@@ -1,0 +1,39 @@
+package com.example.demo.entity;
+
+import com.example.demo.entity.status.RoleName;
+import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import lombok.*;
+
+import java.util.Date;
+import java.util.List;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@ToString
+@Entity
+@Table(name="Roles")
+public class Role {
+
+    @Id
+    @GeneratedValue( strategy= GenerationType.IDENTITY)
+    @Column(name = "Id")
+    private Long id;
+
+    @Column(name = "FullName", columnDefinition = "nvarchar(300)")
+    private String fullName;
+
+    @Column(name= "CreatedAt")
+    private Date createdAt;
+
+    @Column(name= "UpdatedAt")
+    private Date updatedAt;
+
+    @Column(name= "Status")
+    private Integer status;
+
+    @OneToMany(mappedBy = "role")
+    private List<Account> accounts;
+}
