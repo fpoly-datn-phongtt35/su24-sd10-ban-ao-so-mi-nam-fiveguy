@@ -52,7 +52,7 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "IdCategory", referencedColumnName = "Id")
-    private Categories category;
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "IdBrandSuppiler", referencedColumnName = "Id")
@@ -68,7 +68,7 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "IdCollar", referencedColumnName = "Id")
-    private Collars collar;
+    private Collar collar;
 
     @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -76,6 +76,9 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private List<ProductSale> productSales;
+
+    @OneToMany(mappedBy = "product")
+    private List<Image> images;
 
 
 }

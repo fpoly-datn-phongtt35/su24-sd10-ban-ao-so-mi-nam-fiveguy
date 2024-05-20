@@ -1,11 +1,13 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +16,7 @@ import java.util.Date;
 @ToString
 @Entity
 @Table(name = "Collars")
-public class Collars implements Serializable {
+public class Collar implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +35,7 @@ public class Collars implements Serializable {
     @Column(name = "Status")
     private Integer status;
 
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "collar", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products;
 }

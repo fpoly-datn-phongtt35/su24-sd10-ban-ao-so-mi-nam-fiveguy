@@ -12,9 +12,10 @@ import java.util.Date;
 @Setter
 @Getter
 @ToString
+@Builder
 @Entity
-@Table(name = "Colors")
-public class Colors implements Serializable {
+@Table(name = "Categories")
+public class Category implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +24,6 @@ public class Colors implements Serializable {
 
     @Column(name = "Name", columnDefinition = "nvarchar(300)")
     private String name;
-
-    @Column(name = "ColorCode")
-    private String colorCode;
 
     @Column(name = "CreatedAt")
     private Date createdAt;

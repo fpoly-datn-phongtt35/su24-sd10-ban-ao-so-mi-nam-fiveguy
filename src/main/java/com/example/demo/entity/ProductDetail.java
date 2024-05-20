@@ -54,16 +54,15 @@ public class ProductDetail implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "IdColor", referencedColumnName = "Id")
-    private Colors color;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "productDetail",cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<Image> images;
+    private Color color;
 
     @JsonIgnore
     @OneToMany( mappedBy = "productDetail",cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<BillDetail> billDetails;
 
+    @JsonIgnore
+    @OneToMany( mappedBy = "productDetail",cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<CartDetail> cartDetails;
 
 
 }

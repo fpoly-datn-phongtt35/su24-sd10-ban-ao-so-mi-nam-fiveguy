@@ -35,8 +35,12 @@ public class Image {
     @Column(name = "Status")
     private Integer status;
 
+    @ManyToOne
+    @JoinColumn(name = "IdProduct", referencedColumnName = "Id")
+    private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "IdProductDetail", referencedColumnName = "Id")
-    private ProductDetail productDetail;
+    @JoinColumn(name = "IdColor", referencedColumnName = "Id")
+    private Color color;
+
 }
