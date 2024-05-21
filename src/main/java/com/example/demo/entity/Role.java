@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-import com.example.demo.entity.status.RoleName;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
