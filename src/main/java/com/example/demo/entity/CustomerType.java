@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,9 +35,11 @@ public class CustomerType {
     @Column(name = "Status")
     private Integer status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "customerType")
     private List<Customer> customers;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "customerType")
     private List<VoucherDetail> voucherDetails;
 }
