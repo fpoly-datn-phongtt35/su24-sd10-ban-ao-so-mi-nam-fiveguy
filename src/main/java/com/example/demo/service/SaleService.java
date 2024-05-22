@@ -1,0 +1,12 @@
+package com.example.demo.service;
+
+import com.example.demo.entity.Sale;
+import java.util.List;
+
+public interface SaleService {
+    Sale saveSale(Sale sale);
+    Sale updateSale(Long id, Sale sale);
+    void deleteSale(Long id);
+    Sale getSaleById(Long id);
+    List<Sale> getAllSales();
+}

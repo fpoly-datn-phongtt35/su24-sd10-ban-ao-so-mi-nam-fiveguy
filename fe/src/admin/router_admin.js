@@ -37,7 +37,9 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/sale", {
       templateUrl: "pages/sale/sale.html",
     })
-
+    .when("/admin/sale/creat", {
+      templateUrl: "pages/sale/creat-sale.html",
+    })
 
 
     .otherwise({
