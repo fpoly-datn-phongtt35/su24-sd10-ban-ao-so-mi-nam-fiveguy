@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
@@ -33,6 +34,7 @@ public class Role {
     @Column(name= "Status")
     private Integer status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "role")
     private List<Account> accounts;
 }
