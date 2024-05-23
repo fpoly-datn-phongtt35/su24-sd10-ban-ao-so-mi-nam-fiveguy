@@ -41,8 +41,9 @@ app.config(function ($routeProvider, $locationProvider) {
 
 
     .otherwise({
-      redirectTo: "/",
-    });
+      templateUrl: "pages/thongke.html",
+      controller: 'thongKeController'
+    })   
 });
 
 
