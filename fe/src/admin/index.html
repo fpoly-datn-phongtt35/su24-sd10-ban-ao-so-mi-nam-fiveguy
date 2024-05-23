@@ -40,7 +40,7 @@
 			</div>
 			<ul class="list-unstyled component m-0">
 				<li ui-sref-active="active">
-					<a ui-sref="dashboard" class="dashboard"><i class="material-icons">dashboard</i>Thống Kê
+					<a href="#/admin/dashboard" ui-sref="dashboard" class="dashboard"><i class="material-icons">dashboard</i>Thống Kê
 					</a>
 				</li>
 
@@ -61,19 +61,19 @@
 				</li>
 
 				<li class="dropdown">
-					<a href="#homeSubmenu3" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+					<a data-target="#voucher" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">monetization_on</i>Giảm Giá
 					</a>
-					<ul class="collapse list-unstyled menu" id="homeSubmenu3">
+					<ul class="collapse list-unstyled menu" id="voucher">
 						<li><a href="#/admin/sale">Đợt Giảm Giá</a></li>
 						<li><a href="#/admin/voucher">Phiếu Giảm Giá</a></li>
 					</ul>
 				</li>
 				<li class="dropdown">
-					<a href="#homeSubmenu4" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+					<a data-target="#bill" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">receipt</i>Quản lý đơn hàng
 					</a>
-					<ul class="collapse list-unstyled menu" id="homeSubmenu4">
+					<ul class="collapse list-unstyled menu" id="bill">
 						<li><a href="#">Pages 1</a></li>
 						<li><a href="#">Pages 2</a></li>
 						<li><a href="#">Pages 3</a></li>
@@ -241,7 +241,7 @@
 
 
 	<!-- Controller.js -->
-	<script src="/src/admin/controller/thongke-controller.js"></script>
+	<script src="/src/admin/controller/dashboard-controller.js"></script>
 
 
 	<!-- Hiếu -->
