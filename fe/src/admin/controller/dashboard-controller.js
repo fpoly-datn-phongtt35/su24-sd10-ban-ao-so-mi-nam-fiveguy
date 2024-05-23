@@ -1,4 +1,4 @@
-app.controller("thongKeController", function ($scope, $http, $window) {
+app.controller("dashboardController", function ($scope, $http, $window) {
 
 
 
