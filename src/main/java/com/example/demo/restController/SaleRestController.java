@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/admin/sales")
-public class SaleController {
+public class SaleRestController {
 
     @Autowired
     private SaleService saleService;
@@ -43,5 +44,23 @@ public class SaleController {
     public ResponseEntity<List<Sale>> getAllSales() {
         List<Sale> sales = saleService.getAllSales();
         return ResponseEntity.ok(sales);
+    }
+
+    @GetMapping("/current/count")
+    public ResponseEntity<Long> countCurrentSales() {
+        Long count = saleService.countCurrentSales();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/upcoming/count")
+    public ResponseEntity<Long> countUpcomingSales() {
+        Long count = saleService.countUpcomingSales();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/expired/count")
+    public ResponseEntity<Long> countExpiredSales() {
+        Long count = saleService.countExpiredSales();
+        return ResponseEntity.ok(count);
     }
 }

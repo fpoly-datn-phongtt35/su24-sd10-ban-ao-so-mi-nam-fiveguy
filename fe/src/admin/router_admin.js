@@ -36,6 +36,7 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Hải -->
     .when("/admin/sale", {
       templateUrl: "pages/sale/sale.html",
+      controller: 'SaleController'
     })
     .when("/admin/sale/creat", {
       templateUrl: "pages/sale/creat-sale.html",

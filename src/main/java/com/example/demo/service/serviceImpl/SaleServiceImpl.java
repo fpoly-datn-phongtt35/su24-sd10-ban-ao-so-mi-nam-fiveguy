@@ -6,6 +6,7 @@ import com.example.demo.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,4 +61,23 @@ public class SaleServiceImpl implements SaleService {
     public List<Sale> getAllSales() {
         return saleRepository.findAll();
     }
+
+    @Override
+    public Long countCurrentSales() {
+        Date currentDate = new Date();
+        return saleRepository.countCurrentSales(currentDate);
+    }
+
+    @Override
+    public Long countUpcomingSales() {
+        Date currentDate = new Date();
+        return saleRepository.countUpcomingSales(currentDate);
+    }
+
+    @Override
+    public Long countExpiredSales() {
+        Date currentDate = new Date();
+        return saleRepository.countExpiredSales(currentDate);
+    }
+
 }
