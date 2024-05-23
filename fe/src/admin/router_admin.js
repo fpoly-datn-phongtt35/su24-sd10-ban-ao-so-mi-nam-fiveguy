@@ -32,6 +32,7 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Nguyên -->
     .when("/admin/voucher", {
       templateUrl: "pages/voucher/voucher.html",
+      controller: "nguyen-voucher-ctrl"
     })
     // <!-- Hải -->
     .when("/admin/sale", {
