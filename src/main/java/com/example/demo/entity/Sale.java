@@ -30,13 +30,13 @@ public class Sale {
     private String name;
 
     @Column(name = "Value")
-    private Double value;
+    private Integer value;
 
     @Column(name = "NumberOfUses")
     private Integer numberOfUses;
 
     @Column(name = "DiscountType")
-    private String discountType;
+    private Integer discountType;
 
     @Column(name = "Describe", columnDefinition = "nvarchar(500)")
     private String describe;

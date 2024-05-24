@@ -1,5 +1,5 @@
 <!-- Main content -->
-<div class="container-fluid px-4">
+<div class="container-fluid px-4" >
     <div class="row">
         <!-- Form nhập thông tin đợt giảm giá -->
         <div class="col-lg-4 mb-4">
@@ -8,43 +8,45 @@
                     Tạo Đợt Giảm Giá Mới
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form name="saleForm" ng-submit="saveSaleDetails()">
                         <div class="mb-3">
                             <label for="saleName" class="form-label">Tên đợt giảm giá</label>
-                            <input type="text" class="form-control" id="saleName" required>
+                            <input type="text" class="form-control" id="saleName" ng-model="saleDetails.name" required>
                         </div>
                         <div class="mb-3">
                             <label for="saleDescription" class="form-label">Mô tả</label>
-                            <textarea class="form-control" id="saleDescription" rows="3" required></textarea>
+                            <textarea class="form-control" id="saleDescription" rows="3" ng-model="saleDetails.describe" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="startTime" class="form-label">Thời gian bắt đầu</label>
-                            <input type="datetime-local" class="form-control" id="startTime" required>
+                            <input type="datetime-local" class="form-control" id="startTime" ng-model="saleDetails.startDate" required>
                         </div>
                         <div class="mb-3">
                             <label for="endTime" class="form-label">Thời gian kết thúc</label>
-                            <input type="datetime-local" class="form-control" id="endTime" required>
+                            <input type="datetime-local" class="form-control" id="endTime" ng-model="saleDetails.endDate" required>
                         </div>
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="discountType" class="form-label">Loại giảm giá</label>
-                            <select class="form-select" id="discountType" required>
-                                <option value="percent">Giảm giá phần trăm</option>
-                                <option value="fixed">Giảm giá cố định</option>
-                                <option value="bogo">Mua 1 tặng 1</option>
-                                <option value="combo">Combo sản phẩm</option>
+                            <select class="form-select" id="discountType" ng-model="saleDetails.discountType" required>
+                                <option value="1">Giảm giá phần trăm</option>
+                                <option value="2">Giảm giá cố định</option>
+                                <option value="3">Mua 1 tặng 1</option>
+                                <option value="4">Combo sản phẩm</option>
                             </select>
-                        </div>
+                        </div> -->
                         <div class="mb-3">
                             <label for="discountValue" class="form-label">Mức giảm giá</label>
-                            <input type="number" class="form-control" id="discountValue" required>
+                            <input type="number" class="form-control" id="discountValue" ng-model="saleDetails.value" required>
                         </div>
                         <div class="mb-3">
                             <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
-                            <input type="file" class="form-control" id="saleImage" required>
+                            <input type="file" class="form-control" id="saleImage" ng-model="saleDetails.image" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Lưu</button>
                     </form>
                 </div>
+                
+                
             </div>
         </div>
     <div class="col-lg-8 mb-4">

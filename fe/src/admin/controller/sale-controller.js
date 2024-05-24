@@ -1,5 +1,4 @@
-// controllers/saleController.js
-app.controller('SaleController', ['$scope', '$http', '$location', function($scope, $http, $location) {
+app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location', function($scope, $http, $routeParams, $location) {
     var baseUrl = 'http://localhost:8080/api/admin/sales';
 
     $scope.countCurrentSales = function() {
@@ -28,7 +27,9 @@ app.controller('SaleController', ['$scope', '$http', '$location', function($scop
         });
     };
 
-    $scope.getAllSales();
+
+
+    // DÙng để xử lí các thuộc tính của sale
 
     $scope.formatDate = function(date) {
         var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -56,20 +57,60 @@ app.controller('SaleController', ['$scope', '$http', '$location', function($scop
             return "bg-secondary";
         }
     };
-
+    $scope.getDiscountValueAndType = function(value, type) {
+        var typeText = '';
+        if (type == 1) {
+            typeText = 'đ';
+        } else if (type == 2) {
+            typeText = '%';
+        } else {
+            typeText = 'Không xác định';
+        }
+        return value + ' ' + typeText  ;
+    };
+    
+    
     $scope.getSaleDetails = function(saleId) {
-
         $http.get(baseUrl + '/' + saleId)
             .then(function(response) {
-                // On success, update scope variable with sale details
                 $scope.saleDetails = response.data;
-                $location.path("/admin/sale/creat").search({ id: saleId });
             }, function(error) {
-                // On error, log the error
                 console.error('Error fetching sale details:', error);
             });
     };
+
+    if ($routeParams.id) {
+        $scope.getSaleDetails($routeParams.id);
+    }
+
+
+
+    $scope.saveSaleDetails = function() {
+        var saleData = $scope.saleDetails;
+
+        if (saleData.id == null) {
+            saleData.createdAt = new Date()
+        }
+        $http.post(baseUrl, saleData)
+            .then(function(response) {
+                console.log('Sale saved successfully', response.data);
+                // Optionally, redirect to another page or reset the form
+            }, function(error) {
+                console.error('Error saving sale:', error);
+            });
+    };
+
+
+
+
+
+
+
+
+    
     $scope.countCurrentSales();
     $scope.countUpcomingSales();
     $scope.countExpiredSales();
+    $scope.getAllSales();
+
 }]);

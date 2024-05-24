@@ -38,8 +38,13 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/sale/sale.html",
       controller: 'SaleController'
     })
-    .when("/admin/sale/creat", {
-      templateUrl: "pages/sale/creat-sale.html",
+    .when("/admin/sale/create", {
+      templateUrl: "pages/sale/create-sale.html",
+      controller: "SaleController"
+    })
+    .when("/admin/sale/update/:id", {
+      templateUrl: "pages/sale/create-sale.html",
+      controller: "SaleController"
     })
 
 

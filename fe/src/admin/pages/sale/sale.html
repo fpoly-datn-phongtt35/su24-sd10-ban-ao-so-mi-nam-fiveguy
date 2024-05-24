@@ -14,7 +14,7 @@
                     <p>Đợt giảm giá đã kết thúc: {{ expiredSalesCount }}</p>
                 </div>
             </div>
-            <a href="#/admin/sale/creat">Tạo đợt giảm giá mới</a>
+            <a href="#/admin/sale/create">Tạo đợt giảm giá mới</a>
         
             <div class="card">
                 <div class="card-header">
@@ -44,13 +44,14 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-warning" ng-click="getSaleDetails(sale.id)">Xem chi tiết</button>
-
-                                    <!-- <button class="btn btn-sm btn-danger">Xóa</button> -->
+                                    <a ng-href="#admin/sale/update/{{sale.id}}" class="btn btn-sm btn-warning">Xem chi tiết</a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    
+                    
+                    
                 </div>
             </div>
         </div>
