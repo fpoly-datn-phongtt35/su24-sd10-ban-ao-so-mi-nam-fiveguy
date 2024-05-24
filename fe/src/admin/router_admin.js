@@ -3,9 +3,9 @@ app.config(function ($routeProvider, $locationProvider) {
   $locationProvider.hashPrefix("");
 
   $routeProvider
-    .when("/admin/thongKe", {
-      templateUrl: "pages/thongke.html",
-      controller: 'thongKeController'
+    .when("/admin/dashboard", {
+      templateUrl: "pages/dashboard.html",
+      controller: 'dashboardController'
     })   
    
     // <!-- Hiếu -->
@@ -42,8 +42,9 @@ app.config(function ($routeProvider, $locationProvider) {
 
 
     .otherwise({
-      redirectTo: "/",
-    });
+      templateUrl: "pages/dashboard.html",
+      controller: 'dashboardController'
+    })   
 });
 
 

@@ -2,420 +2,246 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
-	<meta name="author" content="AdminKit">
-	<meta name="keywords"
-		content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+	<!-- Required meta tags -->
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<title>Dasboard</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="common/static/css/bootstrap.min.css" />
+	<!----css3---->
+	<link rel="stylesheet" href="common/static/css/custom.css" />
 
-	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link rel="shortcut icon" href="/src/admin/common/img/icons/icon-48x48.png" />
+	<!--google fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-
-	<!-- angularJs -->
+	<!--google material icon-->
+	<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
+	<!-- AngularJS -->
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
 
-
-	<title>Hello</title>
-
-	<link href="/src/admin/common/static/css/app.css" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	<!-- End AngularJS -->
 </head>
 
 <body ng-app="appAdmin">
 	<div class="wrapper">
-		<nav id="sidebar" class="sidebar js-sidebar">
-			<div class="sidebar-content js-simplebar">
-				<a class="sidebar-brand" href="index.html">
-					<span class="align-middle">AdminKit</span>
-					<li class="sidebar-item">
-						<a href="#product" data-bs-toggle="collapse" class="sidebar-link dropdown-toggle">
-							<i class="align-middle" data-feather="sliders"></i><span class="align-middle">Quản Lý Sản
-								Phẩm</span>
-						</a>
-						<ul class="collapse nav flex-column ms-1" id="product" data-bs-parent="#menu">
-							<li class="w-100">
-								<a href="#/admin/product" class="sidebar-link"> <span class="d-none d-sm-inline">Sản
-										Phẩm</span></a>
-							</li>
-							<li>
-								<a href="#/admin/product" class="sidebar-link"> <span class="d-none d-sm-inline">Nhóm
-										Sản Phẩm</span></a>
-							</li>
-							<li>
-								<a href="#/admin/wrist" class="sidebar-link"> <span class="d-none d-sm-inline">Cổ
-										Áo</span></a>
-							</li>
-							<li>
-								<a href="#/admin/collar" class="sidebar-link"> <span class="d-none d-sm-inline">Cổ
-										Tay</span></a>
-							</li>
-							<li>
-								<a href="#/admin/material" class="sidebar-link"> <span class="d-none d-sm-inline">Chất
-										Liệu</span></a>
-							</li>
-						</ul>
-					</li>
+		<div class="body-overlay"></div>
 
-					<ul class="sidebar-nav">
-						<li class="sidebar-header">
-							Pages
-						</li>
+		<!-------sidebar--design------------>
 
-						<li class="sidebar-item active">
-							<a class="sidebar-link" ui-sref="dasboard">
-								<i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Thống
-									kê</span>
-							</a>
-						</li>
+		<div id="sidebar">
+			<div class="sidebar-header">
+				<h3>
+					<img src="common/img/logo-shirt.png" class="img-fluid" /><span>Shop Fiveguys</span>
+				</h3>
+			</div>
+			<ul class="list-unstyled component m-0">
+				<li ui-sref-active="active">
+					<a href="#/admin/dashboard" ui-sref="dashboard" class="dashboard"><i class="material-icons">dashboard</i>Thống Kê
+					</a>
+				</li>
 
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="#/admin/sale">
-								<i class="align-middle" data-feather="user"></i> <span class="align-middle">Đợt giảm
-									giá</span>
-							</a>
+				<li class="dropdown">
+					<a data-target="#product" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"
+						style="cursor: pointer">
+						<i class="material-icons">style</i>Quản Lý Sản Phẩm
+					</a>
+					<ul class="collapse list-unstyled menu" id="product">
+						<li><a href="#/admin/product">Sản Phẩm</a></li>
+						<li ui-sref-active="active">
+							<a ui-sref="category">Nhóm Sản Phẩm</a>
 						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="#/admin/voucher">
-								<i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Phiếu giảm
-									giá</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="#/admin/staff">
-								<i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Nhân
-									viên</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="#/admin/customer">
-								<i class="align-middle" data-feather="book"></i> <span class="align-middle">Khách
-									hàng</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="pages-blank.html">
-								<i class="align-middle" data-feather="book"></i> <span class="align-middle">Phương thức
-									thanh toán</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="pages-blank.html">
-								<i class="align-middle" data-feather="book"></i> <span class="align-middle">Hóa
-									đơn</span>
-							</a>
-						</li>
-
-						<li class="sidebar-header">
-							Tools & Components
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="ui-buttons.html">
-								<i class="align-middle" data-feather="square"></i> <span
-									class="align-middle">Buttons</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="ui-forms.html">
-								<i class="align-middle" data-feather="check-square"></i> <span
-									class="align-middle">Forms</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="ui-cards.html">
-								<i class="align-middle" data-feather="grid"></i> <span class="align-middle">Cards</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="ui-typography.html">
-								<i class="align-middle" data-feather="align-left"></i> <span
-									class="align-middle">Typography</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="icons-feather.html">
-								<i class="align-middle" data-feather="coffee"></i> <span
-									class="align-middle">Icons</span>
-							</a>
-						</li>
-
-						<li class="sidebar-header">
-							Plugins & Addons
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="charts-chartjs.html">
-								<i class="align-middle" data-feather="bar-chart-2"></i> <span
-									class="align-middle">Charts</span>
-							</a>
-						</li>
-
-						<li class="sidebar-item">
-							<a class="sidebar-link" href="maps-google.html">
-								<i class="align-middle" data-feather="map"></i> <span class="align-middle">Maps</span>
-							</a>
-						</li>
+						<li><a href="#/admin/wrist">Cổ Áo</a></li>
+						<li><a href="#/admin/collar">Cổ Tay</a></li>
+						<li><a href="#/admin/material">Chất Liệu</a></li>
 					</ul>
+				</li>
 
-					<div class="sidebar-cta">
-						<div class="sidebar-cta-content">
-							<strong class="d-inline-block mb-2">Upgrade to Pro</strong>
-							<div class="mb-3 text-sm">
-								Are you looking for more components? Check out our premium version.
+				<li class="dropdown">
+					<a data-target="#voucher" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+						<i class="material-icons">monetization_on</i>Giảm Giá
+					</a>
+					<ul class="collapse list-unstyled menu" id="voucher">
+						<li><a href="#/admin/sale">Đợt Giảm Giá</a></li>
+						<li><a href="#/admin/voucher">Phiếu Giảm Giá</a></li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a data-target="#bill" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+						<i class="material-icons">receipt</i>Quản lý đơn hàng
+					</a>
+					<ul class="collapse list-unstyled menu" id="bill">
+						<li><a href="#">Pages 1</a></li>
+						<li><a href="#">Pages 2</a></li>
+						<li><a href="#">Pages 3</a></li>
+					</ul>
+				</li>
+				<li class="">
+					<a href="#/admin/staff" class=""><i class="material-icons">groups</i>Nhân Viên
+					</a>
+				</li>
+				<li class="">
+					<a href="#/admin/customer" class=""><i class="material-icons">person</i>Khách Hàng
+					</a>
+				</li>
+			</ul>
+		</div>
+		<!-------sidebar--design- close----------->
+		<!-------page-content start----------->
+
+		<div id="content">
+			<!------top-navbar-start----------->
+			<div class="top-navbar">
+				<div class="xd-topbar">
+					<div class="row">
+						<div class="col-2 col-md-1 col-lg-1 order-2 order-md-1 align-self-center">
+							<div class="xp-menubar">
+								<span class="material-icons text-white">signal_cellular_alt</span>
 							</div>
-							<div class="d-grid">
-								<a href="upgrade-to-pro.html" class="btn btn-primary">Upgrade to Pro</a>
+						</div>
+
+						<div class="col-md-5 col-lg-3 order-3 order-md-2">
+							<div class="xp-searchbar">
+								<form>
+									<div class="input-group">
+										<input type="search" class="form-control" placeholder="Search" />
+										<div class="input-group-append">
+											<button class="btn" type="submit" id="button-addon2">
+												Go
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+
+						<div class="col-10 col-md-6 col-lg-8 order-1 order-md-3">
+							<div class="xp-profilebar text-right">
+								<nav class="navbar p-0">
+									<ul class="nav navbar-nav flex-row ml-auto">
+										<li class="dropdown nav-item active">
+											<a class="nav-link" href="#" data-toggle="dropdown">
+												<span class="material-icons">notifications</span>
+												<span class="notification">4</span>
+											</a>
+											<ul class="dropdown-menu">
+												<li><a href="#">You Have 4 New Messages</a></li>
+												<li><a href="#">You Have 4 New Messages</a></li>
+												<li><a href="#">You Have 4 New Messages</a></li>
+												<li><a href="#">You Have 4 New Messages</a></li>
+											</ul>
+										</li>
+
+										<li class="nav-item">
+											<a class="nav-link" href="#">
+												<span class="material-icons">question_answer</span>
+											</a>
+										</li>
+
+										<li class="dropdown nav-item">
+											<a class="nav-link" href="#" data-toggle="dropdown">
+												<img src="common/img/user.jpg"
+													style="width: 40px; border-radius: 50%" />
+												<span class="xp-user-live"></span>
+											</a>
+											<ul class="dropdown-menu small-menu">
+												<li>
+													<a href="#">
+														<span class="material-icons">person_outline</span>
+														Profile
+													</a>
+												</li>
+												<li>
+													<a href="#">
+														<span class="material-icons">settings</span>
+														Settings
+													</a>
+												</li>
+												<li>
+													<a href="#">
+														<span class="material-icons">logout</span>
+														Logout
+													</a>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</nav>
 							</div>
 						</div>
 					</div>
-			</div>
-		</nav>
 
-		<div class="main">
-			<nav class="navbar navbar-expand navbar-light navbar-bg">
-				<a class="sidebar-toggle js-sidebar-toggle">
-					<i class="hamburger align-self-center"></i>
-				</a>
-
-				<div class="navbar-collapse collapse">
-					<ul class="navbar-nav navbar-align">
-						<li class="nav-item dropdown">
-							<a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
-								<div class="position-relative">
-									<i class="align-middle" data-feather="bell"></i>
-									<span class="indicator">4</span>
-								</div>
-							</a>
-							<div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0"
-								aria-labelledby="alertsDropdown">
-								<div class="dropdown-menu-header">
-									4 New Notifications
-								</div>
-								<div class="list-group">
-									<a href="#" class="list-group-item">
-										<div class="row g-0 align-items-center">
-											<div class="col-2">
-												<i class="text-danger" data-feather="alert-circle"></i>
-											</div>
-											<div class="col-10">
-												<div class="text-dark">Update completed</div>
-												<div class="text-muted small mt-1">Restart server 12 to complete the
-													update.</div>
-												<div class="text-muted small mt-1">30m ago</div>
-											</div>
-										</div>
-									</a>
-									<a href="#" class="list-group-item">
-										<div class="row g-0 align-items-center">
-											<div class="col-2">
-												<i class="text-warning" data-feather="bell"></i>
-											</div>
-											<div class="col-10">
-												<div class="text-dark">Lorem ipsum</div>
-												<div class="text-muted small mt-1">Aliquam ex eros, imperdiet vulputate
-													hendrerit et.</div>
-												<div class="text-muted small mt-1">2h ago</div>
-											</div>
-										</div>
-									</a>
-									<a href="#" class="list-group-item">
-										<div class="row g-0 align-items-center">
-											<div class="col-2">
-												<i class="text-primary" data-feather="home"></i>
-											</div>
-											<div class="col-10">
-												<div class="text-dark">Login from 192.186.1.8</div>
-												<div class="text-muted small mt-1">5h ago</div>
-											</div>
-										</div>
-									</a>
-									<a href="#" class="list-group-item">
-										<div class="row g-0 align-items-center">
-											<div class="col-2">
-												<i class="text-success" data-feather="user-plus"></i>
-											</div>
-											<div class="col-10">
-												<div class="text-dark">New connection</div>
-												<div class="text-muted small mt-1">Christina accepted your request.
-												</div>
-												<div class="text-muted small mt-1">14h ago</div>
-											</div>
-										</div>
-									</a>
-								</div>
-								<div class="dropdown-menu-footer">
-									<a href="#" class="text-muted">Show all notifications</a>
-								</div>
-							</div>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-icon dropdown-toggle" href="#" id="messagesDropdown"
-								data-bs-toggle="dropdown">
-								<div class="position-relative">
-									<i class="align-middle" data-feather="message-square"></i>
-								</div>
-							</a>
-							<div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0"
-								aria-labelledby="messagesDropdown">
-								<div class="dropdown-menu-header">
-									<div class="position-relative">
-										4 New Messages
-									</div>
-								</div>
-								<div class="list-group">
-									<a href="#" class="list-group-item">
-										<div class="row g-0 align-items-center">
-											<div class="col-2">
-												<img src="/src/admin/common/static/img/avatars/avatar-5.jpg"
-													class="avatar img-fluid rounded-circle" alt="Vanessa Tucker">
-											</div>
-											<div class="col-10 ps-2">
-												<div class="text-dark">Vanessa Tucker</div>
-												<div class="text-muted small mt-1">Nam pretium turpis et arcu. Duis arcu
-													tortor.</div>
-												<div class="text-muted small mt-1">15m ago</div>
-											</div>
-										</div>
-									</a>
-									<a href="#" class="list-group-item">
-										<div class="row g-0 align-items-center">
-											<div class="col-2">
-												<img src="/src/admin/common/static/img/avatars/avatar-5.jpg"
-													class="avatar img-fluid rounded-circle" alt="Vanessa Tucker">
-											</div>
-											<div class="col-10 ps-2">
-												<div class="text-dark">William Harris</div>
-												<div class="text-muted small mt-1">Curabitur ligula sapien euismod
-													vitae.</div>
-												<div class="text-muted small mt-1">2h ago</div>
-											</div>
-										</div>
-									</a>
-									<a href="#" class="list-group-item">
-										<div class="row g-0 align-items-center">
-											<div class="col-2">
-												<img src="/src/admin/common/static/img/avatars/avatar-5.jpg"
-													class="avatar img-fluid rounded-circle" alt="Vanessa Tucker">
-											</div>
-											<div class="col-10 ps-2">
-												<div class="text-dark">Christina Mason</div>
-												<div class="text-muted small mt-1">Pellentesque auctor neque nec urna.
-												</div>
-												<div class="text-muted small mt-1">4h ago</div>
-											</div>
-										</div>
-									</a>
-									<a href="#" class="list-group-item">
-										<div class="row g-0 align-items-center">
-											<div class="col-2">
-												<img src="/src/admin/common/static/img/avatars/avatar-5.jpg"
-													class="avatar img-fluid rounded-circle" alt="Vanessa Tucker">
-											</div>
-											<div class="col-10 ps-2">
-												<div class="text-dark">Sharon Lessman</div>
-												<div class="text-muted small mt-1">Aenean tellus metus, bibendum sed,
-													posuere ac, mattis non.</div>
-												<div class="text-muted small mt-1">5h ago</div>
-											</div>
-										</div>
-									</a>
-								</div>
-								<div class="dropdown-menu-footer">
-									<a href="#" class="text-muted">Show all messages</a>
-								</div>
-							</div>
-						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#"
-								data-bs-toggle="dropdown">
-								<i class="align-middle" data-feather="settings"></i>
-							</a>
-
-							<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
-								data-bs-toggle="dropdown">
-								<img src="/src/admin/common/static/img/avatars/avatar-5.jpg"
-									class="avatar img-fluid rounded-circle" alt="Vanessa Tucker"> <span
-									class="text-dark">Charles Hall</span>
-							</a>
-							<div class="dropdown-menu dropdown-menu-end">
-								<a class="dropdown-item" href="pages-profile.html"><i class="align-middle me-1"
-										data-feather="user"></i> Profile</a>
-								<a class="dropdown-item" href="#"><i class="align-middle me-1"
-										data-feather="pie-chart"></i> Analytics</a>
-								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="index.html"><i class="align-middle me-1"
-										data-feather="settings"></i> Settings & Privacy</a>
-								<a class="dropdown-item" href="#"><i class="align-middle me-1"
-										data-feather="help-circle"></i> Help Center</a>
-								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="#">Log out</a>
-							</div>
-						</li>
-					</ul>
+					<div class="xp-breadcrumbbar text-center">
+						<h4 class="page-title">Dashboard</h4>
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="#">Vishweb</a></li>
+							<li class="breadcrumb-item active" aria-curent="page">
+								Dashboard
+							</li>
+						</ol>
+					</div>
 				</div>
-			</nav>
+			</div>
+			<!------top-navbar-end----------->
+
+			<!------main-content-start----------->
 
 			<!-- View -->
 
 			<div ng-view autoscroll="true"></div>
 
 			<!-- View -->
+			<!------main-content-end----------->
+
+			<!----footer-design------------->
 
 			<footer class="footer">
 				<div class="container-fluid">
-					<div class="row text-muted">
-						<div class="col-6 text-start">
-							<p class="mb-0">
-								<a class="text-muted" href="https://adminkit.io/"
-									target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted"
-									href="https://adminkit.io/" target="_blank"><strong>Bootstrap Admin
-										Template</strong></a> &copy;
-							</p>
-						</div>
-						<div class="col-6 text-end">
-							<ul class="list-inline">
-								<li class="list-inline-item">
-									<a class="text-muted" href="https://adminkit.io/" target="_blank">Support</a>
-								</li>
-								<li class="list-inline-item">
-									<a class="text-muted" href="https://adminkit.io/" target="_blank">Help Center</a>
-								</li>
-								<li class="list-inline-item">
-									<a class="text-muted" href="https://adminkit.io/" target="_blank">Privacy</a>
-								</li>
-								<li class="list-inline-item">
-									<a class="text-muted" href="https://adminkit.io/" target="_blank">Terms</a>
-								</li>
-							</ul>
-						</div>
+					<div class="footer-in">
+						<p class="mb-0">
+							&copy 2021 Vishweb Design . All Rights Reserved.
+						</p>
 					</div>
 				</div>
 			</footer>
 		</div>
 	</div>
+	<!-------complete html----------->
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="common/js/jquery-3.3.1.slim.min.js"></script>
+	<script src="common/js/popper.min.js"></script>
+	<script src="common/js/bootstrap.min.js"></script>
+	<script src="common/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(".xp-menubar").on("click", function () {
+				$("#sidebar").toggleClass("active");
+				$("#content").toggleClass("active");
+			});
+
+			$(".xp-menubar,.body-overlay").on("click", function () {
+				$("#sidebar,.body-overlay").toggleClass("show-nav");
+			});
+		});
+	</script>
+
+
+
+
+
 
 
 	<!-- App js -->
 	<script src="router_admin.js"></script>
-	<script src="/src/admin/common/js/app.js"></script>
-	<script src="/src/admin/common/static/js/app.js"></script>
+
 
 
 	<!-- Controller.js -->
-	<script src="/src/admin/controller/thongke-controller.js"></script>
+	<script src="/src/admin/controller/dashboard-controller.js"></script>
 
 
 	<!-- Hiếu -->
