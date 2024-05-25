@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/voucher")
 @CrossOrigin("*")
+@RequestMapping("/api/admin/voucher")
 public class VoucherRestController {
 
     @Autowired
@@ -27,5 +27,10 @@ public class VoucherRestController {
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody Voucher voucher){
         return ResponseEntity.ok(voucherService.createVoucher(voucher));
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@RequestBody Voucher voucher, @PathVariable Long id){
+        return ResponseEntity.ok(voucherService.updateVoucher(voucher, id));
     }
 }

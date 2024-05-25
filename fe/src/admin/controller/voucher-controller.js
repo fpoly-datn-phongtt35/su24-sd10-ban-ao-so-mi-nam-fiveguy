@@ -22,13 +22,35 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     $scope.vouchers = []
 
+    $scope.formInputVoucher = {}
+
+    $scope.formUpdateVoucher = {}
+
     const apiVoucher = "http://localhost:8080/api/admin/voucher"
 
-    $scope.getAllVoucher = function() {
-        $http.get(apiVoucher + "/all").then(function (res){
+    $scope.getAllVoucher = function () {
+        $http.get(apiVoucher + "/all").then(function (res) {
             $scope.vouchers = res.data;
-            console.log($scope.vouchers);
         })
     }
     $scope.getAllVoucher()
+
+    $scope.addVoucher = function () {
+        let data = $scope.formInputVoucher
+        $http.post(apiVoucher + "/save", data).then(function (res) {
+            $scope.getAllVoucher()
+        })
+    }
+
+    $scope.getVoucherById = function (voucher) {
+        $scope.formUpdateVoucher = angular.copy(voucher)
+    }
+
+    $scope.updateVoucher = function (id) {
+        let data = angular.copy($scope.formUpdateVoucher)
+        console.log(data);
+        $http.put(apiVoucher + "/update/" + id, data).then(function (res) {
+            $scope.getAllVoucher()
+        })
+    }
 });
