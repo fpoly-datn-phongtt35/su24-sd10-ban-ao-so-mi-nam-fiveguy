@@ -1,7 +1,7 @@
-package com.example.demo.restController;
+package com.example.demo.restController.sale;
 
 import com.example.demo.entity.Sale;
-import com.example.demo.service.SaleService;
+import com.example.demo.service.sale.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

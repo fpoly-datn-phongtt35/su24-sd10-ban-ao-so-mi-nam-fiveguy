@@ -1,8 +1,8 @@
-package com.example.demo.service.serviceImpl;
+package com.example.demo.service.sale.serviceImpl;
 
 import com.example.demo.entity.Sale;
-import com.example.demo.repository.SaleRepository;
-import com.example.demo.service.SaleService;
+import com.example.demo.repository.sale.SaleRepository;
+import com.example.demo.service.sale.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

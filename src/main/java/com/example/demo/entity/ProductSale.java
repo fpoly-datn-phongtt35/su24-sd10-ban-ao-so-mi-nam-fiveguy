@@ -19,10 +19,10 @@ public class ProductSale {
     private Long id;
 
     @Column(name = "PromotionalPrice")
-    private Double promotionalPrice;
+    private Integer promotionalPrice;
 
     @Column(name = "DiscountPrice")
-    private Double discountPrice;
+    private Integer discountPrice;
 
     @Column(name = "Status")
     private Integer status;

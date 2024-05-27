@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.service.sale;
 
 import com.example.demo.entity.ProductSale;
 import java.util.List;
@@ -9,4 +9,10 @@ public interface ProductSaleService {
     void deleteProductSale(Long id);
     ProductSale getProductSaleById(Long id);
     List<ProductSale> getAllProductSales();
+    List<ProductSale> getProductSalesBySaleId(Long saleId);
+
+
+    List<ProductSale> addProductSales(List<ProductSale> productSales);
+    void deleteProductSales(List<Long> ids);
+    void deleteAllProductSales();
 }

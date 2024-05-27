@@ -14,7 +14,97 @@
                     <p>Đợt giảm giá đã kết thúc: {{ expiredSalesCount }}</p>
                 </div>
             </div>
-            <a href="#/admin/sale/create">Tạo đợt giảm giá mới</a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saleModal" data-bs-whatever="@mdo">Tạo mới đợt giảm giá</button>
+            
+
+
+
+ <!-- The Modal -->
+ <div class="modal fade" id="saleModal" tabindex="-1" aria-labelledby="saleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saleModalLabel">Tạo mới đợt giảm giá</h5>
+            </div>
+            <div class="modal-body">
+                <form name="saleForm" ng-submit="saveSaleDetails()">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="saleName" class="form-label">Tên đợt giảm giá</label>
+                                    <input type="text" class="form-control" id="saleName" ng-model="saleDetails.name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="saleCode" class="form-label">Mã giảm giá</label>
+                                    <input type="text" class="form-control" id="saleCode" ng-model="saleDetails.code" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="saleDescription" class="form-label">Mô tả</label>
+                                    <textarea class="form-control" id="saleDescription" rows="3" ng-model="saleDetails.describe" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="startTime" class="form-label">Thời gian bắt đầu</label>
+                                    <input type="datetime-local" class="form-control" id="startTime" ng-model="saleDetails.startDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endTime" class="form-label">Thời gian kết thúc</label>
+                                    <input type="datetime-local" class="form-control" id="endTime" ng-model="saleDetails.endDate" required>
+                                </div>
+                         
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="discountType" class="form-label">Loại giảm giá</label>
+                                    <select class="form-control" id="discountType" ng-model="saleDetails.discountType" required>
+                                        <option value="1">Giảm giá phần trăm</option>
+                                        <option value="2">Giảm giá cố định</option>
+                                        <option value="3">Mua 1 tặng 1</option>
+                                        <option value="4">Combo sản phẩm</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="discountValue" class="form-label">Mức giảm giá</label>
+                                    <input type="number" class="form-control" id="discountValue" ng-model="saleDetails.value" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="maximumDiscountAmount" class="form-label">Số tiền giảm giá tối đa</label>
+                                    <input type="number" class="form-control" id="maximumDiscountAmount" ng-model="saleDetails.maximumDiscountAmount" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="numberOfUses" class="form-label">Số lần sử dụng</label>
+                                    <input type="number" class="form-control" id="numberOfUses" ng-model="saleDetails.numberOfUses" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
+                                    <input type="file" class="form-control" id="saleImage" ng-model="saleDetails.image" required>
+                                </div>
+                                <!-- <div class="form-group">
+                                    <label for="createdBy" class="form-label">Tạo bởi</label>
+                                    <input type="text" class="form-control" id="createdBy" ng-model="saleDetails.createdBy" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="updatedBy" class="form-label">Cập nhật bởi</label>
+                                    <input type="text" class="form-control" id="updatedBy" ng-model="saleDetails.updatedBy">
+                                </div> -->
+                                <!-- <div class="form-group">
+                                    <label for="status" class="form-label">Trạng thái</label>
+                                    <select class="form-control" id="status" ng-model="saleDetails.status" required>
+                                        <option value="1">Hoạt động</option>
+                                        <option value="0">Không hoạt động</option>
+                                    </select>
+                                </div> -->
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy bỏ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+            
         
             <div class="card">
                 <div class="card-header">

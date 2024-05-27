@@ -1,8 +1,8 @@
-package com.example.demo.service.serviceImpl;
+package com.example.demo.service.sale.serviceImpl;
 
 import com.example.demo.entity.ProductSale;
-import com.example.demo.repository.ProductSaleRepository;
-import com.example.demo.service.ProductSaleService;
+import com.example.demo.repository.sale.ProductSaleRepository;
+import com.example.demo.service.sale.ProductSaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,4 +50,29 @@ public class ProductSaleServiceImpl implements ProductSaleService {
     public List<ProductSale> getAllProductSales() {
         return productSaleRepository.findAll();
     }
+
+    @Override
+    public List<ProductSale> getProductSalesBySaleId(Long saleId) {
+        return productSaleRepository.findBySaleId(saleId);
+    }
+
+    @Override
+    public List<ProductSale> addProductSales(List<ProductSale> productSales) {
+
+
+        return productSaleRepository.saveAll(productSales);
+    }
+
+
+    @Override
+    public void deleteProductSales(List<Long> ids) {
+        productSaleRepository.deleteAllById(ids);
+    }
+
+    @Override
+    public void deleteAllProductSales() {
+        productSaleRepository.deleteAll();
+    }
+
+
 }
