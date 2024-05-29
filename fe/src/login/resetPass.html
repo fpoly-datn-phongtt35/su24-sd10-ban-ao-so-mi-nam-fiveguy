@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <link rel="stylesheet" th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="login.css">
+  <title>Login</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" referrerpolicy="no-referrer"></script>
+  <!-- //toastr -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+
+  <!-- angular-jwt -->
+  <script type="text/javascript" src="https://cdn.rawgit.com/auth0/angular-jwt/master/dist/angular-jwt.js"></script>
+</head>
+
+<body ng-app="resetPass" ng-controller="resetPassCtrcl">
+  <div class="container">
+    <form>
+      <h1>Đặt lại mật khẩu</h1>
+      <div class="input-group">
+        <input type="password" ng-model="password2" placeholder="Mật khẩu" required>
+        <input type="password" ng-model="passwordCheck" placeholder="Nhập lại Mật khẩu" required>
+      </div>
+
+      <button ng-click="resetPass()">Đặt lại mật khẩu</button>
+    </form>
+  </div>
+
+  <script src="login.js"></script>
+  <script src="loginAngularJs.js"></script>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+</html>
