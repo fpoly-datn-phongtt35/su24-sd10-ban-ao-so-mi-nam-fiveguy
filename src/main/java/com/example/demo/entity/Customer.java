@@ -59,7 +59,8 @@ public class Customer {
     @OneToMany(mappedBy = "customer")
     private List<Bill> bills;
 
-    @OneToOne(mappedBy = "customer")
+    @ManyToOne
+    @JoinColumn(name = "IdAccount", referencedColumnName = "Id")
     private Account account;
 
     @ManyToOne
