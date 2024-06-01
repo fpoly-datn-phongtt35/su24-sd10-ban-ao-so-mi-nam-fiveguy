@@ -35,22 +35,50 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     }
     $scope.getAllVoucher()
 
+    $scope.formInputVoucher.discountType = 1
+
     $scope.addVoucher = function () {
+        let maxReVa = +document.getElementById("maximumReductionValue").value
+        console.log(maxReVa);
+
+        if($scope.formInputVoucher.discountType == 2){
+            $scope.formInputVoucher.maximumReductionValue = maxReVa
+        }
+
         let data = $scope.formInputVoucher
-        $http.post(apiVoucher + "/save", data).then(function (res) {
-            $scope.getAllVoucher()
-        })
+        console.log(data)
+        
+        // $http.post(apiVoucher + "/save", data).then(function (res) {
+        //     $scope.getAllVoucher()
+        // })
     }
+
+    $scope.currentVoucher = null
 
     $scope.getVoucherById = function (voucher) {
         $scope.formUpdateVoucher = angular.copy(voucher)
+        $scope.currentVoucher = angular.copy(voucher)
+        console.log(voucher);
     }
 
     $scope.updateVoucher = function (id) {
+        if($scope.formUpdateVoucher.startDate == null){
+            $scope.formUpdateVoucher.startDate = $scope.currentVoucher.startDate
+        }
+
+        if($scope.formUpdateVoucher.endDate == null){
+            $scope.formUpdateVoucher.endDate = $scope.currentVoucher.endDate
+        }
+
         let data = angular.copy($scope.formUpdateVoucher)
         console.log(data);
         $http.put(apiVoucher + "/update/" + id, data).then(function (res) {
             $scope.getAllVoucher()
         })
+    }
+
+    $scope.discountTypeChange = function(aa) {
+        console.log(aa);
+        return aa;
     }
 });

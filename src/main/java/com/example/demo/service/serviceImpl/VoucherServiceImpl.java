@@ -33,15 +33,34 @@ public class VoucherServiceImpl implements VoucherService {
         voucher.setCreatedBy("Admin add");
         voucher.setUpdatedAt(new Date());
         voucher.setUpdatedBy("Admin add");
+        voucher.setStatus(1);
         return voucherRepository.save(voucher);
     }
 
     @Override
     public Voucher updateVoucher(Voucher voucher, Long id) {
-        Optional<Voucher> v = voucherRepository.findById(id);
-        if(v.isEmpty()){
-        }
+        Optional<Voucher> voucherOptional = voucherRepository.findById(id);
+        if(voucherOptional.isPresent()){
+            Voucher v = voucherOptional.get();
+            v.setCode(voucher.getCode());
+            v.setName(voucher.getName());
+            v.setValue(voucher.getValue());
+            v.setDiscountType(voucher.getDiscountType());
+            v.setMaximumReductionValue(voucher.getMaximumReductionValue());
+            v.setMinimumTotalAmount(voucher.getMinimumTotalAmount());
+            v.setQuantity(voucher.getQuantity());
+            v.setNumberOfUses(voucher.getNumberOfUses());
+            v.setDescribe(voucher.getDescribe());
+            v.setStartDate(voucher.getStartDate());
+            v.setEndDate(voucher.getEndDate());
+            v.setCreatedAt(voucher.getCreatedAt());
+            v.setCreatedBy(voucher.getCreatedBy());
+            v.setUpdatedAt(voucher.getUpdatedAt());
+            v.setUpdatedBy(voucher.getUpdatedBy());
+            v.setStatus(voucher.getStatus());
 
+            return voucherRepository.save(v);
+        }
         return null;
     }
 }
