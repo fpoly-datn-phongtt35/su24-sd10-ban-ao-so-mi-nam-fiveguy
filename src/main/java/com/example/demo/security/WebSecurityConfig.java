@@ -25,10 +25,6 @@ import java.util.Collections;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-
-//    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-//    private final UserDetailsService jwtUserDetailsService;
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
@@ -85,7 +81,7 @@ public PasswordEncoder passwordEncoder() {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
 
 //                        .requestMatchers("/api/ol/authenticated/**").authenticated()
                         .anyRequest().permitAll()

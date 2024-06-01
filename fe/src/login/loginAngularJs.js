@@ -278,7 +278,7 @@ app.controller('LoginCtrl2', function ($scope, $http, $location) {
                 console.log(response.data.accessToken);
                 localStorage.setItem('refreshToken', response.data.refreshToken);
                 $scope.showSuccessNotification("Đăng nhập thành công");
-                window.location.href = 'http://127.0.0.1:5555/src/user/pages/index.html#!/home';
+                window.location.href = 'http://127.0.0.1:5555/src/user/index.html#/home';
             })
             .catch(function (error) {
                 if (error.status === 404) {

@@ -34,22 +34,9 @@ public class RefreshTokenImpl implements RefreshTokenService {
     }
 
 
-    public static final long JWT_TOKENRFRESH_VALIDITY = 24 * 60 * 60;
+    public static final long JWT_TOKENRFRESH_VALIDITY = 7 * 24 * 60 * 60;
 
 
-
-    /**
-     * Find a refresh token based on the natural id i.e the token itself
-     */
-    @Override
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
-    }
-
-
-    /**
-     * Creates and returns a new refresh token
-     */
     @Override
     public RefreshToken createRefreshToken(UserDetails userDetails, Account accountEntity) {
         RefreshToken refreshToken = new RefreshToken();

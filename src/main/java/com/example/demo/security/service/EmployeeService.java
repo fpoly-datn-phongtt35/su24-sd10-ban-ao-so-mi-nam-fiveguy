@@ -6,8 +6,6 @@ import java.util.Optional;
 
 public interface EmployeeService {
 
-    Optional<Employee> findById(Long Id);
-
     Employee findByAccount_Id(Long accountId);
 
     Employee save(Employee employees);

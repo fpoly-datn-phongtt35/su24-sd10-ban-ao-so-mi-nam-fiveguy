@@ -20,20 +20,6 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    @Autowired
-    private CustomerService olCustomerService;
-
-    @Autowired
-    private EmployeeService olEmployeeService;
-
-//    public  UserRequestDTO mapAccountToUserRequestDTO(AccountEntity account) {
-//        UserRequestDTO userRequestDTO = new UserRequestDTO();
-//        userRequestDTO.setAccount(account.getAccount());
-//        userRequestDTO.setEmail(account.getEmail());
-//        userRequestDTO.setId(account.getId());
-//        // Các trường thông tin khác
-//        return userRequestDTO;
-//    }
 
     @Override
     public Optional<Account> findByAccount(String username) {
@@ -43,7 +29,6 @@ public class AccountServiceImpl implements AccountService {
         }
         return Optional.empty();
     }
-
 
     @Override
     public List<Account> findByEmail(String email) {
@@ -64,12 +49,11 @@ public class AccountServiceImpl implements AccountService {
         userRequestDTO.setAccount(account.getAccount());
         userRequestDTO.setEmail(account.getEmail());
         userRequestDTO.setId(account.getId());
-        // Các trường thông tin khác
         return userRequestDTO;
     }
 
     @Override
-    public List<UserRequestDTO> getAllAccount2() {
+    public List<UserRequestDTO> getAllAccount() {
         List<Account> accounts = accountRepository.findAll();
         List<UserRequestDTO> userRequestDTOs = new ArrayList<>();
         for (Account account : accounts) {
@@ -87,36 +71,5 @@ public class AccountServiceImpl implements AccountService {
         return Optional.empty();
     }
 
-//    @Override
-//    public boolean updateUser(UserInfoRequest userInfoRequest) {
-//        if (userInfoRequest.getAccount().getRole().getFullName().equals("CUSTOMER")) {
-//            Optional<CustomerEntity> customer = Optional.ofNullable(olCustomerService.findByAccount_Id(userInfoRequest.getAccount().getId()));
-//            CustomerEntity customerNew = customer.get();
-//            customerNew.setFullName(userInfoRequest.getFullName());
-//            customerNew.getAccount().setEmail(userInfoRequest.getAccount().getEmail());
-//            customerNew.setId(userInfoRequest.getId());
-//            customerNew.setGender(userInfoRequest.getGender());
-//            customerNew.getAccount().setPhoneNumber(userInfoRequest.getAccount().getPhoneNumber());
-//            customerNew.getAccount().setId(userInfoRequest.getAccount().getId());
-//            customerNew.setAvatar(userInfoRequest.getAvatar());
-//
-//            accountRepository.save(customerNew.getAccount());
-//            olCustomerService.save(customerNew);
-//            return true;
-//        } else if (userInfoRequest.getAccount().getRole().getFullName().equals("STAFF") || userInfoRequest.getAccount().getRole().equals("ADMIN")) {
-//            Optional<Employees> employee = Optional.ofNullable(olEmployeeService.findByAccount_Id(userInfoRequest.getAccount().getId()));
-//            Employees customerNew = employee.get();
-//            customerNew.setFullName(userInfoRequest.getFullName());
-//            customerNew.getAccount().setEmail(userInfoRequest.getAccount().getEmail());
-//            customerNew.setId(userInfoRequest.getId());
-//            customerNew.setGender(userInfoRequest.getGender());
-//            customerNew.getAccount().setPhoneNumber(userInfoRequest.getAccount().getPhoneNumber());
-//            customerNew.getAccount().setId(userInfoRequest.getAccount().getId());
-//            customerNew.setAvatar(userInfoRequest.getAvatar());
-//            accountRepository.save(customerNew.getAccount());
-//            olEmployeeService.save(customerNew);
-//            return true;
-//        }
-//        return false;
-//    }
+
 }

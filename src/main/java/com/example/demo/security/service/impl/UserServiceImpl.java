@@ -70,8 +70,6 @@ public class UserServiceImpl implements UserService {
         this.accountEmailSender = accountEmailSender;
     }
 
-//    @Value("${spring.mail.username}")
-//    private String sender;
 
     public void sendSimpleEmail(String toEmail, String text, String subject) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -95,21 +93,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean resetPassword2(String username, String newPassword) {
-        Optional<Account> accountEntity = accountService.findByAccount2(username);
-
-        if (accountEntity.isPresent()){
-            accountEntity.get().setPassword(bcryptEncoder.encode(newPassword));
-            accountService.createAccount(accountEntity.get());
-            return true; // Trả về true khi reset mật khẩu thành công
-        } else {
-            return false; // Trả về false nếu không tìm thấy tài khoản để reset mật khẩu
-        }
-    }
-
-    @Override
     public ResponseObject register(UserRequestDTO user) {
-        UserRequestDTO userRequestDTO = helper.getUser(user.getAccount(), accountService.getAllAccount2());
+        UserRequestDTO userRequestDTO = helper.getUser(user.getAccount(), accountService.getAllAccount());
         if (userRequestDTO != null) {
             return new ResponseObject("400", "Email này tồn tại", null);
         } else {
@@ -165,11 +150,9 @@ public class UserServiceImpl implements UserService {
     public TokenResponse login(JwtRequest authenticationRequest) throws Exception {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
-
 
 
         Optional<Account> account = accountService.findByAccount(authenticationRequest.getUsername());
@@ -190,12 +173,8 @@ public class UserServiceImpl implements UserService {
                 tokenResponse.setAccessToken(token);
                 tokenResponse.setRefreshToken(refreshToken.getToken());
                 return tokenResponse;
-
             }
         }
-
-        System.out.println(tokenResponse.getRefreshToken());
-        System.out.println(tokenResponse.getAccessToken());
 
         return tokenResponse;
     }
@@ -236,7 +215,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseObject reSendOTP(String email) {
-        UserRequestDTO userRequestDTO = helper.getUserByEmail(email, accountService.getAllAccount2());
+        UserRequestDTO userRequestDTO = helper.getUserByEmail(email, accountService.getAllAccount());
         if (userRequestDTO == null) {
             return new ResponseObject("400", "email này không tồn tại", null);
         } else {

@@ -10,6 +10,7 @@ import com.example.demo.security.repository.AccountRepository;
 import com.example.demo.security.service.*;
 import com.example.demo.senderMail.Respone.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,31 +46,28 @@ public class JwtAuthenticationController {
     @PostMapping(value = "/auth/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
         TokenResponse tokenResponse =  userService.login(authenticationRequest);
-
-        System.out.println(tokenResponse.getAccessToken());
-        System.out.println(tokenResponse.getRefreshToken());
         return ResponseEntity.ok(tokenResponse);
     }
 
     @PostMapping("/RFToken/{refreshToken}")
     public ResponseEntity<TokenResponse> refreshToken(@PathVariable("refreshToken") String refreshToken) {
+        System.out.println("Refresh Token");
         if (refreshToken != null) {
-            System.out.println("Refresh token success");
             Account accountEntity = refreshTokenService.verifyExpiration(refreshToken);
             if (accountEntity != null) {
-//                String newAccessToken = jwtTokenUtil.refreshToken(existingRefreshToken.getAccountEntity());
                 TokenResponse tokenResponse = new TokenResponse();
                 tokenResponse.setAccessToken(jwtTokenUtil.refreshToken(accountEntity));
                 tokenResponse.setRefreshToken(refreshToken);
                 System.out.println(tokenResponse);
                 return ResponseEntity.ok(tokenResponse);
             } else {
-                throw new RuntimeException("Invalid refresh token");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
         } else {
             return ResponseEntity.badRequest().build();
         }
     }
+
 
     @PostMapping("/auth/register")
     public ResponseObject register(@RequestBody UserRequestDTO user) {
@@ -78,7 +76,6 @@ public class JwtAuthenticationController {
 
     @PostMapping("/auth/reSendOTP/{email}")
     public ResponseObject reSendOTP(@PathVariable String email) {
-//        System.out.println(email);
         return userService.reSendOTP(email);
     }
 
@@ -122,11 +119,8 @@ public class JwtAuthenticationController {
 
     @GetMapping("/api/ol/user")
     public ResponseEntity<?> getUserOl(@RequestParam(name = "username") String currentUsername) {
-
         Optional<Account> account = accountService.findByAccount(currentUsername);
-
         Map<String, Object> responseData = new HashMap<>();
-
         return account.map(acc -> {
             Optional<Customer> customerEntity = Optional.ofNullable(customerService.findByAccount_Id(acc.getId()));
             Optional<Employee> employeeEntity = Optional.ofNullable(employeeService.findByAccount_Id(acc.getId()));

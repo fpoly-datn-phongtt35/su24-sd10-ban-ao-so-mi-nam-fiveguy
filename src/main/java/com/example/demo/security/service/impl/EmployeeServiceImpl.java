@@ -15,17 +15,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Override
-    public Optional<Employee> findById(Long Id) {
-        Optional<Employee> employee = employeeRepository.findById(Id);
-
-        if (employee.isPresent()){
-            return employee;
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
     public Employee findByAccount_Id(Long accountId) {
         return employeeRepository.findByAccount_Id(accountId);
     }

@@ -13,9 +13,8 @@ public interface AccountService {
 
     List<Account> findByEmail(String email);
     Account createAccount(Account accountEntity);
-    List<UserRequestDTO> getAllAccount2();
+    List<UserRequestDTO> getAllAccount();
 
     Optional<Account> findByAccount2(String username);
 
-//    boolean updateUser(UserInfoRequest userInfoRequest);
 }

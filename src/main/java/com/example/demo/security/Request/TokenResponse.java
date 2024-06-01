@@ -13,5 +13,6 @@ public class TokenResponse {
 
     private String accessToken;
 
-    private String RefreshToken;
+    private String refreshToken;
+
 }

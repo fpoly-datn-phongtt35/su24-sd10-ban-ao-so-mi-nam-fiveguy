@@ -12,8 +12,6 @@ public interface RefreshTokenService {
 
     void delete(Long id);
 
-    Optional<RefreshToken> findByToken(String token);
-
     RefreshToken createRefreshToken(UserDetails userDetails, Account accountEntity);
 
     void deleteByAccount(Account accountEntity);

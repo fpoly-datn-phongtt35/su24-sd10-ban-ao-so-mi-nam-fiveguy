@@ -4,7 +4,23 @@ app.controller("thongKeController", function ($scope, $http, $window) {
 
 
   console.log("Hello")
+  
+  $scope.message = '';
 
+  // Gọi hàm lấy dữ liệu từ service
+  $scope.getData = function() {
+    $http
+      .get("http://localhost:8080/test")
+          .then(function(response) {
+              $scope.message = response.data;
+          })
+          .catch(function(error) {
+              console.error('Error occurred:', error);
+          });
+  };
+
+  // Gọi hàm để lấy dữ liệu khi controller được khởi tạo
+  $scope.getData();
   // var token = $window.localStorage.getItem("accessToken");
   // var role = $window.localStorage.getItem("role");
   // if (role == null) {

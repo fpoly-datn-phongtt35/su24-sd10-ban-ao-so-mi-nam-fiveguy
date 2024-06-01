@@ -16,17 +16,6 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository customerRepository;
 
     @Override
-    public Optional<Customer> findById(Long Id) {
-        Optional<Customer> customer = customerRepository.findById(Id);
-
-        if (customer.isPresent()){
-            return customer;
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
     public Customer findByAccount_Id(Long accountId) {
         return customerRepository.findByAccount_Id(accountId);
     }
