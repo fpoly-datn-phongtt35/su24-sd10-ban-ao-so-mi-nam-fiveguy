@@ -50,13 +50,15 @@
                                 <!-- <th><span class="custom-checkbox">
                                         <input type="checkbox" id="selectAll">
                                         <label for="selectAll"></label></th> -->
-                                <th scope="col">Tên</th>
-                                <th scope="col">Mã</th>
-                                <th scope="col">Giá trị</th>
-                                <th scope="col">Loại</th>
-                                <th scope="col">Số lượng</th>
-                                <th scope="col">Trạng thái</th>
-                                <th scope="col">Action</th>
+                                <th scope="col-1">Mã</th>
+                                <th scope="col-2">Tên</th>
+                                <th scope="col-2">Giá trị</th>
+                                <th scope="col-1">Loại</th>
+                                <th scope="col-1">Số lượng</th>
+                                <th scope="col-1">Ngày bắt đầu</th>
+                                <th scope="col-1">Ngày kết thúc</th>
+                                <th scope="col-2">Trạng thái</th>
+                                <th scope="col-1">Action</th>
                             </tr>
                         </thead>
 
@@ -65,25 +67,37 @@
                                 <!-- <th><span class="custom-checkbox">
                                         <input type="checkbox" id="checkbox1" name="option[]" value="1">
                                         <label for="checkbox1"></label></th> -->
-                                <td>{{v.name}}</td>
-                                <td>{{v.code}}</td>
-                                <td>{{v.value}}</td>
-                                <td>{{v.discountType == 1 ? '%' : 'vnđ'}}</td>
-                                <td>{{v.quantity}}</td>
+                                <td scope="col-1">{{v.code}}</td>
+                                <td scope="col-2">{{v.name}}</td>
+                                <td scope="col-2">{{v.value}}</td>
+                                <td scope="col-1">{{v.discountType == 1 ? '%' : 'vnđ'}}</td>
+                                <td scope="col-1">{{v.quantity}}</td>
+                                <td scope="col-1">{{v.startDate | date: "dd/MM/yyyy HH:mm"}}</td>
+                                <td scope="col-1">{{v.endDate | date: "dd/MM/yyyy HH:mm"}}</td>
                                 <!-- <td>{{v.status == 1 ? 'Hoạt động' : ' Ngừng'}}</td> -->
-                                <td ng-switch="v.status">
+                                <td scope="col-2" ng-switch="v.status" style="font-size: 18px;">
                                     <span ng-switch-when="1">
-                                        <div class="badge bg-success text-wrap">
-                                            Hoạt động
+                                        <div class="badge bg-success text-wrap" style="width: 65%;">
+                                            Đang diễn ra
                                         </div>
                                     </span>
                                     <span ng-switch-when="2">
-                                        <div class="badge bg-danger text-wrap">
-                                            Ngừng
+                                        <div class="badge bg-danger text-wrap" style="width: 65%;">
+                                            Đã hết hạn
+                                        </div>
+                                    </span>
+                                    <span ng-switch-when="3">
+                                        <div class="badge bg-warning text-wrap" style="width: 65%;">
+                                            Sắp diễn ra
+                                        </div>
+                                    </span>
+                                    <span ng-switch-when="4">
+                                        <div class="badge bg-secondary text-wrap" style="width: 65%;">
+                                            Tạm ngưng
                                         </div>
                                     </span>
                                 </td>
-                                <th>
+                                <td scope="col-1">
                                     <a type="button" class="edit" data-bs-toggle="modal"
                                         data-bs-target="#updateVoucherModal" ng-click="getVoucherById(v)">
                                         <i class="material-icons" title="Edit">&#xE254;</i>
@@ -91,7 +105,7 @@
                                     <!-- <a data-target="#addEmployeeModal" class="delete" data-toggle="modal">
                                         <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
                                     </a> -->
-                                </th>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -115,7 +129,8 @@
             <div class="modal fade" tabindex="-1" id="addVoucherModal" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
-                        <form name="formAddVoucher" ng-submit="formAddVoucher.$valid && addVoucher()" novalidate>
+                        <form name="formAddVoucher" ng-submit=" addVoucher()" novalidate>
+                            <!-- formAddVoucher.$valid && -->
                             <div class="modal-header">
                                 <h5 class="modal-title">Thêm mới voucher</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -146,6 +161,7 @@
                                         <div class="form-group">
                                             <label>Giá trị tối thiểu HD</label>
                                             <input type="number" name="addMinBill" class="form-control"
+                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                                                 ng-model="formInputVoucher.minimumTotalAmount" ng-required="true">
 
                                             <span ng-show="formAddVoucher.$submitted">
@@ -193,24 +209,39 @@
                                         <div class="form-group">
                                             <label>Giá trị</label>
                                             <!-- <div ng-if="formInputVoucher.discountType == '1'">
-                                                <input type="number" class="form-control" max="100"
-                                                    ng-model="formInputVoucher.value">
+                                                <input type="number" name="addValue" class="form-control" min="0"
+                                                    oninput="if (this.value < 0) this.value = 0; if (this.value > 100) this.value = 100;"
+                                                    ng-value="formInputVoucher.value > 100 ? '100' : formInputVoucher.value"
+                                                    max="{{formInputVoucher.discountType == '1' ? '100' : ''}}"
+                                                    ng-model="formInputVoucher.value" ng-required="true">
                                             </div>
                                             <div ng-if="formInputVoucher.discountType == '2'">
-                                                <input type="number" class="form-control"
-                                                    ng-model="formInputVoucher.value">
+                                                <input type="number" name="addValue" class="form-control" min="0"
+                                                    oninput="if (this.value < 0) this.value = 0;"
+                                                    ng-model="formInputVoucher.value" ng-required="true">
                                             </div> -->
-                                            <input type="number" name="addValue" class="form-control" min="0"
-                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
-                                                max="{{formInputVoucher.discountType == '1' ? '100' : ''}}"
-                                                ng-model="formInputVoucher.value" ng-required="true">
-
+                                            <div class="input-group">
+                                                <input type="number" name="addValue" class="form-control" min="0"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+                                                    max="{{formInputVoucher.discountType == '1' ? '100' : ''}}"
+                                                    ng-model="formInputVoucher.value" ng-required="true">
+                                                <span ng-if="formInputVoucher.discountType == 1" class="input-group-text" id="basic-addon2">%</span>
+                                                <span ng-if="formInputVoucher.discountType == 2" class="input-group-text" id="basic-addon2">đ</span>
+                                            </div>
                                             <span ng-show="formAddVoucher.$submitted">
+                                                <!-- <div ng-if="formInputVoucher.discountType == '1' && formInputVoucher.value >= '100'"
+                                                    class="error-message text-danger form-text">
+                                                    100</div> -->
                                                 <div ng-show="formAddVoucher.addValue.$invalid"
                                                     class="error-message text-danger form-text">
-                                                    Giá trị không được để trống</div>
+                                                    <div ng-show="formAddVoucher.addValue.$error.max">
+                                                        Giá trị không được > 100%</div>
+
+                                                    <div ng-show="formAddVoucher.addValue.$error.required">
+                                                        Giá trị không được trống</div>
+                                                </div>
                                             </span>
-                                            
+
                                         </div>
                                         <div class="form-group">
                                             <label>Giá trị giảm tối đa</label>
@@ -218,9 +249,10 @@
                                                     id="maximumReductionValue" min="0"
                                                     oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                                                     ng-model="formInputVoucher.maximumReductionValue"
-                                                    ng-value="formInputVoucher.discountType == 2 ? formInputVoucher.value : this.value"
                                                     ng-disabled="formInputVoucher.discountType == 2 ? true : fasle"
                                                     ng-required="true">
+
+                                                <!-- ng-value="formInputVoucher.discountType == 2 ? formInputVoucher.value : this.value"-->
 
                                                 <span ng-show="formAddVoucher.$submitted">
                                                     <div ng-show="formAddVoucher.addMaxReVa.$invalid && formInputVoucher.discountType == 1"

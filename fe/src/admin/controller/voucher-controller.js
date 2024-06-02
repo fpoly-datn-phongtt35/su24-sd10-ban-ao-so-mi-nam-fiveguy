@@ -39,11 +39,13 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     $scope.addVoucher = function () {
         let maxReVa = +document.getElementById("maximumReductionValue").value
-        console.log(maxReVa);
 
-        if ($scope.formInputVoucher.discountType == 2) {
-            $scope.formInputVoucher.maximumReductionValue = maxReVa
-        }
+        // if ($scope.formInputVoucher.discountType == 2) {
+        //     $scope.formInputVoucher.maximumReductionValue = maxReVa
+        // }   
+        // if ($scope.formInputVoucher.discountType == 1 && $scope.formInputVoucher.maximumReductionValue == null) {
+        //     $scope.formInputVoucher.maximumReductionValue = null
+        // }
 
         let data = $scope.formInputVoucher
         console.log(data)
@@ -59,12 +61,12 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         $scope.formUpdateVoucher = angular.copy(voucher)
         if (voucher.startDate != null) {
             $scope.formUpdateVoucher.startDate = new Date(voucher.startDate)
-        }else{
+        } else {
             $scope.formUpdateVoucher.startDate = null
         }
         if (voucher.endDate != null) {
             $scope.formUpdateVoucher.endDate = new Date(voucher.endDate)
-        }else{
+        } else {
             $scope.formUpdateVoucher.endDate = null
         }
 
