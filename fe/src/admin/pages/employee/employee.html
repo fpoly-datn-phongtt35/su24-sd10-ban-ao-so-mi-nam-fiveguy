@@ -1,0 +1,120 @@
+<link rel="stylesheet" href="@{/assets/js/employee/Employee.js}">
+<style>
+    .overlay {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.1);
+        width: 100%;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        z-index: 9998;
+        display: block;
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+</style>
+<div class="overlay" ng-show="loading">
+    <div class="spinner-border" role="status" style="position: absolute;left: 50%;top: 50%;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+<!-- <div class="pagetitle">
+    <h1>Nhân Viên</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@{/admin/index}">Trang Chủ</a></li>
+            <li class="breadcrumb-item">Tài Khoản</li>
+            <li class="breadcrumb-item active">Nhân Viên</li>
+        </ol>
+    </nav>
+
+</div> -->
+<!--  Begin code  -->
+<section class="section">
+ 
+
+    <!-- End Modal Update -->
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th scope="col">Avatar</th>
+                        <th scope="col">Mã</th>
+                        <th scope="col">Họ Tên</th>
+                        <th scope="col">Tài khoản</th>
+                        <th scope="col">Giới tính</th>
+                        <th scope="col">Địa Chỉ</th>
+                        <th scope="col">Trạng Thái</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="employee in paper.items">
+                        <td>{{$index + ((paper.page) * paper.size) +1}}</td>
+                        <td><img ng-src="{{employee.avatar}}" alt="" style="width: 50px;height: 50px;"></td>
+                        <td>{{employee.code}}</td>
+                        <td>{{employee.fullName}}</td>
+                        <td>{{employee.account.account}}</td>
+                        <td>{{employee.gender == true ? 'Nam' : 'Nứ'}}</td>
+                        <td>{{employee.address}}</td>
+
+                        <td class="col-1" ng-switch="employee.status">
+                            <span ng-switch-when="1">
+                                <div class="badge bg-success text-wrap">
+                                    Đang Hoạt Động'
+                                </div>
+                            </span>
+                            <span ng-switch-when="2">
+                                <div class="badge bg-danger text-wrap">
+                                    Ngừng Hoạt Động
+                                </div>
+                            </span>
+                        </td>
+                        <td>
+                            <button ng-click="edit(employee)" type="button" class="btn btn-info" data-bs-toggle="modal"
+                                data-bs-target="#modalUpdate"><i class="bi bi-pencil-square"></i></button>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal-{{employee.id}}"><i
+                                    class="ri-delete-bin-fill"></i></button>
+                            <div class="modal fade" id="deleteModal-{{employee.id}}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn xóa
+                                                không?</h5>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button ng-click="delete(employee)" type="button" class="btn btn-primary"
+                                                data-bs-dismiss="modal">Xoá</button>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Đóng</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- <div class="row align-items-center">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item"><button ng-click="paper.first()" class="page-link">First</button></li>
+                        <li class="page-item"><button ng-click="paper.prev()" class="page-link">Previous</button>
+                        </li>
+                        <li class="page-item"><a class="page-link">{{paper.page + 1}} of {{paper.count}}</a>
+                        </li>
+                        <li class="page-item"><button ng-click="paper.next()" class="page-link">Next</button></li>
+                        <li class="page-item"><button ng-click="paper.last()" class="page-link">Last</button></li>
+                    </ul>
+                </nav>
+            </div> -->
+        </div>
+    </div>
+ 
+
+</section>
+<!--
