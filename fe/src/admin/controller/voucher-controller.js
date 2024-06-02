@@ -38,7 +38,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     $scope.formInputVoucher.discountType = 1
 
     $scope.addVoucher = function () {
-        let maxReVa = +document.getElementById("maximumReductionValue").value
+        // let maxReVa = +document.getElementById("maximumReductionValue").value
 
         // if ($scope.formInputVoucher.discountType == 2) {
         //     $scope.formInputVoucher.maximumReductionValue = maxReVa
@@ -50,12 +50,21 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         let data = $scope.formInputVoucher
         console.log(data)
 
-        // $http.post(apiVoucher + "/save", data).then(function (res) {
-        //     $scope.getAllVoucher()
-        // })
+        $http.post(apiVoucher + "/save", data).then(function (res) {
+            $scope.getAllVoucher()
+        })
+
+        $scope.resetFormAdd()
     }
 
-    $scope.
+    $scope.discountTypeChangeAdd = function () {
+        if ($scope.formInputVoucher.discountType == 1) {
+            $scope.formInputVoucher.maximumReductionValue = null
+        }
+        if ($scope.formInputVoucher.discountType == 2) {
+            $scope.formInputVoucher.maximumReductionValue = 0
+        }
+    }
 
     $scope.currentVoucher = null
 
@@ -76,6 +85,15 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         console.log(voucher);
     }
 
+    $scope.discountTypeChangeUpdate = function () {
+        if ($scope.formUpdateVoucher.discountType == 1) {
+            $scope.formUpdateVoucher.maximumReductionValue = null
+        }
+        if ($scope.formUpdateVoucher.discountType == 2) {
+            $scope.formUpdateVoucher.maximumReductionValue = 0
+        }
+    }
+
     $scope.updateVoucher = function (id) {
         if ($scope.formUpdateVoucher.startDate == null) {
             $scope.formUpdateVoucher.startDate = $scope.currentVoucher.startDate
@@ -92,8 +110,15 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         })
     }
 
-    $scope.discountTypeChange = function (aa) {
-        console.log(aa);
-        return aa;
+    $scope.resetFormAdd = function () {
+        $scope.formInputVoucher = {}
+        $scope.formInputVoucher.discountType = 1
+
+        $scope.formAddVoucher.$setPristine();
+        $scope.formAddVoucher.$setUntouched();
+    }
+
+    $scope.resetFormUpdate = function () {
+        $scope.formUpdateVoucher = {}
     }
 });

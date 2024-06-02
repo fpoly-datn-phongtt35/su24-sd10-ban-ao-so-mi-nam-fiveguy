@@ -129,7 +129,7 @@
             <div class="modal fade" tabindex="-1" id="addVoucherModal" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
-                        <form name="formAddVoucher" ng-submit=" addVoucher()" novalidate>
+                        <form name="formAddVoucher" ng-submit="formAddVoucher.$valid && addVoucher()" novalidate>
                             <!-- formAddVoucher.$valid && -->
                             <div class="modal-header">
                                 <h5 class="modal-title">Thêm mới voucher</h5>
@@ -153,7 +153,8 @@
                                         <div class="form-group">
                                             <label>Loại</label>
                                             <select name="addType" class="form-select"
-                                                ng-model="formInputVoucher.discountType">
+                                                ng-model="formInputVoucher.discountType"
+                                                ng-change="discountTypeChangeAdd()">
                                                 <option ng-value="1">Giảm theo %</option>
                                                 <option ng-value="2">Giảm theo số tiền</option>
                                             </select>
@@ -161,7 +162,7 @@
                                         <div class="form-group">
                                             <label>Giá trị tối thiểu HD</label>
                                             <input type="number" name="addMinBill" class="form-control"
-                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
                                                 ng-model="formInputVoucher.minimumTotalAmount" ng-required="true">
 
                                             <span ng-show="formAddVoucher.$submitted">
@@ -225,8 +226,10 @@
                                                     oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                                                     max="{{formInputVoucher.discountType == '1' ? '100' : ''}}"
                                                     ng-model="formInputVoucher.value" ng-required="true">
-                                                <span ng-if="formInputVoucher.discountType == 1" class="input-group-text" id="basic-addon2">%</span>
-                                                <span ng-if="formInputVoucher.discountType == 2" class="input-group-text" id="basic-addon2">đ</span>
+                                                <span ng-if="formInputVoucher.discountType == 1"
+                                                    class="input-group-text" id="basic-addon2">%</span>
+                                                <span ng-if="formInputVoucher.discountType == 2"
+                                                    class="input-group-text" id="basic-addon2">đ</span>
                                             </div>
                                             <span ng-show="formAddVoucher.$submitted">
                                                 <!-- <div ng-if="formInputVoucher.discountType == '1' && formInputVoucher.value >= '100'"
@@ -247,7 +250,7 @@
                                             <label>Giá trị giảm tối đa</label>
                                             <div><input type="number" name="addMaxReVa" class="form-control"
                                                     id="maximumReductionValue" min="0"
-                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
                                                     ng-model="formInputVoucher.maximumReductionValue"
                                                     ng-disabled="formInputVoucher.discountType == 2 ? true : fasle"
                                                     ng-required="true">
@@ -329,7 +332,8 @@
                                             <!-- <input type="text" class="form-control"
                                                 ng-model="formUpdateVoucher.discountType"> -->
                                             <select name="update" class="form-select"
-                                                ng-model="formUpdateVoucher.discountType">
+                                                ng-model="formUpdateVoucher.discountType"
+                                                ng-change="discountTypeChangeUpdate()">
                                                 <option ng-value="1">Giảm theo %</option>
                                                 <option ng-value="2">Giảm theo số tiền</option>
                                             </select>
@@ -393,11 +397,16 @@
                                         </div>
                                         <div class="form-group">
                                             <label>Giá trị giảm tối đa</label>
-                                            <input type="number" name="updateMaxReVa" class="form-control"
-                                                ng-model="formUpdateVoucher.maximumReductionValue" ng-required="true">
+                                            <!-- <input type="number" name="updateMaxReVa" class="form-control"
+                                                ng-model="formUpdateVoucher.maximumReductionValue" ng-required="true"> -->
+                                            <input type="number" name="updateMaxReVa" class="form-control" min="0"
+                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+                                                ng-model="formUpdateVoucher.maximumReductionValue"
+                                                ng-disabled="formUpdateVoucher.discountType == 2 ? true : fasle"
+                                                ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
-                                                <div ng-show="formEditVoucher.updateMaxReVa.$invalid"
+                                                <div ng-show="formEditVoucher.updateMaxReVa.$invalid && formUpdateVoucher.discountType == 1"
                                                     class="error-message text-danger form-text">
                                                     Giá trị giảm không được để trống</div>
                                             </span>
@@ -427,6 +436,10 @@
 
                                             <!-- ng-value="formUpdateVoucher.startDate | date:'yyyy-MM-dd'" -->
                                         </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="checkbox" value="4">Tạm ngưng
                                     </div>
                                 </div>
                             </div>
