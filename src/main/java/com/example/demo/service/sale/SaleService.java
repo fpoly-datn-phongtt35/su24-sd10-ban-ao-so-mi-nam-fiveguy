@@ -6,13 +6,15 @@ import java.util.Date;
 import java.util.List;
 
 public interface SaleService {
+
     Sale saveSale(Sale sale);
     Sale updateSale(Long id, Sale sale);
     void deleteSale(Long id);
     Sale getSaleById(Long id);
     List<Sale> getAllSales();
-
     Long countCurrentSales();
     Long countUpcomingSales();
     Long countExpiredSales();
+    List<Sale> searchByCodeNameValue(String searchTerm);
+    List<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status);
 }

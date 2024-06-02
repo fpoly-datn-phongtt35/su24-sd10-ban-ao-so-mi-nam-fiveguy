@@ -105,7 +105,26 @@
     </div>
 </div>
             
-        
+<div>
+    <label for="searchTerm">Search Term:</label>
+    <input type="text" id="searchTerm" ng-model="searchTerm" />
+    <button ng-click="searchSale()">Search</button>
+</div>
+
+<label>Start Date:</label>
+<input type="datetime-local" ng-model="startDate" ng-change="getSalesByConditions()"><br>
+
+<label>End Date:</label>
+<input type="datetime-local" ng-model="endDate" ng-change="getSalesByConditions()"><br>
+
+<label>Status:</label>
+<select ng-model="status" ng-change="getSalesByConditions()">
+    <option value="0">0</option>
+    <option value="1">1</option>
+</select><br>
+
+<button ng-click="getAllSales()">Refresh</button>
+
             <div class="card">
                 <div class="card-header">
                     Danh sách các đợt giảm giá

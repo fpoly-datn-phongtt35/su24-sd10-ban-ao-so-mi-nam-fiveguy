@@ -3,7 +3,9 @@ package com.example.demo.service.sale.serviceImpl;
 import com.example.demo.entity.Sale;
 import com.example.demo.repository.sale.SaleRepository;
 import com.example.demo.service.sale.SaleService;
+import com.example.demo.untility.SaleSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -78,6 +80,18 @@ public class SaleServiceImpl implements SaleService {
     public Long countExpiredSales() {
         Date currentDate = new Date();
         return saleRepository.countExpiredSales(currentDate);
+    }
+
+    @Override
+    public List<Sale> searchByCodeNameValue(String searchTerm) {
+        return saleRepository.searchByCodeNameValue(searchTerm);
+    }
+
+    @Override
+    public List<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status) {
+        return saleRepository.findAll(Specification
+                .where(SaleSpecifications.betweenDates(startDate, endDate))
+                .and(SaleSpecifications.hasStatus(status)));
     }
 
 }

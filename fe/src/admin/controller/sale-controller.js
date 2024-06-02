@@ -32,6 +32,38 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         });
     };
 
+    $scope.searchSale = function() {
+        $http.get(baseUrl + '/search', { params: { searchTerm: $scope.searchTerm } })
+            .then(function(response) {
+                $scope.sales = response.data;
+            })
+            .catch(function(error) {
+                console.error('Error fetching search results:', error);
+            });
+    };
+
+    $scope.startDate = null;
+    $scope.endDate = null;
+    $scope.status = null;
+
+
+    $scope.getSalesByConditions = function() {
+        var config = {
+            params: {
+                startDate: $scope.startDate,
+                endDate: $scope.endDate,
+                status: $scope.status
+            }
+        };
+
+        $http.get(baseUrl + '/fill', config)
+            .then(function(response) {
+                $scope.sales = response.data;
+            }, function(error) {
+                console.error('Error fetching sales:', error);
+            });
+    };
+    
 
 
     // DÙng để xử lí các thuộc tính của sale
@@ -92,7 +124,6 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
 
     $scope.saveSale = function() {
         var saleData = $scope.saleDetails;
-
         if (saleData.id == null) {
             saleData.createdAt = new Date()
         }
@@ -147,39 +178,24 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         }).map(function(productSale) {
             return productSale.id;
         });
-
-        if (selectedIds.length > 0 && confirm('Are you sure you want to delete the selected product sales?')) {
             $http.post(baseUrl + '/product-sales/deleteList', selectedIds).then(function(response) {
-                // Successfully deleted selected product sales
-                console.log('Selected product sales deleted successfully');
-                // Refresh the list or remove the deleted items from the view
-                // For example:
                 $scope.productSales = $scope.productSales.filter(function(productSale) {
                     return !selectedIds.includes(productSale.id);
                 });
             }).catch(function(error) {
-                // Handle the error
                 console.error('Error deleting selected product sales:', error);
             });
-        }
     };
 
-    // Function to delete all product sales
     $scope.deleteAll = function() {
-        if (confirm('Are you sure you want to delete all product sales?')) {
             $http.delete(baseUrl + '/product-sales/deleteAll').then(function(response) {
-                // Successfully deleted all product sales
-                console.log('All product sales deleted successfully');
-                // Clear the product sales list
                 $scope.productSales = [];
             }).catch(function(error) {
-                // Handle the error
                 console.error('Error deleting all product sales:', error);
             });
-        }
     };
 
-// Thêm sản phẩm ra khỏi đợt giảm giá \
+// Thêm sản phẩm  đợt giảm giá \
 
     $scope.addSelectedProductSales = function() {
         var selectedProducts = $scope.products.filter(function(product) {
@@ -189,7 +205,6 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
             var discount = 0;
 
             if (sale.discountType === 1) {
-                // Flat discount
                 discount = sale.value;
             } else if (sale.discountType === 2) {
                 discount = product.price * (sale.value / 100);
@@ -207,7 +222,6 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         });
         if (selectedProducts.length > 0) {
             $http.post(baseUrl + '/product-sales/addList', selectedProducts).then(function(response) {
-                console.log('Selected product sales added successfully');
                 response.data.forEach(function(newProductSale) {
                     $scope.productSales.push(newProductSale);
                 });
@@ -217,7 +231,40 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         }
     };
     
-    
+    // Thêm tất cả sản phẩm vào đợt giảm giá
+$scope.addAllProductSales = function() {
+    var allProducts = $scope.products.map(function(product) {
+        var sale = $scope.saleDetails;
+        var discount = 0;
+
+        if (sale.discountType === 1) {
+            discount = sale.value;
+        } else if (sale.discountType === 2) {
+            discount = product.price * (sale.value / 100);
+        }
+        if (sale.maximumDiscountAmount && discount > sale.maximumDiscountAmount) {
+            discount = sale.maximumDiscountAmount;
+        }
+        var promotionalPrice = product.price - discount;
+        return {
+            product: product,
+            sale: sale,
+            promotionalPrice: promotionalPrice,
+            discountPrice: discount
+        };
+    });
+
+    if (allProducts.length > 0) {
+        $http.post(baseUrl + '/product-sales/addList', allProducts).then(function(response) {
+            response.data.forEach(function(newProductSale) {
+                $scope.productSales.push(newProductSale);
+            });
+        }).catch(function(error) {
+            console.error('Error adding all product sales:', error);
+        });
+    }
+};
+
     
 
 
@@ -293,6 +340,9 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/admin/infoProduct';
         });
     };
 
+
+
+
     $scope.getAllWrists();
     $scope.getAllSizes();
     $scope.getAllMaterials();
@@ -300,6 +350,45 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/admin/infoProduct';
     $scope.getAllCollars();
     $scope.getAllBrands();
 
+
+
+    $scope.filterProducts = function() {
+        console.log($scope.selectedColor)
+        console.log($scope.selectedMaterial)
+
+
+        $http.get('http://localhost:8080/api/admin/sales/products/filter', {
+            params: {
+                categoryId: $scope.selectedCategory,
+                collarId: $scope.selectedCollar,
+                wristId: $scope.selectedWrist,
+                colorId: $scope.selectedColor,
+                sizeId: $scope.selectedSize,
+                materialId: $scope.selectedMaterial
+            }
+        }).then(function(response) {
+            // Xử lý dữ liệu trả về từ API
+            $scope.products = response.data;
+            console.log(response.data)
+        }, function(error) {
+            // Xử lý lỗi nếu có
+            console.error('Error fetching products:', error);
+        });
+    };
+
+    $scope.searchProducts = function() {
+        $http.get('http://localhost:8080/api/admin/sales/products/search', {
+            params: {
+                searchTerm: $scope.searchTerm
+            }
+        }).then(function(response) {
+            // Xử lý dữ liệu trả về từ API
+            $scope.products = response.data;
+        }, function(error) {
+            // Xử lý lỗi nếu có
+            console.error('Error searching products:', error);
+        });
+    };
 
 
 }]);

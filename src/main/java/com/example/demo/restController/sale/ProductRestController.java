@@ -29,4 +29,20 @@ public class ProductRestController {
 //        return ResponseEntity.ok(productSales);
 //    }
 
+    @GetMapping("/filter")
+    public List<Product> filterProducts(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long collarId,
+            @RequestParam(required = false) Long wristId,
+            @RequestParam(required = false) Long colorId,
+            @RequestParam(required = false) Long sizeId,
+            @RequestParam(required = false) Long materialId) {
+
+        return productService.filterProducts(categoryId, collarId, wristId, colorId, sizeId, materialId);
+    }
+
+    @GetMapping("/search")
+    public List<Product> searchProducts(@RequestParam String searchTerm) {
+        return productService.searchByNameOrCode(searchTerm);
+    }
 }

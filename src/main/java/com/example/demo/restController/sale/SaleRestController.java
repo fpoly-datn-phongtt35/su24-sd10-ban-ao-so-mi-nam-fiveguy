@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -63,4 +66,31 @@ public class SaleRestController {
         Long count = saleService.countExpiredSales();
         return ResponseEntity.ok(count);
     }
+
+    @GetMapping("/search")
+    public List<Sale> searchSales(@RequestParam(value = "searchTerm") String searchTerm) {
+        return saleService.searchByCodeNameValue(searchTerm);
+    }
+
+    @GetMapping("/fill")
+    public List<Sale> getSalesByConditions(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Integer status) {
+        Date parsedStartDate = null;
+        Date parsedEndDate = null;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        try {
+            if (startDate != null) {
+                parsedStartDate = dateFormat.parse(startDate);
+            }
+            if (endDate != null) {
+                parsedEndDate = dateFormat.parse(endDate);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return saleService.findSalesByConditions(parsedStartDate, parsedEndDate, status);
+    }
+
 }

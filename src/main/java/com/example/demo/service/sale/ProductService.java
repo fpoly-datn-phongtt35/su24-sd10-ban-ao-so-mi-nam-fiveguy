@@ -8,5 +8,8 @@ public interface ProductService {
     List<Product> getProductsWithoutSaleOrExpiredPromotion();
 //    List<Product> getProductsBySaleId(Long id);
 
+    List<Product> filterProducts(Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId);
+
+    List<Product> searchByNameOrCode(String searchTerm);
 
 }
