@@ -55,6 +55,8 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         // })
     }
 
+    $scope.
+
     $scope.currentVoucher = null
 
     $scope.getVoucherById = function (voucher) {
