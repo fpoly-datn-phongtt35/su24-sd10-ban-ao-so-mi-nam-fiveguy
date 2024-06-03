@@ -13,6 +13,9 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/staff/staff.html",
     })
     // <!-- Thưởng -->
+    .when("/admin/category", {
+      templateUrl: "pages/product/category.html",
+    })
     .when("/admin/product", {
       templateUrl: "pages/product/product.html",
     })
