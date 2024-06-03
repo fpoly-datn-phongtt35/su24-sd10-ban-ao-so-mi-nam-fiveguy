@@ -47,9 +47,5 @@ public class PaymentMethod {
 
     @JsonIgnore
     @OneToMany(mappedBy = "paymentMethod")
-    private List<VoucherDetail> voucherDetails;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "paymentMethod")
     private List<Bill> bills;
 }

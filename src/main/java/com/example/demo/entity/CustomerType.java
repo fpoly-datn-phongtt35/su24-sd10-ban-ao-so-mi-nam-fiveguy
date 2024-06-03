@@ -41,5 +41,5 @@ public class CustomerType {
 
     @JsonIgnore
     @OneToMany(mappedBy = "customerType")
-    private List<VoucherDetail> voucherDetails;
+    private List<CustomerTypeVoucher> customerTypeVouchers;
 }
