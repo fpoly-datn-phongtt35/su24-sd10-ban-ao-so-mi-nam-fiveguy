@@ -35,8 +35,4 @@ public class Account {
 
     @Column(name = "Status")
     private Integer status;
-
-//    @OneToOne
-//    @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
-//    private Customer customer;
 }

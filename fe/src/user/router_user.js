@@ -3,7 +3,10 @@ app.config(function ($routeProvider, $locationProvider) {
   $locationProvider.hashPrefix("");
 
   $routeProvider
-
+  .when("/home", {
+    templateUrl: "pages/home.html",
+    
+  })
    
     // <!-- Hiếu -->
     .when("/home/customer", {
