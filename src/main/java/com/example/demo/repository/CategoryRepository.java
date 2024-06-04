@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    Page<Category> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Category> findByNameContainingIgnoreCase(String name,Pageable pageable);
     Category findByName(String name);
 }

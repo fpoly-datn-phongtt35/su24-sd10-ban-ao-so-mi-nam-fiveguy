@@ -1,6 +1,6 @@
 package com.example.demo.restController;
 
-import com.example.demo.advice.DuplicateCategoryException;
+import com.example.demo.advice.DuplicateException;
 import com.example.demo.entity.Category;
 import com.example.demo.model.request.CategoryRequest;
 import com.example.demo.service.CategoryService;
@@ -20,10 +20,12 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<?> getCategories(@RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "5") int size,
-                                           @RequestParam(required = false) String name
+                                           @RequestParam(required = false) String name,
+                                           @RequestParam String sortField,
+                                           @RequestParam String sortDirection
     ) {
 
-        return ResponseEntity.ok(categoryService.getCategories(page, size, name));
+        return ResponseEntity.ok(categoryService.getCategories(page, size, name, sortField, sortDirection));
     }
 
     @GetMapping("/{id}")
@@ -33,20 +35,17 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryRequest category) {
-        Category existingCategory = categoryService.findByName(category.getName());
-        if (existingCategory != null) {
-            throw new DuplicateCategoryException("Trùng tên nhóm sản phẩm");
-        }
         return new ResponseEntity<>(categoryService.create(category), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest category) {
-        Category existingCategory = categoryService.findByName(category.getName());
-        if (existingCategory != null) {
-            throw new DuplicateCategoryException("Trùng tên nhóm sản phẩm");
-        }
         return new ResponseEntity<>(categoryService.update(category, id), HttpStatus.OK);
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> updateStatus(@PathVariable Long id) {
+        return new ResponseEntity<>(categoryService.updateStatus(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

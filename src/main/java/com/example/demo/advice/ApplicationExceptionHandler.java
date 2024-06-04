@@ -21,9 +21,9 @@ public class ApplicationExceptionHandler {
         return errorMap;
     }
 
-    @ExceptionHandler(DuplicateCategoryException.class)
+    @ExceptionHandler(DuplicateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleDuplicateCategory(DuplicateCategoryException ex) {
+    public Map<String, String> handleDuplicate(DuplicateException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("name", ex.getMessage());
         return errorMap;
