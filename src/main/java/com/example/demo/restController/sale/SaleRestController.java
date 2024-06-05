@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @RestController
 @CrossOrigin
@@ -80,6 +81,7 @@ public class SaleRestController {
         Date parsedStartDate = null;
         Date parsedEndDate = null;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Đặt múi giờ là UTC hoặc múi giờ mong muốn
         try {
             if (startDate != null) {
                 parsedStartDate = dateFormat.parse(startDate);

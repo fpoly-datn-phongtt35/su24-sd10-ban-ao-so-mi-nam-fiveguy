@@ -11,55 +11,67 @@
                     <form name="saleForm" ng-submit="saveSale()">
                         <div class="mb-3">
                             <label for="saleName" class="form-label">Tên đợt giảm giá</label>
-                            <input type="text" class="form-control" id="saleName" ng-model="saleDetails.name" required>
+                            <input type="text" class="form-control" id="saleName" ng-model="saleDetail.name" required>
                         </div>
                         <div class="mb-3">
                             <label for="saleCode" class="form-label">Mã giảm giá</label>
-                            <input type="text" class="form-control" id="saleCode" ng-model="saleDetails.code" required>
+                            <input type="text" class="form-control" id="saleCode" ng-model="saleDetail.code" required>
                         </div>
                         <div class="mb-3">
                             <label for="saleDescription" class="form-label">Mô tả</label>
-                            <textarea class="form-control" id="saleDescription" rows="3" ng-model="saleDetails.describe" required></textarea>
+                            <textarea class="form-control" id="saleDescription" rows="3" ng-model="saleDetail.describe" required></textarea>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="startTime" class="form-label">Thời gian bắt đầu</label>
-                                <input type="datetime-local" class="form-control" id="startTime" ng-model="saleDetails.startDate" required>
+                                <input type="datetime-local" class="form-control" id="startTime" ng-model="saleDetail.startDate" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="endTime" class="form-label">Thời gian kết thúc</label>
-                                <input type="datetime-local" class="form-control" id="endTime" ng-model="saleDetails.endDate" required>
+                                <input type="datetime-local" class="form-control" id="endTime" ng-model="saleDetail.endDate" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="discountType" class="form-label">Loại giảm giá</label>
-                                <select class="form-select" id="discountType" ng-model="saleDetails.discountType" required>
-                                    <option value="1">Giảm giá phần trăm</option>
-                                    <option value="2">Giảm giá cố định</option>
-                                    <option value="3">Mua 1 tặng 1</option>
-                                    <option value="4">Combo sản phẩm</option>
+                                <select class="form-select" id="discountType" ng-model="saleDetail.discountType" required>
+                                    <option value="1" ng-selected="saleDetail.discountType == 1">Giảm giá phần trăm</option>
+                                    <option value="2" ng-selected="saleDetail.discountType == 2">Giảm giá cố định</option>
+                                    <option value="3" ng-selected="saleDetail.discountType == 3">Mua 1 tặng 1</option>
+                                    <option value="4" ng-selected="saleDetail.discountType == 4">Combo sản phẩm</option>
                                 </select>
                             </div>
+                            
                             <div class="col-md-6">
                                 <label for="discountValue" class="form-label">Mức giảm giá</label>
-                                <input type="number" class="form-control" id="discountValue" ng-model="saleDetails.value" required>
+                                <input type="number" class="form-control" id="discountValue" ng-model="saleDetail.value" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="maximumDiscountAmount" class="form-label">Số tiền giảm giá tối đa</label>
-                                <input type="number" class="form-control" id="maximumDiscountAmount" ng-model="saleDetails.maximumDiscountAmount" required>
+                                <input type="number" class="form-control" id="maximumDiscountAmount" ng-model="saleDetail.maximumDiscountAmount" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="numberOfUses" class="form-label">Số lần sử dụng</label>
-                                <input type="number" class="form-control" id="numberOfUses" ng-model="saleDetails.numberOfUses" required>
+                                <input type="number" class="form-control" id="numberOfUses" ng-model="saleDetail.numberOfUses" required>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
-                            <input type="file" class="form-control" id="saleImage" ng-model="saleDetails.image" required>
+                            <input type="file" class="form-control" id="saleImage" ng-model="saleDetail.image" required>
                         </div>
+
+                        <div class="col-md-6">
+                            <label for="saleStatus" class="form-label">Trạng thái</label>
+                            <select class="form-control" id="saleStatus" ng-model="saleDetail.status" required>
+                                <option ng-value="2" ng-selected="saleDetail.status === 2">Sắp bắt đầu</option>
+                                <option ng-value="1" ng-selected="saleDetail.status === 1">Đang hoạt động</option>
+                                <option ng-value="3" ng-selected="saleDetail.status === 3">Hết hạn</option>
+                                <option ng-value="4" ng-selected="saleDetail.status === 4">Dừng hoạt động</option>
+                            </select>
+                        </div>
+                        
             
                         <button type="submit" class="btn btn-primary">Lưu</button>
                     </form>

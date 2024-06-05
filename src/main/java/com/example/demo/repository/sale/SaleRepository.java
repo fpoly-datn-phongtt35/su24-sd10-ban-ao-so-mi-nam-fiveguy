@@ -24,4 +24,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> , JpaSpecifica
 
     @Query("SELECT s FROM Sale s WHERE LOWER(s.code) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     List<Sale> searchByCodeNameValue(@Param("searchTerm") String searchTerm);
+
+    List<Sale> findAllByStatusNot(int status);
 }

@@ -42,56 +42,57 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
             });
     };
 
+    $scope.refreshData = function() {
+        $scope.startDate = null;
+        $scope.endDate = null;
+        $scope.status = null;
+        $scope.getAllSales();
+    };
+    
+
     $scope.startDate = null;
     $scope.endDate = null;
     $scope.status = null;
 
 
     $scope.getSalesByConditions = function() {
-        var config = {
-            params: {
-                startDate: $scope.startDate,
-                endDate: $scope.endDate,
-                status: $scope.status
-            }
-        };
-
-        $http.get(baseUrl + '/fill', config)
-            .then(function(response) {
-                $scope.sales = response.data;
-            }, function(error) {
-                console.error('Error fetching sales:', error);
-            });
+        if ($scope.startDate && $scope.endDate) {
+            var config = {
+                params: {
+                    startDate: $scope.startDate,
+                    endDate: $scope.endDate,
+                    status: $scope.status
+                }
+            };
+            console.log(config);
+    
+            $http.get(baseUrl + '/fill', config)
+                .then(function(response) {
+                    $scope.sales = response.data;
+                    console.log($scope.sales);
+                }, function(error) {
+                    console.error('Error fetching sales:', error);
+                });
+        }
     };
+    
     
 
 
     // DÙng để xử lí các thuộc tính của sale
 
-    $scope.formatDate = function(date) {
-        var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        return new Date(date).toLocaleDateString('en-GB', options);
-    };
-
-    $scope.getStatusBadge = function(startDate, endDate) {
-        var currentDate = new Date();
-        if (currentDate >= new Date(startDate) && currentDate <= new Date(endDate)) {
-            return "Đang diễn ra";
-        } else if (currentDate < new Date(startDate)) {
-            return "Sắp tới";
-        } else {
-            return "Đã kết thúc";
-        }
-    };
-
-    $scope.getStatusClass = function(startDate, endDate) {
-        var currentDate = new Date();
-        if (currentDate >= new Date(startDate) && currentDate <= new Date(endDate)) {
-            return "bg-success";
-        } else if (currentDate < new Date(startDate)) {
-            return "bg-primary";
-        } else {
-            return "bg-secondary";
+    $scope.getStatusText = function(status) {
+        switch (status) {
+            case 1:
+                return "Đang hoạt động";
+            case 2:
+                return "Sắp bắt đầu";
+            case 3:
+                return "Hết hạn";
+            case 4:
+                return "Dừng hoạt động";
+            default:
+                return "Không xác định"; 
         }
     };
     $scope.getDiscountValueAndType = function(value, type) {
@@ -106,11 +107,20 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         return value + ' ' + typeText  ;
     };
     
-    
+      function parseDate(dateString) {
+        if (!dateString) return null;
+        return new Date(dateString);
+    }
+
     $scope.getSale = function(saleId) {
         $http.get(baseUrl + '/' + saleId)
             .then(function(response) {
-                $scope.saleDetails = response.data;
+                var saleData = response.data;
+                saleData.startDate = parseDate(saleData.startDate);
+                saleData.endDate = parseDate(saleData.endDate);
+                $scope.saleDetail = saleData;
+                console.log($scope.saleDetail)
+                console.log($scope.saleDetail.discountType)
             }, function(error) {
                 console.error('Error fetching sale details:', error);
             });
@@ -118,15 +128,17 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
 
     if ($routeParams.id) {
         $scope.getSale($routeParams.id);
+    } else {
+        $scope.saleDetail = {
+            startDate: null,
+            endDate: null
+        };
     }
 
 
 
     $scope.saveSale = function() {
-        var saleData = $scope.saleDetails;
-        if (saleData.id == null) {
-            saleData.createdAt = new Date()
-        }
+        var saleData = $scope.saleDetail;
         $http.post(baseUrl, saleData)
             .then(function(response) {
                 console.log('Sale saved successfully', response.data);
@@ -144,7 +156,6 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         var saleId = $routeParams.id;
         $http.get(baseUrl + '/product-sales/getList/' + saleId ).then(function(response) {
             $scope.productSales = response.data;
-            console.log(response.data)
         }, function(error) {
             console.error('Error fetching product sales:', error);
         });
@@ -201,7 +212,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         var selectedProducts = $scope.products.filter(function(product) {
             return product.selected;
         }).map(function(product) {
-            var sale =  $scope.saleDetails;
+            var sale =  $scope.saleDetail;
             var discount = 0;
 
             if (sale.discountType === 1) {

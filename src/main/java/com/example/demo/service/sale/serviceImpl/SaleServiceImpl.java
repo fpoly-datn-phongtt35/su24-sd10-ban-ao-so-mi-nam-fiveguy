@@ -20,6 +20,20 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     public Sale saveSale(Sale sale) {
+        Date now = new Date();
+        if (sale.getId() == null) {
+            sale.setCreatedAt(now); // Đặt ngày tạo mới
+            Date startDate = sale.getStartDate();
+
+            if (startDate != null && startDate.after(now)) {
+                sale.setStatus(2); // Sắp bắt đầu
+            } else {
+                sale.setStatus(1); // Đang hoạt động
+            }
+        } else {
+            sale.setUpdatedAt(now); // Cập nhật ngày cập nhật
+        }
+
         return saleRepository.save(sale);
     }
 
@@ -89,9 +103,17 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     public List<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status) {
-        return saleRepository.findAll(Specification
-                .where(SaleSpecifications.betweenDates(startDate, endDate))
-                .and(SaleSpecifications.hasStatus(status)));
+        Specification<Sale> spec = Specification.where(null);
+
+        if (startDate != null && endDate != null) {
+            spec = spec.and(SaleSpecifications.betweenDates(startDate, endDate));
+        }
+
+        if (status != null) {
+            spec = spec.and(SaleSpecifications.hasStatus(status));
+        }
+
+        return saleRepository.findAll(spec);
     }
 
 }
