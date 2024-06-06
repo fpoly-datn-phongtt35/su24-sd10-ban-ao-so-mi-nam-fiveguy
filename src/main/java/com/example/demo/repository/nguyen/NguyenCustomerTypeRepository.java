@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+package com.example.demo.repository.nguyen;
 
 import com.example.demo.entity.CustomerType;
 import org.springframework.data.jpa.repository.JpaRepository;

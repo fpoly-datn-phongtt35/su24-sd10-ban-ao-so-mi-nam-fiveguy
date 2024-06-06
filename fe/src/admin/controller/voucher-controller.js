@@ -35,8 +35,11 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     }
     $scope.getAllVoucher()
 
+    //set gia tri cua discountType trong add form
     $scope.formInputVoucher.discountType = 1
 
+
+    //add voucher
     $scope.addVoucher = function () {
         // let maxReVa = +document.getElementById("maximumReductionValue").value
 
@@ -51,12 +54,14 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         console.log(data)
 
         $http.post(apiVoucher + "/save", data).then(function (res) {
+            $('#addVoucherModal').modal('hide');
             $scope.getAllVoucher()
         })
 
         $scope.resetFormAdd()
     }
 
+    //chuyen doi gia tri cua MaximumValueReduce tranh loi luc validation *ADD*
     $scope.discountTypeChangeAdd = function () {
         if ($scope.formInputVoucher.discountType == 1) {
             $scope.formInputVoucher.maximumReductionValue = null
@@ -66,8 +71,28 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         }
     }
 
+    // // Hàm cập nhật max của startDate khi endDate thay đổi
+    // $scope.updateStartDateMax = function () {
+    //     if ($scope.formInputVoucher.endDate) {
+    //         $scope.formInputVoucher.endDate = $scope.formInputVoucher.endDate;
+    //     } else {
+    //         $scope.formInputVoucher.endDate = null;
+    //     }
+    // };
+
+    // Hàm cập nhật min của endDate khi startDate thay đổi
+    // $scope.updateEndDateMin = function () {
+    //     if ($scope.formInputVoucher.startDate) {
+    //         $scope.formInputVoucher.startDate = $scope.formInputVoucher.startDate;
+    //     } else {
+    //         $scope.formInputVoucher.startDate = null;
+    //     }
+    // };
+
+    //tao bien current voucher de so sanh gia tri startdate enddate (updatevoucher)
     $scope.currentVoucher = null
 
+    //lay gia tri voucher qua id
     $scope.getVoucherById = function (voucher) {
         $scope.formUpdateVoucher = angular.copy(voucher)
         if (voucher.startDate != null) {
@@ -85,6 +110,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         console.log(voucher);
     }
 
+    //chuyen doi gia tri cua MaximumValueReduce tranh loi luc validation *UPDATE*
     $scope.discountTypeChangeUpdate = function () {
         if ($scope.formUpdateVoucher.discountType == 1) {
             $scope.formUpdateVoucher.maximumReductionValue = null
@@ -94,14 +120,15 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         }
     }
 
+    //cap nhat voucher
     $scope.updateVoucher = function (id) {
-        if ($scope.formUpdateVoucher.startDate == null) {
-            $scope.formUpdateVoucher.startDate = $scope.currentVoucher.startDate
-        }
+        // if ($scope.formUpdateVoucher.startDate == null) {
+        //     $scope.formUpdateVoucher.startDate = $scope.currentVoucher.startDate
+        // }
 
-        if ($scope.formUpdateVoucher.endDate == null) {
-            $scope.formUpdateVoucher.endDate = $scope.currentVoucher.endDate
-        }
+        // if ($scope.formUpdateVoucher.endDate == null) {
+        //     $scope.formUpdateVoucher.endDate = $scope.currentVoucher.endDate
+        // }
 
         let data = angular.copy($scope.formUpdateVoucher)
         console.log(data);
@@ -110,6 +137,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         })
     }
 
+    //reset form add
     $scope.resetFormAdd = function () {
         $scope.formInputVoucher = {}
         $scope.formInputVoucher.discountType = 1

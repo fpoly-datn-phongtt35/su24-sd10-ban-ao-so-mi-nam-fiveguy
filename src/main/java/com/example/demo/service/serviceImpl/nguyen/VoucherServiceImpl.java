@@ -1,14 +1,18 @@
-package com.example.demo.service.serviceImpl;
+package com.example.demo.service.serviceImpl.nguyen;
 
 import com.example.demo.entity.Voucher;
-import com.example.demo.repository.VoucherRepository;
-import com.example.demo.service.VoucherService;
+import com.example.demo.repository.nguyen.VoucherRepository;
+import com.example.demo.repository.nguyen.VoucherSpecification;
+import com.example.demo.service.nguyen.VoucherService;
+//import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +27,7 @@ public class VoucherServiceImpl implements VoucherService {
     public List<Voucher> getAllVoucher() {
         updateStatus();
 
-        return voucherRepository.findAll();
+        return voucherRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
@@ -93,5 +97,16 @@ public class VoucherServiceImpl implements VoucherService {
                 }
             }
         }
+    }
+
+    @Override
+    public Page<Voucher> findVouchers(String name, String code, Integer discountType, Date startDate, Date endDate, Integer status, Pageable pageable) {
+        Specification<Voucher> spec = Specification.where(VoucherSpecification.hasName(name))
+                .and(VoucherSpecification.hasCode(code))
+                .and(VoucherSpecification.hasDiscountType(discountType))
+                .and(VoucherSpecification.hasStartDate(startDate))
+                .and(VoucherSpecification.hasEndDate(endDate))
+                .and(VoucherSpecification.hasStatus(status));
+        return voucherRepository.findAll(spec, pageable);
     }
 }

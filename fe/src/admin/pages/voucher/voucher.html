@@ -186,12 +186,23 @@
                                         <div class="form-group">
                                             <label>Ngày bắt đầu</label>
                                             <input type="date" name="addStartDate" class="form-control"
-                                                ng-model="formInputVoucher.startDate" ng-required="true">
+                                                max="{{formInputVoucher.endDate}}" ng-model="formInputVoucher.startDate"
+                                                ng-change="updateStartDateMax()" ng-required="true">
 
-                                            <span ng-show="formAddVoucher.$submitted">
+                                            <!-- <span ng-show="formAddVoucher.$submitted">
                                                 <div ng-show="formAddVoucher.addStartDate.$invalid"
                                                     class="error-message text-danger form-text">
                                                     Ngày bắt đầu không được để trống</div>
+                                            </span> -->
+                                            <span ng-show="formAddVoucher.$submitted">
+                                                <div ng-show="formAddVoucher.addStartDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được để trống</div>
+                                            </span>
+                                            <span ng-show="formAddVoucher.$submitted">
+                                                <div ng-show="formAddVoucher.addStartDate.$error.max"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được nhỏ hơn ngày kết thúc</div>
                                             </span>
                                         </div>
                                     </div>
@@ -280,12 +291,23 @@
                                         <div class="form-group">
                                             <label>Ngày kết thúc</label>
                                             <input type="date" name="addEndDate" class="form-control"
-                                                ng-model="formInputVoucher.endDate" ng-required="true">
+                                                min="{{formInputVoucher.startDate}}" ng-model="formInputVoucher.endDate"
+                                                ng-change="updateEndDateMin()" ng-required="true">
 
-                                            <span ng-show="formAddVoucher.$submitted">
+                                            <!-- <span ng-show="formAddVoucher.$submitted">
                                                 <div ng-show="formAddVoucher.addEndDate.$invalid"
                                                     class="error-message text-danger form-text">
                                                     Ngày kết thúc không được để trống</div>
+                                            </span> -->
+                                            <span ng-show="formAddVoucher.$submitted">
+                                                <div ng-show="formAddVoucher.addEndDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được để trống</div>
+                                            </span>
+                                            <span ng-show="formAddVoucher.$submitted">
+                                                <div ng-show="formAddVoucher.addEndDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được nhỏ hơn ngày bắt đầu</div>
                                             </span>
                                         </div>
                                     </div>
@@ -363,12 +385,24 @@
                                         <div class="form-group">
                                             <label>Ngày bắt đầu</label>
                                             <input type="date" name="updateStartDate" class="form-control"
+                                                max="{{formUpdateVoucher.endDate}}"
                                                 ng-model="formUpdateVoucher.startDate" ng-required="true">
 
-                                            <span ng-show="formEditVoucher.$submitted">
+                                            <!-- <span ng-show="formEditVoucher.$submitted">
                                                 <div ng-show="formEditVoucher.updateStartDate.$invalid"
                                                     class="error-message text-danger form-text">
                                                     Ngày bắt đầu không được để trống</div>
+                                            </span> -->
+
+                                            <span ng-show="formEditVoucher.$submitted">
+                                                <div ng-show="formEditVoucher.updateStartDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được để trống</div>
+                                            </span>
+                                            <span ng-show="formEditVoucher.$submitted">
+                                                <div ng-show="formEditVoucher.updateStartDate.$error.max"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được nhỏ hơn ngày kết thúc</div>
                                             </span>
                                         </div>
                                     </div>
@@ -425,13 +459,25 @@
                                         <div class="form-group">
                                             <label>Ngày kết thúc</label>
                                             <input type="date" name="updateEndDate" class="form-control"
+                                                min="{{formUpdateVoucher.startDate}}"
                                                 ng-model="formUpdateVoucher.endDate" ng-required="true">
 
-                                            <span ng-show="formEditVoucher.$submitted">
+                                            <!-- <span ng-show="formEditVoucher.$submitted">
                                                 <div ng-show="formUpdateVoucher.endDate == null"
                                                     class="error-message text-danger form-text">
                                                     Ngày kết thúc không được để trống</div>
+                                            </span> -->
+                                            <span ng-show="formEditVoucher.$submitted">
+                                                <div ng-show="formEditVoucher.updateEndDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được để trống</div>
                                             </span>
+                                            <span ng-show="formEditVoucher.$submitted">
+                                                <div ng-show="formEditVoucher.updateEndDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được nhỏ hơn ngày bắt đầu</div>
+                                            </span>
+
                                             <!-- formEditVoucher.updateEndDate.$invalid -->
 
                                             <!-- ng-value="formUpdateVoucher.startDate | date:'yyyy-MM-dd'" -->
