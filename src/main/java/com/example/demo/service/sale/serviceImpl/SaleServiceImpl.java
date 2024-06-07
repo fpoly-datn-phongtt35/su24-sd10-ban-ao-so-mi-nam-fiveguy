@@ -5,6 +5,8 @@ import com.example.demo.repository.sale.SaleRepository;
 import com.example.demo.service.sale.SaleService;
 import com.example.demo.untility.SaleSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -37,31 +39,7 @@ public class SaleServiceImpl implements SaleService {
         return saleRepository.save(sale);
     }
 
-    @Override
-    public Sale updateSale(Long id, Sale sale) {
-        Optional<Sale> existingSale = saleRepository.findById(id);
-        if (existingSale.isPresent()) {
-            Sale updatedSale = existingSale.get();
-            updatedSale.setCode(sale.getCode());
-            updatedSale.setName(sale.getName());
-            updatedSale.setValue(sale.getValue());
-            updatedSale.setNumberOfUses(sale.getNumberOfUses());
-            updatedSale.setDiscountType(sale.getDiscountType());
-            updatedSale.setDescribe(sale.getDescribe());
-            updatedSale.setMaximumDiscountAmount(sale.getMaximumDiscountAmount());
-            updatedSale.setStartDate(sale.getStartDate());
-            updatedSale.setEndDate(sale.getEndDate());
-            updatedSale.setCreatedAt(sale.getCreatedAt());
-            updatedSale.setUpdatedAt(sale.getUpdatedAt());
-            updatedSale.setCreatedBy(sale.getCreatedBy());
-            updatedSale.setUpdatedBy(sale.getUpdatedBy());
-            updatedSale.setStatus(sale.getStatus());
-            updatedSale.setProductSales(sale.getProductSales());
-            return saleRepository.save(updatedSale);
-        } else {
-            throw new RuntimeException("Sale not found with id " + id);
-        }
-    }
+
 
     @Override
     public void deleteSale(Long id) {
@@ -97,15 +75,10 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public List<Sale> searchByCodeNameValue(String searchTerm) {
-        return saleRepository.searchByCodeNameValue(searchTerm);
-    }
-
-    @Override
-    public List<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status) {
+    public Page<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status, String searchTerm, Pageable pageable) {
         Specification<Sale> spec = Specification.where(null);
 
-        if (startDate != null && endDate != null) {
+        if (startDate != null || endDate != null) {
             spec = spec.and(SaleSpecifications.betweenDates(startDate, endDate));
         }
 
@@ -113,7 +86,12 @@ public class SaleServiceImpl implements SaleService {
             spec = spec.and(SaleSpecifications.hasStatus(status));
         }
 
-        return saleRepository.findAll(spec);
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            spec = spec.and(SaleSpecifications.containsSearchTerm(searchTerm));
+        }
+
+        return saleRepository.findAll(spec, pageable);
     }
+
 
 }

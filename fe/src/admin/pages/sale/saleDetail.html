@@ -1,5 +1,5 @@
 <!-- Main content -->
-<div class="container-fluid px-4" ng-init="loadProductsWithoutSaleOrExpiredPromotion(); loadProductSales()">
+<div class="container-fluid px-4" ng-init=" ">
     <div class="row">
         <!-- Form nhập thông tin đợt giảm giá -->
         <div class="col-lg-4 mb-4">
@@ -84,7 +84,7 @@
 
             <div class="filters d-flex justify-content-between flex-wrap align-items-center">
                 <div class="mb-3">
-                    <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchTerm" ng-change="searchProducts()">
+                    <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchTerm" ng-change="filterProducts()">
                 </div>
                 <div class="mb-3">
                     <select class="form-select" id="neckStyleFilter" ng-model="selectedCollar" ng-change="filterProducts()" ng-options="collar.id as collar.name for collar in collars">
@@ -110,6 +110,9 @@
                     <select class="form-select" id="materialFilter" ng-model="selectedMaterial" ng-change="filterProducts()" ng-options="material.id as material.name for material in materials">
                         <option value="">Chọn chất liệu</option>
                     </select>
+                </div>
+                <div class="col-sm-3">
+                    <button class="btn btn-primary" ng-click="refreshDataProduct()">Làm mới</button>
                 </div>
             </div>
             
@@ -140,13 +143,75 @@
                         <button type="button" class="btn btn-success" ng-click="addAllProductSales()">Thêm tất cả sản phẩm</button>
                     </div>
                 </div>
+                <div class="row text-center">
+                    <div class="col-md-12" ng-if="totalPages > 1">
+                        <ul class="pagination">
+                            <li ng-class="{disabled: currentPage === 0}">
+                                <a href="" ng-click="setCurrentPageRateProduct(0)">
+                                    First
+                                </a>
+                            </li>
+                            <li ng-class="{disabled: currentPage === 0}">
+                                <a href="" ng-click="setCurrentPageRateProduct(currentPage - 1)">
+                                    Previous
+                                </a>
+                            </li>
+                
+                            {{ currentPage + 1 }}
+                
+                            <li ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a href="" ng-click="setCurrentPageRateProduct(currentPage + 1)">
+                                    Next
+                                </a>
+                            </li>
+                            <li ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a href="" ng-click="setCurrentPageRateProduct(totalPages - 1)">
+                                    Last
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         
         
     
     </div>
-
+    <div class="filters d-flex justify-content-between flex-wrap align-items-center">
+        <div class="mb-3">
+            <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchTerm2" ng-change="filterProductSale()">
+        </div>
+        <div class="mb-3">
+            <select class="form-select" id="neckStyleFilter" ng-model="selectedCollar2" ng-change="filterProductSale()" ng-options="collar.id as collar.name for collar in collars">
+                <option value="">Chọn cổ áo</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select class="form-select" id="sleeveStyleFilter" ng-model="selectedWrist2" ng-change="filterProductSale()" ng-options="wrist.id as wrist.name for wrist in wrists">
+                <option value="">Chọn cổ tay</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select class="form-select" id="sizeFilter" ng-model="selectedSize2" ng-change="filterProductSale()" ng-options="size.id as size.name for size in sizes">
+                <option value="">Chọn kích cỡ</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select class="form-select" id="colorFilter" ng-model="selectedColor2" ng-change="filterProductSale()" ng-options="color.id as color.name for color in colors">
+                <option value="">Chọn màu sắc</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select class="form-select" id="materialFilter" ng-model="selectedMaterial2" ng-change="filterProductSale()" ng-options="material.id as material.name for material in materials">
+                <option value="">Chọn chất liệu</option>
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <button class="btn btn-primary" ng-click="refreshDataProductSale()">Làm mới</button>
+        </div>
+    </div>
+    
           <!-- Row for "Sản phẩm đã áp dụng" -->
           <div class="row">
             <div class="col-12">
@@ -178,6 +243,36 @@
                     <button class="btn btn-danger" ng-click="deleteAll()">Xóa tất cả</button>
                 </div>
             </div>
+            <div class="row text-center">
+                <div class="col-md-12" ng-if="totalPages2 > 1">
+                    <ul class="pagination">
+                        <li ng-class="{disabled: currentPage2 === 0}">
+                            <a href="" ng-click="setCurrentPageProductSales2(0)">
+                                First
+                            </a>
+                        </li>
+                        <li ng-class="{disabled: currentPage2 === 0}">
+                            <a href="" ng-click="setCurrentPageProductSales2(currentPage2 - 1)">
+                                Previous
+                            </a>
+                        </li>
+            
+                        {{ currentPage2 + 1 }}
+            
+                        <li ng-class="{disabled: currentPage2 === totalPages2 - 1}">
+                            <a href="" ng-click="setCurrentPageProductSales2(currentPage2 + 1)">
+                                Next
+                            </a>
+                        </li>
+                        <li ng-class="{disabled: currentPage2 === totalPages2 - 1}">
+                            <a href="" ng-click="setCurrentPageProductSales2(totalPages2 - 1)">
+                                Last
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
         </div>
 
 </div>

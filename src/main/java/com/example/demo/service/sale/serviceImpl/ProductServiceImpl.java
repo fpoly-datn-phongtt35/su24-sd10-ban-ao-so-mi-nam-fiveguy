@@ -5,6 +5,10 @@ import com.example.demo.repository.sale.ProductRepository;
 import com.example.demo.service.sale.ProductService;
 import com.example.demo.untility.ProductSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -31,25 +35,37 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> filterProducts(Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId) {
+    public Page<Product> filterProducts(Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId, String searchTerm, int page, int size) {
+        Specification<Product> spec = Specification.where(null);
 
-        List<Product> productsWithoutSaleOrExpiredPromotion = getProductsWithoutSaleOrExpiredPromotion();
+        if (categoryId != null) {
+            spec = spec.and(ProductSpecification.hasCategory(categoryId));
+        }
+        if (collarId != null) {
+            spec = spec.and(ProductSpecification.hasCollar(collarId));
+        }
+        if (wristId != null) {
+            spec = spec.and(ProductSpecification.hasWrist(wristId));
+        }
+        if (colorId != null) {
+            spec = spec.and(ProductSpecification.hasColor(colorId));
+        }
+        if (sizeId != null) {
+            spec = spec.and(ProductSpecification.hasSize(sizeId));
+        }
+        if (materialId != null) {
+            spec = spec.and(ProductSpecification.hasMaterial(materialId));
+        }
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            spec = spec.and(ProductSpecification.containsSearchTerm(searchTerm));
+        }
 
-        return productsWithoutSaleOrExpiredPromotion.stream()
-                .filter(product -> (categoryId == null || product.getCategory().getId().equals(categoryId)))
-                .filter(product -> (collarId == null || product.getCollar().getId().equals(collarId)))
-                .filter(product -> (wristId == null || product.getWrist().getId().equals(wristId)))
-                .filter(product -> (colorId == null || product.getProductDetails().stream().anyMatch(detail -> detail.getColor().getId().equals(colorId))))
-                .filter(product -> (sizeId == null || product.getProductDetails().stream().anyMatch(detail -> detail.getSize().getId().equals(sizeId))))
-                .filter(product -> (materialId == null || product.getMaterial().getId().equals(materialId)))
-                .filter(product -> product.getStatus().equals(1)) // Assuming the status filter
-                .collect(Collectors.toList());
+        spec = spec.and(ProductSpecification.isStatus(1)); // Assuming the status filter
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return productRepository.findAll(spec, pageable);
     }
 
-
-    @Override
-    public List<Product> searchByNameOrCode(String searchTerm) {
-        return productRepository.searchByNameOrCode(searchTerm);
-    }
 
 }

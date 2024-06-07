@@ -19,4 +19,14 @@ public class SaleSpecifications {
         };
     }
 
+    public static Specification<Sale> containsSearchTerm(String searchTerm) {
+        return (root, query, criteriaBuilder) -> {
+            String likePattern = "%" + searchTerm.toLowerCase() + "%";
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("code")), likePattern),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), likePattern)
+            );
+        };
+    }
 }
+

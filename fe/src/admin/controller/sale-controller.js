@@ -24,59 +24,87 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         });
     };
 
-    $scope.getAllSales = function() {
-        $http.get(baseUrl).then(function(response) {
-            $scope.sales = response.data;
-        }, function(error) {
-            console.error('Error fetching sales data:', error);
-        });
-    };
+    // $scope.getAllSales = function() {
+    //     $http.get(baseUrl).then(function(response) {
+    //         $scope.sales = response.data;
+    //     }, function(error) {
+    //         console.error('Error fetching sales data:', error);
+    //     });
+    // };
 
-    $scope.searchSale = function() {
-        $http.get(baseUrl + '/search', { params: { searchTerm: $scope.searchTerm } })
-            .then(function(response) {
-                $scope.sales = response.data;
-            })
-            .catch(function(error) {
-                console.error('Error fetching search results:', error);
-            });
-    };
+    // $scope.searchSale = function() {
+    //     $http.get(baseUrl + '/search', { params: { searchTerm: $scope.searchTerm } })
+    //         .then(function(response) {
+    //             $scope.sales = response.data;
+    //         })
+    //         .catch(function(error) {
+    //             console.error('Error fetching search results:', error);
+    //         });
+    // };
 
     $scope.refreshData = function() {
         $scope.startDate = null;
         $scope.endDate = null;
         $scope.status = null;
-        $scope.getAllSales();
+        $scope.searchTerm = null;
+        $scope.currentPage = 0;
+
+        $scope.getSalesByConditions(0);
     };
     
 
     $scope.startDate = null;
     $scope.endDate = null;
     $scope.status = null;
+    $scope.currentPage = 0;
+    $scope.pageSize = 10;
 
 
-    $scope.getSalesByConditions = function() {
-        if ($scope.startDate && $scope.endDate) {
-            var config = {
-                params: {
-                    startDate: $scope.startDate,
-                    endDate: $scope.endDate,
-                    status: $scope.status
-                }
-            };
-            console.log(config);
-    
-            $http.get(baseUrl + '/fill', config)
-                .then(function(response) {
-                    $scope.sales = response.data;
-                    console.log($scope.sales);
-                }, function(error) {
-                    console.error('Error fetching sales:', error);
-                });
+
+$scope.getSalesByConditions = function(page) {
+    if (page === undefined) {
+        page = $scope.currentPage;
+    }
+
+    var config = {
+        params: {
+            startDate: $scope.startDate,
+            endDate: $scope.endDate,
+            status: $scope.status,
+            searchTerm: $scope.searchTerm,
+            page: page,
+            size: $scope.pageSize
         }
     };
+    console.log(config);
+
+    $http.get(baseUrl + '/fill', config)
+        .then(function(response) {
+            // Check if the response has data
+            if (response.data.content.length === 0 && page > 0) {
+                // If no data is found and we are not on the first page, reset to first page
+                $scope.getSalesByConditions(0);
+            } else {
+                // Otherwise, update the sales data and pagination
+                $scope.sales = response.data.content;
+                $scope.totalPages = response.data.totalPages;
+                $scope.currentPage = page;
+                console.log($scope.sales);
+            }
+        }, function(error) {
+            console.error('Error fetching sales:', error);
+        });
+};
+
+$scope.setCurrentPageRateProduct = function(page) {
+    if (page >= 0 && page < $scope.totalPages) {
+        $scope.getSalesByConditions(page);
+    }
+};
+
     
     
+$scope.getSalesByConditions(0);
 
 
     // DÙng để xử lí các thuộc tính của sale
@@ -150,29 +178,111 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
 
 
 
+    // $scope.productSales = [];
+
+    // $scope.filterProductSale = function() {
+    //     var saleId = $routeParams.id;
+    //     $http.get(baseUrl + '/product-sales/getList/' + saleId ).then(function(response) {
+    //         $scope.productSales = response.data;
+    //     }, function(error) {
+    //         console.error('Error fetching product sales:', error);
+    //     });
+    // };
+
+    $scope.refreshDataProductSale = function() {
+        $scope.selectedCategory2 = null;
+        $scope.selectedCollar2 = null;
+        $scope.selectedWrist2 = null;
+        $scope.selectedColor2 = null;
+        $scope.selectedSize2 = null;
+        $scope.selectedMaterial2 = null;
+        $scope.currentPage2 = 0;
+        $scope.searchTerm2 = null;
+    
+        $scope.filterProductSale(0);
+    };
+    
+
     $scope.productSales = [];
-
-    $scope.loadProductSales = function() {
-        var saleId = $routeParams.id;
-        $http.get(baseUrl + '/product-sales/getList/' + saleId ).then(function(response) {
-            $scope.productSales = response.data;
-        }, function(error) {
-            console.error('Error fetching product sales:', error);
-        });
+    $scope.currentPage2 = 0;
+    // $scope.pageSize2 = 10;
+    $scope.totalPages2 = 0;
+    $scope.searchTerm2 = null;
+    
+    $scope.selectedProduct2 = null;
+    $scope.selectedCategory2 = null;
+    $scope.selectedCollar2 = null;
+    $scope.selectedWrist2 = null;
+    $scope.selectedColor2 = null;
+    $scope.selectedSize2 = null;
+    $scope.selectedMaterial2 = null;
+    $scope.selectedStatus2 = null;
+    
+    $scope.filterProductSale = function(page) {
+        if (page === undefined) {
+            page = $scope.currentPage2;
+        }
+        var saleId = $routeParams.id ? parseInt($routeParams.id, 10) : null;
+    
+        if (isNaN(saleId)) {
+            console.error('Invalid saleId:', saleId);
+            return;
+        }
+    
+        var config = {
+            params: {
+                saleId: saleId,
+                productId: $scope.selectedProduct2,
+                categoryId: $scope.selectedCategory2,
+                collarId: $scope.selectedCollar2,
+                wristId: $scope.selectedWrist2,
+                colorId: $scope.selectedColor2,
+                sizeId: $scope.selectedSize2,
+                materialId: $scope.selectedMaterial2,
+                status: $scope.selectedStatus2,
+                page: page,
+                size: $scope.pageSize2,
+                searchTerm: $scope.searchTerm2
+            }
+        };
+        console.log(config);
+    
+        $http.get(baseUrl + '/product-sales/fillProductSale', config)
+            .then(function(response) {
+                if (response.data.content.length === 0 && page > 0) {
+                    $scope.filterProductSale(0);
+                } else {
+                    $scope.productSales = response.data.content;
+                    $scope.totalPages2 = response.data.totalPages;
+                    $scope.currentPage2 = page;
+                    console.log($scope.productSales);
+                }
+            }, function(error) {
+                console.error('Error fetching product sales:', error);
+            });
     };
-
-
-    $scope.products = [];
-
-    $scope.loadProductsWithoutSaleOrExpiredPromotion = function() {
-        $http.get(baseUrl + '/products/without-sale-or-expired-promotion')
-        .then(function(response) {
-            $scope.products = response.data;
-        })
-        .catch(function(error) {
-            console.error('Error fetching products without sale or expired promotion:', error);
-        });
+    
+    $scope.setCurrentPageProductSales2 = function(page) {
+        if (page >= 0 && page < $scope.totalPages2) {
+            $scope.filterProductSale(page);
+        }
     };
+    
+    $scope.filterProductSale(0);
+      
+    
+    
+    // $scope.products = [];
+
+    // $scope.loadProductsWithoutSaleOrExpiredPromotion = function() {
+    //     $http.get(baseUrl + '/products/without-sale-or-expired-promotion')
+    //     .then(function(response) {
+    //         $scope.products = response.data;
+    //     })
+    //     .catch(function(error) {
+    //         console.error('Error fetching products without sale or expired promotion:', error);
+    //     });
+    // };
 
 // Xóa sản phẩm ra khỏi đợt giảm giá \
    
@@ -245,9 +355,9 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     // Thêm tất cả sản phẩm vào đợt giảm giá
 $scope.addAllProductSales = function() {
     var allProducts = $scope.products.map(function(product) {
-        var sale = $scope.saleDetails;
+        var sale = $scope.saleDetail;
         var discount = 0;
-
+console.log(sale)
         if (sale.discountType === 1) {
             discount = sale.value;
         } else if (sale.discountType === 2) {
@@ -283,7 +393,7 @@ $scope.addAllProductSales = function() {
     $scope.countCurrentSales();
     $scope.countUpcomingSales();
     $scope.countExpiredSales();
-    $scope.getAllSales();
+    // $scope.getAllSales();
 
 
 
@@ -361,45 +471,88 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/admin/infoProduct';
     $scope.getAllCollars();
     $scope.getAllBrands();
 
+    $scope.refreshDataProduct = function() {
+        $scope.selectedCategory = null;
+        $scope.selectedCollar = null;
+        $scope.selectedWrist = null;
+        $scope.selectedColor = null;
+        $scope.selectedSize = null;
+        $scope.selectedMaterial = null;
+        $scope.currentPage = 0;
+        $scope.searchTerm = null;
 
 
-    $scope.filterProducts = function() {
-        console.log($scope.selectedColor)
-        console.log($scope.selectedMaterial)
+        $scope.filterProducts(0);
+    };
 
+    $scope.selectedCategory = null;
+    $scope.selectedCollar = null;
+    $scope.selectedWrist = null;
+    $scope.selectedColor = null;
+    $scope.selectedSize = null;
+    $scope.selectedMaterial = null;
 
-        $http.get('http://localhost:8080/api/admin/sales/products/filter', {
+    $scope.filterProducts = function(page) {
+        if (page === undefined) {
+            page = $scope.currentPage;
+        }
+    
+        var config = {
             params: {
                 categoryId: $scope.selectedCategory,
                 collarId: $scope.selectedCollar,
                 wristId: $scope.selectedWrist,
                 colorId: $scope.selectedColor,
                 sizeId: $scope.selectedSize,
-                materialId: $scope.selectedMaterial
+                materialId: $scope.selectedMaterial,
+                searchTerm: $scope.searchTerm,
+                page: page,
+                size: $scope.pageSize
             }
-        }).then(function(response) {
-            // Xử lý dữ liệu trả về từ API
-            $scope.products = response.data;
-            console.log(response.data)
-        }, function(error) {
-            // Xử lý lỗi nếu có
-            console.error('Error fetching products:', error);
-        });
+        };
+    
+        $http.get('http://localhost:8080/api/admin/sales/products/filter', config)
+            .then(function(response) {
+                // Check if the response has data
+                if (response.data.content.length === 0 && page > 0) {
+                    // If no data is found and we are not on the first page, reset to first page
+                    $scope.filterProducts(0);
+                } else {
+                    // Otherwise, update the products data and pagination
+                    $scope.products = response.data.content;
+                    $scope.totalPages = response.data.totalPages;
+                    $scope.currentPage = page;
+                    console.log($scope.products);
+                }
+            }, function(error) {
+                console.error('Error fetching products:', error);
+            });
     };
 
-    $scope.searchProducts = function() {
-        $http.get('http://localhost:8080/api/admin/sales/products/search', {
-            params: {
-                searchTerm: $scope.searchTerm
-            }
-        }).then(function(response) {
-            // Xử lý dữ liệu trả về từ API
-            $scope.products = response.data;
-        }, function(error) {
-            // Xử lý lỗi nếu có
-            console.error('Error searching products:', error);
-        });
+
+    $scope.setCurrentPageRateProduct = function(page) {
+        if (page >= 0 && page < $scope.totalPages) {
+            $scope.filterProducts(page);
+        }
     };
+
+
+    $scope.filterProducts(0);
+    
+
+    // $scope.searchProducts = function() {
+    //     $http.get('http://localhost:8080/api/admin/sales/products/search', {
+    //         params: {
+    //             searchTerm: $scope.searchTerm
+    //         }
+    //     }).then(function(response) {
+    //         // Xử lý dữ liệu trả về từ API
+    //         $scope.products = response.data;
+    //     }, function(error) {
+    //         // Xử lý lỗi nếu có
+    //         console.error('Error searching products:', error);
+    //     });
+    // };
 
 
 }]);

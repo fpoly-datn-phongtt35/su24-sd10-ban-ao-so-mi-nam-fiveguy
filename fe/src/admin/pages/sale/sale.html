@@ -109,7 +109,7 @@
     <div class="col-md-6">
         <form>
             <div class="form-group">
-                <input type="text" class="form-control" id="searchTerm" ng-model="searchTerm" ng-change="searchSale()">
+                <input type="text" class="form-control" id="searchTerm" ng-model="searchTerm" ng-change="getSalesByConditions()">
             </div>
         </form>
     </div>
@@ -173,10 +173,38 @@
                             </tr>
                         </tbody>
                     </table>
-                    
-                    
-                    
                 </div>
+                <div class="row text-center">
+                    <div class="col-md-12" ng-if="totalPages > 1">
+                        <ul class="pagination">
+                            <li ng-class="{disabled: currentPage === 0}">
+                                <a href="" ng-click="setCurrentPageRateProduct(0)">
+                                    First
+                                </a>
+                            </li>
+                            <li ng-class="{disabled: currentPage === 0}">
+                                <a href="" ng-click="setCurrentPageRateProduct(currentPage - 1)">
+                                    Previous
+                                </a>
+                            </li>
+                
+                            {{ currentPage + 1 }}
+                
+                            <li ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a href="" ng-click="setCurrentPageRateProduct(currentPage + 1)">
+                                    Next
+                                </a>
+                            </li>
+                            <li ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a href="" ng-click="setCurrentPageRateProduct(totalPages - 1)">
+                                    Last
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                
             </div>
         </div>
     </div>
