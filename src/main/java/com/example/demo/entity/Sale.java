@@ -42,7 +42,7 @@ public class Sale {
     private String describe;
 
     @Column(name = "MaximumDiscountAmount")
-    private Double maximumDiscountAmount;
+    private Integer maximumDiscountAmount;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "StartDate", nullable = false)
