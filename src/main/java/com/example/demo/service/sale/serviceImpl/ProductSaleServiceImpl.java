@@ -1,8 +1,12 @@
 package com.example.demo.service.sale.serviceImpl;
 
+import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductSale;
+import com.example.demo.entity.Sale;
 import com.example.demo.repository.sale.ProductSaleRepository;
 import com.example.demo.service.sale.ProductSaleService;
+import com.example.demo.service.sale.ProductService;
+import com.example.demo.service.sale.SaleService;
 import com.example.demo.untility.ProductSaleSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +23,12 @@ public class ProductSaleServiceImpl implements ProductSaleService {
 
     @Autowired
     private ProductSaleRepository productSaleRepository;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private SaleService saleService;
 
     @Override
     public ProductSale saveProductSale(ProductSale productSale) {
@@ -115,4 +126,39 @@ public class ProductSaleServiceImpl implements ProductSaleService {
 
         return productSaleRepository.findAll(spec, pageable);
     }
+
+    @Override
+    public List<ProductSale> addAllProductSales(Long saleId) {
+        // Find the sale by ID
+        Sale sale = saleService.getSaleById(saleId);
+
+        // Get the products without sale or with expired sale
+        List<Product> products = productService.getProductsWithoutSaleOrExpiredPromotion();
+
+        // Create a list of ProductSale
+        List<ProductSale> productSales = new ArrayList<>();
+        for (Product product : products) {
+            int discount = 0;
+            if (sale.getDiscountType() == 1) {
+                discount = sale.getValue();
+            } else if (sale.getDiscountType() == 2) {
+                discount = product.getPrice().intValue() * sale.getValue() / 100;
+            }
+            if (sale.getMaximumDiscountAmount() != null && discount > sale.getMaximumDiscountAmount()) {
+                discount = sale.getMaximumDiscountAmount();
+            }
+            int promotionalPrice = product.getPrice().intValue() - discount;
+
+            ProductSale productSale = new ProductSale();
+            productSale.setProduct(product);
+            productSale.setSale(sale);
+            productSale.setPromotionalPrice(promotionalPrice);
+            productSale.setDiscountPrice(discount);
+            productSales.add(productSale);
+        }
+
+        // Save all productSales
+        return productSaleRepository.saveAll(productSales);
+    }
+
 }

@@ -63,6 +63,11 @@ public class ProductSaleRestController {
         return ResponseEntity.ok(savedProductSales);
     }
 
+    @PostMapping("/addAll")
+    public ResponseEntity<List<ProductSale>> addAllProductSales(@PathVariable Long id) {
+        List<ProductSale> savedProductSales = productService.addAllProductsWithSale(productSales);
+        return ResponseEntity.ok(savedProductSales);
+    }
 
     @PostMapping("/deleteList")
     public ResponseEntity<Void> deleteProductSales(@RequestBody List<Long> ids) {
@@ -90,17 +95,6 @@ public class ProductSaleRestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchTerm) {
-
-        System.out.println("saleId: " + saleId);
-        System.out.println("productId: " + productId);
-        System.out.println("categoryId: " + categoryId);
-        System.out.println("collarId: " + collarId);
-        System.out.println("wristId: " + wristId);
-        System.out.println("colorId: " + colorId);
-        System.out.println("sizeId: " + sizeId);
-        System.out.println("materialId: " + materialId);
-        System.out.println("status: " + status);
-        System.out.println("searchTerm: " + searchTerm);
 
         Pageable pageable = PageRequest.of(page, size);
         return productSaleService.filterProductSales(saleId, productId, categoryId, collarId, wristId, colorId, sizeId, materialId, status, searchTerm, pageable);

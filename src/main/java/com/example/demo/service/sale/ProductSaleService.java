@@ -20,4 +20,6 @@ public interface ProductSaleService {
     void deleteAllProductSales();
 
     Page<ProductSale> filterProductSales(Long saleId, Long productId, Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId, Integer status, String searchTerm, Pageable pageable);
+
+    List<ProductSale> addAllProductSales(Long id);
 }
