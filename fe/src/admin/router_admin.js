@@ -28,6 +28,8 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Tịnh -->
     .when("/admin/customer", {
       templateUrl: "pages/customer/customer.html",
+      controller: 'customerCtrl'
+
     })
     // <!-- Nguyên -->
     .when("/admin/voucher", {
