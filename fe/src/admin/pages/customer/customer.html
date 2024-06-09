@@ -61,7 +61,6 @@
                             <td scope="col-1">{{$index + ((paper.page) * paper.size) +1}}</td>
                             <td scope="col-2">{{customer.code}}</td>
                             <td scope="col-1">
-                            <td scope="col-1">
                                 <img ng-src="{{customer.avatar}}" alt="" style="width: 50px; height: 50px" />
                             </td>
                             <td scope="col-1">{{customer.fullName}}</td>
@@ -84,9 +83,10 @@
                                     ng-click="edit(customer)">
                                     <i class="material-icons" title="Edit">&#xE254;</i>
                                 </a>
-                                <a type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteModal"
-                                    ng-click="setDeleteCustomer(customer.id)">
-                                    <i class="material-icons" title="Delete">&#xE872;</i></a>
+                                <a type="button" class="btn" data-bs-toggle="modal"
+                                    data-bs-target="" ng-click="delete(customer)">
+                                    <i class="material-icons" title="Delete">&#xE872;</i>
+                                </a>
                             </td>
                         </tr>
                     </tbody>
@@ -126,7 +126,7 @@
     <div class="modal fade" tabindex="-1" id="modalAdd" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form name="formCreateCustomer" ng-submit="formCreateCustomer.$valid && themNhanVien()" novalidate>
+                <form name="formCreateCustomer" ng-submit="formCreateCustomer.$valid && themkhachhang()" novalidate>
                     <div class="modal-header">
                         <h5 class="modal-title">Thêm mới nhân viên</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -237,7 +237,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mb-3">
+                            <!-- <div class="row mb-3">
                                 <label for="inputcustomerType" class="col-sm-3 col-form-label">Loại Khách Hàng</label>
                                 <div class="col-sm-9">
                                     <select name="customerType" id="inputcustomerType" class="form-control"
@@ -253,7 +253,7 @@
                                         </div>
                                     </span>
                                 </div>
-                            </div>
+                            </div> -->
 
 
                             <!-- <div class="row mb-3">
@@ -295,7 +295,7 @@
     <div class="modal fade" tabindex="-1" id="modalUpdate" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form name="formUpdateCustomer" ng-submit="formUpdateCustomer.$valid && suaNhanVien()" novalidate>
+                <form name="formUpdateCustomer" ng-submit="formUpdateCustomer.$valid && suakhachhang()" novalidate>
                     <div class="modal-header">
                         <h5 class="modal-title">Cập nhật nhân viên</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -399,7 +399,7 @@
                                     <select name="customerType" id="inputcustomerType" class="form-control"
                                         ng-model="formInput.customerType" required>
                                         <option value="" disabled selected>Chọn loại khách hàng</option>
-                                        <option ng-repeat="type in customerTypes" ng-value="{{type.id}}">{{type.name}}
+                                        <option ng-repeat="type in customerTypes" value="{{type.id}}">{{type.name}}
                                         </option>
                                     </select>
                                     <span ng-show="formUpdateCustomer.$submitted">

@@ -34,6 +34,11 @@ public class CustomerTypeRestController {
         List<CustomerType> customerTypes = customerTypeService.getAll();
         return ResponseEntity.ok(customerTypes);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerType> getById(@PathVariable Long id) {
+        CustomerType customerType = customerTypeService.getById(id);
+        return ResponseEntity.ok(customerType);
+    }
     @GetMapping("/get-page")
     public ResponseEntity<Page<CustomerType>> phantrang(@RequestParam(defaultValue = "0", name = "page") Integer t) {
         Page<CustomerType> customerTypes = customerTypeService.phanTrang(t, 5);

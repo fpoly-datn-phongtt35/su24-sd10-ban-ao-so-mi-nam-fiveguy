@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
+@Service
 public class CustomerTypeServiceImpl implements CustomerTypeService {
     @Autowired
     CustomerTypeRepository customerTypeRepository;
@@ -20,6 +21,11 @@ public class CustomerTypeServiceImpl implements CustomerTypeService {
     @Override
     public List<CustomerType> getAll() {
         return customerTypeRepository.findAll();
+    }
+
+    @Override
+    public CustomerType getById(Long id) {
+        return customerTypeRepository.findById(id).orElse(null);
     }
 
     @Override
