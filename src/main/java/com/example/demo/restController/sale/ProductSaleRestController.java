@@ -96,7 +96,7 @@ public class ProductSaleRestController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String searchTerm) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return productSaleService.filterProductSales(saleId, productId, categoryId, collarId, wristId, colorId, sizeId, materialId, status, searchTerm, pageable);
     }
 

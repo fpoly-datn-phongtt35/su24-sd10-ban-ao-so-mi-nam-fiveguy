@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,6 +130,8 @@ public class ProductSaleServiceImpl implements ProductSaleService {
 
     @Override
     public List<ProductSale> addAllProductSales(Long saleId) {
+        Date now = new Date();
+
         // Find the sale by ID
         Sale sale = saleService.getSaleById(saleId);
 
@@ -150,6 +153,8 @@ public class ProductSaleServiceImpl implements ProductSaleService {
             int promotionalPrice = product.getPrice().intValue() - discount;
 
             ProductSale productSale = new ProductSale();
+            productSale.setCreatedAt(now);
+
             productSale.setProduct(product);
             productSale.setSale(sale);
             productSale.setPromotionalPrice(promotionalPrice);

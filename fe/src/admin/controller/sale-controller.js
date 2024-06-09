@@ -37,7 +37,6 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     var baseUrl = 'http://localhost:8080/api/admin/sales';
 
 
-
     $scope.countCurrentSales = function() {
         $http.get(baseUrl + '/current/count').then(function(response) {
             $scope.currentSalesCount = response.data;
@@ -56,30 +55,12 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         });
     };
 
-    // $scope.getAllSales = function() {
-    //     $http.get(baseUrl).then(function(response) {
-    //         $scope.sales = response.data;
-    //     }, function(error) {
-    //         console.error('Error fetching sales data:', error);
-    //     });
-    // };
-
-    // $scope.searchSale = function() {
-    //     $http.get(baseUrl + '/search', { params: { searchTerm: $scope.searchTerm } })
-    //         .then(function(response) {
-    //             $scope.sales = response.data;
-    //         })
-    //         .catch(function(error) {
-    //             console.error('Error fetching search results:', error);
-    //         });
-    // };
-
 
     $scope.refreshData = function() {
         $scope.startDate = null;
         $scope.endDate = null;
         $scope.status = null;
-        $scope.discountType = null; // Reset discountType
+        $scope.discountType = null;
         $scope.searchTerm = null;
         $scope.currentPage = 0;
     
@@ -89,7 +70,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     $scope.startDate = null;
     $scope.endDate = null;
     $scope.status = null;
-    $scope.discountType = null; // Initialize discountType
+    $scope.discountType = null; 
     $scope.currentPage = 0;
     $scope.pageSize = 10;
     
@@ -132,7 +113,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         }
     };
     
-    $scope.getSalesByConditions(0); // Initial call to load data
+    $scope.getSalesByConditions(0); 
     
 
 
@@ -211,7 +192,6 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
 
 
 
-    // $scope.productSales = [];
 
     $scope.getAllProductSale = function() {
         var saleId = $routeParams.id;
@@ -225,25 +205,20 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     };
 
 
-// Initialize selected product sales in localStorage if not present
 if (!localStorage.getItem('selectedProductSales')) {
     localStorage.setItem('selectedProductSales', JSON.stringify([]));
 }
 
-// Function to clear selected product sales from localStorage
 $scope.clearSelectedProductSales = function() {
     localStorage.removeItem('selectedProductSales');
 };
 
-// Function to toggle the selection of a product sale
 $scope.toggleProductSaleSelection = function(productSale) {
     let selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
 
     if (productSale.selected) {
-        // Add product sale to selectedProductSales if it is selected
         selectedProductSales.push(productSale);
     } else {
-        // Remove product sale from selectedProductSales if it is unselected
         selectedProductSales = selectedProductSales.filter(function(selectedProductSale) {
             return selectedProductSale.id !== productSale.id;
         });
@@ -315,16 +290,13 @@ $scope.filterProductSale = function(page) {
             if (response.data.content.length === 0 && page > 0) {
                 $scope.filterProductSale(0);
             } else {
-                // Update productSales with data from the response
                 $scope.productSales = response.data.content;
                 $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = page;
                 console.log($scope.productSales);
 
-                // Get selected product sales from localStorage
                 var selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
 
-                // Mark product sales as selected based on localStorage data
                 $scope.productSales.forEach(function(productSale) {
                     productSale.selected = selectedProductSales.some(function(selectedProductSale) {
                         return selectedProductSale.id === productSale.id;
@@ -364,24 +336,16 @@ $scope.filterProductSale(0);
    
 
 $scope.deleteSelected = function() {
-    // Step 1: Get all product sales
     $scope.getAllProductSale().then(function(allProductSales) {
-        if (!allProductSales) return; // Kiểm tra xem allProductSales có giá trị không
-
-        // Step 2: Get selected product sale IDs from localStorage
+        if (!allProductSales) return; 
         var selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
         var selectedIds = selectedProductSales.map(function(selectedProductSale) {
             return selectedProductSale.id;
         });
-
-        // Step 3: Send request to delete selected product sales
         $http.post(baseUrl + '/product-sales/deleteList', selectedIds).then(function(response) {
-            // Step 4: Remove selected product sales from the product sales list on the client
             $scope.productSales = $scope.productSales.filter(function(productSale) {
                 return !productSale.selected;
             });
-
-            // Step 5: Update the all product sales list on the client
             $scope.allProductSales = $scope.allProductSales.filter(function(productSale) {
                 return !selectedIds.includes(productSale.id);
             });
@@ -412,13 +376,9 @@ $scope.deleteSelected = function() {
     // Thêm tất cả sản phẩm vào đợt giảm giá
 $scope.addAllProductSales = function() {
     var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.id;
-
     $http.post(apiUrl)
         .then(function(response) {
-            // Clear the existing product sales if you want to replace them
             $scope.productSales = [];
-            
-            // Add the newly returned product sales to the scope
             response.data.forEach(function(newProductSale) {
                 $scope.productSales.push(newProductSale);
             });
@@ -587,10 +547,8 @@ function calculateDiscount(sale, product) {
         let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
     
         if (product.selected) {
-            // Add product to selectedProducts if it is selected
             selectedProducts.push(product);
         } else {
-            // Remove product from selectedProducts if it is unselected
             selectedProducts = selectedProducts.filter(function(selectedProduct) {
                 return selectedProduct.id !== product.id;
             });
@@ -648,8 +606,6 @@ function calculateDiscount(sale, product) {
                     $scope.products = response.data.content;
                     $scope.totalPages = response.data.totalPages;
                     $scope.currentPage = page;
-    
-                    // Update the selected state based on selectedProducts in local storage
                     let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
     
                     $scope.products.forEach(function(product) {
