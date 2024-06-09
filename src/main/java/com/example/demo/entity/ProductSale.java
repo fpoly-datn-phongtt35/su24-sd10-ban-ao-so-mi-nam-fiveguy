@@ -3,6 +3,8 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -26,6 +28,12 @@ public class ProductSale {
 
     @Column(name = "Status")
     private Integer status;
+
+    @Column(name = "CreatedAt")
+    private Date createdAt;
+
+    @Column(name = "CreatedBy")
+    private String createdBy;
 
     @ManyToOne
     @JoinColumn(name = "IdSale", referencedColumnName = "Id")
