@@ -213,133 +213,188 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
 
     // $scope.productSales = [];
 
-    // $scope.filterProductSale = function() {
-    //     var saleId = $routeParams.id;
-    //     $http.get(baseUrl + '/product-sales/getList/' + saleId ).then(function(response) {
-    //         $scope.productSales = response.data;
-    //     }, function(error) {
-    //         console.error('Error fetching product sales:', error);
-    //     });
-    // };
-
-    $scope.refreshDataProductSale = function() {
-        $scope.selectedCategory2 = null;
-        $scope.selectedCollar2 = null;
-        $scope.selectedWrist2 = null;
-        $scope.selectedColor2 = null;
-        $scope.selectedSize2 = null;
-        $scope.selectedMaterial2 = null;
-        $scope.currentPage2 = 0;
-        $scope.searchTerm2 = null;
-    
-        $scope.filterProductSale(0);
+    $scope.getAllProductSale = function() {
+        var saleId = $routeParams.id;
+        // Trả về promise
+        return $http.get(baseUrl + '/product-sales/getList/' + saleId).then(function(response) {
+            $scope.allProductSales = response.data;
+            return response.data;
+        }).catch(function(error) {
+            console.error('Error fetching product sales:', error);
+        });
     };
-    
 
-    $scope.productSales = [];
-    $scope.currentPage2 = 0;
-    // $scope.pageSize2 = 10;
-    $scope.totalPages2 = 0;
-    $scope.searchTerm2 = null;
-    
-    $scope.selectedProduct2 = null;
+
+// Initialize selected product sales in localStorage if not present
+if (!localStorage.getItem('selectedProductSales')) {
+    localStorage.setItem('selectedProductSales', JSON.stringify([]));
+}
+
+// Function to clear selected product sales from localStorage
+$scope.clearSelectedProductSales = function() {
+    localStorage.removeItem('selectedProductSales');
+};
+
+// Function to toggle the selection of a product sale
+$scope.toggleProductSaleSelection = function(productSale) {
+    let selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
+
+    if (productSale.selected) {
+        // Add product sale to selectedProductSales if it is selected
+        selectedProductSales.push(productSale);
+    } else {
+        // Remove product sale from selectedProductSales if it is unselected
+        selectedProductSales = selectedProductSales.filter(function(selectedProductSale) {
+            return selectedProductSale.id !== productSale.id;
+        });
+    }
+
+    localStorage.setItem('selectedProductSales', JSON.stringify(selectedProductSales));
+};
+
+
+$scope.refreshDataProductSale = function() {
     $scope.selectedCategory2 = null;
     $scope.selectedCollar2 = null;
     $scope.selectedWrist2 = null;
     $scope.selectedColor2 = null;
     $scope.selectedSize2 = null;
     $scope.selectedMaterial2 = null;
-    $scope.selectedStatus2 = null;
-    
-    $scope.filterProductSale = function(page) {
-        if (page === undefined) {
-            page = $scope.currentPage2;
-        }
-        var saleId = $routeParams.id ? parseInt($routeParams.id, 10) : null;
-    
-        if (isNaN(saleId)) {
-            console.error('Invalid saleId:', saleId);
-            return;
-        }
-    
-        var config = {
-            params: {
-                saleId: saleId,
-                productId: $scope.selectedProduct2,
-                categoryId: $scope.selectedCategory2,
-                collarId: $scope.selectedCollar2,
-                wristId: $scope.selectedWrist2,
-                colorId: $scope.selectedColor2,
-                sizeId: $scope.selectedSize2,
-                materialId: $scope.selectedMaterial2,
-                status: $scope.selectedStatus2,
-                page: page,
-                size: $scope.pageSize2,
-                searchTerm: $scope.searchTerm2
-            }
-        };
-        console.log(config);
-    
-        $http.get(baseUrl + '/product-sales/fillProductSale', config)
-            .then(function(response) {
-                if (response.data.content.length === 0 && page > 0) {
-                    $scope.filterProductSale(0);
-                } else {
-                    $scope.productSales = response.data.content;
-                    $scope.totalPages2 = response.data.totalPages;
-                    $scope.currentPage2 = page;
-                    console.log($scope.productSales);
-                }
-            }, function(error) {
-                console.error('Error fetching product sales:', error);
-            });
-    };
-    
-    $scope.setCurrentPageProductSales2 = function(page) {
-        if (page >= 0 && page < $scope.totalPages2) {
-            $scope.filterProductSale(page);
-        }
-    };
-    
+    $scope.currentPage2 = 0;
+    $scope.searchTerm2 = null;
+
     $scope.filterProductSale(0);
-      
-    
-    
-    // $scope.products = [];
+};
 
-    // $scope.loadProductsWithoutSaleOrExpiredPromotion = function() {
-    //     $http.get(baseUrl + '/products/without-sale-or-expired-promotion')
-    //     .then(function(response) {
-    //         $scope.products = response.data;
-    //     })
-    //     .catch(function(error) {
-    //         console.error('Error fetching products without sale or expired promotion:', error);
-    //     });
-    // };
+$scope.productSales = [];
+$scope.currentPage2 = 0;
+// $scope.pageSize2 = 10;
+$scope.totalPages2 = 0;
+$scope.searchTerm2 = null;
 
-// Xóa sản phẩm ra khỏi đợt giảm giá \
-   
-   $scope.confirmRemove = function(productSale) {
-    if (confirm('Are you sure you want to delete this product sale?')) {
-        $scope.deleteProductSale(productSale.id);
+$scope.selectedProduct2 = null;
+$scope.selectedCategory2 = null;
+$scope.selectedCollar2 = null;
+$scope.selectedWrist2 = null;
+$scope.selectedColor2 = null;
+$scope.selectedSize2 = null;
+$scope.selectedMaterial2 = null;
+$scope.selectedStatus2 = null;
+
+$scope.filterProductSale = function(page) {
+    if (page === undefined) {
+        page = $scope.currentPage2;
+    }
+    var saleId = $routeParams.id ? parseInt($routeParams.id, 10) : null;
+
+    if (isNaN(saleId)) {
+        console.error('Invalid saleId:', saleId);
+        return;
+    }
+
+    var config = {
+        params: {
+            saleId: saleId,
+            productId: $scope.selectedProduct2,
+            categoryId: $scope.selectedCategory2,
+            collarId: $scope.selectedCollar2,
+            wristId: $scope.selectedWrist2,
+            colorId: $scope.selectedColor2,
+            sizeId: $scope.selectedSize2,
+            materialId: $scope.selectedMaterial2,
+            status: $scope.selectedStatus2,
+            page: page,
+            size: $scope.pageSize2,
+            searchTerm: $scope.searchTerm2
+        }
+    };
+    console.log(config);
+
+    $http.get(baseUrl + '/product-sales/fillProductSale', config)
+        .then(function(response) {
+            if (response.data.content.length === 0 && page > 0) {
+                $scope.filterProductSale(0);
+            } else {
+                // Update productSales with data from the response
+                $scope.productSales = response.data.content;
+                $scope.totalPages2 = response.data.totalPages;
+                $scope.currentPage2 = page;
+                console.log($scope.productSales);
+
+                // Get selected product sales from localStorage
+                var selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
+
+                // Mark product sales as selected based on localStorage data
+                $scope.productSales.forEach(function(productSale) {
+                    productSale.selected = selectedProductSales.some(function(selectedProductSale) {
+                        return selectedProductSale.id === productSale.id;
+                    });
+                });
+            }
+        }, function(error) {
+            console.error('Error fetching product sales:', error);
+        });
+};
+
+$scope.setCurrentPageProductSales2 = function(page) {
+    if (page >= 0 && page < $scope.totalPages2) {
+        $scope.filterProductSale(page);
     }
 };
 
+// Ensure selected product sales are saved to localStorage when toggled
+$scope.toggleProductSelection = function(productSale) {
+    let selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
 
-    $scope.deleteSelected = function() {
-        var selectedIds = $scope.productSales.filter(function(productSale) {
-            return productSale.selected;
-        }).map(function(productSale) {
-            return productSale.id;
+    if (productSale.selected) {
+        selectedProductSales.push(productSale);
+    } else {
+        selectedProductSales = selectedProductSales.filter(function(selectedProductSale) {
+            return selectedProductSale.id !== productSale.id;
         });
-            $http.post(baseUrl + '/product-sales/deleteList', selectedIds).then(function(response) {
-                $scope.productSales = $scope.productSales.filter(function(productSale) {
-                    return !selectedIds.includes(productSale.id);
-                });
-            }).catch(function(error) {
-                console.error('Error deleting selected product sales:', error);
+    }
+
+    localStorage.setItem('selectedProductSales', JSON.stringify(selectedProductSales));
+};
+
+// Initialize the filtering process
+$scope.filterProductSale(0);
+    
+// Xóa sản phẩm ra khỏi đợt giảm giá \
+   
+
+$scope.deleteSelected = function() {
+    // Step 1: Get all product sales
+    $scope.getAllProductSale().then(function(allProductSales) {
+        if (!allProductSales) return; // Kiểm tra xem allProductSales có giá trị không
+
+        // Step 2: Get selected product sale IDs from localStorage
+        var selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
+        var selectedIds = selectedProductSales.map(function(selectedProductSale) {
+            return selectedProductSale.id;
+        });
+
+        // Step 3: Send request to delete selected product sales
+        $http.post(baseUrl + '/product-sales/deleteList', selectedIds).then(function(response) {
+            // Step 4: Remove selected product sales from the product sales list on the client
+            $scope.productSales = $scope.productSales.filter(function(productSale) {
+                return !productSale.selected;
             });
-    };
+
+            // Step 5: Update the all product sales list on the client
+            $scope.allProductSales = $scope.allProductSales.filter(function(productSale) {
+                return !selectedIds.includes(productSale.id);
+            });
+        }).catch(function(error) {
+            console.error('Error deleting selected product sales:', error);
+        });
+    });
+};
+
+
+
+
+
 
     $scope.deleteAll = function() {
             $http.delete(baseUrl + '/product-sales/deleteAll').then(function(response) {

@@ -1,5 +1,6 @@
 <!-- Main content -->
-<div class="container-fluid px-4" ng-init="clearSelectedProducts()">
+<div class="container-fluid px-4" ng-init="clearSelectedProducts(); clearSelectedProductSales()">
+
     <div class="row">
         <!-- Form nhập thông tin đợt giảm giá -->
         <div class="col-lg-4 mb-4">
@@ -233,7 +234,7 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="productSale in productSales">
-                                <td><input type="checkbox" ng-model="productSale.selected"></td>
+                                <td><input type="checkbox" ng-model="productSale.selected" ng-change="toggleProductSaleSelection(productSale)"></td>
                                 <td>{{ productSale.product.code }}</td>
                                 <td>{{ productSale.product.name }}</td>
                                 <td></td>
