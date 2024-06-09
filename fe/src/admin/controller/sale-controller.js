@@ -1,6 +1,38 @@
 app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location', function($scope, $http, $routeParams, $location) {
 
+  // notify
 
+  toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": true,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+  }
+  
+  // Hàm hiển thị thông báo thành công
+  $scope.showSuccessNotification = function(message) {
+  toastr["success"](message);
+  };
+  
+  // Hàm hiển thị thông báo lỗi
+  $scope.showErrorNotification = function(message) {
+    toastr["error"](message);
+  };
+  
+  
+  $scope.showWarningNotification = function(message) {
+    toastr["warning"](message);
+  };
     
     var baseUrl = 'http://localhost:8080/api/admin/sales';
 
@@ -42,69 +74,66 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     //         });
     // };
 
+
     $scope.refreshData = function() {
         $scope.startDate = null;
         $scope.endDate = null;
         $scope.status = null;
+        $scope.discountType = null; // Reset discountType
         $scope.searchTerm = null;
         $scope.currentPage = 0;
-
+    
         $scope.getSalesByConditions(0);
     };
     
-
     $scope.startDate = null;
     $scope.endDate = null;
     $scope.status = null;
+    $scope.discountType = null; // Initialize discountType
     $scope.currentPage = 0;
     $scope.pageSize = 10;
-
-
-
-$scope.getSalesByConditions = function(page) {
-    if (page === undefined) {
-        page = $scope.currentPage;
-    }
-
-    var config = {
-        params: {
-            startDate: $scope.startDate,
-            endDate: $scope.endDate,
-            status: $scope.status,
-            searchTerm: $scope.searchTerm,
-            page: page,
-            size: $scope.pageSize
+    
+    $scope.getSalesByConditions = function(page) {
+        if (page === undefined) {
+            page = $scope.currentPage;
+        }
+    
+        var config = {
+            params: {
+                startDate: $scope.startDate,
+                endDate: $scope.endDate,
+                status: $scope.status,
+                discountType: $scope.discountType, 
+                searchTerm: $scope.searchTerm,
+                page: page,
+                size: $scope.pageSize
+            }
+        };
+        console.log(config);
+    
+        $http.get(baseUrl + '/fill', config)
+            .then(function(response) {
+                // Check if the response has data
+                if (response.data.content.length === 0 && page > 0) {
+                    $scope.getSalesByConditions(0);
+                } else {
+                    $scope.sales = response.data.content;
+                    $scope.totalPages = response.data.totalPages;
+                    $scope.currentPage = page;
+                }
+            }, function(error) {
+                console.error('Error fetching sales:', error);
+            });
+    };
+    
+    $scope.setCurrentPageSale = function(page) {
+        if (page >= 0 && page < $scope.totalPages) {
+            $scope.getSalesByConditions(page);
         }
     };
-    console.log(config);
-
-    $http.get(baseUrl + '/fill', config)
-        .then(function(response) {
-            // Check if the response has data
-            if (response.data.content.length === 0 && page > 0) {
-                // If no data is found and we are not on the first page, reset to first page
-                $scope.getSalesByConditions(0);
-            } else {
-                // Otherwise, update the sales data and pagination
-                $scope.sales = response.data.content;
-                $scope.totalPages = response.data.totalPages;
-                $scope.currentPage = page;
-                console.log($scope.sales);
-            }
-        }, function(error) {
-            console.error('Error fetching sales:', error);
-        });
-};
-
-$scope.setCurrentPageRateProduct = function(page) {
-    if (page >= 0 && page < $scope.totalPages) {
-        $scope.getSalesByConditions(page);
-    }
-};
-
     
+    $scope.getSalesByConditions(0); // Initial call to load data
     
-$scope.getSalesByConditions(0);
 
 
     // DÙng để xử lí các thuộc tính của sale
@@ -171,7 +200,11 @@ $scope.getSalesByConditions(0);
             .then(function(response) {
                 console.log('Sale saved successfully', response.data);
                 $('#saleModal').modal('hide');
+      $scope.showSuccessNotification("Thêm đợt giảm giá thành công");
+
             }, function(error) {
+      $scope.showErrorNotification("Thêm đợt giảm giá thất bại");
+
                 console.error('Error saving sale:', error);
             });
     };
@@ -316,75 +349,30 @@ $scope.getSalesByConditions(0);
             });
     };
 
-// Thêm sản phẩm  đợt giảm giá \
 
-    $scope.addSelectedProductSales = function() {
-        var selectedProducts = $scope.products.filter(function(product) {
-            return product.selected;
-        }).map(function(product) {
-            var sale =  $scope.saleDetail;
-            var discount = 0;
 
-            if (sale.discountType === 1) {
-                discount = sale.value;
-            } else if (sale.discountType === 2) {
-                discount = product.price * (sale.value / 100);
-            }
-            if (sale.maximumDiscountAmount && discount > sale.maximumDiscountAmount) {
-                discount = sale.maximumDiscountAmount;
-            }
-            var promotionalPrice = product.price - discount;
-            return {
-                product: product,
-                sale: sale,
-                promotionalPrice: promotionalPrice,
-                discountPrice: discount
-            };
-        });
-        if (selectedProducts.length > 0) {
-            $http.post(baseUrl + '/product-sales/addList', selectedProducts).then(function(response) {
-                response.data.forEach(function(newProductSale) {
-                    $scope.productSales.push(newProductSale);
-                });
-            }).catch(function(error) {
-                console.error('Error adding selected product sales:', error);
-            });
-        }
-    };
+
+
     
     // Thêm tất cả sản phẩm vào đợt giảm giá
 $scope.addAllProductSales = function() {
-    var allProducts = $scope.products.map(function(product) {
-        var sale = $scope.saleDetail;
-        var discount = 0;
-console.log(sale)
-        if (sale.discountType === 1) {
-            discount = sale.value;
-        } else if (sale.discountType === 2) {
-            discount = product.price * (sale.value / 100);
-        }
-        if (sale.maximumDiscountAmount && discount > sale.maximumDiscountAmount) {
-            discount = sale.maximumDiscountAmount;
-        }
-        var promotionalPrice = product.price - discount;
-        return {
-            product: product,
-            sale: sale,
-            promotionalPrice: promotionalPrice,
-            discountPrice: discount
-        };
-    });
+    var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.id;
 
-    if (allProducts.length > 0) {
-        $http.post(baseUrl + '/product-sales/addList', allProducts).then(function(response) {
+    $http.post(apiUrl)
+        .then(function(response) {
+            // Clear the existing product sales if you want to replace them
+            $scope.productSales = [];
+            
+            // Add the newly returned product sales to the scope
             response.data.forEach(function(newProductSale) {
                 $scope.productSales.push(newProductSale);
             });
-        }).catch(function(error) {
+        })
+        .catch(function(error) {
             console.error('Error adding all product sales:', error);
         });
-    }
 };
+
 
     
 
@@ -471,6 +459,92 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/admin/infoProduct';
     $scope.getAllCollars();
     $scope.getAllBrands();
 
+    
+// Function to calculate discount
+function calculateDiscount(sale, product) {
+    console.log(discount)
+    
+        var discount = 0;
+        if (sale.discountType === 1) {
+            discount = sale.value;
+        } else if (sale.discountType === 2) {
+            discount = product.price * (sale.value / 100);
+        }
+        if (sale.maximumDiscountAmount && discount > sale.maximumDiscountAmount) {
+            discount = sale.maximumDiscountAmount;
+        }
+        return discount;
+    }
+
+    // Thêm sản phẩm  đợt giảm giá \
+
+    $scope.getAllProduct = function() {
+        return $http.get('http://localhost:8080/api/admin/sales/products')
+            .then(function(response) {
+                return response.data;
+            })
+            .catch(function(error) {
+                console.error('Error fetching products:', error);
+            });
+    };
+    
+    $scope.addSelectedProductSales = function() {
+        var sale = $scope.saleDetail;
+        $scope.getAllProduct().then(function(allProducts) {
+            var selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+            var selectedProductsFromAll = allProducts.filter(function(product) {
+                return selectedProducts.some(function(selectedProduct) {
+                    return selectedProduct.id === product.id;
+                });
+            }).map(function(product) {
+                var discount = calculateDiscount(sale, product);
+                var promotionalPrice = product.price - discount;
+                console.log(discount)
+                return {
+                    product: product,
+                    sale: sale,
+                    promotionalPrice: promotionalPrice,
+                    discountPrice: discount
+                };
+            });
+    
+            if (selectedProductsFromAll.length > 0) {
+                $http.post(baseUrl + '/product-sales/addList', selectedProductsFromAll).then(function(response) {
+                    response.data.forEach(function(newProductSale) {
+                        $scope.productSales.push(newProductSale);
+                    });
+                }).catch(function(error) {
+                    console.error('Error adding selected product sales:', error);
+                });
+            }
+        });
+    };
+    
+    if (!localStorage.getItem('selectedProducts')) {
+        localStorage.setItem('selectedProducts', JSON.stringify([]));
+    }
+    
+    $scope.clearSelectedProducts = function() {
+        localStorage.removeItem('selectedProducts');
+    };
+    
+    $scope.toggleProductSelection = function(product) {
+        let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+    
+        if (product.selected) {
+            // Add product to selectedProducts if it is selected
+            selectedProducts.push(product);
+        } else {
+            // Remove product from selectedProducts if it is unselected
+            selectedProducts = selectedProducts.filter(function(selectedProduct) {
+                return selectedProduct.id !== product.id;
+            });
+        }
+    
+        localStorage.setItem('selectedProducts', JSON.stringify(selectedProducts));
+    };
+    
+
     $scope.refreshDataProduct = function() {
         $scope.selectedCategory = null;
         $scope.selectedCollar = null;
@@ -513,24 +587,35 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/admin/infoProduct';
     
         $http.get('http://localhost:8080/api/admin/sales/products/filter', config)
             .then(function(response) {
-                // Check if the response has data
                 if (response.data.content.length === 0 && page > 0) {
-                    // If no data is found and we are not on the first page, reset to first page
                     $scope.filterProducts(0);
                 } else {
-                    // Otherwise, update the products data and pagination
                     $scope.products = response.data.content;
                     $scope.totalPages = response.data.totalPages;
                     $scope.currentPage = page;
+    
+                    // Update the selected state based on selectedProducts in local storage
+                    let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+    
+                    $scope.products.forEach(function(product) {
+                        var selectedProduct = selectedProducts.find(function(selectedProduct) {
+                            return selectedProduct.id === product.id;
+                        });
+                        product.selected = !!selectedProduct;
+                    });
+    
                     console.log($scope.products);
                 }
             }, function(error) {
                 console.error('Error fetching products:', error);
             });
     };
+    
 
 
     $scope.setCurrentPageRateProduct = function(page) {
+        console.log(page)
+        console.log($scope.totalPages)
         if (page >= 0 && page < $scope.totalPages) {
             $scope.filterProducts(page);
         }

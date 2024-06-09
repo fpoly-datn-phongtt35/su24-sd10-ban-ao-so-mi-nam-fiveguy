@@ -1,7 +1,11 @@
 package com.example.demo.service.sale.serviceImpl;
 
+import com.example.demo.entity.Product;
+import com.example.demo.entity.ProductSale;
 import com.example.demo.entity.Sale;
+import com.example.demo.repository.sale.ProductSaleRepository;
 import com.example.demo.repository.sale.SaleRepository;
+import com.example.demo.service.sale.ProductSaleService;
 import com.example.demo.service.sale.SaleService;
 import com.example.demo.untility.SaleSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +24,44 @@ public class SaleServiceImpl implements SaleService {
     @Autowired
     private SaleRepository saleRepository;
 
+    @Autowired
+    private ProductSaleRepository productSaleRepository;
+
+    private void updateProductSales(Sale sale) {
+        List<ProductSale> productSales = productSaleRepository.findBySaleId(sale.getId());
+
+        for (ProductSale productSale : productSales) {
+            Product product = productSale.getProduct();
+            int discount = 0;
+
+            if (sale.getDiscountType() == 1) {
+                discount = sale.getValue();
+            } else if (sale.getDiscountType() == 2) {
+                discount = product.getPrice().intValue() * sale.getValue() / 100;
+            }
+
+            if (sale.getMaximumDiscountAmount() != null && discount > sale.getMaximumDiscountAmount()) {
+                discount = sale.getMaximumDiscountAmount();
+            }
+
+            int promotionalPrice = product.getPrice().intValue() - discount;
+
+            productSale.setPromotionalPrice(promotionalPrice);
+            productSale.setDiscountPrice(discount);
+        }
+
+        productSaleRepository.saveAll(productSales);
+    }
+
+
+
+
     @Override
     public Sale saveSale(Sale sale) {
         Date now = new Date();
-        if (sale.getId() == null) {
+        boolean isNewSale = sale.getId() == null;
+
+        if (isNewSale) {
             sale.setCreatedAt(now); // Đặt ngày tạo mới
             Date startDate = sale.getStartDate();
 
@@ -33,11 +71,21 @@ public class SaleServiceImpl implements SaleService {
                 sale.setStatus(1); // Đang hoạt động
             }
         } else {
+            Sale existingSale = saleRepository.findById(sale.getId()).orElseThrow(() -> new RuntimeException("Sale not found"));
+//            sale.setCreatedAt(existingSale.getCreatedAt()); // Preserve the original created date
             sale.setUpdatedAt(now); // Cập nhật ngày cập nhật
+
+            // Check if any of the relevant fields have changed
+            if (!existingSale.getValue().equals(sale.getValue()) ||
+                    !existingSale.getDiscountType().equals(sale.getDiscountType()) ||
+                    !existingSale.getMaximumDiscountAmount().equals(sale.getMaximumDiscountAmount())) {
+                updateProductSales(sale);
+            }
         }
 
         return saleRepository.save(sale);
     }
+
 
 
 
@@ -75,7 +123,7 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public Page<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status, String searchTerm, Pageable pageable) {
+    public Page<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status, String searchTerm, Integer discountType, Pageable pageable) {
         Specification<Sale> spec = Specification.where(null);
 
         if (startDate != null || endDate != null) {
@@ -90,8 +138,13 @@ public class SaleServiceImpl implements SaleService {
             spec = spec.and(SaleSpecifications.containsSearchTerm(searchTerm));
         }
 
+        if (discountType != null) {
+            spec = spec.and(SaleSpecifications.hasDiscountType(discountType));
+        }
+
         return saleRepository.findAll(spec, pageable);
     }
+
 
 
 }

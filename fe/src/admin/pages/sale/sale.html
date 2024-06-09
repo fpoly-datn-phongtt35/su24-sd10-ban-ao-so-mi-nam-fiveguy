@@ -57,8 +57,8 @@
                                 <div class="form-group">
                                     <label for="discountType" class="form-label">Loại giảm giá</label>
                                     <select class="form-control" id="discountType" ng-model="saleDetail.discountType" required>
-                                        <option value="1">Giảm giá phần trăm</option>
-                                        <option value="2">Giảm giá cố định</option>
+                                        <option value="1">Giảm giá cố định</option>
+                                        <option value="2">Giảm giá phần trăm</option>
                                         <option value="3">Mua 1 tặng 1</option>
                                         <option value="4">Combo sản phẩm</option>
                                     </select>
@@ -127,12 +127,22 @@
     <div class="col-sm-3">
         <label>Trạng thái:</label>
         <select class="form-control" ng-model="status" ng-change="getSalesByConditions()">
+            <option value="" selected>Chọn trạng thái</option>
             <option value="2">Sắp bắt đầu</option>
             <option value="1">Đang hoạt động</option>
             <option value="3">Hết hạn</option>
             <option value="4">Dừng hoạt động</option>
         </select>
     </div>
+    <div class="col-sm-3">
+        <label>Loại giảm giá:</label>
+        <select class="form-control" ng-model="discountType" ng-change="getSalesByConditions()">
+            <option value="" selected>Chọn loại giảm giá</option>
+            <option value="1">Giảm giá theo giá</option>
+            <option value="2">Giảm giá theo phần trăm</option>
+        </select>
+    </div>
+    
     <div class="col-sm-3">
         <button class="btn btn-primary" ng-click="refreshData()">Làm mới</button>
     </div>
@@ -149,6 +159,8 @@
                             <tr>
                                 <th>Tên</th>
                                 <th>Mã</th>
+                                <th>Giá trị</th>
+                                <th>Loại</th>
                                 <th>Thời gian bắt đầu</th>
                                 <th>Thời gian kết thúc</th>
                                 <th>Trạng thái</th>
@@ -159,6 +171,8 @@
                             <tr ng-repeat="sale in sales">
                                 <td>{{ sale.name }}</td>
                                 <td>{{ sale.code }}</td>
+                                <td>{{ sale.value }}</td>
+                                <td>{{ sale.discountType }}</td>
                                 <td>{{ sale.startDate | date:'dd/MM/yyyy h:mm a' }}</td>
                                 <td>{{ sale.endDate | date:'dd/MM/yyyy h:mm a' }}</td>
                                 
@@ -178,12 +192,12 @@
                     <div class="col-md-12" ng-if="totalPages > 1">
                         <ul class="pagination">
                             <li ng-class="{disabled: currentPage === 0}">
-                                <a href="" ng-click="setCurrentPageRateProduct(0)">
+                                <a href="" ng-click="setCurrentPageSale(0)">
                                     First
                                 </a>
                             </li>
                             <li ng-class="{disabled: currentPage === 0}">
-                                <a href="" ng-click="setCurrentPageRateProduct(currentPage - 1)">
+                                <a href="" ng-click="setCurrentPageSale(currentPage - 1)">
                                     Previous
                                 </a>
                             </li>
@@ -191,12 +205,12 @@
                             {{ currentPage + 1 }}
                 
                             <li ng-class="{disabled: currentPage === totalPages - 1}">
-                                <a href="" ng-click="setCurrentPageRateProduct(currentPage + 1)">
+                                <a href="" ng-click="setCurrentPageSale(currentPage + 1)">
                                     Next
                                 </a>
                             </li>
                             <li ng-class="{disabled: currentPage === totalPages - 1}">
-                                <a href="" ng-click="setCurrentPageRateProduct(totalPages - 1)">
+                                <a href="" ng-click="setCurrentPageSale(totalPages - 1)">
                                     Last
                                 </a>
                             </li>

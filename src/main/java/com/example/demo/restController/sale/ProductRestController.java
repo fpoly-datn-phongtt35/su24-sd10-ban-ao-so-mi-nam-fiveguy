@@ -18,7 +18,7 @@ public class ProductRestController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/without-sale-or-expired-promotion")
+    @GetMapping("")
     public ResponseEntity<List<Product>> getProductsWithoutSaleOrExpiredPromotion() {
         List<Product> products = productService.getProductsWithoutSaleOrExpiredPromotion();
         return ResponseEntity.ok(products);

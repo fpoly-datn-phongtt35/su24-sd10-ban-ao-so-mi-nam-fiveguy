@@ -28,5 +28,12 @@ public class SaleSpecifications {
             );
         };
     }
+
+    public static Specification<Sale> hasDiscountType(Integer discountType) {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.equal(root.get("discountType"), discountType);
+        };
+    }
 }
+
 

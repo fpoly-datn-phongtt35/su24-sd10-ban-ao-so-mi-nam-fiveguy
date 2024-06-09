@@ -17,5 +17,5 @@ public interface SaleService {
     Long countUpcomingSales();
     Long countExpiredSales();
 //    List<Sale> searchByCodeNameValue(String searchTerm);
-    Page<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status , String searchTerm, Pageable pageable);
+    Page<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status , String searchTerm,Integer discountTyp, Pageable pageable);
 }

@@ -3,7 +3,6 @@ package com.example.demo.service.sale.serviceImpl;
 import com.example.demo.entity.Product;
 import com.example.demo.repository.sale.ProductRepository;
 import com.example.demo.service.sale.ProductService;
-import com.example.demo.untility.ProductSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,7 +42,8 @@ public class ProductServiceImpl implements ProductService {
                         (colorId == null || product.getProductDetails().stream().anyMatch(pd -> pd.getColor().getId().equals(colorId))) &&
                         (sizeId == null || product.getProductDetails().stream().anyMatch(pd -> pd.getSize().getId().equals(sizeId))) &&
                         (materialId == null || product.getMaterial().getId().equals(materialId)) &&
-                        (searchTerm == null || product.getName().toLowerCase().contains(searchTerm.toLowerCase())) &&
+                        (searchTerm == null || product.getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                product.getCode().toLowerCase().contains(searchTerm.toLowerCase())) &&
                         product.getStatus().equals(1)) // Assuming the status filter
                 .collect(Collectors.toList());
 
@@ -53,4 +53,5 @@ public class ProductServiceImpl implements ProductService {
 
         return new PageImpl<>(output, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")), filteredProducts.size());
     }
+
 }

@@ -63,9 +63,9 @@ public class ProductSaleRestController {
         return ResponseEntity.ok(savedProductSales);
     }
 
-    @PostMapping("/addAll")
+    @PostMapping("/addAll/{id}")
     public ResponseEntity<List<ProductSale>> addAllProductSales(@PathVariable Long id) {
-        List<ProductSale> savedProductSales = productService.addAllProductsWithSale(productSales);
+        List<ProductSale> savedProductSales = productSaleService.addAllProductSales(id);
         return ResponseEntity.ok(savedProductSales);
     }
 

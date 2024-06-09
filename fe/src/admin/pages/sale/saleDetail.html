@@ -1,5 +1,5 @@
 <!-- Main content -->
-<div class="container-fluid px-4" ng-init=" ">
+<div class="container-fluid px-4" ng-init="clearSelectedProducts()">
     <div class="row">
         <!-- Form nhập thông tin đợt giảm giá -->
         <div class="col-lg-4 mb-4">
@@ -35,8 +35,8 @@
                             <div class="col-md-6">
                                 <label for="discountType" class="form-label">Loại giảm giá</label>
                                 <select class="form-select" id="discountType" ng-model="saleDetail.discountType" required>
-                                    <option value="1" ng-selected="saleDetail.discountType == 1">Giảm giá phần trăm</option>
-                                    <option value="2" ng-selected="saleDetail.discountType == 2">Giảm giá cố định</option>
+                                    <option value="1" ng-selected="saleDetail.discountType == 1">Giảm giá cố định</option>
+                                    <option value="2" ng-selected="saleDetail.discountType == 2">Giảm giá phần trăm</option>
                                     <option value="3" ng-selected="saleDetail.discountType == 3">Mua 1 tặng 1</option>
                                     <option value="4" ng-selected="saleDetail.discountType == 4">Combo sản phẩm</option>
                                 </select>
@@ -131,12 +131,15 @@
                             </thead>
                             <tbody id="mergedProducts">
                                 <tr ng-repeat="product in products">
-                                    <td><input type="checkbox" ng-model="product.selected"></td>
+                                    <td><input type="checkbox" ng-model="product.selected" ng-change="toggleProductSelection(product)"></td>
+
+                                    <td>{{ product.selected }}</td>
                                     <td>{{ product.code }}</td>
                                     <td>{{ product.name }}</td>
                                     <td></td>
                                     <td>{{ product.price | currency:'VND' }}</td>
                                 </tr>
+                                
                             </tbody>
                         </table>
                         <button type="button" class="btn btn-primary" ng-click="addSelectedProductSales()">Thêm sản phẩm đã chọn</button>

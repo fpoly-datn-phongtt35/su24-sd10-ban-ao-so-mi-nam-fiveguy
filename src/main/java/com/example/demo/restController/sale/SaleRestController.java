@@ -78,6 +78,7 @@ public class SaleRestController {
             @RequestParam(required = false) String endDate,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = false) String searchTerm,
+            @RequestParam(required = false) Integer discountType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Date parsedStartDate = null;
@@ -97,8 +98,11 @@ public class SaleRestController {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return saleService.findSalesByConditions(parsedStartDate, parsedEndDate, status, searchTerm, pageable);
+        Page<Sale> result = saleService.findSalesByConditions(parsedStartDate, parsedEndDate, status, searchTerm, discountType, pageable);
+        return result;
     }
+
+
 
 
 
