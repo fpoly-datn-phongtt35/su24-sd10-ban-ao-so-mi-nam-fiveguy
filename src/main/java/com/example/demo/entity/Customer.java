@@ -23,6 +23,9 @@ public class Customer {
     @Column(name = "Id")
     private Long id;
 
+    @Column(name= "Code")
+    private String code;
+
     @Column(name = "FullName", columnDefinition = "nvarchar(300)")
     private String fullName;
 
@@ -59,7 +62,8 @@ public class Customer {
     @OneToMany(mappedBy = "customer")
     private List<Bill> bills;
 
-    @OneToOne(mappedBy = "customer")
+    @ManyToOne
+    @JoinColumn(name = "IdAccount", referencedColumnName = "Id")
     private Account account;
 
     @ManyToOne
