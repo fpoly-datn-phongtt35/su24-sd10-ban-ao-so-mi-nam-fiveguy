@@ -6,7 +6,10 @@ import com.example.demo.repository.nguyen.VoucherSpecification;
 import com.example.demo.service.nguyen.VoucherService;
 //import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
@@ -25,21 +28,20 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public List<Voucher> getAllVoucher() {
-        updateStatus();
+//        updateStatus();
 
         return voucherRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
     public Voucher getVoucherById(Long id) {
-        updateStatus();
+//        updateStatus();
 
         return voucherRepository.findById(id).get();
     }
 
     @Override
     public Voucher createVoucher(Voucher voucher) {
-        voucher.setNumberOfUses(1);
         voucher.setCreatedAt(new Date());
         voucher.setCreatedBy("Admin add");
         voucher.setUpdatedAt(new Date());
@@ -99,6 +101,11 @@ public class VoucherServiceImpl implements VoucherService {
         }
     }
 
+    @Scheduled(fixedRate = 60000)
+    public void autoUpdateStatus(){
+        updateStatus();
+    }
+
     @Override
     public Page<Voucher> findVouchers(String name, String code, Integer discountType, Date startDate, Date endDate, Integer status, Pageable pageable) {
         Specification<Voucher> spec = Specification.where(VoucherSpecification.hasName(name))
@@ -107,6 +114,8 @@ public class VoucherServiceImpl implements VoucherService {
                 .and(VoucherSpecification.hasStartDate(startDate))
                 .and(VoucherSpecification.hasEndDate(endDate))
                 .and(VoucherSpecification.hasStatus(status));
-        return voucherRepository.findAll(spec, pageable);
+
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.desc("CreatedAt")));
+        return voucherRepository.findAll(spec, sortedPageable);
     }
 }

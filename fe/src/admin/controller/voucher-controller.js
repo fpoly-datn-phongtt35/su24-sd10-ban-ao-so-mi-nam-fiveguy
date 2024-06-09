@@ -55,7 +55,9 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
         $http.post(apiVoucher + "/save", data).then(function (res) {
             $('#addVoucherModal').modal('hide');
-            $scope.getAllVoucher()
+            // $scope.getAllVoucher()
+
+            $scope.getVouchers(0);
         })
 
         $scope.resetFormAdd()
@@ -133,7 +135,9 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         let data = angular.copy($scope.formUpdateVoucher)
         console.log(data);
         $http.put(apiVoucher + "/update/" + id, data).then(function (res) {
-            $scope.getAllVoucher()
+            // $scope.getAllVoucher()
+            
+            $scope.getVouchers(0);
         })
     }
 
@@ -149,4 +153,68 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     $scope.resetFormUpdate = function () {
         $scope.formUpdateVoucher = {}
     }
+
+    $scope.filterVoucher = function () {
+        $http.get(apiVoucher + "/all").then(function (res) {
+            $scope.vouchers = res.data;
+        })
+    }
+
+    $scope.filtervouchers = [];
+    $scope.totalPages = 0;
+    $scope.currentPage = 0;
+    $scope.desiredPage = 1;
+    $scope.filters = {
+        name: null,
+        code: null,
+        discountType: null,
+        startDate: null,
+        endDate: null,
+        status: null
+    };
+
+    $scope.getVouchers = function (pageNumber) {
+        // let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+        // $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function(response) {
+        //     $scope.filtervouchers = response.data.content;
+        //     $scope.totalPages = response.data.totalPages;
+        //     $scope.currentPage = pageNumber;
+        // });
+        let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+        $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function (response) {
+            $scope.filtervouchers = response.data.content;
+            $scope.totalPages = response.data.totalPages;
+            $scope.currentPage = pageNumber;
+            $scope.desiredPage = pageNumber + 1;
+        });
+    };
+
+    $scope.applyFilters = function () {
+        $scope.getVouchers(0);
+    };
+
+    $scope.goToPage = function () {
+        let pageNumber = $scope.desiredPage - 1;
+        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+            $scope.getVouchers(pageNumber);
+        } else {
+            // Reset desiredPage to currentPage if the input is invalid
+            $scope.desiredPage = $scope.currentPage + 1;
+        }
+    };
+    // Initial load
+    $scope.getVouchers(0);
+
+    $scope.resetFilters = function () {
+        $scope.filters = {
+            name: null,
+            code: null,
+            discountType: null,
+            startDate: null,
+            endDate: null,
+            status: null
+        };
+        $scope.getVouchers(0);
+    }
+
 });

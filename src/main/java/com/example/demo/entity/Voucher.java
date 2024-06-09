@@ -50,9 +50,11 @@ public class Voucher {
     @Column(name = "Describe", columnDefinition = "nvarchar(max)")
     private String describe;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "StartDate")
     private Date startDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "EndDate")
     private Date endDate;
 

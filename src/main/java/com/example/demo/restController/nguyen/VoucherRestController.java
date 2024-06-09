@@ -50,7 +50,7 @@ public class VoucherRestController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date endDate,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber, 5);
+        Pageable pageable = PageRequest.of(pageNumber, 4);
         Page<Voucher> page = voucherService.findVouchers(name, code, discountType, startDate, endDate, status, pageable);
         return new PaginationResponse<>(page);
     }
