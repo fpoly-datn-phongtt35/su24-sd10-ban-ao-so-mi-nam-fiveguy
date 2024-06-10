@@ -50,11 +50,11 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
     }
     $scope.getAll = function () {
         $http.get(apiCustomer).then(function (resp) {
-          $scope.employee = resp.data;
-          //   $scope.employee = angular.copy($scope.originalEmployee);
+            $scope.employee = resp.data;
+            //   $scope.employee = angular.copy($scope.originalEmployee);
         });
-      }; 
-      $scope.getAll();
+    };
+    $scope.getAll();
 
     let allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
     $scope.showErrorImg = function (message) {
@@ -198,32 +198,32 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
         console.log("Đây lèm thêm NV");
         let items = angular.copy($scope.formInput);
         $http
-          .post(apiCustomer, items)
-          .then(function (response) {
-            console.log(response);
-            $scope.getAll();
-            $("#modalAdd").modal("hide");
-          })
-          .catch(function () {
-            console.log("Error", error);
-          });
-      };
+            .post(apiCustomer, items)
+            .then(function (response) {
+                console.log(response);
+                $scope.getAll();
+                $("#modalAdd").modal("hide");
+            })
+            .catch(function () {
+                console.log("Error", error);
+            });
+    };
     $scope.suakhachhang = function () {
         // console.log("Đây lèm thêm NV");
         let item = angular.copy($scope.formUpdate);
-    
+
         $http
-          .put(apiCustomer + `/${item.id}`, item)
-          .then(function (response) {
-            console.log(response);
-    
-            $scope.getAll();
-            $("#modalUpdate").modal("hide");
-          })
-          .catch(function () {
-            console.log("Error", error);
-          });
-      };
+            .put(apiCustomer + `/${item.id}`, item)
+            .then(function (response) {
+                console.log(response);
+
+                $scope.getAll();
+                $("#modalUpdate").modal("hide");
+            })
+            .catch(function () {
+                console.log("Error", error);
+            });
+    };
     $scope.createKA = function () {
         let fileInput = document.getElementById("image");
         if (fileInput.files.length > 0) {
@@ -287,6 +287,7 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
             $scope.showErrorImg("Please upload file");
         }
     };
+
 
     $scope.loadCustomerTypes = function () {
         const apiCustomerType = "http://localhost:8080/api/admin/customerType";
@@ -367,7 +368,7 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
         $http
             .put(apiCustomer + "/status" + `/${item.id}`, item)
             .then(function (resp) {
-                
+
                 $scope.getAll();
             })
             .catch(function (error) {

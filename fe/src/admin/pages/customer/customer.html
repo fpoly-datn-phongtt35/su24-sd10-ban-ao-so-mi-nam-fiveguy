@@ -83,8 +83,8 @@
                                     ng-click="edit(customer)">
                                     <i class="material-icons" title="Edit">&#xE254;</i>
                                 </a>
-                                <a type="button" class="btn" data-bs-toggle="modal"
-                                    data-bs-target="" ng-click="delete(customer)">
+                                <a type="button" class="btn" data-bs-toggle="modal" data-bs-target=""
+                                    ng-click="delete(customer)">
                                     <i class="material-icons" title="Delete">&#xE872;</i>
                                 </a>
                             </td>
@@ -134,7 +134,7 @@
                     <div class="modal-body row">
                         <div class="col-lg-3">
                             <label for="image">
-                                <img src="/fe/src/admin/common/img/no-img.png" id="image-preview"
+                                <img src="/assets/img/no-img.png" id="image-preview"
                                     style="width: 100px; height: 100px" />
                             </label>
                         </div>
@@ -153,12 +153,12 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="image" class="col-sm-3 col-form-label">Ảnh</label>
+                                <label for="image" class="col-sm-3 col-form-label">Hình Ảnh</label>
                                 <div class="col-sm-9">
                                     <input class="form-control" name="path" type="file" id="image" />
-                                    <!-- <span ng-if="showError" class="error-message text-danger form-text">
-                                    {{alertErrorImg}}
-                                </span> -->
+                                    <span ng-if="showError" class="error-message text-danger form-text">
+                                        {{alertErrorImg}}
+                                    </span>
                                 </div>
                             </div>
 
@@ -304,7 +304,8 @@
                         <div class="col-lg-3">
                             <!-- <h1>Avatar</h1> -->
                             <label for="image">
-                                <img src="/fe/src/admin/common/img/no-img.png" id="image-preview"
+                                <img id="image-preview-update"
+                                    ng-src="{{formUpdate.avatar ? formUpdate.avatar : '/assets/img/no-img.png'}}"
                                     style="width: 100px; height: 100px" />
                             </label>
                         </div>
