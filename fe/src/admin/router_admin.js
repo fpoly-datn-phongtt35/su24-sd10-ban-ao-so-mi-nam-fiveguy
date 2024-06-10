@@ -11,6 +11,7 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Tịnh -->
     .when("/admin/employee", {
       templateUrl: "pages/employee/employee.html",
+      controller: "tinh-employee-controller",
     })
     // <!-- Thưởng -->
     .when("/admin/product", {

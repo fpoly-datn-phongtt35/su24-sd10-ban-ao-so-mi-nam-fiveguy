@@ -1,31 +1,26 @@
-package com.example.demo.restController;
+package com.example.demo.restController.tinh;
 
 //import com.example.demo.entity.AccountEntity
+
 import com.example.demo.entity.Employee;
-//import com.example.demo.model.request.employee.EmployeeRequest;
-import com.example.demo.repository.EmployeeRepository;
-//import com.example.demo.service.AccountService;
-import com.example.demo.service.EmployeeService;
-//import org.apache.poi.ss.usermodel.*;
-//import org.apache.poi.xssf.usermodel.XSSFRow;
-//import org.apache.poi.xssf.usermodel.XSSFSheet;
-//import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.example.demo.repository.tinh.EmployeeRepository;
+import com.example.demo.service.tinh.EmployeeService;
+import com.example.demo.untility.tinh.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/employee")
+@RequestMapping("/api/admin/employee")
 public class EmployeeRestController {
     @Autowired
     EmployeeService employeeService;
@@ -63,16 +58,11 @@ public class EmployeeRestController {
     }
 
 
-    @GetMapping("/get-page")
-    public ResponseEntity<Page<Employee>> phantrang(@RequestParam(defaultValue = "0", name = "page") Integer t) {
-        Page<Employee> employee = employeeService.phanTrang(t, 5);
 
-        return ResponseEntity.ok(employee);
-    }
-     @PutMapping("/update-status-nhan-vien/{id}")
-     public void updateStatus(@PathVariable Long id){
+    @PutMapping("/update-status-nhan-vien/{id}")
+    public void updateStatus(@PathVariable Long id){
         employeeRepository.updateStatusEmployee(id);
-     }
+    }
 
 
     //Thêm Employee
@@ -114,6 +104,23 @@ public class EmployeeRestController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @GetMapping("/page")
+    public PaginationResponse<Employee> getEmployees(
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String avatar,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date birthDate,
+            @RequestParam(required = false) Boolean gender,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String account,
+            @RequestParam(required = false) Integer status,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "5") int size,
+//            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 5);
+        Page<Employee> page = employeeService.findEmployee(fullName, code, avatar, birthDate, gender, address, account, status, pageable);
+        return new PaginationResponse<>(page);
+    }
 
 }

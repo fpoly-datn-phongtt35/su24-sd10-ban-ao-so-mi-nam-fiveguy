@@ -13,11 +13,15 @@
     />
     <title>Dasboard</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="common/static/css/bootstrap.min.css" />
-    <!----css3---->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <!----css---->
     <link rel="stylesheet" href="common/static/css/custom.css" />
 
-<<<<<<< HEAD
     <!--google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,18 +29,6 @@
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-=======
-<head>
-	<!-- Required meta tags -->
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
-	<title>Dasboard</title>
-	<!-- Bootstrap CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-	<!----css---->
-	<link rel="stylesheet" href="common/static/css/custom.css" />
->>>>>>> e1735ab6987e4001271ac3c40678af98a5e8c289
 
     <!--google material icon-->
     <link
@@ -47,32 +39,30 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
 
+    <!-- toastr -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"
+      rel="stylesheet"
+    />
+
     <!-- End AngularJS -->
+
+    <!-- Thư viện muốn thêm riêng phần của mn  -->
+
+    <!-- Hiếu -->
+
+    <!-- Thưởng -->
+
+    <!-- Tịnh -->
+
+    <!-- Nguyên -->
+
+    <!-- Hải -->
   </head>
 
-<<<<<<< HEAD
   <body ng-app="appAdmin">
     <div class="wrapper">
       <div class="body-overlay"></div>
-=======
-	  <!-- toastr -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
-
-	<!-- End AngularJS -->
-
-	<!-- Thư viện muốn thêm riêng phần của mn  -->
-	 
-	<!-- Hiếu -->
-
-	<!-- Thưởng -->
-
-	<!-- Tịnh -->
-
-	<!-- Nguyên -->
-
-	<!-- Hải -->
-</head>
->>>>>>> e1735ab6987e4001271ac3c40678af98a5e8c289
 
       <!-------sidebar--design------------>
 
@@ -93,11 +83,12 @@
 
           <li class="dropdown">
             <a
-              data-target="#product"
-              data-toggle="collapse"
+              data-bs-toggle="collapse"
+              href="#product"
+              role="button"
               aria-expanded="false"
+              aria-controls="product"
               class="dropdown-toggle"
-              style="cursor: pointer"
             >
               <i class="material-icons">style</i>Quản Lý Sản Phẩm
             </a>
@@ -112,12 +103,13 @@
             </ul>
           </li>
 
-<<<<<<< HEAD
           <li class="dropdown">
             <a
-              data-target="#voucher"
-              data-toggle="collapse"
+              data-bs-toggle="collapse"
+              href="#voucher"
+              role="button"
               aria-expanded="false"
+              aria-controls="voucher"
               class="dropdown-toggle"
             >
               <i class="material-icons">monetization_on</i>Giảm Giá
@@ -129,9 +121,11 @@
           </li>
           <li class="dropdown">
             <a
-              data-target="#bill"
-              data-toggle="collapse"
+              data-bs-toggle="collapse"
+              href="#bill"
+              role="button"
               aria-expanded="false"
+              aria-controls="bill"
               class="dropdown-toggle"
             >
               <i class="material-icons">receipt</i>Quản lý đơn hàng
@@ -171,58 +165,6 @@
                   >
                 </div>
               </div>
-=======
-
-				<li class="dropdown">
-					<a data-bs-toggle="collapse" href="#product" role="button" aria-expanded="false" aria-controls="product"
-						class="dropdown-toggle">
-						<i class="material-icons">style</i>Quản Lý Sản Phẩm
-					</a>
-					<ul class="collapse list-unstyled menu" id="product">
-						<li><a href="#/admin/product">Sản Phẩm</a></li>
-						<li ui-sref-active="active">
-							<a ui-sref="category">Nhóm Sản Phẩm</a>
-						</li>
-						<li><a href="#/admin/wrist">Cổ Áo</a></li>
-						<li><a href="#/admin/collar">Cổ Tay</a></li>
-						<li><a href="#/admin/material">Chất Liệu</a></li>
-					</ul>
-				</li>
-
-				<li class="dropdown">
-					<a data-bs-toggle="collapse" href="#voucher" role="button" aria-expanded="false" aria-controls="voucher"
-						class="dropdown-toggle">
-						<i class="material-icons">monetization_on</i>Giảm Giá
-					</a>
-					<ul class="collapse list-unstyled menu" id="voucher">
-						<li><a href="#/admin/sale">Đợt Giảm Giá</a></li>
-						<li><a href="#/admin/voucher">Phiếu Giảm Giá</a></li>
-					</ul>
-				</li>
-				<li class="dropdown">
-					<a data-bs-toggle="collapse" href="#bill" role="button" aria-expanded="false" aria-controls="bill"
-						class="dropdown-toggle">
-						<i class="material-icons">receipt</i>Quản lý đơn hàng
-					</a>
-					<ul class="collapse list-unstyled menu" id="bill">
-						<li><a href="#">Pages 1</a></li>
-						<li><a href="#">Pages 2</a></li>
-						<li><a href="#">Pages 3</a></li>
-					</ul>
-				</li>
-				<li class="">
-					<a href="#/admin/staff" class=""><i class="material-icons">groups</i>Nhân Viên
-					</a>
-				</li>
-				<li class="">
-					<a href="#/admin/customer" class=""><i class="material-icons">person</i>Khách Hàng
-					</a>
-				</li>
-			</ul>
-		</div>
-		<!-------sidebar--design- close----------->
-		<!-------page-content start----------->
->>>>>>> e1735ab6987e4001271ac3c40678af98a5e8c289
 
               <div class="col-md-5 col-lg-3 order-3 order-md-2">
                 <div class="xp-searchbar">
@@ -244,49 +186,46 @@
               </div>
 
               <div class="col-10 col-md-6 col-lg-8 order-1 order-md-3">
-                <div class="xp-profilebar text-right">
+                <div class="xp-profilebar text-end">
                   <nav class="navbar p-0">
-                    <ul class="nav navbar-nav flex-row ml-auto">
+                    <ul class="nav navbar-nav flex-row ms-auto">
                       <li class="dropdown nav-item active">
-                        <a class="nav-link" href="#" data-toggle="dropdown">
+                        <a class="nav-link" href="#" data-bs-toggle="dropdown">
                           <span class="material-icons">notifications</span>
                           <span class="notification">4</span>
                         </a>
                         <ul class="dropdown-menu">
-                          <li><a href="#">You Have 4 New Messages</a></li>
-                          <li><a href="#">You Have 4 New Messages</a></li>
-                          <li><a href="#">You Have 4 New Messages</a></li>
-                          <li><a href="#">You Have 4 New Messages</a></li>
+                          <li>
+                            <a class="dropdown-item" href="#"
+                              >You Have 4 New Messages</a
+                            >
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="#"
+                              >You Have 4 New Messages</a
+                            >
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="#"
+                              >You Have 4 New Messages</a
+                            >
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="#"
+                              >You Have 4 New Messages</a
+                            >
+                          </li>
                         </ul>
                       </li>
 
-<<<<<<< HEAD
                       <li class="nav-item">
                         <a class="nav-link" href="#">
                           <span class="material-icons">question_answer</span>
                         </a>
                       </li>
-=======
-						<div class="col-10 col-md-6 col-lg-8 order-1 order-md-3">
-							<div class="xp-profilebar text-end">
-								<nav class="navbar p-0">
-									<ul class="nav navbar-nav flex-row ms-auto">
-										<li class="dropdown nav-item active">
-											<a class="nav-link" href="#" data-bs-toggle="dropdown">
-												<span class="material-icons">notifications</span>
-												<span class="notification">4</span>
-											</a>
-											<ul class="dropdown-menu">
-												<li><a class="dropdown-item" href="#">You Have 4 New Messages</a></li>
-												<li><a class="dropdown-item" href="#">You Have 4 New Messages</a></li>
-												<li><a class="dropdown-item" href="#">You Have 4 New Messages</a></li>
-												<li><a class="dropdown-item" href="#">You Have 4 New Messages</a></li>
-											</ul>
-										</li>
->>>>>>> e1735ab6987e4001271ac3c40678af98a5e8c289
 
                       <li class="dropdown nav-item">
-                        <a class="nav-link" href="#" data-toggle="dropdown">
+                        <a class="nav-link" href="#" data-bs-toggle="dropdown">
                           <img
                             src="common/img/user.jpg"
                             style="width: 40px; border-radius: 50%"
@@ -295,19 +234,19 @@
                         </a>
                         <ul class="dropdown-menu small-menu">
                           <li>
-                            <a href="#">
+                            <a class="dropdown-item" href="#">
                               <span class="material-icons">person_outline</span>
                               Profile
                             </a>
                           </li>
                           <li>
-                            <a href="#">
+                            <a class="dropdown-item" href="#">
                               <span class="material-icons">settings</span>
                               Settings
                             </a>
                           </li>
                           <li>
-                            <a href="#">
+                            <a class="dropdown-item" href="#">
                               <span class="material-icons">logout</span>
                               Logout
                             </a>
@@ -320,12 +259,11 @@
               </div>
             </div>
 
-<<<<<<< HEAD
             <div class="xp-breadcrumbbar text-center">
               <h4 class="page-title">Dashboard</h4>
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Vishweb</a></li>
-                <li class="breadcrumb-item active" aria-curent="page">
+                <li class="breadcrumb-item active" aria-current="page">
                   Dashboard
                 </li>
               </ol>
@@ -335,69 +273,13 @@
         <!------top-navbar-end----------->
 
         <!------main-content-start----------->
-=======
-										<li class="dropdown nav-item">
-											<a class="nav-link" href="#" data-bs-toggle="dropdown">
-												<img src="common/img/user.jpg"
-													style="width: 40px; border-radius: 50%" />
-												<span class="xp-user-live"></span>
-											</a>
-											<ul class="dropdown-menu small-menu">
-												<li>
-													<a class="dropdown-item" href="#">
-														<span class="material-icons">person_outline</span>
-														Profile
-													</a>
-												</li>
-												<li>
-													<a class="dropdown-item" href="#">
-														<span class="material-icons">settings</span>
-														Settings
-													</a>
-												</li>
-												<li>
-													<a class="dropdown-item" href="#">
-														<span class="material-icons">logout</span>
-														Logout
-													</a>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</nav>
-							</div>
-						</div>
-					</div>
-
-					<div class="xp-breadcrumbbar text-center">
-						<h4 class="page-title">Dashboard</h4>
-						<ol class="breadcrumb">
-							<li class="breadcrumb-item"><a href="#">Vishweb</a></li>
-							<li class="breadcrumb-item active" aria-current="page">
-								Dashboard
-							</li>
-						</ol>
-					</div>
-				</div>
-			</div>
-			<!------top-navbar-end----------->
->>>>>>> e1735ab6987e4001271ac3c40678af98a5e8c289
 
         <!-- View -->
-
-<<<<<<< HEAD
-        <div ng-view autoscroll="true"></div>
-
+        <div style="margin: 30px" ng-view autoscroll="true"></div>
         <!-- View -->
         <!------main-content-end----------->
 
         <!----footer-design------------->
-=======
-			<!-- View -->
-			<div style="margin: 30px;" ng-view autoscroll="true"></div>
-			<!-- View -->
-			<!------main-content-end----------->
->>>>>>> e1735ab6987e4001271ac3c40678af98a5e8c289
 
         <footer class="footer">
           <div class="container-fluid">
@@ -413,10 +295,13 @@
     <!-------complete html----------->
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="common/js/jquery-3.3.1.slim.min.js"></script>
-    <script src="common/js/popper.min.js"></script>
-    <script src="common/js/bootstrap.min.js"></script>
-    <script src="common/js/jquery-3.3.1.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
     <script type="text/javascript">
       $(document).ready(function () {
         $(".xp-menubar").on("click", function () {
@@ -424,55 +309,27 @@
           $("#content").toggleClass("active");
         });
 
-<<<<<<< HEAD
         $(".xp-menubar,.body-overlay").on("click", function () {
           $("#sidebar,.body-overlay").toggleClass("show-nav");
         });
       });
     </script>
-=======
-			<footer class="footer">
-				<div class="container-fluid">
-					<div class="footer-in">
-						<p class="mb-0">
-							&copy 2021 Vishweb Design . All Rights Reserved.
-						</p>
-					</div>
-				</div>
-			</footer>
-		</div>
-	</div>
-	<!-------complete html----------->
-	<!-- Optional JavaScript -->
-	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-	<script type="text/javascript">
-		$(document).ready(function () {
-			$(".xp-menubar").on("click", function () {
-				$("#sidebar").toggleClass("active");
-				$("#content").toggleClass("active");
-			});
->>>>>>> e1735ab6987e4001271ac3c40678af98a5e8c289
+    <!-- toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     <!-- App js -->
     <script src="router_admin.js"></script>
 
-<<<<<<< HEAD
     <!-- Controller.js -->
-    <!-- <script src="/src/admin/controller/dashboard-controller.js"></script> -->
+    <script src="/src/admin/controller/dashboard-controller.js"></script>
 
     <!-- Hiếu -->
 
     <!-- Thưởng -->
-=======
-	  <!-- toastr -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
->>>>>>> e1735ab6987e4001271ac3c40678af98a5e8c289
 
     <!-- Tịnh -->
-    <script src="/fe/src/admin/pages/employee/employee.js"></script>
+    <script src="/fe/src/admin/controller/employee-controller.js"></script>
 
     <!-- Nguyên -->
 

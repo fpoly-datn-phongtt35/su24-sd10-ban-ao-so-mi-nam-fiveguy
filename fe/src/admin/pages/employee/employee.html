@@ -1,120 +1,505 @@
-<link rel="stylesheet" href="@{/assets/js/employee/Employee.js}">
-<style>
-    .overlay {
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.1);
-        width: 100%;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        z-index: 9998;
-        display: block;
-        overflow-y: hidden;
-        overflow-x: hidden;
-    }
-</style>
-<div class="overlay" ng-show="loading">
-    <div class="spinner-border" role="status" style="position: absolute;left: 50%;top: 50%;">
-        <span class="visually-hidden">Loading...</span>
+<div class="container">
+    <!-- Modal Add Voucher-->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">...</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-<!-- <div class="pagetitle">
-    <h1>Nhân Viên</h1>
-    <nav>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="@{/admin/index}">Trang Chủ</a></li>
-            <li class="breadcrumb-item">Tài Khoản</li>
-            <li class="breadcrumb-item active">Nhân Viên</li>
-        </ol>
-    </nav>
 
-</div> -->
-<!--  Begin code  -->
-<section class="section">
- 
+    <!-- Filter -->
+    <div class="col-8">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#homefilter"
+                    type="button" role="tab" aria-controls="home" aria-selected="true" ng-click="resetFilter()">Tìm kiếm
+                    cơ bản
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#detailfilter"
+                    type="button" role="tab" aria-controls="profile" aria-selected="false" ng-click="resetFilter()">Tìm
+                    kiếm nâng cao
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content mb-3" id="myTabContent">
+        <div class="tab-pane fade show active" id="homefilter" role="tabpanel" aria-labelledby="home-tab">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" ng-model="searchKeyword" ng-change="search()" placeholder="Nhập mã"
+                        class="form-control mt-2">
+                </div>
+                <!-- <div class="col-8">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" ng-click="resetFilter()">Đang hoạt động
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                data-bs-target="" t ype="button" role="tab" aria-controls="profile"
+                                aria-selected="false" ng-click="resetFilter()">Ngừng hoạt động
+                            </button>
+                        </li>
+                    </ul>
+                </div> -->
+            </div>
+        </div>
+        <div class="tab-pane fade" id="detailfilter" role="tabpanel" aria-labelledby="profile-tab">
+            <form ng-submit="applyFilters()">
+                <div class="row">
+                    <div class="col-10">
 
-    <!-- End Modal Update -->
-    <div class="row">
-        <div class="col-lg-12">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th scope="col">Avatar</th>
-                        <th scope="col">Mã</th>
-                        <th scope="col">Họ Tên</th>
-                        <th scope="col">Tài khoản</th>
-                        <th scope="col">Giới tính</th>
-                        <th scope="col">Địa Chỉ</th>
-                        <th scope="col">Trạng Thái</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="employee in paper.items">
-                        <td>{{$index + ((paper.page) * paper.size) +1}}</td>
-                        <td><img ng-src="{{employee.avatar}}" alt="" style="width: 50px;height: 50px;"></td>
-                        <td>{{employee.code}}</td>
-                        <td>{{employee.fullName}}</td>
-                        <td>{{employee.account.account}}</td>
-                        <td>{{employee.gender == true ? 'Nam' : 'Nứ'}}</td>
-                        <td>{{employee.address}}</td>
-
-                        <td class="col-1" ng-switch="employee.status">
-                            <span ng-switch-when="1">
-                                <div class="badge bg-success text-wrap">
-                                    Đang Hoạt Động'
-                                </div>
-                            </span>
-                            <span ng-switch-when="2">
-                                <div class="badge bg-danger text-wrap">
-                                    Ngừng Hoạt Động
-                                </div>
-                            </span>
-                        </td>
-                        <td>
-                            <button ng-click="edit(employee)" type="button" class="btn btn-info" data-bs-toggle="modal"
-                                data-bs-target="#modalUpdate"><i class="bi bi-pencil-square"></i></button>
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal-{{employee.id}}"><i
-                                    class="ri-delete-bin-fill"></i></button>
-                            <div class="modal fade" id="deleteModal-{{employee.id}}" tabindex="-1"
-                                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn xóa
-                                                không?</h5>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button ng-click="delete(employee)" type="button" class="btn btn-primary"
-                                                data-bs-dismiss="modal">Xoá</button>
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Đóng</button>
-                                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Tên nhân viên:</label>
+                                <input type="text" ng-model="filters.name" placeholder="Nhập tên" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label>Giới tính:</label>
+                                <div class="row">
+                                    <div class="form-check col-md-5">
+                                        <input class="form-check-input" type="radio" name="gender" id="gender1"
+                                            value="true" ng-model="filters.gender" />Nam
+                                    </div>
+                                    <div class="form-check col-md-5">
+                                        <input class="form-check-input" type="radio" name="gender" id="gender2"
+                                            ng-model="filters.gender" value="false" />Nữ
                                     </div>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <!-- <div class="row align-items-center">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item"><button ng-click="paper.first()" class="page-link">First</button></li>
-                        <li class="page-item"><button ng-click="paper.prev()" class="page-link">Previous</button>
-                        </li>
-                        <li class="page-item"><a class="page-link">{{paper.page + 1}} of {{paper.count}}</a>
-                        </li>
-                        <li class="page-item"><button ng-click="paper.next()" class="page-link">Next</button></li>
-                        <li class="page-item"><button ng-click="paper.last()" class="page-link">Last</button></li>
-                    </ul>
-                </nav>
-            </div> -->
+                            <div class="col-md-3">
+                                <label>SĐT:</label>
+                                <input type="text" class="form-control" ng-model="filters.phoneNumber" placeholder="Nhập SĐT">
+                            </div>
+                            <!-- <div class="col-md-3">
+                                <label>Ngày Sinh:</label>
+                                <input type="date" class="form-control" ng-model="filters.birthDate">
+                            </div> -->
+                            <div class="col-md-3">
+                                <label>Trnagj thái:</label>
+                                <select class="form-select" ng-model="filters.status">
+                                    <option selected value="">Chọn trạng thái</option>
+                                    <option value="1">Đang hoạt động</option>
+                                    <option value="2">Ngưng hoạt động</option>
+                                    <!-- <option value="3">Sắp diễn ra</option> -->
+                                    <!-- <option value="4">Tạm ngưng</option> -->
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="row mt-4">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-9">
+                                <button type="submit" class="btn btn-outline-primary mb-2 form-control">
+                                    Tìm kiếm
+                                </button>
+                                <button type="button" class="btn btn-outline-info mb-2 form-control"
+                                    ng-click="resetFilters()">Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
- 
+    <!-- End filter -->
 
-</section>
-<!--
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="table-wapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-6 p-0 flex justify-content-lg-start justify-content-center">
+                            <h2 class="ml-lg-2">Quản lý Nhân Viên</h2>
+                        </div>
+                        <div class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
+                            <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAdd">
+                                <i class="material-icons">&#xE147;</i>
+                                <span>Thêm mới</span>
+                            </a>
+                            <!-- <a href="#deleteEmployeeModal" class="btn btn-danger" data-toggle="modal">
+                                    <i class="material-icons">&#xE15C;</i>
+                                    <span>Delete</span>
+                                </a> -->
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col-1">STT</th>
+                            <th scope="col-1">Mã</th>
+                            <th scope="col-2">Avatar</th>
+                            <th scope="col-1">Họ tên</th>
+                            <!-- <th scope="col-1">Tài khoản</th> -->
+                             <th scope="col-1">SĐT</th>
+                            <th scope="col-1">Ngày sinh</th>
+                            <th scope="col-1">Giới tính</th>
+                            <th scope="col-1">Địa chỉ</th>
+                            <th scope="col-2">Trạng thái</th>
+                            <th scope="col-1">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr ng-repeat="employee in filteremployee">
+                            <td scope="col-1">{{ ($index + 1) + (desiredPage != 1 ? (desiredPage * 5) : 0) }}</td>
+                            <td scope="col-1">{{employee.code}}</td>
+                            <td scope="col-2">
+                                <img ng-src="{{employee.avatar}}" alt="" style="width: 50px; height: 50px" />
+                            </td>
+                            <td scope="col-1">{{employee.fullName}}</td>
+
+                            <!-- <td scope="col-1">{{employee.account.account}}</td> -->
+                            <td scope="col-1">{{employee.phoneNumber}}</td>
+                            <td scope="col-1">{{employee.birthDate}}</td>
+                            <td scope="col-1">{{employee.gender == true ? 'Nam' : 'Nứ'}}</td>
+                            <td scope="col-1">{{employee.address}}</td>
+                            <!-- <td>{{v.status == 1 ? 'Hoạt động' : ' Ngừng'}}</td> -->
+                            <td class="col-2" ng-switch="employee.status">
+                                <span ng-switch-when="1">
+                                    <div class="badge bg-success text-wrap">Đang Hoạt Động'</div>
+                                </span>
+                                <span ng-switch-when="2">
+                                    <div class="badge bg-danger text-wrap">Ngừng Hoạt Động</div>
+                                </span>
+                            </td>
+                            <td scope="col-1">
+                                <a type="button" class="edit" data-bs-toggle="modal" data-bs-target="#modalUpdate"
+                                    ng-click="edit(employee)">
+                                    <i class="material-icons" title="Edit">&#xE254;</i>
+                                </a>
+                                <a type="button" class="btn" data-bs-toggle="modal" data-bs-target=""
+                                    ng-click="delete(employee)">
+                                    <i class="material-icons" title="Delete">&#xE872;</i>
+                                </a>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <ul class="pagination">
+                <div class="d-flex justify-content-between align-items-center">
+                    <button class="btn btn-primary" ng-disabled="currentPage == 0"
+                        ng-click="getEmployee(currentPage - 1)">Previous</button>
+                    <span class="ms-3 me-3">Page <input type="number"
+                            class="form-control d-inline-block w-auto ms-2 me-2" ng-model="desiredPage" min="1"
+                            max="{{totalPages}}" ng-change="goToPage()"> of
+                        {{totalPages}}</span>
+                    <button class="btn btn-primary" ng-disabled="currentPage == totalPages - 1"
+                        ng-click="getEmployee(currentPage + 1)">Next</button>
+                </div>
+            </ul>
+
+        </div>
+    </div>
+</div>
+<!--Modal Add nhân viên -->
+<div class="modal fade" tabindex="-1" id="modalAdd" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form name="formCreateEmployee" ng-submit="formCreateEmployee.$valid && themNhanVien()" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm mới nhân viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-lg-3">
+                        <label for="image">
+                            <img src="/fe/src/admin/common/img/no-img.png" id="image-preview"
+                                style="width: 100px; height: 100px" />
+                        </label>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="row mb-3">
+                            <label for="inputFullName" class="col-sm-3 col-form-label">Họ Tên</label>
+                            <div class="col-sm-9">
+                                <input name="fullName" id="inputFullName" type="text" class="form-control"
+                                    ng-model="formInput.fullName" required />
+                                <span ng-show="formCreateEmployee.$submitted">
+                                    <div ng-show="formCreateEmployee.fullName.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="image" class="col-sm-3 col-form-label">Ảnh</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="path" type="file" id="image" />
+                                <span ng-if="showError" class="error-message text-danger form-text">
+                                    {{alertErrorImg}}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- form thêm account -->
+                        <!-- <div class="row mb-3">
+                            <label for="inputaccountr" class="col-sm-3 col-form-label">Tài khoản</label>
+                            <div class="col-sm-9">
+                                <input name="account" id="inputaccount" type="text" class="form-control"
+                                    ng-model="formInput.account" required />
+                                <span ng-show="formCreateEmployee.$submitted">
+                                    <div ng-show="formCreateEmployee.account.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div> -->
+                        <div class="row mb-3">
+                            <label for="inputSDT" class="col-sm-3 col-form-label">SDT</label>
+                            <div class="col-sm-9">
+                                <input name="phoneNumber" id="inputSDT" type="text" class="form-control"
+                                    ng-model="formInput.phoneNumber" required
+                                    ng-pattern="/^(\+84|0)[3|5|7|8|9][0-9]{8}$/" />
+                                <span ng-show="formCreateEmployee.$submitted">
+                                    <div ng-show="formCreateEmployee.phoneNumber.$error.required"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                    <div ng-show="!formCreateEmployee.phoneNumber.$error.required && formCreateEmployee.phoneNumber.$error.pattern"
+                                        class="error-message text-danger form-text">
+                                        Số điện thoại không hợp lệ
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputemail" class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                <input name="email" id="inputemail" type="email" class="form-control"
+                                    ng-model="formInput.email" required />
+                                <span ng-show="formCreateEmployee.$submitted">
+                                    <div ng-show="formCreateEmployee.email.$error.required"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                    <div ng-show="!formCreateEmployee.email.$error.required && formCreateEmployee.email.$error.email"
+                                        class="error-message text-danger form-text">
+                                        Email không hợp lệ
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputBirthDate" class="col-sm-3 col-form-label">Ngày Sinh</label>
+                            <div class="col-sm-9">
+                                <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
+                                    ng-model="formInput.birthDate" required />
+                                <span ng-show="formCreateEmployee.$submitted">
+                                    <div ng-show="formCreateEmployee.birthDate.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputGender" class="col-sm-3 col-form-label">Giới tính</label>
+                            <div class="col-sm-9">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender1" value="true"
+                                        ng-model="formInput.gender" />Nam
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender2"
+                                        ng-model="formInput.gender" value="false" />Nữ
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputAddress" class="col-sm-3 col-form-label">Địa Chỉ</label>
+                            <div class="col-sm-9">
+                                <input name="address" id="inputAddress" type="text" class="form-control"
+                                    ng-model="formInput.address" required />
+                                <span ng-show="formCreateEmployee.$submitted">
+                                    <div ng-show="formCreateEmployee.address.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#modalAddExcel" style="background-color: rgb(9, 141, 9)">
+                            Thêm file Excel
+                        </button>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                        <button ng-click="resetFormInput()" type="button" class="btn btn-warning">
+                            Xoá form
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Đóng
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- End modal add -->
+
+<!--Modal update -->
+<div class="modal fade" tabindex="-1" id="modalUpdate" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && suaNhanVien()" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật nhân viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-lg-3">
+                        <!-- <h1>Avatar</h1> -->
+                        <label for="image">
+                            <img src="/fe/src/admin/common/img/no-img.png" id="image-preview"
+                                style="width: 100px; height: 100px" />
+                        </label>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="row mb-3">
+                            <label for="inputFullName" class="col-sm-3 col-form-label">Họ Tên</label>
+                            <div class="col-sm-9">
+                                <input name="fullName" id="inputFullName" type="text" class="form-control"
+                                    ng-model="formUpdate.fullName" required>
+                                <span ng-show="formUpdateEmployee.$submitted">
+                                    <div ng-show="formUpdateEmployee.fullName.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Họ Tên không được để trống</div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="image-update" class="col-sm-3 col-form-label">Hình Ảnh</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="path" type="file" id="image-update" />
+                                <span ng-if="showError" class="error-message text-danger form-text">
+                                    {{alertErrorImg}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputGender" class="col-sm-3 col-form-label">Giới Tính</label>
+                            <div class="col-sm-9">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender1"
+                                        ng-value="true" ng-model="formUpdate.gender" ng-checked='true'>Nam
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender2"
+                                        ng-model="formUpdate.gender" ng-value="false">Nữ
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputBirthDate" class="col-sm-3 col-form-label">Ngày Sinh</label>
+                            <div class="col-sm-9">
+                                <!-- <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
+                                    ng-model="formUpdate.birthDate" ng-value="currentDate | date:'yyyy-MM-dd'"
+                                    required /> -->
+                                <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
+                                    ng-model="formUpdate.birthDate" required>
+                                <span ng-show="formUpdateEmployee.$submitted">
+                                    <div ng-show="formUpdateEmployee.birthDate.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputAddress" class="col-sm-3 col-form-label">Địa Chỉ</label>
+                            <div class="col-sm-9">
+                                <input name="address" id="inputAddress" type="text" class="form-control"
+                                    ng-model="formUpdate.address" required>
+                                <span ng-show="formUpdateEmployee.$submitted">
+                                    <div ng-show="formUpdateEmployee.address.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống</div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUpdatedAt" class="col-sm-3 col-form-label">Ngày Sửa</label>
+                            <div class="col-sm-9">
+                                <input name="updatedAt" id="inputUpdatedAt" type="text" class="form-control"
+                                    ng-value="currentDate | date:'yyyy-MM-dd'" readonly>
+                                <span ng-show="formUpdateEmployee.$submitted">
+                                    <div ng-show="formUpdateEmployee.updatedAt.$invalid"
+                                        class="error-message text-danger form-text">
+                                        UpdatedAt cannot be blank</div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUpdatedBy" class="col-sm-3 col-form-label">Người Sửa</label>
+                            <div class="col-sm-9">
+                                <input name="updatedBy" id="inputUpdatedBy" type="text" class="form-control"
+                                    ng-model="formUpdate.updatedBy" required>
+                                <span ng-show="formUpdateEmployee.$submitted">
+                                    <div ng-show="formUpdateEmployee.updatedBy.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống</div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputStatus" class="col-sm-3 col-form-label">Trạng Thái</label>
+                            <div class="col-sm-9">
+                                <select name="status" class="form-select form-select-sm"
+                                    aria-label="Small select example" ng-model="formUpdate.status">
+                                    <option ng-value="1">Đang hoạt động</option>
+                                    <option ng-value="2">Ngừng hoạt động</option>
+
+                                </select>
+                                <span ng-show="formUpdateEmployee.$submitted">
+                                    <div ng-show="formUpdateEmployee.status.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống</div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Sửa</button>
+                            <button ng-click="resetFormUpdate()" type="button" class="btn btn-warning">xoá
+                                form</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- End modal update -->
+
+<!----delete-modal --------->
+
+<!----edit-modal end--------->
