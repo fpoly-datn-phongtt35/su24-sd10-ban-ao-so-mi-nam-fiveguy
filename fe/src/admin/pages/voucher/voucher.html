@@ -120,7 +120,7 @@
                             </div>
                             <div class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
                                 <a type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#addVoucherModal">
+                                    data-bs-target="#addVoucherModal" ng-click="resetFormAdd()">
                                     <i class="material-icons">&#xE147;</i>
                                     <span>Thêm mới</span>
                                 </a>
@@ -150,7 +150,7 @@
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody style="text-transform: none; ">
                             <tr ng-repeat="v in filtervouchers">
                                 <!-- <th><span class="custom-checkbox">
                                         <input type="checkbox" id="checkbox1" name="option[]" value="1">
@@ -241,12 +241,19 @@
                                         <div class="form-group">
                                             <label>Mã</label>
                                             <input type="text" name="addCode" class="form-control"
-                                                ng-model="formInputVoucher.code" ng-required="true">
+                                                ng-change="checkDuplicateCode()" ng-model="formInputVoucher.code"
+                                                ng-required="true">
 
                                             <span ng-show="formAddVoucher.$submitted">
                                                 <div ng-show="formAddVoucher.addCode.$invalid"
                                                     class="error-message text-danger form-text">
                                                     Mã không được để trống</div>
+                                            </span>
+                                            <span ng-show="formAddVoucher.$submitted || duplicateCodeError">
+                                                <div ng-show="duplicateCodeError"
+                                                    class="error-message text-danger form-text">
+                                                    Mã voucher đã tồn tại
+                                                </div>
                                             </span>
                                         </div>
                                     </div>
@@ -254,12 +261,19 @@
                                         <div class="form-group">
                                             <label>Tên</label>
                                             <input type="text" name="addName" class="form-control"
-                                                ng-model="formInputVoucher.name" ng-required="true">
+                                                ng-change="checkDuplicateName()" ng-model="formInputVoucher.name"
+                                                ng-required="true">
 
                                             <span ng-show="formAddVoucher.$submitted">
                                                 <div ng-show="formAddVoucher.addName.$invalid"
                                                     class="error-message text-danger form-text">
                                                     Tên không được để trống</div>
+                                            </span>
+                                            <span ng-show="formAddVoucher.$submitted || duplicateNameError">
+                                                <div ng-show="duplicateNameError"
+                                                    class="error-message text-danger form-text">
+                                                    Tên voucher đã tồn tại
+                                                </div>
                                             </span>
                                         </div>
                                     </div>
@@ -450,7 +464,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Mã</label>
-                                            <input type="text" name="updateCode" class="form-control"
+                                            <input type="text" name="updateCode" class="form-control" ng-change="checkDuplicateCodeOnUpdate()"
                                                 ng-model="formUpdateVoucher.code" ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
@@ -458,18 +472,28 @@
                                                     class="error-message text-danger form-text">
                                                     Mã không được để trống</div>
                                             </span>
+                                            <span ng-show="formEditVoucher.$submitted || duplicateUpdateCodeError">
+                                                <div ng-show="duplicateUpdateCodeError" class="error-message text-danger form-text">
+                                                    Mã voucher đã tồn tại
+                                                </div>
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Tên</label>
-                                            <input type="text" name="updateName" class="form-control"
+                                            <input type="text" name="updateName" class="form-control" ng-change="checkDuplicateNameOnUpdate()"
                                                 ng-model="formUpdateVoucher.name" ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
                                                 <div ng-show="formEditVoucher.updateName.$invalid"
                                                     class="error-message text-danger form-text">
                                                     Tên không được để trống</div>
+                                            </span>
+                                            <span ng-show="formEditVoucher.$submitted || duplicateUpdateNameError">
+                                                <div ng-show="duplicateUpdateNameError" class="error-message text-danger form-text">
+                                                    Tên voucher đã tồn tại
+                                                </div>
                                             </span>
                                         </div>
                                     </div>

@@ -38,24 +38,30 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     //set gia tri cua discountType trong add form
     $scope.formInputVoucher.discountType = 1
 
+    //check trung ten va ma add
+    $scope.duplicateNameError = false;
+    $scope.duplicateCodeError = false;
+
+    $scope.checkDuplicateName = function () {
+        $scope.duplicateNameError = $scope.vouchers.some(voucher => voucher.name === $scope.formInputVoucher.name);
+    };
+
+    $scope.checkDuplicateCode = function () {
+        $scope.duplicateCodeError = $scope.vouchers.some(voucher => voucher.code === $scope.formInputVoucher.code);
+    };
 
     //add voucher
     $scope.addVoucher = function () {
-        // let maxReVa = +document.getElementById("maximumReductionValue").value
 
-        // if ($scope.formInputVoucher.discountType == 2) {
-        //     $scope.formInputVoucher.maximumReductionValue = maxReVa
-        // }   
-        // if ($scope.formInputVoucher.discountType == 1 && $scope.formInputVoucher.maximumReductionValue == null) {
-        //     $scope.formInputVoucher.maximumReductionValue = null
-        // }
+        if ($scope.duplicateNameError || $scope.duplicateCodeError) {
+            return;
+        }
 
         let data = $scope.formInputVoucher
         console.log(data)
 
         $http.post(apiVoucher + "/save", data).then(function (res) {
             $('#addVoucherModal').modal('hide');
-            // $scope.getAllVoucher()
 
             $scope.getVouchers(0);
         })
@@ -122,6 +128,20 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         }
     }
 
+    //check trung ten va ma update
+    $scope.duplicateUpdateNameError = false;
+    $scope.duplicateUpdateCodeError = false;
+
+    $scope.checkDuplicateNameOnUpdate = function () {
+        const currentId = $scope.formUpdateVoucher.id;
+        $scope.duplicateUpdateNameError = $scope.vouchers.some(voucher => voucher.name === $scope.formUpdateVoucher.name && voucher.id !== currentId);
+    };
+
+    $scope.checkDuplicateCodeOnUpdate = function () {
+        const currentId = $scope.formUpdateVoucher.id;
+        $scope.duplicateUpdateCodeError = $scope.vouchers.some(voucher => voucher.code === $scope.formUpdateVoucher.code && voucher.id !== currentId);
+    };
+
     //cap nhat voucher
     $scope.updateVoucher = function (id) {
         // if ($scope.formUpdateVoucher.startDate == null) {
@@ -132,11 +152,15 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         //     $scope.formUpdateVoucher.endDate = $scope.currentVoucher.endDate
         // }
 
+        if ($scope.duplicateUpdateNameError || $scope.duplicateUpdateCodeError) {
+            return;
+        }
+
         let data = angular.copy($scope.formUpdateVoucher)
         console.log(data);
         $http.put(apiVoucher + "/update/" + id, data).then(function (res) {
             // $scope.getAllVoucher()
-            
+
             $scope.getVouchers(0);
         })
     }
@@ -146,12 +170,21 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         $scope.formInputVoucher = {}
         $scope.formInputVoucher.discountType = 1
 
+        $scope.duplicateNameError = false;
+        $scope.duplicateCodeError = false;
+
         $scope.formAddVoucher.$setPristine();
         $scope.formAddVoucher.$setUntouched();
     }
 
     $scope.resetFormUpdate = function () {
         $scope.formUpdateVoucher = {}
+
+        $scope.duplicateUpdateNameError = false;
+        $scope.duplicateUpdateCodeError = false;
+
+        $scope.formUpdateVoucher.$setPristine();
+        $scope.formUpdateVoucher.$setUntouched();
     }
 
     $scope.filterVoucher = function () {

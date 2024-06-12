@@ -11,6 +11,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 @RestController
@@ -50,6 +52,16 @@ public class VoucherRestController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date endDate,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
+
+        // Kiểm tra và thêm một ngày vào startDate nếu không null
+        if (startDate != null) {
+            LocalDate localDate = startDate.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            localDate = localDate.plusDays(1);
+            startDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        }
+
         Pageable pageable = PageRequest.of(pageNumber, 4);
         Page<Voucher> page = voucherService.findVouchers(name, code, discountType, startDate, endDate, status, pageable);
         return new PaginationResponse<>(page);
