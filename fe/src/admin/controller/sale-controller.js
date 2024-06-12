@@ -173,22 +173,87 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         };
     }
 
+    
 
-
-    $scope.saveSale = function() {
-        var saleData = $scope.saleDetail;
-        $http.post(baseUrl, saleData)
+    $scope.fetchAllSales = function() {
+        $http.get(baseUrl)
             .then(function(response) {
-                console.log('Sale saved successfully', response.data);
-                $('#saleModal').modal('hide');
-      $scope.showSuccessNotification("Thêm đợt giảm giá thành công");
-
+                $scope.allSales = response.data;
             }, function(error) {
-      $scope.showErrorNotification("Thêm đợt giảm giá thất bại");
-
-                console.error('Error saving sale:', error);
+                console.error('Error fetching all sales:', error);
             });
     };
+    
+    $scope.fetchAllSales();
+    
+    $scope.checkSaleCode = function(code) {
+        return $scope.allSales.some(sale => sale.code === code);
+    };
+
+    $scope.checkSaleCodeUpdate = function(code) {
+        var updatedSaleId = $routeParams.id.toString(); 
+        return $scope.allSales.some(function(sale) {
+            return sale.code === code && sale.id.toString() !== updatedSaleId; 
+        });
+    };
+    
+    
+    
+    
+    
+    $scope.saveSale = function() {
+        if ($scope.saleForm.$valid) {
+            var saleData = $scope.saleDetail;
+    
+            if ($scope.checkSaleCode(saleData.code)) {
+                $scope.showErrorNotification("Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.");
+                return;
+            }
+    
+            $http.post(baseUrl, saleData)
+                .then(function(response) {
+                    console.log('Sale saved successfully', response.data);
+                    $('#saleModal').modal('hide');
+                    $scope.showSuccessNotification("Thêm đợt giảm giá thành công");
+                    $scope.fetchAllSales();
+                }, function(error) {
+                    $scope.showErrorNotification("Thêm đợt giảm giá thất bại");
+                    console.error('Error saving sale:', error);
+                });
+        } else {
+            $scope.saleForm.$setSubmitted();
+            $scope.showErrorNotification("Vui lòng điền đầy đủ thông tin.");
+        }
+    };
+    
+
+ // Hàm cập nhật sale
+ $scope.updateSale = function() {
+    if ($scope.saleFormUpdate.$valid) {
+        var saleData = $scope.saleDetail;
+
+        // Kiểm tra mã giảm giá trùng lặp
+        if ($scope.checkSaleCodeUpdate(saleData.code)) {
+            $scope.showErrorNotification("Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.");
+            return;
+        }
+
+        // Gửi yêu cầu cập nhật sale
+        $http.post(baseUrl, saleData)
+            .then(function(response) {
+                $scope.showSuccessNotification("Cập nhật đợt giảm giá thành công");
+                $scope.fetchAllSales();
+            }, function(error) {
+                $scope.showErrorNotification("Cập nhật đợt giảm giá thất bại");
+                console.error('Error updating sale:', error);
+            });
+    } else {
+        $scope.saleFormUpdate.$setSubmitted();
+        $scope.showErrorNotification("Vui lòng điền đầy đủ thông tin.");
+    }
+};
+
+    
 
 
 
@@ -349,48 +414,26 @@ $scope.deleteSelected = function() {
             $scope.allProductSales = $scope.allProductSales.filter(function(productSale) {
                 return !selectedIds.includes(productSale.id);
             });
+            $scope.showSuccessNotification("Xóa sản phẩm thành công");
         }).catch(function(error) {
+            $scope.showErrorNotification("Xóa sản phẩm thất bại");
             console.error('Error deleting selected product sales:', error);
         });
     });
 };
 
 
-
-
-
-
     $scope.deleteAll = function() {
             $http.delete(baseUrl + '/product-sales/deleteAll').then(function(response) {
                 $scope.productSales = [];
+            $scope.showSuccessNotification("Xóa sản phẩm thành công");
+
             }).catch(function(error) {
+            $scope.showErrorNotification("Xóa sản phẩm thất bại");
+
                 console.error('Error deleting all product sales:', error);
             });
     };
-
-
-
-
-
-    
-    // Thêm tất cả sản phẩm vào đợt giảm giá
-$scope.addAllProductSales = function() {
-    var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.id;
-    $http.post(apiUrl)
-        .then(function(response) {
-            $scope.productSales = [];
-            response.data.forEach(function(newProductSale) {
-                $scope.productSales.push(newProductSale);
-            });
-        })
-        .catch(function(error) {
-            console.error('Error adding all product sales:', error);
-        });
-};
-
-
-    
-
 
     
     $scope.countCurrentSales();
@@ -398,14 +441,6 @@ $scope.addAllProductSales = function() {
     $scope.countExpiredSales();
     // $scope.getAllSales();
 
-
-
-
-
-
-
-
-// Fill Product
 
 var baseUrlInfoProduct = 'http://localhost:8080/api/admin/infoProduct';
 
@@ -504,6 +539,7 @@ function calculateDiscount(sale, product) {
     };
     
     $scope.addSelectedProductSales = function() {
+
         var sale = $scope.saleDetail;
         $scope.getAllProduct().then(function(allProducts) {
             var selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
@@ -528,12 +564,32 @@ function calculateDiscount(sale, product) {
                     response.data.forEach(function(newProductSale) {
                         $scope.productSales.push(newProductSale);
                     });
+                    $scope.showSuccessNotification("Thêm sản phẩm thành công")
+
                 }).catch(function(error) {
+                    $scope.showErrorNotification("Thêm sản phẩm thất bại")
                     console.error('Error adding selected product sales:', error);
                 });
             }
         });
     };
+
+        // Thêm tất cả sản phẩm vào đợt giảm giá
+$scope.addAllProductSales = function() {
+    var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.id;
+    $http.post(apiUrl)
+        .then(function(response) {
+            $scope.productSales = [];
+            response.data.forEach(function(newProductSale) {
+                $scope.productSales.push(newProductSale);
+            });
+            $scope.showSuccessNotification("Thêm sản phẩm thành công")
+        })
+        .catch(function(error) {
+            $scope.showErrorNotification("Thêm sản phẩm thất bại")
+            console.error('Error adding all product sales:', error);
+        });
+};
     
     if (!localStorage.getItem('selectedProducts')) {
         localStorage.setItem('selectedProducts', JSON.stringify([]));

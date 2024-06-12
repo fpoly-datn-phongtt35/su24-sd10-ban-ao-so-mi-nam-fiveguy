@@ -27,73 +27,90 @@
                 <h5 class="modal-title" id="saleModalLabel">Tạo mới đợt giảm giá</h5>
             </div>
             <div class="modal-body">
-                <form name="saleForm" ng-submit="saveSale()">
+                <form name="saleForm" ng-submit="saveSale()" novalidate>
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.saleName.$touched || saleForm.$submitted) && saleForm.saleName.$invalid}">
                                     <label for="saleName" class="form-label">Tên đợt giảm giá</label>
-                                    <input type="text" class="form-control" id="saleName" ng-model="saleDetail.name" required>
+                                    <input type="text" class="form-control" id="saleName" name="saleName" ng-model="saleDetail.name" required>
+                                    <div class="text-danger" ng-show="(saleForm.saleName.$touched || saleForm.$submitted) && saleForm.saleName.$invalid">
+                                        Tên đợt giảm giá là bắt buộc.
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.saleCode.$touched || saleForm.$submitted) && (saleForm.saleCode.$error.required || checkSaleCode(saleDetail.code))}">
                                     <label for="saleCode" class="form-label">Mã giảm giá</label>
-                                    <input type="text" class="form-control" id="saleCode" ng-model="saleDetail.code" required>
+                                    <input type="text" class="form-control" id="saleCode" name="saleCode" ng-model="saleDetail.code" required>
+                                    <div class="text-danger" ng-show="(saleForm.saleCode.$touched || saleForm.$submitted) && saleForm.saleCode.$error.required">
+                                        Mã giảm giá là bắt buộc.
+                                    </div>
+                                    <div class="text-danger" ng-show="(saleForm.saleCode.$touched || saleForm.$submitted) && checkSaleCode(saleDetail.code)">
+                                        Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.saleDescription.$touched || saleForm.$submitted) && saleForm.saleDescription.$invalid}">
                                     <label for="saleDescription" class="form-label">Mô tả</label>
-                                    <textarea class="form-control" id="saleDescription" rows="3" ng-model="saleDetail.describe" required></textarea>
+                                    <textarea class="form-control" id="saleDescription" name="saleDescription" rows="3" ng-model="saleDetail.describe" required></textarea>
+                                    <div class="text-danger" ng-show="(saleForm.saleDescription.$touched || saleForm.$submitted) && saleForm.saleDescription.$invalid">
+                                        Mô tả là bắt buộc.
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.startTime.$touched || saleForm.$submitted) && saleForm.startTime.$invalid}">
                                     <label for="startTime" class="form-label">Thời gian bắt đầu</label>
-                                    <input type="datetime-local" class="form-control" id="startTime" ng-model="saleDetail.startDate" required>
+                                    <input type="datetime-local" class="form-control" id="startTime" name="startTime" ng-model="saleDetail.startDate" required>
+                                    <div class="text-danger" ng-show="(saleForm.startTime.$touched || saleForm.$submitted) && saleForm.startTime.$invalid">
+                                        Thời gian bắt đầu là bắt buộc.
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.endTime.$touched || saleForm.$submitted) && saleForm.endTime.$invalid}">
                                     <label for="endTime" class="form-label">Thời gian kết thúc</label>
-                                    <input type="datetime-local" class="form-control" id="endTime" ng-model="saleDetail.endDate" required>
+                                    <input type="datetime-local" class="form-control" id="endTime" name="endTime" ng-model="saleDetail.endDate" required>
+                                    <div class="text-danger" ng-show="(saleForm.endTime.$touched || saleForm.$submitted) && saleForm.endTime.$invalid">
+                                        Thời gian kết thúc là bắt buộc.
+                                    </div>
                                 </div>
-                         
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.discountType.$touched || saleForm.$submitted) && saleForm.discountType.$invalid}">
                                     <label for="discountType" class="form-label">Loại giảm giá</label>
-                                    <select class="form-control" id="discountType" ng-model="saleDetail.discountType" required>
+                                    <select class="form-control" id="discountType" name="discountType" ng-model="saleDetail.discountType" required>
                                         <option value="1">Giảm giá cố định</option>
                                         <option value="2">Giảm giá phần trăm</option>
                                         <option value="3">Mua 1 tặng 1</option>
                                         <option value="4">Combo sản phẩm</option>
                                     </select>
+                                    <div class="text-danger" ng-show="(saleForm.discountType.$touched || saleForm.$submitted) && saleForm.discountType.$invalid">
+                                        Loại giảm giá là bắt buộc.
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.discountValue.$touched || saleForm.$submitted) && saleForm.discountValue.$invalid}">
                                     <label for="discountValue" class="form-label">Mức giảm giá</label>
-                                    <input type="number" class="form-control" id="discountValue" ng-model="saleDetail.value" required>
+                                    <input type="number" class="form-control" id="discountValue" name="discountValue" ng-model="saleDetail.value" required>
+                                    <div class="text-danger" ng-show="(saleForm.discountValue.$touched || saleForm.$submitted) && saleForm.discountValue.$invalid">
+                                        Mức giảm giá là bắt buộc.
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.maximumDiscountAmount.$touched || saleForm.$submitted) && saleForm.maximumDiscountAmount.$invalid}">
                                     <label for="maximumDiscountAmount" class="form-label">Số tiền giảm giá tối đa</label>
-                                    <input type="number" class="form-control" id="maximumDiscountAmount" ng-model="saleDetail.maximumDiscountAmount" required>
+                                    <input type="number" class="form-control" id="maximumDiscountAmount" name="maximumDiscountAmount" ng-model="saleDetail.maximumDiscountAmount" required>
+                                    <div class="text-danger" ng-show="(saleForm.maximumDiscountAmount.$touched || saleForm.$submitted) && saleForm.maximumDiscountAmount.$invalid">
+                                        Số tiền giảm giá tối đa là bắt buộc.
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.numberOfUses.$touched || saleForm.$submitted) && saleForm.numberOfUses.$invalid}">
                                     <label for="numberOfUses" class="form-label">Số lần sử dụng</label>
-                                    <input type="number" class="form-control" id="numberOfUses" ng-model="saleDetail.numberOfUses" required>
+                                    <input type="number" class="form-control" id="numberOfUses" name="numberOfUses" ng-model="saleDetail.numberOfUses" required>
+                                    <div class="text-danger" ng-show="(saleForm.numberOfUses.$touched || saleForm.$submitted) && saleForm.numberOfUses.$invalid">
+                                        Số lần sử dụng là bắt buộc.
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.saleImage.$touched || saleForm.$submitted) && saleForm.saleImage.$invalid}">
                                     <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
-                                    <input type="file" class="form-control" id="saleImage" ng-model="saleDetail.image" required>
+                                    <input type="file" class="form-control" id="saleImage" name="saleImage" ng-model="saleDetail.image" required>
+                                    <div class="text-danger" ng-show="(saleForm.saleImage.$touched || saleForm.$submitted) && saleForm.saleImage.$invalid">
+                                        Hình ảnh/Banner giảm giá là bắt buộc.
+                                    </div>
                                 </div>
-                                <!-- <div class="form-group">
-                                    <label for="createdBy" class="form-label">Tạo bởi</label>
-                                    <input type="text" class="form-control" id="createdBy" ng-model="saleDetail.createdBy" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="updatedBy" class="form-label">Cập nhật bởi</label>
-                                    <input type="text" class="form-control" id="updatedBy" ng-model="saleDetail.updatedBy">
-                                </div> -->
-                                <!-- <div class="form-group">
-                                    <label for="status" class="form-label">Trạng thái</label>
-                                    <select class="form-control" id="status" ng-model="saleDetail.status" required>
-                                        <option value="1">Hoạt động</option>
-                                        <option value="0">Không hoạt động</option>
-                                    </select>
-                                </div> -->
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Lưu</button>
@@ -101,6 +118,7 @@
                     </div>
                 </form>
             </div>
+            
         </div>
     </div>
 </div>
