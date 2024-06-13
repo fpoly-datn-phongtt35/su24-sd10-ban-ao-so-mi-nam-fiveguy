@@ -124,6 +124,7 @@
                                     <i class="material-icons">&#xE147;</i>
                                     <span>Thêm mới</span>
                                 </a>
+                                <a href="#/admin/voucher/create" class="btn btn-info">Create page</a>
                                 <!-- <a href="#deleteEmployeeModal" class="btn btn-danger" data-toggle="modal">
                                     <i class="material-icons">&#xE15C;</i>
                                     <span>Delete</span>
@@ -385,6 +386,16 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group">
+                                        <label>Loại khách hàng được áp dụng</label>
+                                        <select id="chosen-select" data-placeholder="Begin typing a name to filter..."
+                                            multiple class="chosen-select" ng-model="selectedBears"
+                                            ng-change="updateSelection()">
+                                            <option ng-repeat="item in customerTypes" value="{{ item.id }}">{{ item.name}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
                                         <label>Mô tả</label>
                                         <input type="text" name="addDescribe" class="form-control"
                                             ng-model="formInputVoucher.describe" ng-required="true">
@@ -464,7 +475,8 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Mã</label>
-                                            <input type="text" name="updateCode" class="form-control" ng-change="checkDuplicateCodeOnUpdate()"
+                                            <input type="text" name="updateCode" class="form-control"
+                                                ng-change="checkDuplicateCodeOnUpdate()"
                                                 ng-model="formUpdateVoucher.code" ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
@@ -473,7 +485,8 @@
                                                     Mã không được để trống</div>
                                             </span>
                                             <span ng-show="formEditVoucher.$submitted || duplicateUpdateCodeError">
-                                                <div ng-show="duplicateUpdateCodeError" class="error-message text-danger form-text">
+                                                <div ng-show="duplicateUpdateCodeError"
+                                                    class="error-message text-danger form-text">
                                                     Mã voucher đã tồn tại
                                                 </div>
                                             </span>
@@ -482,7 +495,8 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Tên</label>
-                                            <input type="text" name="updateName" class="form-control" ng-change="checkDuplicateNameOnUpdate()"
+                                            <input type="text" name="updateName" class="form-control"
+                                                ng-change="checkDuplicateNameOnUpdate()"
                                                 ng-model="formUpdateVoucher.name" ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
@@ -491,7 +505,8 @@
                                                     Tên không được để trống</div>
                                             </span>
                                             <span ng-show="formEditVoucher.$submitted || duplicateUpdateNameError">
-                                                <div ng-show="duplicateUpdateNameError" class="error-message text-danger form-text">
+                                                <div ng-show="duplicateUpdateNameError"
+                                                    class="error-message text-danger form-text">
                                                     Tên voucher đã tồn tại
                                                 </div>
                                             </span>
@@ -676,6 +691,12 @@
             </div>
             <!----edit-modal end--------->
         </div>
-    </div>
 
+        <!-- <form ng-submit="submitForm()">
+            <select id="chosen-select" data-placeholder="Begin typing a name to filter..." multiple style="width: 100%;" class="chosen-select" ng-model="selectedBears" ng-change="updateSelection()">
+                <option ng-repeat="item in customerTypes" value="{{ item.id }}">{{ item.name }}</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form> -->
+    </div>
 </div>

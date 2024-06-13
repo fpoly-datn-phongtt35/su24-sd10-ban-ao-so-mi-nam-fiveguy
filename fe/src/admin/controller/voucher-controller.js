@@ -27,6 +27,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     $scope.formUpdateVoucher = {}
 
     const apiVoucher = "http://localhost:8080/api/admin/voucher"
+    const apiCustomerType = "http://localhost:8080/api/admin/customerType"
 
     $scope.getAllVoucher = function () {
         $http.get(apiVoucher + "/all").then(function (res) {
@@ -34,6 +35,51 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         })
     }
     $scope.getAllVoucher()
+
+    $scope.customerTypes = [];
+    $scope.selectedBears = []; 
+    // $scope.selectedBears = ['1', '2', '3'];
+
+    $scope.getAllCustomerType = function () {
+        $http.get('http://localhost:8080/api/admin/customerType/all').then(function (res) {
+            $scope.customerTypes = res.data;
+            console.log($scope.customerTypes);
+
+            // Use $timeout to ensure Chosen is re-initialized after data is assigned
+            $timeout(function () {
+                $(".chosen-select").trigger("chosen:updated");
+            }, 0);
+        });
+    };
+
+    $scope.updateSelection = function () {
+        console.log("Selected IDs: ", $scope.selectedBears);
+    };
+
+    // Call getAllCustomerType on load
+    $scope.getAllCustomerType();
+
+    // Initialize Chosen
+    $scope.initChosen = function () {
+        $('#chosen-select').chosen({
+            no_results_text: "Oops, nothing found!",width: '100%',rounder: '5%'
+        }).change(function () {
+            $scope.$apply(function () {
+                // Update selectedBears with the IDs of the selected items
+                $scope.selectedBears = $('#chosen-select').val();
+                $scope.updateSelection();
+            });
+        });
+    };
+
+    // Call initChosen when the document is ready
+    angular.element(document).ready(function () {
+        $scope.initChosen();
+    });
+
+    $scope.submitForm = function () {
+        console.log('Selected Bears:', $scope.selectedBears);
+    };
 
     //set gia tri cua discountType trong add form
     $scope.formInputVoucher.discountType = 1

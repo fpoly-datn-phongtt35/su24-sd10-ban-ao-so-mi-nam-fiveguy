@@ -1,0 +1,28 @@
+.chosen-container {
+    width: 100% !important;
+}
+
+.chosen-container .chosen-drop {
+    width: 100% !important;
+}
+
+.chosen-container .chosen-single,
+.chosen-container .chosen-choices {
+    border-radius: .25rem;
+    /* height: calc(1.5em + .75rem + 2px); */
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.chosen-container .chosen-single {
+    background-color: #fff;
+    border: 1px solid #ced4da;
+}
+.chosen-container .chosen-choices {
+    border: 1px solid #ced4da;
+    background-color: #fff;
+}
+.chosen-container .chosen-choices li.search-choice {
+    line-height: 1.5;
+}

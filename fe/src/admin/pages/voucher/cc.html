@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+    <style>
+        .chosen-container {
+            width: 100% !important;
+        }
+        .chosen-container .chosen-drop {
+            width: 100% !important;
+        }
+        .chosen-container .chosen-single,
+        .chosen-container .chosen-choices {
+            border-radius: .25rem;
+            /* height: calc(1.5em + .75rem + 2px); */
+            padding: .375rem .75rem;
+            /* font-size: 1rem; */
+            line-height: 1.5;
+        }
+        .chosen-container .chosen-single {
+            background-color: #fff;
+            border: 1px solid #ced4da;
+        }
+        .chosen-container .chosen-choices {
+            border: 1px solid #ced4da;
+            background-color: #fff;
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .chosen-container .chosen-choices li.search-choice {
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body ng-controller="MyController">
+    <div class="form-group">
+        <label>Loại khách hàng được áp dụng</label>
+        <select id="chosen-select" data-placeholder="Begin typing a name to filter..." multiple class="form-control chosen-select w-100" ng-model="selectedBears" ng-change="updateSelection()">
+            <option ng-repeat="item in customerTypes" value="{{ item.id }}" data-bg-color="{{ item.bgColor }}" data-text-color="{{ item.textColor }}">{{ item.name }}</option>
+        </select>
+    </div>
+    <form ng-submit="submitForm()">
+        <button type="submit">Submit</button>
+    </form>
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('MyController', function($scope, $http, $timeout) {
+            $scope.customerTypes = [
+                { id: 1, name: 'Customer Type 1', bgColor: '#ffcccc', textColor: '#ff0000' },
+                { id: 2, name: 'Customer Type 2', bgColor: '#ccffcc', textColor: '#006600' },
+                { id: 3, name: 'Customer Type 3', bgColor: '#ccccff', textColor: '#000066' },
+                // Add more items as needed
+            ];
+            $scope.selectedBears = [];
+
+            $scope.getAllCustomerType = function() {
+                $http.get('http://localhost:8080/api/admin/customerType/all').then(function(res) {
+                    $scope.customerTypes = res.data;
+                    console.log($scope.customerTypes);
+
+                    // Use $timeout to ensure Chosen is re-initialized after data is assigned
+                    $timeout(function() {
+                        $(".chosen-select").trigger("chosen:updated");
+                    }, 0);
+                });
+            };
+
+            $scope.updateSelection = function() {
+                console.log("Selected IDs: ", $scope.selectedBears);
+                $timeout(function() {
+                    $scope.applyStylesToChosenChoices();
+                }, 0);
+            };
+
+            // Initialize Chosen
+            $scope.initChosen = function() {
+                $('#chosen-select').chosen({
+                    no_results_text: "Oops, nothing found!",
+                    width: '100%' // Ensure Chosen uses full width
+                }).change(function() {
+                    $scope.$apply(function() {
+                        // Update selectedBears with the IDs of the selected items
+                        $scope.selectedBears = $('#chosen-select').val().map(Number);
+                        $scope.updateSelection();
+                    });
+                });
+
+                // Add form-control class to Chosen container
+                $('#chosen-select').next('.chosen-container').addClass('form-control');
+            };
+
+            // Apply styles to chosen-choices
+            $scope.applyStylesToChosenChoices = function() {
+                $('.chosen-choices li.search-choice').each(function() {
+                    var text = $(this).find('span').text();
+                    var option = $('#chosen-select option').filter(function() {
+                        return $(this).text() === text;
+                    });
+                    var bgColor = option.data('bg-color');
+                    var textColor = option.data('text-color');
+                    $(this).css('background-color', bgColor);
+                    $(this).css('color', textColor);
+                });
+            };
+
+            // Call initChosen when the document is ready
+            angular.element(document).ready(function() {
+                $scope.initChosen();
+                $timeout(function() {
+                    $scope.applyStylesToChosenChoices();
+                }, 0);
+            });
+
+            $scope.submitForm = function() {
+                console.log('Selected Bears:', $scope.selectedBears);
+            };
+        });
+    </script>
+</body>
+</html>
