@@ -164,8 +164,8 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
             });
     };
 
-    if ($routeParams.id) {
-        $scope.getSale($routeParams.id);
+    if ($routeParams.idSale) {
+        $scope.getSale($routeParams.idSale);
     } else {
         $scope.saleDetail = {
             startDate: null,
@@ -191,7 +191,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     };
 
     $scope.checkSaleCodeUpdate = function(code) {
-        var updatedSaleId = $routeParams.id.toString(); 
+        var updatedSaleId = $routeParams.idSale.toString(); 
         return $scope.allSales.some(function(sale) {
             return sale.code === code && sale.id.toString() !== updatedSaleId; 
         });
@@ -259,7 +259,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
 
 
     $scope.getAllProductSale = function() {
-        var saleId = $routeParams.id;
+        var saleId = $routeParams.idSale;
         // Trả về promise
         return $http.get(baseUrl + '/product-sales/getList/' + saleId).then(function(response) {
             $scope.allProductSales = response.data;
@@ -325,7 +325,7 @@ $scope.filterProductSale = function(page) {
     if (page === undefined) {
         page = $scope.currentPage2;
     }
-    var saleId = $routeParams.id ? parseInt($routeParams.id, 10) : null;
+    var saleId = $routeParams.idSale ? parseInt($routeParams.idSale, 10) : null;
 
     if (isNaN(saleId)) {
         console.error('Invalid saleId:', saleId);
@@ -414,6 +414,8 @@ $scope.deleteSelected = function() {
             $scope.allProductSales = $scope.allProductSales.filter(function(productSale) {
                 return !selectedIds.includes(productSale.id);
             });
+            $scope.filterProducts(0);
+            $scope.filterProductSale(0);
             $scope.showSuccessNotification("Xóa sản phẩm thành công");
         }).catch(function(error) {
             $scope.showErrorNotification("Xóa sản phẩm thất bại");
@@ -427,7 +429,8 @@ $scope.deleteSelected = function() {
             $http.delete(baseUrl + '/product-sales/deleteAll').then(function(response) {
                 $scope.productSales = [];
             $scope.showSuccessNotification("Xóa sản phẩm thành công");
-
+            $scope.filterProducts(0);
+            $scope.filterProductSale(0);
             }).catch(function(error) {
             $scope.showErrorNotification("Xóa sản phẩm thất bại");
 
@@ -564,8 +567,9 @@ function calculateDiscount(sale, product) {
                     response.data.forEach(function(newProductSale) {
                         $scope.productSales.push(newProductSale);
                     });
+                    $scope.filterProducts(0);
+                    $scope.filterProductSale(0);
                     $scope.showSuccessNotification("Thêm sản phẩm thành công")
-
                 }).catch(function(error) {
                     $scope.showErrorNotification("Thêm sản phẩm thất bại")
                     console.error('Error adding selected product sales:', error);
@@ -576,13 +580,15 @@ function calculateDiscount(sale, product) {
 
         // Thêm tất cả sản phẩm vào đợt giảm giá
 $scope.addAllProductSales = function() {
-    var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.id;
+    var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.idSale;
     $http.post(apiUrl)
         .then(function(response) {
             $scope.productSales = [];
             response.data.forEach(function(newProductSale) {
                 $scope.productSales.push(newProductSale);
             });
+            $scope.filterProducts(0);
+            $scope.filterProductSale(0);
             $scope.showSuccessNotification("Thêm sản phẩm thành công")
         })
         .catch(function(error) {
@@ -706,5 +712,21 @@ $scope.addAllProductSales = function() {
     //     });
     // };
 
+
+    // summary sale
+
+    $scope.getSaleSummary = function() {
+        var saleId = $routeParams.idSale;
+
+        $http.get(baseUrl + '/summary/' + saleId)
+            .then(function(response) {
+                console.log(response.data)
+                $scope.summary = response.data;
+                $scope.summary.profitMargin = ($scope.summary.totalProfit / $scope.summary.totalRevenue) * 100;
+            })
+            .catch(function(error) {
+                console.error('Error fetching sale summary:', error);
+            });
+    };
 
 }]);

@@ -3,6 +3,7 @@ package com.example.demo.service.sale.serviceImpl;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductSale;
 import com.example.demo.entity.Sale;
+import com.example.demo.model.response.sale.SaleSummaryResponse;
 import com.example.demo.repository.sale.ProductSaleRepository;
 import com.example.demo.repository.sale.SaleRepository;
 import com.example.demo.service.sale.ProductSaleService;
@@ -126,7 +127,7 @@ public class SaleServiceImpl implements SaleService {
     public Page<Sale> findSalesByConditions(Date startDate, Date endDate, Integer status, String searchTerm, Integer discountType, Pageable pageable) {
         Specification<Sale> spec = Specification.where(null);
 
-        if (startDate != null || endDate != null) {
+        if (startDate != null && endDate != null) {
             spec = spec.and(SaleSpecifications.betweenDates(startDate, endDate));
         }
 
@@ -145,6 +146,10 @@ public class SaleServiceImpl implements SaleService {
         return saleRepository.findAll(spec, pageable);
     }
 
+    @Override
+    public SaleSummaryResponse getSaleSummaryById(Long saleId) {
+        return saleRepository.findSaleSummaryById(saleId);
+    }
 
 
 }

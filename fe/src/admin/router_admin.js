@@ -38,7 +38,7 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/sale/sale.html",
       controller: 'SaleController'
     })
-    .when("/admin/sale/update/:id", {
+    .when("/admin/sale/update/:idSale", {
       templateUrl: "pages/sale/saleDetail.html",
       controller: "SaleController"
     })

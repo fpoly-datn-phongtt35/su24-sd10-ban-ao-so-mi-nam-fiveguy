@@ -1,6 +1,7 @@
 package com.example.demo.restController.sale;
 
 import com.example.demo.entity.Sale;
+import com.example.demo.model.response.sale.SaleSummaryResponse;
 import com.example.demo.service.sale.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -104,7 +105,10 @@ public class SaleRestController {
 
 
 
-
+    @GetMapping("/summary/{id}")
+    public SaleSummaryResponse getSaleSummary(@PathVariable("id") Long saleId) {
+        return saleService.getSaleSummaryById(saleId);
+    }
 
 
 }
