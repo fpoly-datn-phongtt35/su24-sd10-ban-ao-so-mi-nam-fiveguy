@@ -387,11 +387,20 @@
                                 <div class="row">
                                     <div class="form-group">
                                         <label>Loại khách hàng được áp dụng</label>
-                                        <select id="chosen-select" data-placeholder="Begin typing a name to filter..."
-                                            multiple class="chosen-select" ng-model="selectedBears"
-                                            ng-change="updateSelection()">
-                                            <option ng-repeat="item in customerTypes" value="{{ item.id }}">{{ item.name}}</option>
-                                        </select>
+                                        <div class="row">
+                                            <div class="col-2">
+                                                <input type="checkbox"> Tất cả
+                                            </div>
+                                            <div class="col-10">
+
+                                                <select id="chosen-select" data-placeholder="Nhập để lọc ..." multiple
+                                                    class="chosen-select" ng-model="selectedCustomerTypes"
+                                                    ng-change="updateSelection()">
+                                                    <option ng-repeat="item in customerTypes" value="{{ item.id }}">{{
+                                                        item.name}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -411,13 +420,24 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Ngày bắt đầu</label>
-                                            <input type="datetime-local" name="addStartDate" class="form-control"
+                                            <!-- <input type="datetime-local" name="addStartDate" class="form-control"
                                                 max="{{formInputVoucher.endDate}}" ng-model="formInputVoucher.startDate"
-                                                ng-change="updateStartDateMax()" ng-required="true">
+                                                ng-change="updateStartDateMax()" ng-required="true"> -->
+
+                                            <input type="datetime-local" name="addStartDate" class="form-control"
+                                                ng-attr-min="{{currentDateTime}}" max="{{formInputVoucher.endDate}}"
+                                                ng-model="formInputVoucher.startDate" ng-change="updateStartDateMax()"
+                                                ng-required="true">
+
                                             <span ng-show="formAddVoucher.$submitted">
                                                 <div ng-show="formAddVoucher.addStartDate.$error.required"
                                                     class="error-message text-danger form-text">
                                                     Ngày bắt đầu không được để trống</div>
+                                            </span>
+                                            <span ng-show="formAddVoucher.$submitted">
+                                                <div ng-show="formAddVoucher.addStartDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được nhỏ hơn ngày hiện tại</div>
                                             </span>
                                             <span ng-show="formAddVoucher.$submitted">
                                                 <div ng-show="formAddVoucher.addStartDate.$error.max"
@@ -475,7 +495,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Mã</label>
-                                            <input type="text" name="updateCode" class="form-control"
+                                            <input type="text" id="updateCode" name="updateCode" class="form-control"
                                                 ng-change="checkDuplicateCodeOnUpdate()"
                                                 ng-model="formUpdateVoucher.code" ng-required="true">
 
@@ -495,7 +515,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Tên</label>
-                                            <input type="text" name="updateName" class="form-control"
+                                            <input type="text" id="updateName" name="updateName" class="form-control"
                                                 ng-change="checkDuplicateNameOnUpdate()"
                                                 ng-model="formUpdateVoucher.name" ng-required="true">
 
@@ -517,7 +537,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Loại giảm giá</label>
-                                            <select name="update" class="form-select"
+                                            <select id="updateDiscountType" name="updateDiscountType" class="form-select"
                                                 ng-model="formUpdateVoucher.discountType"
                                                 ng-change="discountTypeChangeUpdate()">
                                                 <option ng-value="1">Giảm theo %</option>
@@ -528,7 +548,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Giá trị</label>
-                                            <input type="number" name="updateValue" class="form-control"
+                                            <input type="number" id="updateValue" name="updateValue" class="form-control"
                                                 ng-model="formUpdateVoucher.value" ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
@@ -544,7 +564,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Giá trị tối thiếu HD</label>
-                                            <input type="number" name="updateMinBill" class="form-control"
+                                            <input type="number" id="updateMinBill" name="updateMinBill" class="form-control"
                                                 ng-model="formUpdateVoucher.minimumTotalAmount" ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
@@ -557,7 +577,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Giá trị giảm tối đa</label>
-                                            <input type="number" name="updateMaxReVa" class="form-control" min="0"
+                                            <input type="number" id="updateMaxReVa" name="updateMaxReVa" class="form-control" min="0"
                                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                                                 ng-model="formUpdateVoucher.maximumReductionValue"
                                                 ng-disabled="formUpdateVoucher.discountType == 2 ? true : fasle"
@@ -575,7 +595,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Số lượng</label>
-                                            <input type="number" name="updateQuantity" class="form-control"
+                                            <input type="number" id="updateQuantity" name="updateQuantity" class="form-control"
                                                 ng-model="formUpdateVoucher.quantity" ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
@@ -588,11 +608,11 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Số lượt sử dụng</label>
-                                            <input type="number" name="updatenumberOfUses" class="form-control"
+                                            <input type="number" id="updateNumberOfUses" name="updateNumberOfUses" class="form-control"
                                                 ng-model="formUpdateVoucher.numberOfUses" ng-required="true">
 
                                             <span ng-show="formEditVoucher.$submitted">
-                                                <div ng-show="formEditVoucher.updatenumberOfUses.$invalid"
+                                                <div ng-show="formEditVoucher.updateNumberOfUses.$invalid"
                                                     class="error-message text-danger form-text">
                                                     Số luợt sử dụng không được để trống</div>
                                             </span>
@@ -601,8 +621,27 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group">
+                                        <label>Loại khách hàng được áp dụng</label>
+                                        <div class="row">
+                                            <div class="col-2">
+                                                <input type="checkbox"> Tất cả
+                                            </div>
+                                            <div class="col-10">
+                                                <select id="chosen-select-update" data-placeholder="Nhập để lọc"
+                                                    multiple class="chosen-select"
+                                                    ng-model="selectedCustomerTypesUpdate"
+                                                    ng-change="updateSelectionEdit()">
+                                                    <option ng-repeat="item in customerTypes" value="{{ item.id }}">{{
+                                                        item.name}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
                                         <label>Mô tả</label>
-                                        <input type="text" name="updateDescribe" class="form-control"
+                                        <input type="text" id="updateDescribe" name="updateDescribe" class="form-control"
                                             ng-model="formUpdateVoucher.describe" ng-required="true">
 
                                         <span ng-show="formEditVoucher.$submitted">
@@ -616,7 +655,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Ngày bắt đầu</label>
-                                            <input type="datetime-local" name="updateStartDate" class="form-control"
+                                            <input type="datetime-local" id="updateStartDate" name="updateStartDate" class="form-control"
                                                 max="{{formUpdateVoucher.endDate}}"
                                                 ng-model="formUpdateVoucher.startDate" ng-required="true">
 
@@ -635,7 +674,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Ngày kết thúc</label>
-                                            <input type="datetime-local" name="updateEndDate" class="form-control"
+                                            <input type="datetime-local" id="updateEndDate" name="updateEndDate" class="form-control"
                                                 min="{{formUpdateVoucher.startDate}}"
                                                 ng-model="formUpdateVoucher.endDate" ng-required="true">
 

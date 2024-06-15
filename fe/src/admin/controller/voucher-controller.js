@@ -28,6 +28,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     const apiVoucher = "http://localhost:8080/api/admin/voucher"
     const apiCustomerType = "http://localhost:8080/api/admin/customerType"
+    const apiCustomerTypeVoucher = "http://localhost:8080/api/admin/customerTypeVoucher"
 
     $scope.getAllVoucher = function () {
         $http.get(apiVoucher + "/all").then(function (res) {
@@ -37,7 +38,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     $scope.getAllVoucher()
 
     $scope.customerTypes = [];
-    $scope.selectedBears = []; 
+    $scope.selectedCustomerTypes = [];
     // $scope.selectedBears = ['1', '2', '3'];
 
     $scope.getAllCustomerType = function () {
@@ -48,12 +49,13 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
             // Use $timeout to ensure Chosen is re-initialized after data is assigned
             $timeout(function () {
                 $(".chosen-select").trigger("chosen:updated");
+                $(".chosen-select-update").trigger("chosen:updated");
             }, 0);
         });
     };
 
     $scope.updateSelection = function () {
-        console.log("Selected IDs: ", $scope.selectedBears);
+        console.log("Selected IDs: ", $scope.selectedCustomerTypes);
     };
 
     // Call getAllCustomerType on load
@@ -62,11 +64,11 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     // Initialize Chosen
     $scope.initChosen = function () {
         $('#chosen-select').chosen({
-            no_results_text: "Oops, nothing found!",width: '100%',rounder: '5%'
+            no_results_text: "Oops, nothing found!", width: '100%'
         }).change(function () {
             $scope.$apply(function () {
-                // Update selectedBears with the IDs of the selected items
-                $scope.selectedBears = $('#chosen-select').val();
+                // Update selectedCustomerTypes with the IDs of the selected items
+                $scope.selectedCustomerTypes = $('#chosen-select').val();
                 $scope.updateSelection();
             });
         });
@@ -76,10 +78,6 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     angular.element(document).ready(function () {
         $scope.initChosen();
     });
-
-    $scope.submitForm = function () {
-        console.log('Selected Bears:', $scope.selectedBears);
-    };
 
     //set gia tri cua discountType trong add form
     $scope.formInputVoucher.discountType = 1
@@ -103,10 +101,21 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
             return;
         }
 
-        let data = $scope.formInputVoucher
+        let numberList = $scope.selectedCustomerTypes.map(Number);
+        const entitiesCustomerType = numberList.map((id) => {
+            return {
+                id: id,
+                name: null
+            };
+        });
+
+        console.log(entitiesCustomerType);
+        console.log(numberList);
+
+        let data = { voucher: $scope.formInputVoucher, customerTypeList: entitiesCustomerType }
         console.log(data)
 
-        $http.post(apiVoucher + "/save", data).then(function (res) {
+        $http.post(apiVoucher + "/saveVoucher", data).then(function (res) {
             $('#addVoucherModal').modal('hide');
 
             $scope.getVouchers(0);
@@ -143,26 +152,95 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     //     }
     // };
 
-    //tao bien current voucher de so sanh gia tri startdate enddate (updatevoucher)
-    $scope.currentVoucher = null
+    //tao list lựa chọn customerType trong Update form
+    $scope.selectedCustomerTypesUpdate = [];
+    $scope.listCustomerTypeVoucher = [];
 
-    //lay gia tri voucher qua id
+    $scope.getListSelectedCustomerTypesUpdate = function (voucherId) {
+        return $http.get(apiCustomerTypeVoucher + "/allCustomerType/" + voucherId).then(function (res) {
+            console.log(res.data);
+            $scope.listCustomerTypeVoucher = res.data;
+            return $scope.listCustomerTypeVoucher.map(entity => entity.customerType.id.toString());
+        });
+    };
+
+    $scope.setDisableUpdateForm = function (bool) {
+        document.getElementById("updateCode").disabled = bool;
+        document.getElementById("updateName").disabled = bool;
+        document.getElementById("updateDiscountType").disabled = bool;
+        document.getElementById("updateValue").disabled = bool;
+        document.getElementById("updateMinBill").disabled = bool;
+        document.getElementById("updateMaxReVa").disabled = bool;
+        document.getElementById("updateQuantity").disabled = bool;
+        document.getElementById("updateNumberOfUses").disabled = bool;
+        document.getElementById("updateDescribe").disabled = bool;
+        document.getElementById("updateStartDate").disabled = bool;
+        document.getElementById("updateEndDate").disabled = bool;
+
+        document.getElementById("chosen-select-update").disabled = bool;
+    }
+
+    // Create a variable currentVoucher to compare start date and end date (update voucher)
+    $scope.currentVoucher = null;
+
+    // Get the voucher value by id
     $scope.getVoucherById = function (voucher) {
-        $scope.formUpdateVoucher = angular.copy(voucher)
+        $scope.formUpdateVoucher = angular.copy(voucher);
         if (voucher.startDate != null) {
-            $scope.formUpdateVoucher.startDate = new Date(voucher.startDate)
+            $scope.formUpdateVoucher.startDate = new Date(voucher.startDate);
         } else {
-            $scope.formUpdateVoucher.startDate = null
+            $scope.formUpdateVoucher.startDate = null;
         }
         if (voucher.endDate != null) {
-            $scope.formUpdateVoucher.endDate = new Date(voucher.endDate)
+            $scope.formUpdateVoucher.endDate = new Date(voucher.endDate);
         } else {
-            $scope.formUpdateVoucher.endDate = null
+            $scope.formUpdateVoucher.endDate = null;
         }
 
-        $scope.currentVoucher = angular.copy(voucher)
+        $scope.currentVoucher = angular.copy(voucher);
         console.log(voucher);
-    }
+
+        if ($scope.currentVoucher.status == 2) {
+            $scope.setDisableUpdateForm(true)
+        } else {
+            $scope.setDisableUpdateForm(false)
+        }
+
+        $scope.getListSelectedCustomerTypesUpdate($scope.currentVoucher.id).then(function (result) {
+            $scope.selectedCustomerTypesUpdate = result;
+            console.log($scope.selectedCustomerTypesUpdate);
+
+            $timeout(function () {
+                $("#chosen-select-update").trigger("chosen:updated");
+            }, 0);
+        });
+    };
+
+
+    $scope.updateSelectionEdit = function () {
+        console.log("Selected IDs: ", $scope.selectedCustomerTypesUpdate);
+    };
+
+    // Call getAllCustomerType on load
+    $scope.getAllCustomerType();
+
+    // Initialize Chosen
+    $scope.initChosenUpdate = function () {
+        $('#chosen-select-update').chosen({
+            no_results_text: "Oops, nothing found!", width: '100%'
+        }).change(function () {
+            $scope.$apply(function () {
+                // Update selectedCustomerTypes with the IDs of the selected items
+                $scope.selectedCustomerTypesUpdate = $('#chosen-select-update').val();
+                $scope.updateSelectionEdit();
+            });
+        });
+    };
+
+    // Call initChosen when the document is ready
+    angular.element(document).ready(function () {
+        $scope.initChosenUpdate();
+    });
 
     //chuyen doi gia tri cua MaximumValueReduce tranh loi luc validation *UPDATE*
     $scope.discountTypeChangeUpdate = function () {
@@ -190,21 +268,26 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     //cap nhat voucher
     $scope.updateVoucher = function (id) {
-        // if ($scope.formUpdateVoucher.startDate == null) {
-        //     $scope.formUpdateVoucher.startDate = $scope.currentVoucher.startDate
-        // }
 
-        // if ($scope.formUpdateVoucher.endDate == null) {
-        //     $scope.formUpdateVoucher.endDate = $scope.currentVoucher.endDate
-        // }
+        let numberList = $scope.selectedCustomerTypesUpdate.map(Number);
+        const entitiesCustomerType = numberList.map((id) => {
+            return {
+                id: id,
+                name: null
+            };
+        });
+
+        console.log(entitiesCustomerType);
+        console.log(numberList);
 
         if ($scope.duplicateUpdateNameError || $scope.duplicateUpdateCodeError) {
             return;
         }
 
         let data = angular.copy($scope.formUpdateVoucher)
+        let dataUpdate = { voucher: angular.copy($scope.formUpdateVoucher), customerTypeList: entitiesCustomerType }
         console.log(data);
-        $http.put(apiVoucher + "/update/" + id, data).then(function (res) {
+        $http.put(apiVoucher + "/updateVoucher/" + id, dataUpdate).then(function (res) {
             // $scope.getAllVoucher()
 
             $scope.getVouchers(0);
@@ -221,6 +304,11 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
         $scope.formAddVoucher.$setPristine();
         $scope.formAddVoucher.$setUntouched();
+
+        $scope.selectedCustomerTypes = []
+        $timeout(function () {
+            $(".chosen-select").trigger("chosen:updated");
+        }, 0);
     }
 
     $scope.resetFormUpdate = function () {
@@ -295,5 +383,13 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         };
         $scope.getVouchers(0);
     }
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = String(now.getMonth() + 1).padStart(2, '0');
+    var day = String(now.getDate()).padStart(2, '0');
+    var hours = String(now.getHours()).padStart(2, '0');
+    var minutes = String(now.getMinutes()).padStart(2, '0');
+
+    $scope.currentDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
 
 });

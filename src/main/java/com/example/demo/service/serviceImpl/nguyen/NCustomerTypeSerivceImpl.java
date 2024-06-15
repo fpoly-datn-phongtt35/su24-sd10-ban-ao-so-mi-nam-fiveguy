@@ -16,7 +16,7 @@ public class NCustomerTypeSerivceImpl implements NCustomerTypeService {
 
     @Override
     public List<CustomerType> getAllCustomerType() {
-        return customerTypeRepository.findAll();
+        return customerTypeRepository.findAllByStatus(1);
     }
 
     @Override

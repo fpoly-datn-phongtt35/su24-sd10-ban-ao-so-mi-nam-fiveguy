@@ -1,10 +1,17 @@
 package com.example.demo.service.serviceImpl.nguyen;
 
+import com.example.demo.entity.Bill;
+import com.example.demo.entity.CustomerType;
+import com.example.demo.entity.CustomerTypeVoucher;
 import com.example.demo.entity.Voucher;
+import com.example.demo.model.response.nguyen.VoucherStatistics;
+import com.example.demo.repository.nguyen.CustomerTypeVoucherRepository;
+import com.example.demo.repository.nguyen.NBillRepository;
 import com.example.demo.repository.nguyen.VoucherRepository;
 import com.example.demo.repository.nguyen.VoucherSpecification;
 import com.example.demo.service.nguyen.VoucherService;
 //import org.hibernate.query.Page;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,15 +23,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VoucherServiceImpl implements VoucherService {
 
     @Autowired
     VoucherRepository voucherRepository;
+
+    @Autowired
+    CustomerTypeVoucherRepository customerTypeVoucherRepository;
+
+    @Autowired
+    private NBillRepository billRepository;
+
 
     @Override
     public List<Voucher> getAllVoucher() {
@@ -102,7 +119,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Scheduled(fixedRate = 60000)
-    public void autoUpdateStatus(){
+    public void autoUpdateStatus() {
         updateStatus();
     }
 
@@ -117,5 +134,111 @@ public class VoucherServiceImpl implements VoucherService {
 
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.desc("CreatedAt")));
         return voucherRepository.findAll(spec, sortedPageable);
+    }
+
+    @Override
+    public Voucher createVoucherAndCustomerTypeVoucher(Voucher voucher, List<CustomerType> customerTypeList) {
+        voucher.setCreatedAt(new Date());
+        voucher.setCreatedBy("Admin add");
+        voucher.setUpdatedAt(new Date());
+        voucher.setUpdatedBy("Admin add");
+        voucher.setStatus(checkDate(voucher.getStartDate(), voucher.getEndDate()));
+
+        updateStatus();
+
+        Voucher returnVoucher = voucherRepository.save(voucher);
+
+        for (CustomerType customerType :
+                customerTypeList) {
+            CustomerTypeVoucher customerTypeVoucher = new CustomerTypeVoucher();
+            customerTypeVoucher.setVoucher(returnVoucher);
+            customerTypeVoucher.setCustomerType(customerType);
+            customerTypeVoucher.setCreatedAt(new Date());
+            customerTypeVoucher.setUpdatedAt(new Date());
+            customerTypeVoucher.setStatus(1);
+
+            customerTypeVoucherRepository.save(customerTypeVoucher);
+        }
+
+        return returnVoucher;
+    }
+
+    @Override
+    public Voucher updateVoucherAndCustomerTypeVoucher(Long voucherId, Voucher updatedVoucher, List<CustomerType> updatedCustomerTypeList) {
+        // Retrieve the existing voucher by ID
+        Optional<Voucher> optionalVoucher = voucherRepository.findById(voucherId);
+        if (!optionalVoucher.isPresent()) {
+            throw new EntityNotFoundException("Voucher not found with id " + voucherId);
+        }
+
+        Voucher existingVoucher = optionalVoucher.get();
+
+        // Update voucher details
+
+        existingVoucher.setCode(updatedVoucher.getCode());
+        existingVoucher.setName(updatedVoucher.getName());
+        existingVoucher.setValue(updatedVoucher.getValue());
+        existingVoucher.setDiscountType(updatedVoucher.getDiscountType());
+        existingVoucher.setMaximumReductionValue(updatedVoucher.getMaximumReductionValue());
+        existingVoucher.setMinimumTotalAmount(updatedVoucher.getMinimumTotalAmount());
+        existingVoucher.setQuantity(updatedVoucher.getQuantity());
+        existingVoucher.setNumberOfUses(updatedVoucher.getNumberOfUses());
+        existingVoucher.setDescribe(updatedVoucher.getDescribe());
+        existingVoucher.setStartDate(updatedVoucher.getStartDate());
+        existingVoucher.setEndDate(updatedVoucher.getEndDate());
+        existingVoucher.setCreatedAt(updatedVoucher.getCreatedAt());
+        existingVoucher.setCreatedBy(updatedVoucher.getCreatedBy());
+        existingVoucher.setUpdatedAt(new Date());
+        existingVoucher.setUpdatedBy("Admin update");
+        existingVoucher.setStatus(checkDate(updatedVoucher.getStartDate(), updatedVoucher.getEndDate()));
+
+        updateStatus();
+
+        Voucher returnVoucher = voucherRepository.save(existingVoucher);
+
+        // Remove existing customer type vouchers associated with the voucher
+        List<CustomerTypeVoucher> existingCustomerTypeVouchers = customerTypeVoucherRepository.findAllByVoucherId(voucherId);
+        for (CustomerTypeVoucher existingCustomerTypeVoucher : existingCustomerTypeVouchers) {
+            customerTypeVoucherRepository.delete(existingCustomerTypeVoucher);
+        }
+
+        // Add updated customer type vouchers
+        for (CustomerType updatedCustomerType : updatedCustomerTypeList) {
+            CustomerTypeVoucher customerTypeVoucher = new CustomerTypeVoucher();
+            customerTypeVoucher.setVoucher(returnVoucher);
+            customerTypeVoucher.setCustomerType(updatedCustomerType);
+            customerTypeVoucher.setCreatedAt(new Date());
+            customerTypeVoucher.setUpdatedAt(new Date());
+            customerTypeVoucher.setStatus(1);
+
+            customerTypeVoucherRepository.save(customerTypeVoucher);
+        }
+
+        return returnVoucher;
+    }
+
+    @Override
+    public VoucherStatistics calculateVoucherStatistics(Long voucherId) {
+        Voucher voucher = voucherRepository.findByIdN(voucherId);
+
+        if (voucher == null) {
+            throw new IllegalArgumentException("Voucher not found");
+        }
+
+        List<Bill> bills = billRepository.findByVoucherId(voucherId);
+        int usageCount = bills.size();
+
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+        BigDecimal totalRevenueAfterDiscount = BigDecimal.ZERO;
+
+        for (Bill bill : bills) {
+            totalRevenue = totalRevenue.add(bill.getTotalAmount());
+            totalRevenueAfterDiscount = totalRevenueAfterDiscount.add(bill.getTotalAmountAfterDiscount());
+        }
+
+        BigDecimal profit = totalRevenueAfterDiscount.subtract(totalRevenue);
+        BigDecimal profitMargin = (totalRevenue.compareTo(BigDecimal.ZERO) > 0) ? profit.divide(totalRevenue, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
+
+        return new VoucherStatistics(usageCount, totalRevenue, totalRevenueAfterDiscount, profit, profitMargin);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.demo.restController.nguyen;
 
 import com.example.demo.entity.Voucher;
+import com.example.demo.model.request.nguyen.VoucherRequest;
+import com.example.demo.model.response.nguyen.VoucherStatistics;
 import com.example.demo.service.nguyen.VoucherService;
 import com.example.demo.untility.nguyen.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +64,32 @@ public class VoucherRestController {
             startDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
 
-        Pageable pageable = PageRequest.of(pageNumber, 4);
-        Page<Voucher> page = voucherService.findVouchers(name, code, discountType, startDate, endDate, status, pageable);
+        Pageable pageable = PageRequest.of(pageNumber, 5);
+        Page<Voucher> page = voucherService.findVouchers(name, code,
+                discountType, startDate, endDate, status, pageable);
         return new PaginationResponse<>(page);
+    }
+
+    @PostMapping("/saveVoucher")
+    public ResponseEntity<?> saveVoucher(@RequestBody VoucherRequest voucherRequest) {
+        System.out.println(voucherRequest.getVoucher());
+        System.out.println(voucherRequest.getCustomerTypeList());
+        return ResponseEntity.ok(voucherService
+                .createVoucherAndCustomerTypeVoucher(voucherRequest.getVoucher(),
+                        voucherRequest.getCustomerTypeList()));
+    }
+
+    @PutMapping("/updateVoucher/{id}")
+    public ResponseEntity<?> updateVoucher(@RequestBody VoucherRequest voucherRequest, @PathVariable Long id) {
+        System.out.println(voucherRequest.getVoucher());
+        System.out.println(voucherRequest.getCustomerTypeList());
+        return ResponseEntity.ok(voucherService
+                .updateVoucherAndCustomerTypeVoucher(id, voucherRequest.getVoucher(),
+                        voucherRequest.getCustomerTypeList()));
+    }
+
+    @GetMapping("/{voucherId}/statistics")
+    public VoucherStatistics getVoucherStatistics(@PathVariable Long voucherId) {
+        return voucherService.calculateVoucherStatistics(voucherId);
     }
 }

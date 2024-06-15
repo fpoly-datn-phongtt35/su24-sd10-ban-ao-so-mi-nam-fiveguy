@@ -1,64 +1,36 @@
 <!DOCTYPE html>
-<html ng-app="myApp">
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="path/to/chosen.css"> <!-- Đường dẫn tới CSS của jQuery Chosen -->
+    <style>
+        .chosen-select[disabled] + .chosen-container .search-choice {
+            font-weight: bold; /* Làm đậm văn bản */
+            color: #000; /* Màu chữ */
+            opacity: 1; /* Đặt độ trong suốt về 1 để chữ rõ hơn */
+        }
+    </style>
 </head>
-<body ng-controller="MyController">
-    <form ng-submit="submitForm()">
-        <select id="chosen-select" data-placeholder="Begin typing a name to filter..." multiple style="width: 100%;" class="chosen-select" ng-model="selectedBears" ng-change="updateSelection()">
-            <option ng-repeat="item in customerTypes" value="{{ item.id }}">{{ item.name }}</option>
-        </select>
-        <button type="submit">Submit</button>
-    </form>
+<body>
+    <select id="chosen-select-update" data-placeholder="Nhập để lọc" multiple class="chosen-select" ng-model="selectedCustomerTypesUpdate" ng-change="updateSelectionEdit()">
+        <option ng-repeat="item in customerTypes" value="{{ item.id }}">{{ item.name}}</option>
+    </select>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="path/to/chosen.jquery.js"></script> <!-- Đường dẫn tới JavaScript của jQuery Chosen -->
     <script>
-        var app = angular.module('myApp', []);
-        app.controller('MyController', function($scope, $http, $timeout) {
-            $scope.customerTypes = [];
-            $scope.selectedBears = ['1', '2', '3']; // Pre-select items with IDs 1, 2, and 3
+        $(document).ready(function() {
+            $("#chosen-select-update").chosen();
+            
+            function toggleChosenDisabled(isDisabled) {
+                const chosenSelect = $("#chosen-select-update");
+                chosenSelect.prop('disabled', isDisabled).trigger("chosen:updated");
+            }
 
-            $scope.getAllCustomerType = function() {
-                $http.get('http://localhost:8080/api/admin/customerType/all').then(function(res) {
-                    $scope.customerTypes = res.data;
-                    console.log($scope.customerTypes);
-
-                    // Use $timeout to ensure Chosen is re-initialized after data is assigned
-                    $timeout(function() {
-                        $(".chosen-select").trigger("chosen:updated");
-                    }, 0);
-                });
-            };
-
-            $scope.updateSelection = function() {
-                console.log("Selected IDs: ", $scope.selectedBears);
-            };
-
-            // Call getAllCustomerType on load
-            $scope.getAllCustomerType();
-
-            // Initialize Chosen
-            $scope.initChosen = function() {
-                $('#chosen-select').chosen({
-                    no_results_text: "Oops, nothing found!"
-                }).change(function() {
-                    $scope.$apply(function() {
-                        // Update selectedBears with the IDs of the selected items
-                        $scope.selectedBears = $('#chosen-select').val().map();
-                        $scope.updateSelection();
-                    });
-                });
-            };
-
-            // Call initChosen when the document is ready
-            angular.element(document).ready(function() {
-                $scope.initChosen();
-            });
-
-            $scope.submitForm = function() {
-                console.log('Selected Bears:', $scope.selectedBears);
-            };
+            // Ví dụ: Gọi hàm toggleChosenDisabled(true) để disable và toggleChosenDisabled(false) để enable
+            toggleChosenDisabled(true); // Hoặc false để enable
         });
     </script>
 </body>
