@@ -53,6 +53,13 @@
             <artifactId>mssql-jdbc</artifactId>
             <scope>runtime</scope>
         </dependency>
+<!--        XỬ lí ảnh-->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.32.2</version>
+        </dependency>
+        <!--        XỬ lí ảnh-->
 
         <!--security-->
         <dependency>
