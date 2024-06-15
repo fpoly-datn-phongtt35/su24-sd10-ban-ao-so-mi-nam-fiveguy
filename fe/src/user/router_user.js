@@ -21,7 +21,10 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Nguyên -->
 
     // <!-- Hải -->
-
+    .when("/home/cart", {
+      templateUrl: "pages/cart/cart.html",
+      controller: 'cartController'
+    })
 
 
     .otherwise({
