@@ -44,7 +44,7 @@ public class WristServiceImpl implements WristService {
     public Wrist create(WristRequest request) {
         Wrist existingWrist = repository.findByName(request.getName());
         if (existingWrist != null) {
-            throw new DuplicateException("Trùng tên cổ tay");
+            throw new DuplicateException("Trùng tên cổ tay", "name");
         }
         Wrist wrist = new Wrist();
         wrist.setName(request.getName());
@@ -56,8 +56,8 @@ public class WristServiceImpl implements WristService {
     @Override
     public Wrist update(WristRequest request, Long id) {
         Wrist existingWrist = repository.findByName(request.getName());
-        if (existingWrist != null) {
-            throw new DuplicateException("Trùng tên cổ tay");
+        if (existingWrist != null && id != existingWrist.getId()) {
+            throw new DuplicateException("Trùng tên cổ tay", "name");
         }
         Optional<Wrist> wristOptional = repository.findById(id);
         if (wristOptional.isPresent()) {

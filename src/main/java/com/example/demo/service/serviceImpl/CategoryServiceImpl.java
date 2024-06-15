@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category create(CategoryRequest request) {
         Category existingCategory = repository.findByName(request.getName());
         if (existingCategory != null) {
-            throw new DuplicateException("Trùng tên nhóm sản phẩm");
+            throw new DuplicateException("Trùng tên nhóm sản phẩm", "name");
         }
         Category category = new Category();
         category.setName(request.getName());
@@ -50,8 +50,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category update(CategoryRequest request, Long id) {
         Category existingCategory = repository.findByName(request.getName());
-        if (existingCategory != null) {
-            throw new DuplicateException("Trùng tên nhóm sản phẩm");
+        if (existingCategory != null && id != existingCategory.getId()) {
+            throw new DuplicateException("Trùng tên nhóm sản phẩm", "name");
         }
         Optional<Category> categoryOptional = repository.findById(id);
         if (categoryOptional.isPresent()) {

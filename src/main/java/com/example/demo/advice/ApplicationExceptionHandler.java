@@ -25,7 +25,7 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleDuplicate(DuplicateException ex) {
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("name", ex.getMessage());
+        errorMap.put(ex.getField(), ex.getMessage());
         return errorMap;
     }
 }

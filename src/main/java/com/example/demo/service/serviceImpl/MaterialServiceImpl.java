@@ -43,7 +43,7 @@ public class MaterialServiceImpl implements MaterialService {
     public Material create(MaterialRequest request) {
         Material existingMaterial = repository.findByName(request.getName());
         if (existingMaterial != null) {
-            throw new DuplicateException("Trùng tên chất liệu");
+            throw new DuplicateException("Trùng tên chất liệu", "name");
         }
         Material material = new Material();
         material.setName(request.getName());
@@ -55,8 +55,8 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public Material update(MaterialRequest request, Long id) {
         Material existingMaterial = repository.findByName(request.getName());
-        if (existingMaterial != null) {
-            throw new DuplicateException("Trùng tên chất liệu");
+        if (existingMaterial != null && id != existingMaterial.getId()) {
+            throw new DuplicateException("Trùng tên chất liệu", "name");
         }
         Optional<Material> materialOptional = repository.findById(id);
         if (materialOptional.isPresent()) {

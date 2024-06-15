@@ -29,6 +29,12 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/material", {
       templateUrl: "pages/product/material.html",
     })
+    .when("/admin/size", {
+      templateUrl: "pages/product/size.html",
+    })
+    .when("/admin/color", {
+      templateUrl: "pages/product/color.html",
+    })
     // <!-- Tịnh -->
     .when("/admin/customer", {
       templateUrl: "pages/customer/customer.html",

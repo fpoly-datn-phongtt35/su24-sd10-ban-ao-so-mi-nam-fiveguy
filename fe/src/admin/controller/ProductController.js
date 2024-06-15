@@ -1,27 +1,27 @@
-app.controller("CategoryController", function($scope, $http){
+app.controller("ProductController", function($scope, $http){
     $scope.page = 0;
     $scope.size = 5;
     
     $scope.filter = {
-        name: '',
+        keyword: '',
         sortField: 'createdAt',
         sortDirection: 'ASC'
     };
-    $scope.category = {};
-    $scope.categoryUpdate = {};
-    $scope.categories = [];
+    $scope.product = {};
+    $scope.productUpdate = {};
+    $scope.products = [];
     
-    $scope.getAllCategories = () => {
+    $scope.getAllProducts = () => {
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
-        $http.get(`${host}/category`, 
-                {params: {page: $scope.page, size: $scope.size, name: $scope.filter.name,
+        $http.get(`${host}/product`, 
+                {params: {page: $scope.page, size: $scope.size, keyword: $scope.filter.keyword,
                 sortField: $scope.filter.sortField,
                 sortDirection: $scope.filter.sortDirection
                 }})
             .then((response) => {
-                $scope.categories = response.data;
+                $scope.products = response.data;
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage = response.data.pageable.pageNumber;
             }).catch(error => {
@@ -29,50 +29,50 @@ app.controller("CategoryController", function($scope, $http){
             })
     }
 
-    $scope.searchCategories = () => {
+    $scope.searchProducts = () => {
         $scope.page = 0;
-        $scope.getAllCategories();
+        $scope.getAllProducts();
     }
     
     $scope.changePage = (page) => {
         if (page >= 0 && page < $scope.totalPages) {
             $scope.page = page;
-            $scope.getAllCategories();
+            $scope.getAllProducts();
         }
     }
 
-    $scope.getAllCategories();
+    // $scope.getAllProducts();
 
     $scope.resetForm = () => {
-        $scope.category = {};
+        $scope.product = {};
         $scope.errors = {};
     }
 
     $scope.resetFormUpdate = () => {
-        $scope.categoryUpdate = {};
+        $scope.productUpdate = {};
         $scope.errorsUpdate = {};
     }
 
-    $scope.editCategory = (key) => {
-        $http.get(`${host}/category/${key}`).then((response) => {
-            $scope.categoryUpdate = response.data;
+    $scope.editProduct = (key) => {
+        $http.get(`${host}/product/${key}`).then((response) => {
+            $scope.productUpdate = response.data;
         }).catch(error => {
             toastr["error"](error);
         })
     }
 
     $scope.handleDelete = (element) => {
-        $scope.category = element;
+        $scope.product = element;
     }
 
     $scope.handleStatus = (element) => {
-        $scope.category = element;
+        $scope.product = element;
     }
 
     $scope.updateStatus = () => {
-        $http.put(`${host}/category/status/${$scope.category.id}`).then(response => {
-            $scope.getAllCategories();
-            $scope.category = {};
+        $http.put(`${host}/product/status/${$scope.product.id}`).then(response => {
+            $scope.getAllProducts();
+            $scope.product = {};
             $('#updateStatusModel').modal('hide');
             toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
         }).catch(error => {
@@ -80,12 +80,12 @@ app.controller("CategoryController", function($scope, $http){
         })
     }
 
-    $scope.createCategory = () => {
-        if ($scope.categoryForm.$valid) {
-           $http.post(`${host}/category`, $scope.category).then((response) => {
-                $scope.getAllCategories();
+    $scope.createProduct = () => {
+        if ($scope.productForm.$valid) {
+           $http.post(`${host}/product`, $scope.product).then((response) => {
+                $scope.getAllProducts();
                 $scope.resetForm();
-                $('#addCategoryModel').modal('hide');
+                $('#addProductModel').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
            }).catch(error => {
                 if (error.status === 400) $scope.errors = error.data
@@ -94,12 +94,12 @@ app.controller("CategoryController", function($scope, $http){
         }
     }
 
-    $scope.updateCategory = () => {
-        if ($scope.categoryFormUpdate.$valid) {
-            $http.put(`${host}/category/${$scope.categoryUpdate.id}`, $scope.categoryUpdate).then(response => {
-                $scope.getAllCategories();
+    $scope.updateProduct = () => {
+        if ($scope.productFormUpdate.$valid) {
+            $http.put(`${host}/product/${$scope.productUpdate.id}`, $scope.productUpdate).then(response => {
+                $scope.getAllProducts();
                 $scope.resetFormUpdate();
-                $('#editCategoryModal').modal('hide');
+                $('#editProductModal').modal('hide');
                 toastr["success"]("Cập nhật " + response.data.name + " thành công");
             }). catch(error => {
                 if (error.status === 400) $scope.errorsUpdate = error.data;
@@ -109,10 +109,10 @@ app.controller("CategoryController", function($scope, $http){
     }
 
     $scope.delete = () => {
-        $http.delete(`${host}/category/${$scope.category.id}`).then(response => {
-            $scope.getAllCategories();
-            $scope.category = {};
-            $('#deleteCategoryModel').modal('hide');
+        $http.delete(`${host}/product/${$scope.product.id}`).then(response => {
+            $scope.getAllProducts();
+            $scope.product = {};
+            $('#deleteProductModel').modal('hide');
             toastr["success"]("Xóa " + response.data.name + " thành công");
         }).catch(error => {
             toastr["error"](error);

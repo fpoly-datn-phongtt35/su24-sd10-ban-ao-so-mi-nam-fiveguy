@@ -44,7 +44,7 @@ public class CollarServiceImpl implements CollarService {
     public Collar create(CollarRequest request) {
         Collar existingCollar = repository.findByName(request.getName());
         if (existingCollar != null) {
-            throw new DuplicateException("Trùng tên cổ áo");
+            throw new DuplicateException("Trùng tên cổ áo", "name");
         }
         Collar collar = new Collar();
         collar.setName(request.getName());
@@ -56,8 +56,8 @@ public class CollarServiceImpl implements CollarService {
     @Override
     public Collar update(CollarRequest request, Long id) {
         Collar existingCollar = repository.findByName(request.getName());
-        if (existingCollar != null) {
-            throw new DuplicateException("Trùng tên cổ áo");
+        if (existingCollar != null && id != existingCollar.getId()) {
+            throw new DuplicateException("Trùng tên cổ áo", "name");
         }
         Optional<Collar> collarOptional = repository.findById(id);
         if (collarOptional.isPresent()) {

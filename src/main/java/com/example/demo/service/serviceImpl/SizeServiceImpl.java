@@ -43,7 +43,7 @@ public class SizeServiceImpl implements SizeService {
     public Size create(SizeRequest request) {
         Size existingMaterial = repository.findByName(request.getName());
         if (existingMaterial != null) {
-            throw new DuplicateException("Trùng tên size");
+            throw new DuplicateException("Trùng tên size", "name");
         }
         Size size = new Size();
         size.setName(request.getName());
@@ -55,8 +55,8 @@ public class SizeServiceImpl implements SizeService {
     @Override
     public Size update(SizeRequest request, Long id) {
         Size existingSize = repository.findByName(request.getName());
-        if (existingSize != null) {
-            throw new DuplicateException("Trùng tên size");
+        if (existingSize != null && id != existingSize.getId()) {
+            throw new DuplicateException("Trùng tên size", "name");
         }
         Optional<Size> sizeOptional = repository.findById(id);
         if (sizeOptional.isPresent()) {
