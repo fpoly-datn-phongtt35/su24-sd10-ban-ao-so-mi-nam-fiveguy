@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="stylesheet" th:href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="login.css">
+    <title>Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    <!-- //toastr -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+
+    <!-- angular-jwt -->
+    <script type="text/javascript" src="https://cdn.rawgit.com/auth0/angular-jwt/master/dist/angular-jwt.js"></script>
+</head>
+
+<body ng-app="security2" ng-controller="LoginCtrl2">
+
+
+
+    <!-- <nav>
+    <button class="btn " ng-click="logout()">Logout</button>
+     <a href="/auth/logoff">Logout</a>
+ </nav> -->
+    <div class="container" id="container">
+        <div class="form-container sign-up">
+            <form>
+                <h1>Đăng Ký</h1>
+                <div class="input-row">
+                    <input type="text" ng-model="user.lastName" placeholder="Họ" required>
+                    <p style="color: red;" class="error-message" ng-if="lastNameError">Họ không được để trống.</p>
+
+                    <input type="text" ng-model="user.firstName" placeholder="Tên" required>
+                    <p style="color: red;" class="error-message" ng-if="firstNameError">Tên không được để trống.</p>
+
+                    <input type="text" ng-model="user.email" placeholder="Email" required>
+                    <p style="color: red;" class="error-message" ng-if="emailError">Email không hợp lệ.</p>
+
+                    <input type="text" ng-model="user.account" placeholder="Tên tài khoản" required>
+                    <p style="color: red;" class="error-message" ng-if="accountError">Tên tài khoản không hợp lệ.</p>
+
+                    <input type="password" ng-model="user.password" placeholder="Mật khẩu" required>
+                    <p style="color: red;" class="error-message" ng-if="passwordError">Mật khẩu có độ dài tối thiểu 10
+                        kí tự, viết Hoa, chứa kí tự số.</p>
+
+                    <input type="password" ng-model="user.confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                    <p style="color: red;" class="error-message" ng-if="confirmPasswordError">Mật khẩu xác nhận không
+                        khớp.</p>
+
+                    <div style="    display: flex;
+                   justify-content: center;">
+                        <button ng-click="registerUser()">Đăng Ký</button>
+                    </div>
+                </div>
+            </form>
+
+
+
+        </div>
+        <div class="form-container sign-in">
+            <form>
+                <h1>Đăng Nhập</h1>
+                <div class="social-icons">
+                    <!-- <a href="#" class="icon"><i class="fa fa-google-plus"></i></a>
+                    <a href="#" class="icon"><i class="fa fa-facebook-f"></i></a>
+                    <a href="#" class="icon"><i class="fa fa-github"></i></a>
+                    <a href="#" class="icon"><i class="fa fa-linkedin"></i></a> -->
+                </div>
+                <span>Nhập tài khoản với mật khẩu</span>
+                <div>
+                    <input type="text" placeholder="Tài khoản" ng-model="username" name="username" required>
+                    <span ng-show="loginForm.username.$dirty && loginForm.username.$error.required"
+                        class="error-message">
+                        Tên người dùng là trường bắt buộc.
+                    </span>
+                </div>
+                <div>
+                    <input type="password" placeholder="Mật khẩu" ng-model="password" name="password" required>
+                    <span ng-show="loginForm.password.$dirty && loginForm.password.$error.required"
+                        class="error-message">
+                        Mật khẩu là trường bắt buộc.
+                    </span>
+                </div>
+                <a href="/src/login/confirmOtp.html">Quên mật khẩu</a>
+                <!-- <div>
+                    <label for="remember">Nhớ tôi:</label>
+                    <input type="checkbox" id="remember" name="remember" th:checked="${remember}">
+                </div> -->
+                <button type="submit" ng-disabled="loginForm.$invalid" ng-click="login()">Đăng Nhập</button>
+            </form>
+
+        </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Xin Chào trở lại!</h1>
+                    <p>Nhập thông tin cá nhân của bạn để sử dụng tất cả các tính năng của trang web.</p>
+                    <button class="hidden" id="login">Đăng Nhập</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Chào Bạn!</h1>
+                    <p>Đăng ký với thông tin cá nhân của bạn để sử dụng tất cả các tính năng của trang web.</p>
+                    <button class="hidden" id="register">Đăng Ký</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+    <script src="login.js"></script>
+    <script src="login-controller.js"></script>
+
+</body>
+
+</html>
