@@ -47,6 +47,9 @@ public class Voucher {
     @Column(name = "NumberOfUses")
     private Integer numberOfUses;
 
+    @Column(name = "Visibility")
+    private Integer visibility;
+
     @Column(name = "Describe", columnDefinition = "nvarchar(max)")
     private String describe;
 
@@ -74,4 +77,8 @@ public class Voucher {
     @JsonIgnore
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
     private List<Bill> bills;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
+    private List<CustomerVoucher> customerVouchers;
 }
