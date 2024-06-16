@@ -5,11 +5,12 @@
             <h2 class="text-center mb-4">BÁO CÁO HIỆU QUẢ CHƯƠNG TRÌNH GIẢM GIÁ</h2>
             <div class="card mt-4">
                 <div class="card-body">
-                    <p class="card-text">Số lần sử dụng giảm giá: <strong>{{summary.totalProductsSold}}</strong></p>
-                    <p class="card-text">Doanh số tương ứng: <strong>{{summary.totalRevenue}} VNĐ</strong></p>
-                    <p class="card-text">Lợi nhuận sau giảm giá: <strong>{{summary.totalProfit}} VNĐ</strong></p>
-                    <p class="card-text">Tỷ lệ lợi nhuận: <strong>{{(summary.profitMargin).toFixed(2)}}%</strong></p>
+                    <p class="card-text">Số lần sử dụng giảm giá: <strong>{{ summary.totalProductsSold }}</strong></p>
+                    <p class="card-text">Doanh số tương ứng: <strong>{{ formatCurrency(summary.totalRevenue) }} VNĐ</strong></p>
+                    <p class="card-text">Lợi nhuận sau giảm giá: <strong>{{ formatCurrency(summary.totalProfit) }} VNĐ</strong></p>
+                    <p class="card-text">Tỷ lệ lợi nhuận: <strong>{{ summary.profitMargin.toFixed(2) }}%</strong></p>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -194,12 +195,10 @@
                             <tbody id="mergedProducts">
                                 <tr ng-repeat="product in products">
                                     <td><input type="checkbox" ng-model="product.selected" ng-change="toggleProductSelection(product)"></td>
-
-                                    <td>{{ product.selected }}</td>
                                     <td>{{ product.code }}</td>
                                     <td>{{ product.name }}</td>
-                                    <td></td>
-                                    <td>{{ product.price | currency:'VND' }}</td>
+                                    <td>Ảnh</td>
+                                    <td>{{formatCurrency(product.price)  }} VNĐ</td>
                                 </tr>
                                 
                             </tbody>
@@ -299,8 +298,8 @@
                                 <td>{{ productSale.product.code }}</td>
                                 <td>{{ productSale.product.name }}</td>
                                 <td></td>
-                                <td>{{ productSale.product.price | currency:'VND' }}</td>
-                                <td>{{ productSale.promotionalPrice | currency:'VND'}}</td>
+                                <td>{{formatCurrency(productSale.product.price)  }} VNĐ</td>
+                                <td>{{formatCurrency(productSale.promotionalPrice)  }} VNĐ</td>
                             </tr>
                         </tbody>
                     </table>

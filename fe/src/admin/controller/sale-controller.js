@@ -728,5 +728,11 @@ $scope.addAllProductSales = function() {
                 console.error('Error fetching sale summary:', error);
             });
     };
+    
+    // formatCurrency
+    $scope.formatCurrency = function(value) {
+        if (!value) return '';
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
 
 }]);
