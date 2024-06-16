@@ -1,6 +1,7 @@
 package com.example.demo.service.serviceImpl.tinh;
 
 import com.cloudinary.Cloudinary;
+import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.tinh.EmployeeRepository;
 import com.example.demo.repository.tinh.EmployeeSpecification;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -157,14 +159,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 //        return employeeRepository.findAll(EmployeeSpecification.filterEmployees(fullName, code, avatar, birthDate, gender, address, account, status), pageable);
 //    }
     @Override
-    public Page<Employee> findEmployee(String fullName, String code, String avatar,Date birthDate, Boolean gender, String address, String account, Integer status, Pageable pageable) {
+    public Page<Employee> findEmployee(String fullName, String code, String avatar, Date birthDate, Boolean gender, String address,String account, String email, String phoneNumber, Long id, Integer status, Pageable pageable) {
+
         Specification<Employee> spec = Specification.where(EmployeeSpecification.hasCode(code))
                 .and(EmployeeSpecification.hasfullName(fullName))
                 .and(EmployeeSpecification.hasAvatar(avatar))
                 .and(EmployeeSpecification.hasBrithDate(birthDate))
                 .and(EmployeeSpecification.hasGenDer(gender))
                 .and(EmployeeSpecification.hasAddRess(address))
-                .and(EmployeeSpecification.hasAccountr(account))
+                .and(EmployeeSpecification.hasAccountByAccount(account))
+                .and(EmployeeSpecification.hasAccountByEmail(email))
+                .and(EmployeeSpecification.hasAccountByPhoneNumber(phoneNumber))
+                .and(EmployeeSpecification.hasAccountByRole(id))
                 .and(EmployeeSpecification.hasStatus(status));
 
         return employeeRepository.findAll(spec, pageable);

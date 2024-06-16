@@ -30,8 +30,7 @@ public interface EmployeeService {
 
      List<Employee> getAllStatus(Integer status);
 
-     Page<Employee> findEmployee(String fullName, String code, String avatar, Date birthDate, Boolean gender, String address, String account, Integer status, Pageable pageable);
-
+     Page<Employee> findEmployee(String fullName, String code, String avatar, Date birthDate, Boolean gender, String address,String account, String email, String phoneNumber, Long id, Integer status, Pageable pageable);
 
 }
 

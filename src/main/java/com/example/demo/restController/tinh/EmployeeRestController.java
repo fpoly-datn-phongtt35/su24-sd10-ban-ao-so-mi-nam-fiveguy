@@ -51,6 +51,7 @@ public class EmployeeRestController {
         Employee employee = employeeService.getById(id);
         return ResponseEntity.ok(employee);
     }
+
     @GetMapping("/search-status/{id}")
     public ResponseEntity<List<Employee>> getAllstatus(@PathVariable Integer id) {
         List<Employee> employee =  employeeService.getAllStatus(id);
@@ -67,7 +68,7 @@ public class EmployeeRestController {
 
     //Thêm Employee
 
-    @PostMapping("")
+    @PostMapping("/save")
     public ResponseEntity<?> create(@RequestBody Employee employees) {
         try {
             Employee createdEmployee = employeeService.create(employees);
@@ -113,13 +114,16 @@ public class EmployeeRestController {
             @RequestParam(required = false) Boolean gender,
             @RequestParam(required = false) String address,
             @RequestParam(required = false) String account,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) Long idRole,
             @RequestParam(required = false) Integer status,
 //            @RequestParam(defaultValue = "0") int page,
 //            @RequestParam(defaultValue = "5") int size,
 //            @RequestParam(defaultValue = "id") String sortField,
             @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
         Pageable pageable = PageRequest.of(pageNumber, 5);
-        Page<Employee> page = employeeService.findEmployee(fullName, code, avatar, birthDate, gender, address, account, status, pageable);
+        Page<Employee> page = employeeService.findEmployee(fullName, code, avatar, birthDate, gender, address, account, email, phoneNumber, idRole, status, pageable);
         return new PaginationResponse<>(page);
     }
 

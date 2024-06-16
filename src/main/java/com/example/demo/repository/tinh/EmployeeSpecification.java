@@ -1,7 +1,9 @@
 package com.example.demo.repository.tinh;
 
+import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 
@@ -14,8 +16,8 @@ public class EmployeeSpecification {
                 String formattedName = "%" + fullName + "%"; // Tìm kiếm đường dẫn chứa tên
 
                 return criteriaBuilder.or(
-                        criteriaBuilder.like(root.get("name"), formattedName), // Tìm kiếm tên chính xác
-                        criteriaBuilder.like(root.get("name"), "%" + fullName.replaceAll("\\s", "") + "%") // Kiếm tên kết hợp với các từ khác
+                        criteriaBuilder.like(root.get("fullName"), formattedName), // Tìm kiếm tên chính xác
+                        criteriaBuilder.like(root.get("fullName"), "%" + fullName.replaceAll("\\s", "") + "%") // Kiếm tên kết hợp với các từ khác
                 );
             }
         };
@@ -59,10 +61,38 @@ public class EmployeeSpecification {
                 address == null ? criteriaBuilder.conjunction() :
                         criteriaBuilder.lessThanOrEqualTo(root.get("address"), address);
     }
-    public static Specification<Employee> hasAccountr(String account) {
-        return (root, query, criteriaBuilder) ->
-                account == null ? criteriaBuilder.conjunction() :
-                        criteriaBuilder.lessThanOrEqualTo(root.get("account"), account);
+    public static Specification<Employee> hasAccountByAccount(String acount) {
+        return (root, query, criteriaBuilder) -> {
+            if (acount == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("account").get("account"), acount);
+        };
+    }
+    public static Specification<Employee> hasAccountByEmail(String email) {
+        return (root, query, criteriaBuilder) -> {
+            if (email == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("account").get("email"), email);
+        };
+    }
+    public static Specification<Employee> hasAccountByPhoneNumber(String phoneNumber) {
+        return (root, query, criteriaBuilder) -> {
+            if (phoneNumber == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("account").get("phoneNumber"), phoneNumber);
+        };
+    }
+
+    public static Specification<Employee> hasAccountByRole(Long id) {
+        return (root, query, criteriaBuilder) -> {
+            if (id == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("account").get("role").get("id"), id);
+        };
     }
 
     public static Specification<Employee> hasStatus(Integer status) {
