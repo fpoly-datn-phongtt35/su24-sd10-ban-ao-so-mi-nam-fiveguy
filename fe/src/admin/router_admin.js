@@ -34,6 +34,10 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/voucher/voucher.html",
       controller: "nguyen-voucher-ctrl"
     })
+    .when("/admin/vouchercopy", {
+      templateUrl: "pages/voucher/voucher copy.html",
+      controller: "nguyen-voucher-ctrl"
+    })
     .when("/admin/voucher/create", {
       templateUrl: "pages/voucher/voucher-create.html",
       controller: "nguyen-voucher-create-ctrl"

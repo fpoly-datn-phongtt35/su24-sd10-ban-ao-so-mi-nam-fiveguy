@@ -294,6 +294,14 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         })
     }
 
+    $scope.staticVoucher = {}
+
+    $scope.getStaticVoucher = function (id) {
+        $http.get(apiVoucher + "/" + id + "/statistics").then(function (res) {
+            $scope.staticVoucher = res.data
+        });
+    };
+
     //reset form add
     $scope.resetFormAdd = function () {
         $scope.formInputVoucher = {}
@@ -392,4 +400,84 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     $scope.currentDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
 
+
+
+    //filter customer
+
+    $scope.customers = [];
+    $scope.totalPagesCustomer = 0;
+    $scope.currentPageCustomer = 0;
+    $scope.desiredPageCustomer = 1;
+    $scope.filtersCustomer = {
+        fullName: null,
+        phoneNumber: null,
+        email: null,
+        customerTypeId: null
+    };
+
+    $scope.getCustomers = function (pageNumber) {
+        var params = {
+            pageNumber: pageNumber,
+            fullName: $scope.filters.fullName,
+            phoneNumber: $scope.filters.phoneNumber,
+            email: $scope.filters.email,
+            customerTypeId: $scope.filters.customerTypeId
+        };
+
+        $http.get('http://localhost:8080/api/admin/customerN/page', { params: params })
+            .then(function (response) {
+                $scope.customers = response.data.content;
+                $scope.totalPagesCustomer = response.data.totalPages;
+                $scope.currentPageCustomer = response.data.number;
+                $scope.desiredPageCustomer = response.data.number + 1;
+            })
+            .catch(function (error) {
+                console.error('Error fetching customers:', error);
+            });
+    };
+
+    $scope.applyFiltersCustomer = function () {
+        $scope.getCustomers(0);
+    };
+
+    $scope.goToPageCustomer = function () {
+        var pageNumber = $scope.desiredPageCustomer - 1;
+        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+            $scope.getCustomers(pageNumber);
+        } else {
+            // Reset desiredPage to currentPage if the input is invalid
+            $scope.desiredPageCustomer = $scope.currentPageCustomer + 1;
+        }
+    };
+
+    // Initial load
+    $scope.getCustomers(0);
+
+    $scope.resetFiltersCustomer = function () {
+        $scope.filtersCustomer = {
+            fullName: null,
+            phoneNumber: null,
+            email: null,
+            customerTypeId: null
+        };
+        $scope.getCustomers(0);
+    };
+
+    $scope.selectAll = false;
+
+    $scope.toggleAll = function () {
+        $scope.selectAll = !$scope.selectAll; // Đảo ngược trạng thái của selectAll
+        angular.forEach($scope.customers, function (customer) {
+            customer.selected = $scope.selectAll;
+        });
+    };
+
+    $scope.submitSelected = function () {
+        var selectedCustomers = $scope.customers.filter(function (customer) {
+            return customer.selected;
+        });
+
+        // Logic to submit selected customers to backend/API
+        console.log('Selected Customers:', selectedCustomers);
+    };
 });
