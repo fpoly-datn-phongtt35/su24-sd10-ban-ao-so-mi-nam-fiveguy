@@ -129,9 +129,10 @@ app.controller("SuppilerController", function($scope, $http){
     } );
 
     // ---------------------------------------
-    $http.get('https://vn-public-apis.fpo.vn/provinces/getAll?limit=-1')
+    $http.get('https://vapi.vnappmob.com/api/province/')
     .then(function(response) {
-        $scope.provinces = response.data.data.data;
+        console.log(response.data);
+        $scope.provinces = response.data;
     })
     .catch(function(error) {
         console.error('Lỗi khi gọi API:', error);
