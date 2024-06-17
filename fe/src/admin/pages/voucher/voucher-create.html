@@ -1,61 +1,53 @@
 <div class="container">
     <div class="row">
-        <div class="col-6">
+        <div class="col-5">
             <form name="formAddVoucher" ng-submit="formAddVoucher.$valid && addVoucher()" novalidate>
                 <div class="modal-header">
                     <h5 class="modal-title">Thêm mới voucher</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label>Mã</label>
-                                <input type="text" name="addCode" class="form-control"
-                                    ng-change="checkDuplicateCode()" ng-model="formInputVoucher.code"
-                                    ng-required="true">
+                        <div class="form-group">
+                            <label>Mã</label>
+                            <input type="text" name="addCode" class="form-control" ng-change="checkDuplicateCode()"
+                                ng-model="formInputVoucher.code" ng-required="true">
 
-                                <span ng-show="formAddVoucher.$submitted">
-                                    <div ng-show="formAddVoucher.addCode.$invalid"
-                                        class="error-message text-danger form-text">
-                                        Mã không được để trống</div>
-                                </span>
-                                <span ng-show="formAddVoucher.$submitted || duplicateCodeError">
-                                    <div ng-show="duplicateCodeError"
-                                        class="error-message text-danger form-text">
-                                        Mã voucher đã tồn tại
-                                    </div>
-                                </span>
-                            </div>
+                            <span ng-show="formAddVoucher.$submitted">
+                                <div ng-show="formAddVoucher.addCode.$invalid"
+                                    class="error-message text-danger form-text">
+                                    Mã không được để trống</div>
+                            </span>
+                            <span ng-show="formAddVoucher.$submitted || duplicateCodeError">
+                                <div ng-show="duplicateCodeError" class="error-message text-danger form-text">
+                                    Mã voucher đã tồn tại
+                                </div>
+                            </span>
                         </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label>Tên</label>
-                                <input type="text" name="addName" class="form-control"
-                                    ng-change="checkDuplicateName()" ng-model="formInputVoucher.name"
-                                    ng-required="true">
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Tên</label>
+                            <input type="text" name="addName" class="form-control" ng-change="checkDuplicateName()"
+                                ng-model="formInputVoucher.name" ng-required="true">
 
-                                <span ng-show="formAddVoucher.$submitted">
-                                    <div ng-show="formAddVoucher.addName.$invalid"
-                                        class="error-message text-danger form-text">
-                                        Tên không được để trống</div>
-                                </span>
-                                <span ng-show="formAddVoucher.$submitted || duplicateNameError">
-                                    <div ng-show="duplicateNameError"
-                                        class="error-message text-danger form-text">
-                                        Tên voucher đã tồn tại
-                                    </div>
-                                </span>
-                            </div>
+                            <span ng-show="formAddVoucher.$submitted">
+                                <div ng-show="formAddVoucher.addName.$invalid"
+                                    class="error-message text-danger form-text">
+                                    Tên không được để trống</div>
+                            </span>
+                            <span ng-show="formAddVoucher.$submitted || duplicateNameError">
+                                <div ng-show="duplicateNameError" class="error-message text-danger form-text">
+                                    Tên voucher đã tồn tại
+                                </div>
+                            </span>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-6">
                             <div class="form-group">
                                 <label>Loại</label>
-                                <select name="addType" class="form-select"
-                                    ng-model="formInputVoucher.discountType"
+                                <select name="addType" class="form-select" ng-model="formInputVoucher.discountType"
                                     ng-change="discountTypeChangeAdd()">
                                     <option ng-value="1">Giảm theo %</option>
                                     <option ng-value="2">Giảm theo số tiền</option>
@@ -70,10 +62,10 @@
                                         oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                                         max="{{formInputVoucher.discountType == '1' ? '100' : ''}}"
                                         ng-model="formInputVoucher.value" ng-required="true">
-                                    <span ng-if="formInputVoucher.discountType == 1"
-                                        class="input-group-text" id="basic-addon2">%</span>
-                                    <span ng-if="formInputVoucher.discountType == 2"
-                                        class="input-group-text" id="basic-addon2">đ</span>
+                                    <span ng-if="formInputVoucher.discountType == 1" class="input-group-text"
+                                        id="basic-addon2">%</span>
+                                    <span ng-if="formInputVoucher.discountType == 2" class="input-group-text"
+                                        id="basic-addon2">đ</span>
                                 </div>
                                 <span ng-show="formAddVoucher.$submitted">
                                     <div ng-show="formAddVoucher.addValue.$invalid"
@@ -212,7 +204,7 @@
                 </div>
             </form>
         </div>
-        <div class="col-6">
+        <div class="col-7">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>

@@ -135,7 +135,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    <div class="col-7">
+                                    <div class="col-6">
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="form-group">
@@ -224,10 +224,13 @@
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label>Giá trị tối thiểu HD</label>
-                                                    <input type="number" name="addMinBill" class="form-control"
-                                                        oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
-                                                        ng-model="formInputVoucher.minimumTotalAmount"
-                                                        ng-required="true">
+                                                    <div class="input-group">
+                                                        <input type="number" name="addMinBill" class="form-control"
+                                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
+                                                            ng-model="formInputVoucher.minimumTotalAmount"
+                                                            ng-required="true">
+                                                        <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                                    </div>
 
                                                     <span ng-show="formAddVoucher.$submitted">
                                                         <div ng-show="formAddVoucher.addMinBill.$invalid"
@@ -366,13 +369,44 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-5">
+                                    <div class="col-6">
                                         <div class="container mt-4">
+                                            <div class="row mb-0">
+                                                <div class="col-4">
+                                                    <input type="text" class="form-control-sm"
+                                                        style="width: 100%;height: 25%;" placeholder="Tìm theo tên"
+                                                        ng-model="filtersCustomer.fullName"
+                                                        ng-change="applyFiltersCustomer()">
+                                                </div>
+                                                <div class="col-4">
+                                                    <input type="text" class="form-control-sm"
+                                                        style="width: 100%;height: 25%;" placeholder="Tìm theo liên hệ"
+                                                        ng-model="filtersCustomer.phoneNumber"
+                                                        ng-change="applyFiltersCustomer()">
+                                                </div>
+                                                <div class="col-3">
+                                                    <select class="form-control-sm"
+                                                        ng-model="filtersCustomer.customerTypeId"
+                                                        ng-change="applyFiltersCustomer()">
+                                                        <option value="">Loại KH</option>
+                                                        <option ng-repeat="ct in customerTypes" ng-value="ct.id">
+                                                            {{ct.name}}</option>
+                                                        <!-- Add more customer types as needed -->
+                                                    </select>
+                                                </div>
+                                                <div class="col-1">
+                                                    <!-- <button class="btn btn-sm btn-primary" ng-click="applyFiltersCustomer()">Apply Filters</button> -->
+                                                    <a class="btn btn-sm" ng-click="resetFiltersCustomer()"
+                                                        style="height: 75%;">
+                                                        <i class="material-icons mb-3"
+                                                            title="Edit">&#xf053;</i></button></a>
+                                                </div>
+                                            </div>
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr>
                                                         <th>
-                                                            <input type="checkbox" ng-model="selectAll" ng-click="toggleAll()">
+                                                            <!-- <input type="checkbox" ng-model="selectAll" ng-click="toggleAll()"> -->
                                                         </th>
                                                         <th>Tên</th>
                                                         <th>Liên hệ</th>
@@ -382,34 +416,43 @@
                                                 <tbody>
                                                     <tr ng-repeat="customer in customers">
                                                         <td>
-                                                            <input type="checkbox" ng-model="customer.selected">
+                                                            <input type="checkbox" ng-model="customer.selected"
+                                                                ng-change="updateSelectedCustomers(customer)">
                                                         </td>
-                                                        <td>{{ customer.fullName }}</td>
-                                                        <td>
+                                                        <td style="font-size: 13px;">{{ customer.fullName }}</td>
+                                                        <td style="font-size: 13px;">
                                                             <div>{{ customer.account.phoneNumber }}</div>
                                                             <div>{{ customer.account.email }}</div>
                                                         </td>
-                                                        <td style="font-size: 16px;">{{ customer.customerType.name }}</td>
+                                                        <td style="font-size: 13px;">{{ customer.customerType.name }}
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                             <div class="clearfix">
                                                 <ul class="pagination">
                                                     <div class="d-flex justify-content-between align-items-center">
-                                                        <button type="button" class="btn btn-primary" ng-disabled="currentPageCustomer == 0"
+                                                        <button type="button" class="btn btn-sm  btn-primary"
+                                                            ng-disabled="currentPageCustomer == 0"
                                                             ng-click="getCustomers(currentPageCustomer - 1)">Previous</button>
                                                         <span class="ms-3 me-3">Page <input type="number"
-                                                                class="form-control d-inline-block w-auto ms-2 me-2" ng-model="desiredPageCustomer"
-                                                                min="1" max="{{totalPagesCustomer}}" ng-change="goToPageCustomer()"> of
-                                                            {{totalPages}}</span>
-                                                        <button type="button" class="btn btn-primary" ng-disabled="currentPageCustomer == totalPagesCustomer - 1"
+                                                                style="height: 75%; width: 30%;"
+                                                                class="form-control-sm d-inline-block ms-2 me-2"
+                                                                ng-model="desiredPageCustomer" min="1"
+                                                                max="{{totalPagesCustomer}}"
+                                                                ng-change="goToPageCustomer()">
+                                                            of
+                                                            {{totalPagesCustomer}}</span>
+                                                        <button type="button" class="btn btn-sm  btn-primary"
+                                                            ng-disabled="currentPageCustomer == totalPagesCustomer - 1"
                                                             ng-click="getCustomers(currentPageCustomer + 1)">Next</button>
                                                     </div>
                                                 </ul>
-                        
                                             </div>
-                                            <button type="button" class="btn btn-primary" ng-click="submitSelected()">Submit</button>
+                                            <button type="button" class="btn btn-sm btn-primary"
+                                                ng-click="submitSelected()">Submit</button>
                                         </div>
+
                                     </div>
                                 </div>
 
@@ -697,40 +740,5 @@
                 </div>
             </div>
         </div>
-
-        <div class="container mt-4">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>
-                            <input type="checkbox" ng-model="selectAll" ng-click="toggleAll()">
-                        </th>
-                        <th>Tên</th>
-                        <th>Số Điện Thoại</th>
-                        <th>Email</th>
-                        <th>Loại Khách Hàng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="customer in customers">
-                        <td>
-                            <input type="checkbox" ng-model="customer.selected">
-                        </td>
-                        <td>{{ customer.fullName }}</td>
-                        <td>{{ customer.account.phoneNumber }}</td>
-                        <td>{{ customer.account.email }}</td>
-                        <td>{{ customer.customerType.name }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button class="btn btn-primary" ng-click="submitSelected()">Submit</button>
-        </div>
-
-        <!-- <form ng-submit="submitForm()">
-            <select id="chosen-select" data-placeholder="Begin typing a name to filter..." multiple style="width: 100%;" class="chosen-select" ng-model="selectedBears" ng-change="updateSelection()">
-                <option ng-repeat="item in customerTypes" value="{{ item.id }}">{{ item.name }}</option>
-            </select>
-            <button type="submit">Submit</button>
-        </form> -->
     </div>
 </div>

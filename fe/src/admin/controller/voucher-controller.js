@@ -403,7 +403,6 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
 
     //filter customer
-
     $scope.customers = [];
     $scope.totalPagesCustomer = 0;
     $scope.currentPageCustomer = 0;
@@ -415,13 +414,18 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         customerTypeId: null
     };
 
+    // Load selected customers from local storage
+    
+    localStorage.setItem('selectedCustomers', []);
+    $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
+
     $scope.getCustomers = function (pageNumber) {
         var params = {
             pageNumber: pageNumber,
-            fullName: $scope.filters.fullName,
-            phoneNumber: $scope.filters.phoneNumber,
-            email: $scope.filters.email,
-            customerTypeId: $scope.filters.customerTypeId
+            fullName: $scope.filtersCustomer.fullName,
+            phoneNumber: $scope.filtersCustomer.phoneNumber,
+            email: $scope.filtersCustomer.email,
+            customerTypeId: $scope.filtersCustomer.customerTypeId
         };
 
         $http.get('http://localhost:8080/api/admin/customerN/page', { params: params })
@@ -430,6 +434,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
                 $scope.totalPagesCustomer = response.data.totalPages;
                 $scope.currentPageCustomer = response.data.number;
                 $scope.desiredPageCustomer = response.data.number + 1;
+                $scope.applySavedSelections(); // Apply saved selections
             })
             .catch(function (error) {
                 console.error('Error fetching customers:', error);
@@ -442,10 +447,9 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     $scope.goToPageCustomer = function () {
         var pageNumber = $scope.desiredPageCustomer - 1;
-        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+        if (pageNumber >= 0 && pageNumber < $scope.totalPagesCustomer) {
             $scope.getCustomers(pageNumber);
         } else {
-            // Reset desiredPage to currentPage if the input is invalid
             $scope.desiredPageCustomer = $scope.currentPageCustomer + 1;
         }
     };
@@ -466,18 +470,43 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     $scope.selectAll = false;
 
     $scope.toggleAll = function () {
-        $scope.selectAll = !$scope.selectAll; // Đảo ngược trạng thái của selectAll
+        $scope.selectAll = !$scope.selectAll;
         angular.forEach($scope.customers, function (customer) {
             customer.selected = $scope.selectAll;
+            $scope.updateSelectedCustomers(customer);
         });
+        $scope.saveSelections(); // Save selections
     };
 
     $scope.submitSelected = function () {
-        var selectedCustomers = $scope.customers.filter(function (customer) {
-            return customer.selected;
+        var selectedCustomers = Object.keys($scope.selectedCustomers).map(function (id) {
+            return $scope.selectedCustomers[id];
         });
-
-        // Logic to submit selected customers to backend/API
         console.log('Selected Customers:', selectedCustomers);
     };
+
+    $scope.updateSelectedCustomers = function (customer) {
+        if (customer.selected) {
+            $scope.selectedCustomers[customer.id] = customer;
+        } else {
+            delete $scope.selectedCustomers[customer.id];
+        }
+        $scope.saveSelections();
+    };
+
+    $scope.saveSelections = function () {
+        localStorage.setItem('selectedCustomers', JSON.stringify($scope.selectedCustomers));
+    };
+
+    $scope.applySavedSelections = function () {
+        angular.forEach($scope.customers, function (customer) {
+            customer.selected = !!$scope.selectedCustomers[customer.id];
+        });
+    };
+
+    $scope.$watch('customers', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+            $scope.applySavedSelections();
+        }
+    });
 });
