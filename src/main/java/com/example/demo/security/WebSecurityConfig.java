@@ -81,7 +81,7 @@ public PasswordEncoder passwordEncoder() {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
 
 //                        .requestMatchers("/api/ol/authenticated/**").authenticated()
                         .anyRequest().permitAll()

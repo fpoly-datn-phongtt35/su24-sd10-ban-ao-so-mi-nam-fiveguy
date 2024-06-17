@@ -9,12 +9,15 @@ import java.util.Optional;
 public interface AccountService {
 
 
-    Optional<Account> findByAccount(String username);
+    Optional<Account> findByAccount(String account);
 
     List<Account> findByEmail(String email);
     Account createAccount(Account accountEntity);
     List<UserRequestDTO> getAllAccount();
 
     Optional<Account> findByAccount2(String username);
+
+    Optional<String> getFullNameByToken(String token);
+
 
 }

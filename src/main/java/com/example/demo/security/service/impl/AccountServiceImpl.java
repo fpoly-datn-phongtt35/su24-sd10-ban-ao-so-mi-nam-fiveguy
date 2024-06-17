@@ -1,8 +1,11 @@
 package com.example.demo.security.service.impl;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Employee;
 import com.example.demo.security.Request.UserRequestDTO;
+import com.example.demo.security.jwt.JwtTokenUtil;
 import com.example.demo.security.repository.AccountRepository;
+import com.example.demo.security.repository.EmployeeRepository;
 import com.example.demo.security.service.AccountService;
 import com.example.demo.security.service.CustomerService;
 import com.example.demo.security.service.EmployeeService;
@@ -20,6 +23,11 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @Override
     public Optional<Account> findByAccount(String username) {
@@ -63,8 +71,30 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<Account> findByAccount2(String username) {
-        Optional<Account> account = accountRepository.findByAccount(username);
+    public Optional<String> getFullNameByToken(String token) {
+        try {
+            String actualToken = token.replace("Bearer ", "");
+            String accountName = jwtTokenUtil.getUsernameFromToken(actualToken);
+
+            Optional<Account> account = accountRepository.findByAccount(accountName);
+
+            if (account.isPresent()) {
+                Employee employee = employeeRepository.findByAccount_Id(account.get().getId());
+                if (employee != null) {
+                    return Optional.of(employee.getFullName());
+                }
+            }
+        } catch (Exception e) {
+            // Log exception if needed
+            System.err.println("Error occurred while getting user name by token: " + e.getMessage());
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Account> findByAccount2(String accountName) {
+        Optional<Account> account = accountRepository.findByAccount(accountName);
         if (account.isPresent()){
             return account;
         }

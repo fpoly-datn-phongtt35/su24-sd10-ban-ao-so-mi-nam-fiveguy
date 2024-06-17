@@ -10,7 +10,7 @@ app.controller("thongKeController", function ($scope, $http, $window) {
   // Gọi hàm lấy dữ liệu từ service
   $scope.getData = function() {
     $http
-      .get("http://localhost:8080/test")
+      .get("http://localhost:8080/security/test")
           .then(function(response) {
               $scope.message = response.data;
           })
