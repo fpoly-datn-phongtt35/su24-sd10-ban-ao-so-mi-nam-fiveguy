@@ -15,7 +15,7 @@ app.controller("CollarController", function($scope, $http){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
-        $http.get(`${host}/collar`, 
+        $http.get(`${config.host}/collar`, 
                 {params: {page: $scope.page, size: $scope.size, name: $scope.filter.name,
                 sortField: $scope.filter.sortField,
                 sortDirection: $scope.filter.sortDirection
@@ -54,7 +54,7 @@ app.controller("CollarController", function($scope, $http){
     }
 
     $scope.editCollar = (key) => {
-        $http.get(`${host}/collar/${key}`).then((response) => {
+        $http.get(`${config.host}/collar/${key}`).then((response) => {
             $scope.collarUpdate = response.data;
         }).catch(error => {
             toastr["error"](error);
@@ -70,7 +70,7 @@ app.controller("CollarController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
-        $http.put(`${host}/collar/status/${$scope.collar.id}`).then(response => {
+        $http.put(`${config.host}/collar/status/${$scope.collar.id}`).then(response => {
             $scope.getAllCollars();
             $scope.collar = {};
             $('#updateStatusModel').modal('hide');
@@ -82,7 +82,7 @@ app.controller("CollarController", function($scope, $http){
 
     $scope.createCollar = () => {
         if ($scope.collarForm.$valid) {
-           $http.post(`${host}/collar`, $scope.collar).then((response) => {
+           $http.post(`${config.host}/collar`, $scope.collar).then((response) => {
                 $scope.getAllCollars();
                 $scope.resetForm();
                 $('#addCollarModel').modal('hide');
@@ -96,7 +96,7 @@ app.controller("CollarController", function($scope, $http){
 
     $scope.updateCollar = () => {
         if ($scope.collarFormUpdate.$valid) {
-            $http.put(`${host}/collar/${$scope.collarUpdate.id}`, $scope.collarUpdate).then(response => {
+            $http.put(`${config.host}/collar/${$scope.collarUpdate.id}`, $scope.collarUpdate).then(response => {
                 $scope.getAllCollars();
                 $scope.resetFormUpdate();
                 $('#editCollarModal').modal('hide');
@@ -109,7 +109,7 @@ app.controller("CollarController", function($scope, $http){
     }
 
     $scope.delete = () => {
-        $http.delete(`${host}/collar/${$scope.collar.id}`).then(response => {
+        $http.delete(`${config.host}/collar/${$scope.collar.id}`).then(response => {
             $scope.getAllCollars();
             $scope.collar = {};
             $('#deleteCollarModel').modal('hide');

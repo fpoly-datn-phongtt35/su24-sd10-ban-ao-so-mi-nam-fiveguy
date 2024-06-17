@@ -1,4 +1,3 @@
-const host = "http://localhost:8080/api/admin";
 var app = angular.module("appAdmin", ["ngRoute"]);
 app.config(function ($routeProvider, $locationProvider) {
   $locationProvider.hashPrefix("");
@@ -34,6 +33,9 @@ app.config(function ($routeProvider, $locationProvider) {
     })
     .when("/admin/color", {
       templateUrl: "pages/product/color.html",
+    })
+    .when("/admin/supplier", {
+      templateUrl: "pages/product/supplier.html",
     })
     // <!-- Tịnh -->
     .when("/admin/customer", {

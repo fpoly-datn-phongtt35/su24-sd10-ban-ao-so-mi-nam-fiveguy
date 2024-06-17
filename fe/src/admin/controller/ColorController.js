@@ -15,7 +15,7 @@ app.controller("ColorController", function($scope, $http){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
-        $http.get(`${host}/color`, 
+        $http.get(`${config.host}/color`, 
                 {params: {page: $scope.page, size: $scope.size, keyword: $scope.filter.keyword,
                 sortField: $scope.filter.sortField,
                 sortDirection: $scope.filter.sortDirection
@@ -54,7 +54,7 @@ app.controller("ColorController", function($scope, $http){
     }
 
     $scope.editColor = (key) => {
-        $http.get(`${host}/color/${key}`).then((response) => {
+        $http.get(`${config.host}/color/${key}`).then((response) => {
             $scope.colorUpdate = response.data;
         }).catch(error => {
             toastr["error"](error);
@@ -70,7 +70,7 @@ app.controller("ColorController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
-        $http.put(`${host}/color/status/${$scope.color.id}`).then(response => {
+        $http.put(`${config.host}/color/status/${$scope.color.id}`).then(response => {
             $scope.getAllColors();
             $scope.color = {};
             $('#updateStatusModel').modal('hide');
@@ -82,7 +82,7 @@ app.controller("ColorController", function($scope, $http){
 
     $scope.createColor = () => {
         if ($scope.colorForm.$valid) {
-           $http.post(`${host}/color`, $scope.color).then((response) => {
+           $http.post(`${config.host}/color`, $scope.color).then((response) => {
                 $scope.getAllColors();
                 $scope.resetForm();
                 $('#addColorModel').modal('hide');
@@ -96,7 +96,7 @@ app.controller("ColorController", function($scope, $http){
 
     $scope.updateColor = () => {
         if ($scope.colorFormUpdate.$valid) {
-            $http.put(`${host}/color/${$scope.colorUpdate.id}`, $scope.colorUpdate).then(response => {
+            $http.put(`${config.host}/color/${$scope.colorUpdate.id}`, $scope.colorUpdate).then(response => {
                 $scope.getAllColors();
                 $scope.resetFormUpdate();
                 $('#editColorModal').modal('hide');
@@ -109,7 +109,7 @@ app.controller("ColorController", function($scope, $http){
     }
 
     $scope.delete = () => {
-        $http.delete(`${host}/color/${$scope.color.id}`).then(response => {
+        $http.delete(`${config.host}/color/${$scope.color.id}`).then(response => {
             $scope.getAllColors();
             $scope.color = {};
             $('#deleteColorModel').modal('hide');

@@ -15,7 +15,7 @@ app.controller("CategoryController", function($scope, $http){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
-        $http.get(`${host}/category`, 
+        $http.get(`${config.host}/category`, 
                 {params: {page: $scope.page, size: $scope.size, name: $scope.filter.name,
                 sortField: $scope.filter.sortField,
                 sortDirection: $scope.filter.sortDirection
@@ -54,7 +54,7 @@ app.controller("CategoryController", function($scope, $http){
     }
 
     $scope.editCategory = (key) => {
-        $http.get(`${host}/category/${key}`).then((response) => {
+        $http.get(`${config.host}/category/${key}`).then((response) => {
             $scope.categoryUpdate = response.data;
         }).catch(error => {
             toastr["error"](error);
@@ -70,7 +70,7 @@ app.controller("CategoryController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
-        $http.put(`${host}/category/status/${$scope.category.id}`).then(response => {
+        $http.put(`${config.host}/category/status/${$scope.category.id}`).then(response => {
             $scope.getAllCategories();
             $scope.category = {};
             $('#updateStatusModel').modal('hide');
@@ -82,7 +82,7 @@ app.controller("CategoryController", function($scope, $http){
 
     $scope.createCategory = () => {
         if ($scope.categoryForm.$valid) {
-           $http.post(`${host}/category`, $scope.category).then((response) => {
+           $http.post(`${config.host}/category`, $scope.category).then((response) => {
                 $scope.getAllCategories();
                 $scope.resetForm();
                 $('#addCategoryModel').modal('hide');
@@ -96,7 +96,7 @@ app.controller("CategoryController", function($scope, $http){
 
     $scope.updateCategory = () => {
         if ($scope.categoryFormUpdate.$valid) {
-            $http.put(`${host}/category/${$scope.categoryUpdate.id}`, $scope.categoryUpdate).then(response => {
+            $http.put(`${config.host}/category/${$scope.categoryUpdate.id}`, $scope.categoryUpdate).then(response => {
                 $scope.getAllCategories();
                 $scope.resetFormUpdate();
                 $('#editCategoryModal').modal('hide');
@@ -109,7 +109,7 @@ app.controller("CategoryController", function($scope, $http){
     }
 
     $scope.delete = () => {
-        $http.delete(`${host}/category/${$scope.category.id}`).then(response => {
+        $http.delete(`${config.host}/category/${$scope.category.id}`).then(response => {
             $scope.getAllCategories();
             $scope.category = {};
             $('#deleteCategoryModel').modal('hide');

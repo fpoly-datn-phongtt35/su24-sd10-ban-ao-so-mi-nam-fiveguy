@@ -15,7 +15,7 @@ app.controller("MaterialController", function($scope, $http){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
-        $http.get(`${host}/material`, 
+        $http.get(`${config.host}/material`, 
                 {params: {page: $scope.page, size: $scope.size, name: $scope.filter.name,
                 sortField: $scope.filter.sortField,
                 sortDirection: $scope.filter.sortDirection
@@ -54,7 +54,7 @@ app.controller("MaterialController", function($scope, $http){
     }
 
     $scope.editMaterial = (key) => {
-        $http.get(`${host}/material/${key}`).then((response) => {
+        $http.get(`${config.host}/material/${key}`).then((response) => {
             $scope.materialUpdate = response.data;
         }).catch(error => {
             toastr["error"](error);
@@ -70,7 +70,7 @@ app.controller("MaterialController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
-        $http.put(`${host}/material/status/${$scope.material.id}`).then(response => {
+        $http.put(`${config.host}/material/status/${$scope.material.id}`).then(response => {
             $scope.getAllMaterials();
             $scope.material = {};
             $('#updateStatusModel').modal('hide');
@@ -82,7 +82,7 @@ app.controller("MaterialController", function($scope, $http){
 
     $scope.createMaterial = () => {
         if ($scope.materialForm.$valid) {
-           $http.post(`${host}/material`, $scope.material).then((response) => {
+           $http.post(`${config.host}/material`, $scope.material).then((response) => {
                 $scope.getAllMaterials();
                 $scope.resetForm();
                 $('#addMaterialModel').modal('hide');
@@ -96,7 +96,7 @@ app.controller("MaterialController", function($scope, $http){
 
     $scope.updateMaterial = () => {
         if ($scope.materialFormUpdate.$valid) {
-            $http.put(`${host}/material/${$scope.materialUpdate.id}`, $scope.materialUpdate).then(response => {
+            $http.put(`${config.host}/material/${$scope.materialUpdate.id}`, $scope.materialUpdate).then(response => {
                 $scope.getAllMaterials();
                 $scope.resetFormUpdate();
                 $('#editMaterialModal').modal('hide');
@@ -109,7 +109,7 @@ app.controller("MaterialController", function($scope, $http){
     }
 
     $scope.delete = () => {
-        $http.delete(`${host}/material/${$scope.material.id}`).then(response => {
+        $http.delete(`${config.host}/material/${$scope.material.id}`).then(response => {
             $scope.getAllMaterials();
             $scope.material = {};
             $('#deleteMaterialModel').modal('hide');

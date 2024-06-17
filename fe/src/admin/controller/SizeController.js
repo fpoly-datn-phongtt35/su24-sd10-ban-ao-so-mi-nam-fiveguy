@@ -15,7 +15,7 @@ app.controller("SizeController", function($scope, $http){
         if ($scope.num <= 0 || !Number.isInteger($scope.num)) {
             $scope.num = 5;
         }
-        $http.get(`${host}/size`, 
+        $http.get(`${config.host}/size`, 
                 {params: {page: $scope.page, size: $scope.num, name: $scope.filter.name,
                 sortField: $scope.filter.sortField,
                 sortDirection: $scope.filter.sortDirection
@@ -54,7 +54,7 @@ app.controller("SizeController", function($scope, $http){
     }
 
     $scope.editSize = (key) => {
-        $http.get(`${host}/size/${key}`).then((response) => {
+        $http.get(`${config.host}/size/${key}`).then((response) => {
             $scope.sizeUpdate = response.data;
         }).catch(error => {
             toastr["error"](error);
@@ -70,7 +70,7 @@ app.controller("SizeController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
-        $http.put(`${host}/size/status/${$scope.size.id}`).then(response => {
+        $http.put(`${config.host}/size/status/${$scope.size.id}`).then(response => {
             $scope.getAllSizes();
             $scope.size = {};
             $('#updateStatusModel').modal('hide');
@@ -82,7 +82,7 @@ app.controller("SizeController", function($scope, $http){
 
     $scope.createSize = () => {
         if ($scope.sizeForm.$valid) {
-           $http.post(`${host}/size`, $scope.size).then((response) => {
+           $http.post(`${config.host}/size`, $scope.size).then((response) => {
                 $scope.getAllSizes();
                 $scope.resetForm();
                 $('#addSizeModel').modal('hide');
@@ -96,7 +96,7 @@ app.controller("SizeController", function($scope, $http){
 
     $scope.updateSize = () => {
         if ($scope.sizeFormUpdate.$valid) {
-            $http.put(`${host}/size/${$scope.sizeUpdate.id}`, $scope.sizeUpdate).then(response => {
+            $http.put(`${config.host}/size/${$scope.sizeUpdate.id}`, $scope.sizeUpdate).then(response => {
                 $scope.getAllSizes();
                 $scope.resetFormUpdate();
                 $('#editSizeModal').modal('hide');
@@ -109,7 +109,7 @@ app.controller("SizeController", function($scope, $http){
     }
 
     $scope.delete = () => {
-        $http.delete(`${host}/size/${$scope.size.id}`).then(response => {
+        $http.delete(`${config.host}/size/${$scope.size.id}`).then(response => {
             $scope.getAllSizes();
             $scope.size = {};
             $('#deleteSizeModel').modal('hide');

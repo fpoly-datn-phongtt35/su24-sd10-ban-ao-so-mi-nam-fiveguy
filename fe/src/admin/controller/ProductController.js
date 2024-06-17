@@ -15,7 +15,7 @@ app.controller("ProductController", function($scope, $http){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
-        $http.get(`${host}/product`, 
+        $http.get(`${config.host}/product`, 
                 {params: {page: $scope.page, size: $scope.size, keyword: $scope.filter.keyword,
                 sortField: $scope.filter.sortField,
                 sortDirection: $scope.filter.sortDirection
@@ -54,7 +54,7 @@ app.controller("ProductController", function($scope, $http){
     }
 
     $scope.editProduct = (key) => {
-        $http.get(`${host}/product/${key}`).then((response) => {
+        $http.get(`${config.host}/product/${key}`).then((response) => {
             $scope.productUpdate = response.data;
         }).catch(error => {
             toastr["error"](error);
@@ -70,7 +70,7 @@ app.controller("ProductController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
-        $http.put(`${host}/product/status/${$scope.product.id}`).then(response => {
+        $http.put(`${config.host}/product/status/${$scope.product.id}`).then(response => {
             $scope.getAllProducts();
             $scope.product = {};
             $('#updateStatusModel').modal('hide');
@@ -82,7 +82,7 @@ app.controller("ProductController", function($scope, $http){
 
     $scope.createProduct = () => {
         if ($scope.productForm.$valid) {
-           $http.post(`${host}/product`, $scope.product).then((response) => {
+           $http.post(`${config.host}/product`, $scope.product).then((response) => {
                 $scope.getAllProducts();
                 $scope.resetForm();
                 $('#addProductModel').modal('hide');
@@ -96,7 +96,7 @@ app.controller("ProductController", function($scope, $http){
 
     $scope.updateProduct = () => {
         if ($scope.productFormUpdate.$valid) {
-            $http.put(`${host}/product/${$scope.productUpdate.id}`, $scope.productUpdate).then(response => {
+            $http.put(`${config.host}/product/${$scope.productUpdate.id}`, $scope.productUpdate).then(response => {
                 $scope.getAllProducts();
                 $scope.resetFormUpdate();
                 $('#editProductModal').modal('hide');
@@ -109,7 +109,7 @@ app.controller("ProductController", function($scope, $http){
     }
 
     $scope.delete = () => {
-        $http.delete(`${host}/product/${$scope.product.id}`).then(response => {
+        $http.delete(`${config.host}/product/${$scope.product.id}`).then(response => {
             $scope.getAllProducts();
             $scope.product = {};
             $('#deleteProductModel').modal('hide');

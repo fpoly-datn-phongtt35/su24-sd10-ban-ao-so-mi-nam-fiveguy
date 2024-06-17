@@ -15,7 +15,7 @@ app.controller("WristController", function($scope, $http){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
-        $http.get(`${host}/wrist`, 
+        $http.get(`${config.host}/wrist`, 
                 {params: {page: $scope.page, size: $scope.size, name: $scope.filter.name,
                 sortField: $scope.filter.sortField,
                 sortDirection: $scope.filter.sortDirection
@@ -54,7 +54,7 @@ app.controller("WristController", function($scope, $http){
     }
 
     $scope.editWrist = (key) => {
-        $http.get(`${host}/wrist/${key}`).then((response) => {
+        $http.get(`${config.host}/wrist/${key}`).then((response) => {
             $scope.wristUpdate = response.data;
         }).catch(error => {
             toastr["error"](error);
@@ -70,7 +70,7 @@ app.controller("WristController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
-        $http.put(`${host}/wrist/status/${$scope.wrist.id}`).then(response => {
+        $http.put(`${config.host}/wrist/status/${$scope.wrist.id}`).then(response => {
             $scope.getAllWrists();
             $scope.wrist = {};
             $('#updateStatusModel').modal('hide');
@@ -82,7 +82,7 @@ app.controller("WristController", function($scope, $http){
 
     $scope.createWrist = () => {
         if ($scope.wristForm.$valid) {
-           $http.post(`${host}/wrist`, $scope.wrist).then((response) => {
+           $http.post(`${config.host}/wrist`, $scope.wrist).then((response) => {
                 $scope.getAllWrists();
                 $scope.resetForm();
                 $('#addWristModel').modal('hide');
@@ -96,7 +96,7 @@ app.controller("WristController", function($scope, $http){
 
     $scope.updateWrist = () => {
         if ($scope.wristFormUpdate.$valid) {
-            $http.put(`${host}/wrist/${$scope.wristUpdate.id}`, $scope.wristUpdate).then(response => {
+            $http.put(`${config.host}/wrist/${$scope.wristUpdate.id}`, $scope.wristUpdate).then(response => {
                 $scope.getAllWrists();
                 $scope.resetFormUpdate();
                 $('#editWristModal').modal('hide');
@@ -109,7 +109,7 @@ app.controller("WristController", function($scope, $http){
     }
 
     $scope.delete = () => {
-        $http.delete(`${host}/wrist/${$scope.wrist.id}`).then(response => {
+        $http.delete(`${config.host}/wrist/${$scope.wrist.id}`).then(response => {
             $scope.getAllWrists();
             $scope.wrist = {};
             $('#deleteWristModel').modal('hide');
