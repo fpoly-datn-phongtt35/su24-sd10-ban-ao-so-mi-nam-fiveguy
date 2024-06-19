@@ -23,6 +23,9 @@ public class Customer {
     @Column(name = "Id")
     private Long id;
 
+    @Column(name= "Code")
+    private String code;
+
     @Column(name = "FullName", columnDefinition = "nvarchar(300)")
     private String fullName;
 
@@ -70,6 +73,10 @@ public class Customer {
     @JsonIgnore
     @OneToMany(mappedBy = "customer")
     private List<Address> addresses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<CustomerVoucher> customerVouchers;
 
 }
 

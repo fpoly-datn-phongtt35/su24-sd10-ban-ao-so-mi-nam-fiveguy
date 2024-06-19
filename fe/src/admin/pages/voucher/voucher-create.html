@@ -47,7 +47,8 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label>Loại</label>
-                                <select name="addType" class="form-select" ng-model="formInputVoucher.discountType"
+                                <select name="addType" class="form-select"
+                                    ng-model="formInputVoucher.discountType"
                                     ng-change="discountTypeChangeAdd()">
                                     <option ng-value="1">Giảm theo %</option>
                                     <option ng-value="2">Giảm theo số tiền</option>
@@ -58,16 +59,20 @@
                             <div class="form-group">
                                 <label>Giá trị</label>
                                 <div class="input-group">
-                                    <input type="number" name="addValue" class="form-control" min="0"
+                                    <input type="number" name="addValue" class="form-control"
+                                        min="0"
                                         oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                                         max="{{formInputVoucher.discountType == '1' ? '100' : ''}}"
                                         ng-model="formInputVoucher.value" ng-required="true">
-                                    <span ng-if="formInputVoucher.discountType == 1" class="input-group-text"
-                                        id="basic-addon2">%</span>
-                                    <span ng-if="formInputVoucher.discountType == 2" class="input-group-text"
-                                        id="basic-addon2">đ</span>
+                                    <span ng-if="formInputVoucher.discountType == 1"
+                                        class="input-group-text" id="basic-addon2">%</span>
+                                    <span ng-if="formInputVoucher.discountType == 2"
+                                        class="input-group-text" id="basic-addon2">đ</span>
                                 </div>
                                 <span ng-show="formAddVoucher.$submitted">
+                                    <!-- <div ng-if="formInputVoucher.discountType == '1' && formInputVoucher.value >= '100'"
+                                        class="error-message text-danger form-text">
+                                        100</div> -->
                                     <div ng-show="formAddVoucher.addValue.$invalid"
                                         class="error-message text-danger form-text">
                                         <div ng-show="formAddVoucher.addValue.$error.max">
@@ -84,9 +89,13 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label>Giá trị tối thiểu HD</label>
-                                <input type="number" name="addMinBill" class="form-control"
-                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
-                                    ng-model="formInputVoucher.minimumTotalAmount" ng-required="true">
+                                <div class="input-group">
+                                    <input type="number" name="addMinBill" class="form-control"
+                                        oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
+                                        ng-model="formInputVoucher.minimumTotalAmount"
+                                        ng-required="true">
+                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                </div>
 
                                 <span ng-show="formAddVoucher.$submitted">
                                     <div ng-show="formAddVoucher.addMinBill.$invalid"
@@ -132,7 +141,8 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label>Số lượt sử dụng</label>
-                                <input type="number" name="addNumberOfUses" class="form-control" min="1"
+                                <input type="number" name="addNumberOfUses" class="form-control"
+                                    min="1"
                                     oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
                                     ng-model="formInputVoucher.numberOfUses" ng-required="true">
 
@@ -141,6 +151,52 @@
                                         class="error-message text-danger form-text">
                                         Số lượt sử dụng không được để trống</div>
                                 </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>Hiển thị</label>
+                                <select name="addVisibility" class="form-select"
+                                    ng-model="formInputVoucher.visibility">
+                                    <option ng-value="1" ng-selected="true">Công khai</option>
+                                    <option ng-value="2">Cá nhân</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                    id="flexRadioDefault1" ng-checked="true"  value="2"
+                                    ng-model="formInputVoucher.visibility1"
+                                    ng-change="aaa(formInputVoucher.visibility1)">
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                    Công khai
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                    id="flexRadioDefault2" value="1"
+                                    ng-model="formInputVoucher.visibility1"
+                                    ng-change="aaa(formInputVoucher.visibility1)">
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                    Cá nhân
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Loại khách hàng được áp dụng</label>
+                            <div class="row">
+                                <select id="chosen-select" data-placeholder="Nhập để lọc ..."
+                                    multiple class="chosen-select" ng-model="selectedCustomerTypes"
+                                    ng-change="updateSelection()">
+                                    <option ng-repeat="item in customerTypes" value="{{ item.id }}">
+                                        {{
+                                        item.name}}</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -161,13 +217,25 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label>Ngày bắt đầu</label>
-                                <input type="datetime-local" name="addStartDate" class="form-control"
+                                <!-- <input type="datetime-local" name="addStartDate" class="form-control"
                                     max="{{formInputVoucher.endDate}}" ng-model="formInputVoucher.startDate"
+                                    ng-change="updateStartDateMax()" ng-required="true"> -->
+
+                                <input type="datetime-local" name="addStartDate"
+                                    class="form-control" ng-attr-min="{{currentDateTime}}"
+                                    max="{{formInputVoucher.endDate}}"
+                                    ng-model="formInputVoucher.startDate"
                                     ng-change="updateStartDateMax()" ng-required="true">
+
                                 <span ng-show="formAddVoucher.$submitted">
                                     <div ng-show="formAddVoucher.addStartDate.$error.required"
                                         class="error-message text-danger form-text">
                                         Ngày bắt đầu không được để trống</div>
+                                </span>
+                                <span ng-show="formAddVoucher.$submitted">
+                                    <div ng-show="formAddVoucher.addStartDate.$error.min"
+                                        class="error-message text-danger form-text">
+                                        Ngày bắt đầu không được nhỏ hơn ngày hiện tại</div>
                                 </span>
                                 <span ng-show="formAddVoucher.$submitted">
                                     <div ng-show="formAddVoucher.addStartDate.$error.max"
@@ -180,7 +248,8 @@
                             <div class="form-group">
                                 <label>Ngày kết thúc</label>
                                 <input type="datetime-local" name="addEndDate" class="form-control"
-                                    min="{{formInputVoucher.startDate}}" ng-model="formInputVoucher.endDate"
+                                    min="{{formInputVoucher.startDate}}"
+                                    ng-model="formInputVoucher.endDate"
                                     ng-change="updateEndDateMin()" ng-required="true">
 
                                 <span ng-show="formAddVoucher.$submitted">
@@ -196,7 +265,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

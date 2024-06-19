@@ -26,9 +26,11 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     $scope.formUpdateVoucher = {}
 
+
     const apiVoucher = "http://localhost:8080/api/admin/voucher"
     const apiCustomerType = "http://localhost:8080/api/admin/customerType"
     const apiCustomerTypeVoucher = "http://localhost:8080/api/admin/customerTypeVoucher"
+    const apiCustomerVoucher = "http://localhost:8080/api/admin/customerVoucher"
 
     $scope.getAllVoucher = function () {
         $http.get(apiVoucher + "/all").then(function (res) {
@@ -79,6 +81,60 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         $scope.initChosen();
     });
 
+    //START CUSTOMER
+
+    $scope.listCustomer = []
+
+    // Load selected customers from local storage
+    localStorage.setItem('selectedCustomers', []);
+    $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
+
+    $scope.selectAll = false;
+
+    $scope.toggleAll = function () {
+        $scope.selectAll = !$scope.selectAll;
+        angular.forEach($scope.customers, function (customer) {
+            customer.selected = $scope.selectAll;
+            $scope.updateSelectedCustomers(customer);
+        });
+        $scope.saveSelections(); // Save selections
+    };
+
+    $scope.submitSelected = function () {
+        var selectedCustomers = Object.keys($scope.selectedCustomers).map(function (id) {
+            return $scope.selectedCustomers[id];
+        });
+        console.log('Selected Customers:', selectedCustomers);
+    };
+
+    $scope.updateSelectedCustomers = function (customer) {
+        if (customer.selected) {
+            $scope.selectedCustomers[customer.id] = customer;
+        } else {
+            delete $scope.selectedCustomers[customer.id];
+        }
+        $scope.saveSelections();
+    };
+
+    $scope.saveSelections = function () {
+        localStorage.setItem('selectedCustomers', JSON.stringify($scope.selectedCustomers));
+    };
+
+    $scope.applySavedSelections = function () {
+        angular.forEach($scope.customers, function (customer) {
+            customer.selected = !!$scope.selectedCustomers[customer.id];
+        });
+    };
+
+    $scope.$watch('customers', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+            $scope.applySavedSelections();
+        }
+    });
+    //END CUSTOMER
+
+    $scope.formInputVoucher.visibility = 1
+
     //set gia tri cua discountType trong add form
     $scope.formInputVoucher.discountType = 1
 
@@ -109,10 +165,17 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
             };
         });
 
+        $scope.listCustomer = Object.keys($scope.selectedCustomers).map(function (id) {
+            return $scope.selectedCustomers[id];
+        });
+
         console.log(entitiesCustomerType);
         console.log(numberList);
 
-        let data = { voucher: $scope.formInputVoucher, customerTypeList: entitiesCustomerType }
+        let data = {
+            voucher: $scope.formInputVoucher, customerTypeList: entitiesCustomerType,
+            customerList: $scope.listCustomer
+        }
         console.log(data)
 
         $http.post(apiVoucher + "/saveVoucher", data).then(function (res) {
@@ -183,6 +246,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     // Create a variable currentVoucher to compare start date and end date (update voucher)
     $scope.currentVoucher = null;
 
+    $scope.valuesList = []
     // Get the voucher value by id
     $scope.getVoucherById = function (voucher) {
         $scope.formUpdateVoucher = angular.copy(voucher);
@@ -205,6 +269,17 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         } else {
             $scope.setDisableUpdateForm(false)
         }
+        $http.get(apiCustomerVoucher + "/voucher/" + $scope.currentVoucher.id + "/customers").then(function (res) {
+            $scope.valuesList = res.data.map(function (object) {
+                return {
+                    id: object.id,
+                    fullName: object.fullName
+                };
+            });
+            console.log($scope.valuesList);
+            localStorage.setItem('selectedCustomers', $scope.valuesList);
+            $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
+        })
 
         $scope.getListSelectedCustomerTypesUpdate($scope.currentVoucher.id).then(function (result) {
             $scope.selectedCustomerTypesUpdate = result;
@@ -295,17 +370,27 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     }
 
     $scope.staticVoucher = {}
+    $scope.statVoucher = {}
 
     $scope.getStaticVoucher = function (id) {
         $http.get(apiVoucher + "/" + id + "/statistics").then(function (res) {
             $scope.staticVoucher = res.data
+        });
+        $http.get(apiVoucher + "/" + id + "/stats").then(function (res) {
+            $scope.statVoucher = res.data.content
+            console.log(res.data);
         });
     };
 
     //reset form add
     $scope.resetFormAdd = function () {
         $scope.formInputVoucher = {}
+        $scope.formInputVoucher.name = null
         $scope.formInputVoucher.discountType = 1
+        $scope.formInputVoucher.visibility = 1
+
+
+        localStorage.setItem('selectedCustomers', []);
 
         $scope.duplicateNameError = false;
         $scope.duplicateCodeError = false;
@@ -414,11 +499,6 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         customerTypeId: null
     };
 
-    // Load selected customers from local storage
-    
-    localStorage.setItem('selectedCustomers', []);
-    $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
-
     $scope.getCustomers = function (pageNumber) {
         var params = {
             pageNumber: pageNumber,
@@ -467,46 +547,5 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         $scope.getCustomers(0);
     };
 
-    $scope.selectAll = false;
 
-    $scope.toggleAll = function () {
-        $scope.selectAll = !$scope.selectAll;
-        angular.forEach($scope.customers, function (customer) {
-            customer.selected = $scope.selectAll;
-            $scope.updateSelectedCustomers(customer);
-        });
-        $scope.saveSelections(); // Save selections
-    };
-
-    $scope.submitSelected = function () {
-        var selectedCustomers = Object.keys($scope.selectedCustomers).map(function (id) {
-            return $scope.selectedCustomers[id];
-        });
-        console.log('Selected Customers:', selectedCustomers);
-    };
-
-    $scope.updateSelectedCustomers = function (customer) {
-        if (customer.selected) {
-            $scope.selectedCustomers[customer.id] = customer;
-        } else {
-            delete $scope.selectedCustomers[customer.id];
-        }
-        $scope.saveSelections();
-    };
-
-    $scope.saveSelections = function () {
-        localStorage.setItem('selectedCustomers', JSON.stringify($scope.selectedCustomers));
-    };
-
-    $scope.applySavedSelections = function () {
-        angular.forEach($scope.customers, function (customer) {
-            customer.selected = !!$scope.selectedCustomers[customer.id];
-        });
-    };
-
-    $scope.$watch('customers', function (newVal, oldVal) {
-        if (newVal !== oldVal) {
-            $scope.applySavedSelections();
-        }
-    });
 });

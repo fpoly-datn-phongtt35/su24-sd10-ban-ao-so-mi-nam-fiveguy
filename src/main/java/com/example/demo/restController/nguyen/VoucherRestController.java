@@ -2,6 +2,7 @@ package com.example.demo.restController.nguyen;
 
 import com.example.demo.entity.Voucher;
 import com.example.demo.model.request.nguyen.VoucherRequest;
+import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
 import com.example.demo.service.nguyen.VoucherService;
 import com.example.demo.untility.nguyen.PaginationResponse;
@@ -74,9 +75,11 @@ public class VoucherRestController {
     public ResponseEntity<?> saveVoucher(@RequestBody VoucherRequest voucherRequest) {
         System.out.println(voucherRequest.getVoucher());
         System.out.println(voucherRequest.getCustomerTypeList());
+        System.out.println(voucherRequest.getCustomerList());
         return ResponseEntity.ok(voucherService
-                .createVoucherAndCustomerTypeVoucher(voucherRequest.getVoucher(),
-                        voucherRequest.getCustomerTypeList()));
+                .createVoucher(voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList(),
+                        voucherRequest.getCustomerList()));
+//        return null;
     }
 
     @PutMapping("/updateVoucher/{id}")
@@ -84,12 +87,21 @@ public class VoucherRestController {
         System.out.println(voucherRequest.getVoucher());
         System.out.println(voucherRequest.getCustomerTypeList());
         return ResponseEntity.ok(voucherService
-                .updateVoucherAndCustomerTypeVoucher(id, voucherRequest.getVoucher(),
-                        voucherRequest.getCustomerTypeList()));
+                .updateVoucher(id, voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList(),
+                        voucherRequest.getCustomerList()));
     }
 
     @GetMapping("/{voucherId}/statistics")
     public VoucherStatistics getVoucherStatistics(@PathVariable Long voucherId) {
         return voucherService.calculateVoucherStatistics(voucherId);
+    }
+
+    @GetMapping("/{voucherId}/stats")
+    public Page<CustomerVoucherStatsDTO> getCustomerVoucherStats(
+            @PathVariable Long voucherId,
+            @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
+
+        Pageable pageable = PageRequest.of(pageNumber, 5);
+        return voucherService.getCustomerVoucherStats(voucherId, pageable);
     }
 }

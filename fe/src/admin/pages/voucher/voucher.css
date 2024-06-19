@@ -27,3 +27,6 @@
 .chosen-container .chosen-choices li.search-choice {
     line-height: 1.5;
 }
+.modal-dialog-custom {
+    width: 800px;
+}

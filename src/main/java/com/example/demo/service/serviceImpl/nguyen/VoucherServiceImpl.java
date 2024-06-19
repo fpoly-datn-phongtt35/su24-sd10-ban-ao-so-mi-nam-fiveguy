@@ -1,14 +1,9 @@
 package com.example.demo.service.serviceImpl.nguyen;
 
-import com.example.demo.entity.Bill;
-import com.example.demo.entity.CustomerType;
-import com.example.demo.entity.CustomerTypeVoucher;
-import com.example.demo.entity.Voucher;
+import com.example.demo.entity.*;
+import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
-import com.example.demo.repository.nguyen.CustomerTypeVoucherRepository;
-import com.example.demo.repository.nguyen.NBillRepository;
-import com.example.demo.repository.nguyen.VoucherRepository;
-import com.example.demo.repository.nguyen.VoucherSpecification;
+import com.example.demo.repository.nguyen.*;
 import com.example.demo.service.nguyen.VoucherService;
 //import org.hibernate.query.Page;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,6 +33,9 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Autowired
     CustomerTypeVoucherRepository customerTypeVoucherRepository;
+
+    @Autowired
+    CustomerVoucherRepository customerVoucherRepository;
 
     @Autowired
     private NBillRepository billRepository;
@@ -137,7 +135,8 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Voucher createVoucherAndCustomerTypeVoucher(Voucher voucher, List<CustomerType> customerTypeList) {
+    public Voucher createVoucher(Voucher voucher, List<CustomerType> customerTypeList,
+                                 List<Customer> customerList) {
         voucher.setCreatedAt(new Date());
         voucher.setCreatedBy("Admin add");
         voucher.setUpdatedAt(new Date());
@@ -160,11 +159,25 @@ public class VoucherServiceImpl implements VoucherService {
             customerTypeVoucherRepository.save(customerTypeVoucher);
         }
 
+        for (Customer customer : customerList) {
+
+            CustomerVoucher customerVoucher = new CustomerVoucher();
+            customerVoucher.setCustomer(customer);
+            customerVoucher.setVoucher(returnVoucher);
+            customerVoucher.setCreatedAt(new Date());
+            customerVoucher.setUpdatedAt(new Date());
+            customerVoucher.setStatus(1);
+
+            customerVoucherRepository.save(customerVoucher);
+        }
+
         return returnVoucher;
     }
 
     @Override
-    public Voucher updateVoucherAndCustomerTypeVoucher(Long voucherId, Voucher updatedVoucher, List<CustomerType> updatedCustomerTypeList) {
+    public Voucher updateVoucher(Long voucherId, Voucher updatedVoucher,
+                                 List<CustomerType> updatedCustomerTypeList,
+                                 List<Customer> customerList) {
         // Retrieve the existing voucher by ID
         Optional<Voucher> optionalVoucher = voucherRepository.findById(voucherId);
         if (!optionalVoucher.isPresent()) {
@@ -214,6 +227,34 @@ public class VoucherServiceImpl implements VoucherService {
             customerTypeVoucherRepository.save(customerTypeVoucher);
         }
 
+        // Update CustomerVouchers associated with the Voucher
+        List<CustomerVoucher> existingCustomerVouchers = returnVoucher.getCustomerVouchers();
+        List<Long> existingCustomerVoucherIds = existingCustomerVouchers.stream()
+                .map(CustomerVoucher::getId)
+                .collect(Collectors.toList());
+
+        // Delete CustomerVouchers not in updated list
+        for (CustomerVoucher existingCustomerVoucher : existingCustomerVouchers) {
+            if (!customerList.contains(existingCustomerVoucher.getCustomer())) {
+                returnVoucher.getCustomerVouchers().remove(existingCustomerVoucher);
+                existingCustomerVoucher.setVoucher(null);
+                customerVoucherRepository.delete(existingCustomerVoucher);
+            }
+        }
+
+        // Add new CustomerVouchers if any in updated list
+        for (Customer customer : customerList) {
+            if (!existingCustomerVoucherIds.contains(customer.getId())) {
+                CustomerVoucher newCustomerVoucher = new CustomerVoucher();
+                newCustomerVoucher.setVoucher(returnVoucher);
+                newCustomerVoucher.setCustomer(customer);
+                newCustomerVoucher.setCreatedAt(new Date());
+                newCustomerVoucher.setUpdatedAt(new Date());
+                newCustomerVoucher.setStatus(1); // Set initial status as needed
+                customerVoucherRepository.save(newCustomerVoucher);
+            }
+        }
+
         return returnVoucher;
     }
 
@@ -240,5 +281,10 @@ public class VoucherServiceImpl implements VoucherService {
         BigDecimal profitMargin = (totalRevenue.compareTo(BigDecimal.ZERO) > 0) ? profit.divide(totalRevenue, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
 
         return new VoucherStatistics(usageCount, totalRevenue, totalRevenueAfterDiscount, profit, profitMargin);
+    }
+
+    @Override
+    public Page<CustomerVoucherStatsDTO> getCustomerVoucherStats(Long voucherId, Pageable pageable) {
+        return billRepository.findCustomerVoucherStatsByVoucherId(voucherId, pageable);
     }
 }
