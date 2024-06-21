@@ -1,7 +1,7 @@
 package com.example.demo.security.jwt;
 
 import com.example.demo.entity.Account;
-import com.example.demo.security.repository.AccountRepository;
+import com.example.demo.security.repository.SCAccountRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,9 +16,9 @@ import java.util.Optional;
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
-    private final AccountRepository userDao;
+    private final SCAccountRepository userDao;
 
-    public JwtUserDetailsService(AccountRepository userDao) {
+    public JwtUserDetailsService(SCAccountRepository userDao) {
         this.userDao = userDao;
     }
 

@@ -3,9 +3,9 @@ package com.example.demo.security.service.impl;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Customer;
 import com.example.demo.security.jwt.JwtTokenUtil;
-import com.example.demo.security.repository.AccountRepository;
-import com.example.demo.security.repository.CustomerRepository;
-import com.example.demo.security.service.CustomerService;
+import com.example.demo.security.repository.SCAccountRepository;
+import com.example.demo.security.repository.SCCustomerRepository;
+import com.example.demo.security.service.SCCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,25 +13,25 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class SCSCCustomerServiceImpl implements SCCustomerService {
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private SCCustomerRepository SCCustomerRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private SCAccountRepository SCAccountRepository;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public Customer findByAccount_Id(Long accountId) {
-        return customerRepository.findByAccount_Id(accountId);
+        return SCCustomerRepository.findByAccount_Id(accountId);
     }
 
     @Override
     public Customer save(Customer customerEntity) {
-        return customerRepository.save(customerEntity);
+        return SCCustomerRepository.save(customerEntity);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setCreatedBy("Admin");
         customer.setUpdatedBy("Admin");
         customer.setStatus(1);
-        return customerRepository.save(customer);
+        return SCCustomerRepository.save(customer);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService {
             }
 
             // Retrieve account
-            Optional<Account> optionalAccount = accountRepository.findByAccount(accountName);
+            Optional<Account> optionalAccount = SCAccountRepository.findByAccount(accountName);
             if (optionalAccount.isEmpty()) {
                 return Optional.empty();
             }
@@ -76,7 +76,7 @@ public class CustomerServiceImpl implements CustomerService {
             Account account = optionalAccount.get();
 
             // Check for Customer
-            Customer customer = customerRepository.findByAccount_Id(account.getId());
+            Customer customer = SCCustomerRepository.findByAccount_Id(account.getId());
             if (customer != null) {
                 return Optional.of(customer);
             }

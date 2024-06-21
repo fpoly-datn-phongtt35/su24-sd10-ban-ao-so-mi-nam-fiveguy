@@ -5,12 +5,10 @@ import com.example.demo.entity.Customer;
 import com.example.demo.entity.Employee;
 import com.example.demo.security.Request.UserRequestDTO;
 import com.example.demo.security.jwt.JwtTokenUtil;
-import com.example.demo.security.repository.AccountRepository;
-import com.example.demo.security.repository.CustomerRepository;
-import com.example.demo.security.repository.EmployeeRepository;
-import com.example.demo.security.service.AccountService;
-import com.example.demo.security.service.CustomerService;
-import com.example.demo.security.service.EmployeeService;
+import com.example.demo.security.repository.SCAccountRepository;
+import com.example.demo.security.repository.SCCustomerRepository;
+import com.example.demo.security.repository.SCEmployeeRepository;
+import com.example.demo.security.service.SCAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,24 +17,24 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AccountServiceImpl implements AccountService {
+public class SCSCAccountServiceImpl implements SCAccountService {
 
 
     @Autowired
-    private AccountRepository accountRepository;
+    private SCAccountRepository SCAccountRepository;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private EmployeeRepository employeeRepository;
+    private SCEmployeeRepository SCEmployeeRepository;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private SCCustomerRepository SCCustomerRepository;
 
     @Override
     public Optional<Account> findByAccount(String username) {
-        Optional<Account> account = accountRepository.findByAccount(username);
+        Optional<Account> account = SCAccountRepository.findByAccount(username);
         if (account.isPresent()) {
             return account;
         }
@@ -45,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Account> findByEmail(String email) {
-        List<Account> account = accountRepository.findByEmail(email);
+        List<Account> account = SCAccountRepository.findByEmail(email);
         if (account != null){
             return account;
         }
@@ -54,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account createAccount(Account accountEntity) {
-        return accountRepository.save(accountEntity);
+        return SCAccountRepository.save(accountEntity);
     }
 
     public  UserRequestDTO mapAccountToUserRequestDTO(Account account) {
@@ -67,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<UserRequestDTO> getAllAccount() {
-        List<Account> accounts = accountRepository.findAll();
+        List<Account> accounts = SCAccountRepository.findAll();
         List<UserRequestDTO> userRequestDTOs = new ArrayList<>();
         for (Account account : accounts) {
             userRequestDTOs.add(mapAccountToUserRequestDTO(account));
@@ -93,7 +91,7 @@ public class AccountServiceImpl implements AccountService {
             }
 
             // Retrieve account
-            Optional<Account> optionalAccount = accountRepository.findByAccount(accountName);
+            Optional<Account> optionalAccount = SCAccountRepository.findByAccount(accountName);
             if (optionalAccount.isEmpty()) {
                 return Optional.empty();
             }
@@ -101,13 +99,13 @@ public class AccountServiceImpl implements AccountService {
             Account account = optionalAccount.get();
 
             // Check for Employee
-            Employee employee = employeeRepository.findByAccount_Id(account.getId());
+            Employee employee = SCEmployeeRepository.findByAccount_Id(account.getId());
             if (employee != null && employee.getFullName() != null) {
                 return Optional.of(employee.getFullName());
             }
 
             // Check for Customer
-            Customer customer = customerRepository.findByAccount_Id(account.getId());
+            Customer customer = SCCustomerRepository.findByAccount_Id(account.getId());
             if (customer != null && customer.getFullName() != null) {
                 return Optional.of(customer.getFullName());
             }
@@ -123,7 +121,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Optional<Account> findByAccount2(String accountName) {
-        Optional<Account> account = accountRepository.findByAccount(accountName);
+        Optional<Account> account = SCAccountRepository.findByAccount(accountName);
         if (account.isPresent()){
             return account;
         }

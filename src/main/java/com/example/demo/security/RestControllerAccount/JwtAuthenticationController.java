@@ -6,7 +6,7 @@ import com.example.demo.entity.Employee;
 import com.example.demo.security.Request.*;
 import com.example.demo.security.jwt.JwtTokenUtil;
 import com.example.demo.security.jwt_model.JwtRequest;
-import com.example.demo.security.repository.AccountRepository;
+import com.example.demo.security.repository.SCAccountRepository;
 import com.example.demo.security.service.*;
 import com.example.demo.senderMail.Respone.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,29 +23,29 @@ import java.util.Optional;
 public class JwtAuthenticationController {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private SCAccountRepository SCAccountRepository;
 
     @Autowired
-    private AccountService accountService;
+    private SCAccountService accountService;
 
     @Autowired
-    private EmployeeService employeeService;
+    private SCEmployeeService SCEmployeeService;
 
     @Autowired
-    private CustomerService customerService;
+    private SCCustomerService SCCustomerService;
 
     @Autowired
-    private UserService userService;
+    private SCUserService SCUserService;
 
     @Autowired
-    private RefreshTokenService refreshTokenService;
+    private SCRefreshTokenService SCRefreshTokenService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @PostMapping(value = "/auth/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
-        TokenResponse tokenResponse =  userService.login(authenticationRequest);
+        TokenResponse tokenResponse =  SCUserService.login(authenticationRequest);
         return ResponseEntity.ok(tokenResponse);
     }
 
@@ -53,7 +53,7 @@ public class JwtAuthenticationController {
     public ResponseEntity<TokenResponse> refreshToken(@PathVariable("refreshToken") String refreshToken) {
         System.out.println("Refresh Token");
         if (refreshToken != null) {
-            Account accountEntity = refreshTokenService.verifyExpiration(refreshToken);
+            Account accountEntity = SCRefreshTokenService.verifyExpiration(refreshToken);
             if (accountEntity != null) {
                 TokenResponse tokenResponse = new TokenResponse();
                 tokenResponse.setAccessToken(jwtTokenUtil.refreshToken(accountEntity));
@@ -71,49 +71,49 @@ public class JwtAuthenticationController {
 
     @PostMapping("/auth/register")
     public ResponseObject register(@RequestBody UserRequestDTO user) {
-        return userService.register(user);
+        return SCUserService.register(user);
     }
 
     @PostMapping("/auth/reSendOTP/{email}")
     public ResponseObject reSendOTP(@PathVariable String email) {
-        return userService.reSendOTP(email);
+        return SCUserService.reSendOTP(email);
     }
 
     @PostMapping("/auth/confirm-otp")
     public boolean confirmOTP(@RequestBody OTPConfirmationDTO otpConfirmationDTO) {
         String email = otpConfirmationDTO.getEmail();
         String enteredOTP = otpConfirmationDTO.getEnteredOTP();
-        return userService.confirmOTP(email, enteredOTP);
+        return SCUserService.confirmOTP(email, enteredOTP);
     }
 
     @PostMapping("/auth/reset-password")
         public boolean resetPassword(@RequestBody OTPresetPassDTO otPresetPassDTO) {
         String email = otPresetPassDTO.getEmail();
         String pass = otPresetPassDTO.getNewPassword();
-        return userService.resetPassword(email, pass);
+        return SCUserService.resetPassword(email, pass);
     }
 
     @PostMapping("/auth/forgot-password/{email}")
     public ResponseObject forgotPassword(@PathVariable String email) {
-        return userService.forgotPassword(email);
+        return SCUserService.forgotPassword(email);
     }
 
     @PostMapping("/check-email")
     public ResponseEntity<Object> checkEmailExists(@RequestBody CheckRequest checkRequest) {
-        boolean exists = accountRepository.existsByEmail(checkRequest.getEmail());
+        boolean exists = SCAccountRepository.existsByEmail(checkRequest.getEmail());
         return ResponseEntity.ok(exists);
     }
 
 
     @PostMapping("/check-account")
     public ResponseEntity<Object> checkAccountExists(@RequestBody CheckRequest checkRequest) {
-        boolean exists = accountRepository.existsByAccount(checkRequest.getAccount());
+        boolean exists = SCAccountRepository.existsByAccount(checkRequest.getAccount());
         return ResponseEntity.ok(exists);
     }
 
     @PostMapping("/check-phone-number")
     public ResponseEntity<Object> checkPhoneNumberExists(@RequestBody CheckRequest checkRequest) {
-        boolean exists = accountRepository.existsByPhoneNumber(checkRequest.getPhoneNumber());
+        boolean exists = SCAccountRepository.existsByPhoneNumber(checkRequest.getPhoneNumber());
         return ResponseEntity.ok(exists);
     }
 
@@ -122,8 +122,8 @@ public class JwtAuthenticationController {
         Optional<Account> account = accountService.findByAccount(currentUsername);
         Map<String, Object> responseData = new HashMap<>();
         return account.map(acc -> {
-            Optional<Customer> customerEntity = Optional.ofNullable(customerService.findByAccount_Id(acc.getId()));
-            Optional<Employee> employeeEntity = Optional.ofNullable(employeeService.findByAccount_Id(acc.getId()));
+            Optional<Customer> customerEntity = Optional.ofNullable(SCCustomerService.findByAccount_Id(acc.getId()));
+            Optional<Employee> employeeEntity = Optional.ofNullable(SCEmployeeService.findByAccount_Id(acc.getId()));
 
             if (customerEntity.isPresent()) {
                 return ResponseEntity.ok(customerEntity);

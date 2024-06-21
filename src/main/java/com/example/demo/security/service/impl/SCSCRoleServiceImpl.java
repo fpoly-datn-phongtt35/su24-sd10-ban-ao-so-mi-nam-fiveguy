@@ -1,8 +1,8 @@
 package com.example.demo.security.service.impl;
 
 import com.example.demo.entity.Role;
-import com.example.demo.security.repository.RoleRepository;
-import com.example.demo.security.service.RoleService;
+import com.example.demo.security.repository.SCRoleRepository;
+import com.example.demo.security.service.SCRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,28 +10,28 @@ import java.util.List;
 import java.util.Optional;
 @Service
 
-public class RoleServiceImpl implements RoleService {
+public class SCSCRoleServiceImpl implements SCRoleService {
     @Autowired
-   private RoleRepository roleRepository;
+   private SCRoleRepository SCRoleRepository;
 
     @Override
     public List<Role> getAll() {
-        return roleRepository.findAll();
+        return SCRoleRepository.findAll();
     }
 
     @Override
     public Role save(Role roles) {
-        return roleRepository.save(roles);
+        return SCRoleRepository.save(roles);
     }
 
     @Override
     public void delete(Long id) {
-        roleRepository.deleteById(id);
+        SCRoleRepository.deleteById(id);
     }
 
     @Override
     public Role update(Long id, Role roles) {
-        Optional<Role> rolesOptional = roleRepository.findById(id);
+        Optional<Role> rolesOptional = SCRoleRepository.findById(id);
         if (rolesOptional.isPresent()) {
             Role roles1 = rolesOptional.get();
             roles1.setFullName(roles.getFullName());
@@ -39,7 +39,7 @@ public class RoleServiceImpl implements RoleService {
             roles1.setUpdatedAt(roles.getUpdatedAt());
             roles1.setStatus(roles.getStatus());
 
-            return roleRepository.save(roles1);
+            return SCRoleRepository.save(roles1);
         } else {
             throw new IllegalArgumentException("Không tìm thấy khách hàng với ID " + id);
         }
@@ -47,7 +47,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Optional<Role> findByFullNameAndStatus(String fullName, int status) {
-        Optional<Role> roles = roleRepository.findByFullNameAndStatus(fullName, 1);
+        Optional<Role> roles = SCRoleRepository.findByFullNameAndStatus(fullName, 1);
         if (roles.isPresent()) {
             return roles;
         }

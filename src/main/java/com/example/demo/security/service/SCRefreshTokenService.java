@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
-public interface RefreshTokenService {
+public interface SCRefreshTokenService {
 
     RefreshToken save(RefreshToken roles);
 

@@ -3,34 +3,34 @@ package com.example.demo.security.service.impl;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
 import com.example.demo.security.jwt.JwtTokenUtil;
-import com.example.demo.security.repository.AccountRepository;
-import com.example.demo.security.repository.EmployeeRepository;
-import com.example.demo.security.service.EmployeeService;
+import com.example.demo.security.repository.SCAccountRepository;
+import com.example.demo.security.repository.SCEmployeeRepository;
+import com.example.demo.security.service.SCEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 @Service
 
-public class EmployeeServiceImpl implements EmployeeService {
+public class SCSCEmployeeServiceImpl implements SCEmployeeService {
 
     @Autowired
-    private EmployeeRepository employeeRepository;
+    private SCEmployeeRepository SCEmployeeRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private SCAccountRepository SCAccountRepository;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public Employee findByAccount_Id(Long accountId) {
-        return employeeRepository.findByAccount_Id(accountId);
+        return SCEmployeeRepository.findByAccount_Id(accountId);
     }
 
     @Override
     public Employee save(Employee employee) {
-        return employeeRepository.save(employee);
+        return SCEmployeeRepository.save(employee);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
 
             // Retrieve account
-            Optional<Account> optionalAccount = accountRepository.findByAccount(accountName);
+            Optional<Account> optionalAccount = SCAccountRepository.findByAccount(accountName);
             if (optionalAccount.isEmpty()) {
                 return Optional.empty();
             }
@@ -59,7 +59,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             Account account = optionalAccount.get();
 
             // Check for Employee with status = 1
-            Employee employee = employeeRepository.findByAccount_Id(account.getId());
+            Employee employee = SCEmployeeRepository.findByAccount_Id(account.getId());
             if (employee != null) {
                 return Optional.of(employee);
             }

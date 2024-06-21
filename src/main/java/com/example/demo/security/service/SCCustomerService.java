@@ -4,7 +4,7 @@ import com.example.demo.entity.Customer;
 
 import java.util.Optional;
 
-public interface CustomerService {
+public interface SCCustomerService {
 
     Customer findByAccount_Id(Long accountId);
 

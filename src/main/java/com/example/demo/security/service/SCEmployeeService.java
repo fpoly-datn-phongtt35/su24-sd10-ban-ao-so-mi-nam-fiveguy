@@ -4,7 +4,7 @@ import com.example.demo.entity.Employee;
 
 import java.util.Optional;
 
-public interface EmployeeService {
+public interface SCEmployeeService {
 
     Employee findByAccount_Id(Long accountId);
 
