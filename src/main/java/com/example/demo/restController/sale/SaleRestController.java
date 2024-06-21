@@ -2,6 +2,7 @@ package com.example.demo.restController.sale;
 
 import com.example.demo.entity.Sale;
 import com.example.demo.model.response.sale.SaleSummaryResponse;
+import com.example.demo.security.service.AccountService;
 import com.example.demo.service.sale.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 @RestController
@@ -25,11 +27,25 @@ public class SaleRestController {
     @Autowired
     private SaleService saleService;
 
+    @Autowired
+    private AccountService accountService;
+
     @PostMapping
-    public ResponseEntity<Sale> createSale(@RequestBody Sale sale) {
-        Sale createdSale = saleService.saveSale(sale);
-        return ResponseEntity.ok(createdSale);
+    public ResponseEntity<Sale> createOrUpdateSale(@RequestBody Sale sale, @RequestHeader("Authorization") String token) {
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+
+        if (fullName.isPresent()) {
+            if (sale.getId() == null) {
+                sale.setCreatedBy(fullName.get());
+            } else {
+                sale.setUpdatedBy(fullName.get());
+            }
+        }
+
+        Sale savedSale = saleService.saveSale(sale);
+        return ResponseEntity.ok(savedSale);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSale(@PathVariable Long id) {

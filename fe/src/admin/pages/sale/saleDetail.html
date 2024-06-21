@@ -1,5 +1,5 @@
 <!-- Main content -->
-<div class="container-fluid px-4" ng-init="clearSelectedProducts(); clearSelectedProductSales();getSaleSummary()">
+<div class="container-fluid px-4" ng-init="clearSelectedProducts(); clearSelectedProductSales();getSaleSummary(); refreshDataProductSale(); refreshDataProduct()">
     <div class="row" style="margin-bottom: 20px;">
         <div class="col-12">
             <h2 class="text-center mb-4">BÁO CÁO HIỆU QUẢ CHƯƠNG TRÌNH GIẢM GIÁ</h2>
@@ -14,9 +14,6 @@
             </div>
         </div>
     </div>
-    
-    
-    
     
     <div class="row">
         <!-- Form nhập thông tin đợt giảm giá -->
@@ -122,21 +119,23 @@
                         </div> -->
                         
                         <div class="col-md-6">
-                            <div class="form-group" ng-class="{'has-error': (saleFormUpdate.status.$touched || saleFormUpdate.$submitted) && saleFormUpdate.status.$invalid}">
+                            <div class="form-group">
                                 <label for="status" class="form-label">Trạng thái</label>
-                                <select class="form-control" id="status" name="status" ng-model="saleDetail.status" required>
-                                    <option value="2" ng-selected="saleDetail.status == 2">Sắp bắt đầu</option>
-                                    <option value="1" ng-selected="saleDetail.status == 1">Đang hoạt động</option>
-                                    <option value="3" ng-selected="saleDetail.status == 3">Hết hạn</option>
-                                    <option value="4" ng-selected="saleDetail.status == 4">Dừng hoạt động</option>
-                                </select>
-                                <div class="text-danger" ng-show="(saleFormUpdate.status.$touched || saleFormUpdate.$submitted) && saleFormUpdate.status.$invalid">
-                                    Trạng thái là bắt buộc.
-                                </div>
+                                <select class="form-control" id="status" name="status" ng-model="saleDetail.status" ng-change="updateStatus()" ng-options="option.value as option.label for option in statusOptions"></select>
+                                <!-- Hiển thị text "Hết hạn" khi trạng thái là 3 -->
+                                <!-- <p ng-if="saleDetail.status === 3">Hết hạn</p> -->
                             </div>
                         </div>
-            
-                        <button type="submit" class="btn btn-primary" ng-if="saleDetail.status !== 3">Lưu</button>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <!-- Nút "Lưu" chỉ hiển thị khi trạng thái khác 3 -->
+                        <button type="submit" class="btn btn-primary" ng-if="getSaleStatusFromLocal() !== '3'">Lưu</button>
+                        
+
                     </form>
                 </div>
             </div>
@@ -203,8 +202,8 @@
                                 
                             </tbody>
                         </table>
-                        <button type="button" class="btn btn-primary" ng-click="addSelectedProductSales()" ng-if="saleDetail.status !== 3">Thêm sản phẩm đã chọn</button>
-                        <button type="button" class="btn btn-success" ng-click="addAllProductSales()" ng-if="saleDetail.status !== 3">Thêm tất cả sản phẩm</button>
+                        <button type="button" class="btn btn-primary" ng-click="addSelectedProductSales()" ng-if="getSaleStatusFromLocal() !== '3'">Thêm sản phẩm đã chọn</button>
+                        <button type="button" class="btn btn-success" ng-click="addAllProductSales()" ng-if="getSaleStatusFromLocal() !== '3'">Thêm tất cả sản phẩm</button>
                     </div>
                 </div>
                 <div class="row text-center">
@@ -303,8 +302,8 @@
                             </tr>
                         </tbody>
                     </table>
-                    <button class="btn btn-danger" ng-click="deleteSelected()" ng-if="saleDetail.status !== 3">Xóa các mục đã chọn</button>
-                    <button class="btn btn-danger" ng-click="deleteAll()" ng-if="saleDetail.status !== 3">Xóa tất cả</button>
+                    <button class="btn btn-danger" ng-click="deleteSelected()" ng-if="getSaleStatusFromLocal() !== '3'">Xóa các mục đã chọn</button>
+                    <button class="btn btn-danger" ng-click="deleteAll()" ng-if="getSaleStatusFromLocal() !== '3'">Xóa tất cả</button>
                 </div>
             </div>
             <div class="row text-center">

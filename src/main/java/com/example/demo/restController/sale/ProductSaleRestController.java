@@ -1,6 +1,7 @@
 package com.example.demo.restController.sale;
 
 import com.example.demo.entity.ProductSale;
+import com.example.demo.security.service.AccountService;
 import com.example.demo.service.sale.ProductSaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -20,17 +22,29 @@ public class ProductSaleRestController {
     @Autowired
     private ProductSaleService productSaleService;
 
+    @Autowired
+    private AccountService accountService;
+
     @PostMapping
-    public ResponseEntity<ProductSale> createProductSale(@RequestBody ProductSale productSale) {
+    public ResponseEntity<ProductSale> createProductSale(@RequestBody ProductSale productSale, @RequestHeader("Authorization") String token) {
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+
+        if (fullName.isPresent()) {
+            if (productSale.getId() == null) {
+                productSale.setCreatedBy(fullName.get());
+            }
+        }
+
         ProductSale createdProductSale = productSaleService.saveProductSale(productSale);
         return ResponseEntity.ok(createdProductSale);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductSale> updateProductSale(@PathVariable Long id, @RequestBody ProductSale productSale) {
-        ProductSale updatedProductSale = productSaleService.updateProductSale(id, productSale);
-        return ResponseEntity.ok(updatedProductSale);
-    }
+
+//    @PutMapping("/{id}")
+//    public ResponseEntity<ProductSale> updateProductSale(@PathVariable Long id, @RequestBody ProductSale productSale) {
+//        ProductSale updatedProductSale = productSaleService.updateProductSale(id, productSale);
+//        return ResponseEntity.ok(updatedProductSale);
+//    }
     
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteProductSale(@PathVariable Long id) {
@@ -63,11 +77,11 @@ public class ProductSaleRestController {
         return ResponseEntity.ok(savedProductSales);
     }
 
-    @PostMapping("/addAll/{id}")
-    public ResponseEntity<List<ProductSale>> addAllProductSales(@PathVariable Long id) {
-        List<ProductSale> savedProductSales = productSaleService.addAllProductSales(id);
-        return ResponseEntity.ok(savedProductSales);
-    }
+//    @PostMapping("/addAll/{id}")
+//    public ResponseEntity<List<ProductSale>> addAllProductSales(@PathVariable Long id) {
+//        List<ProductSale> savedProductSales = productSaleService.addAllProductSales(id);
+//        return ResponseEntity.ok(savedProductSales);
+//    }
 
     @PostMapping("/deleteList")
     public ResponseEntity<Void> deleteProductSales(@RequestBody List<Long> ids) {
@@ -75,11 +89,11 @@ public class ProductSaleRestController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/deleteAll")
-    public ResponseEntity<Void> deleteAllProductSales() {
-        productSaleService.deleteAllProductSales();
-        return ResponseEntity.ok().build();
-    }
+//    @DeleteMapping("/deleteAll")
+//    public ResponseEntity<Void> deleteAllProductSales() {
+//        productSaleService.deleteAllProductSales();
+//        return ResponseEntity.ok().build();
+//    }
 
     @GetMapping("/fillProductSale")
     public Page<ProductSale> filterProductSales(

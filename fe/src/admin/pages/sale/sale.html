@@ -114,7 +114,7 @@
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Lưu</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy bỏ</button>
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy bỏ</button> -->
                     </div>
                 </form>
             </div>
@@ -156,7 +156,7 @@
         <label>Loại giảm giá:</label>
         <select class="form-control" ng-model="discountType" ng-change="getSalesByConditions()">
             <option value="" selected>Chọn loại giảm giá</option>
-            <option value="1">Giảm giá theo giá</option>
+            <option value="1">Giảm giá theo giá tiền</option>
             <option value="2">Giảm giá theo phần trăm</option>
         </select>
     </div>
@@ -178,7 +178,7 @@
                                 <th>Tên</th>
                                 <th>Mã</th>
                                 <th>Giá trị</th>
-                                <th>Loại</th>
+                                <th>Loại giảm giá</th>
                                 <th>Thời gian bắt đầu</th>
                                 <th>Thời gian kết thúc</th>
                                 <th>Trạng thái</th>
@@ -189,16 +189,21 @@
                             <tr ng-repeat="sale in sales">
                                 <td>{{ sale.name }}</td>
                                 <td>{{ sale.code }}</td>
-                                <td>{{ sale.value }}</td>
-                                <td>{{ sale.discountType }}</td>
+                                <td>
+                                    <span ng-if="sale.discountType == 1">{{ formatCurrency(sale.value) }} </span>
+                                    <span ng-if="sale.discountType != 1">{{ sale.value }}</span>
+                                </td>
+                                <td>
+                                    <span ng-if="sale.discountType == 1">theo giá tiền</span>
+                                    <span ng-if="sale.discountType == 2">theo phần trăm</span>
+                                    <span ng-if="sale.discountType != 1 && sale.discountType != 2">Không rõ loại giảm giá</span>
+                                </td>
+                                
                                 <td>{{ sale.startDate | date:'dd/MM/yyyy h:mm a' }}</td>
                                 <td>{{ sale.endDate | date:'dd/MM/yyyy h:mm a' }}</td>
-                                
                                 <td>
                                     {{getStatusText(sale.status)}}
                                 </td>
-                                
-                                
                                 <td>
                                     <a ng-href="#admin/sale/update/{{sale.id}}" class="btn btn-sm btn-warning">Xem chi tiết</a>
                                 </td>

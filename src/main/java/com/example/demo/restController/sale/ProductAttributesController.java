@@ -14,7 +14,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping("/api/admin/infoProduct")
-public class FillProductRestController {
+public class ProductAttributesController {
 
     @Autowired
     private WristService wristService;

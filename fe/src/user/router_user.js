@@ -25,6 +25,10 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/cart/cart.html",
       controller: 'cartController'
     })
+    .when("/home/product", {
+      templateUrl: "pages/product.html",
+      controller: 'productController'
+    })
 
 
     .otherwise({

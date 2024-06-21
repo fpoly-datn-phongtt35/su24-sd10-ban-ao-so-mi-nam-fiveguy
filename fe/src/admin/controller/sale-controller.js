@@ -90,7 +90,6 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
                 size: $scope.pageSize
             }
         };
-        console.log(config);
     
         $http.get(baseUrl + '/fill', config)
             .then(function(response) {
@@ -157,8 +156,11 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
                 saleData.startDate = parseDate(saleData.startDate);
                 saleData.endDate = parseDate(saleData.endDate);
                 $scope.saleDetail = saleData;
-                console.log($scope.saleDetail)
-                console.log($scope.saleDetail.discountType)
+                if (saleData.status) {
+                    localStorage.setItem('saleStatus', saleData.status);
+                }
+    $scope.updateStatus();
+
             }, function(error) {
                 console.error('Error fetching sale details:', error);
             });
@@ -173,6 +175,42 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         };
     }
 
+    $scope.updateStatus = function() {
+        var sale = $scope.saleDetail;
+        var today = new Date();
+        var startDate = new Date(sale.startDate);
+        var endDate = new Date(sale.endDate);
+
+        $scope.statusOptions = [];
+
+        if (sale) {
+            // Luôn thêm trạng thái hiện tại lên đầu
+            if (sale.status === 1) {
+                $scope.statusOptions.push({ value: 1, label: 'Đang hoạt động' });
+            } else if (sale.status === 2) {
+                $scope.statusOptions.push({ value: 2, label: 'Sắp bắt đầu' });
+            } else if (sale.status === 4) {
+                $scope.statusOptions.push({ value: 4, label: 'Dừng hoạt động' });
+            } else if (sale.status === 3) {
+                $scope.statusOptions.push({ value: 3, label: 'Hết hạn' });
+            }
+
+            // Thêm các trạng thái khác dựa trên điều kiện
+            if (sale.status === 1 || sale.status === 2) {
+                $scope.statusOptions.push({ value: 4, label: 'Dừng hoạt động' });
+            }
+
+            if (sale.status === 4) {
+                if (today >= startDate && today <= endDate) {
+                    $scope.statusOptions.push({ value: 1, label: 'Đang hoạt động' });
+                } else if (today < startDate) {
+                    $scope.statusOptions.push({ value: 2, label: 'Sắp bắt đầu' });
+                }
+            }
+        }
+    };
+    
+    // Gọi hàm updateStatus() khi controller khởi tạo
     
 
     $scope.fetchAllSales = function() {
@@ -212,7 +250,6 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     
             $http.post(baseUrl, saleData)
                 .then(function(response) {
-                    console.log('Sale saved successfully', response.data);
                     $('#saleModal').modal('hide');
                     $scope.showSuccessNotification("Thêm đợt giảm giá thành công");
                     $scope.fetchAllSales();
@@ -276,6 +313,7 @@ if (!localStorage.getItem('selectedProductSales')) {
 
 $scope.clearSelectedProductSales = function() {
     localStorage.removeItem('selectedProductSales');
+    localStorage.removeItem('saleStatus');
 };
 
 $scope.toggleProductSaleSelection = function(productSale) {
@@ -329,7 +367,7 @@ $scope.filterProductSale = function(page) {
 
     if (isNaN(saleId)) {
         console.error('Invalid saleId:', saleId);
-        return;
+        return Promise.reject('Invalid saleId');
     }
 
     var config = {
@@ -348,17 +386,15 @@ $scope.filterProductSale = function(page) {
             searchTerm: $scope.searchTerm2
         }
     };
-    console.log(config);
 
-    $http.get(baseUrl + '/product-sales/fillProductSale', config)
+    return $http.get(baseUrl + '/product-sales/fillProductSale', config)
         .then(function(response) {
             if (response.data.content.length === 0 && page > 0) {
-                $scope.filterProductSale(0);
+                return $scope.refreshDataProductSale(); // Recursive call to get the first page if the current page is empty
             } else {
                 $scope.productSales = response.data.content;
                 $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = page;
-                console.log($scope.productSales);
 
                 var selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
 
@@ -367,11 +403,18 @@ $scope.filterProductSale = function(page) {
                         return selectedProductSale.id === productSale.id;
                     });
                 });
+
+                return {
+                    productSales: $scope.productSales,
+                    totalPages: $scope.totalPages2
+                }; // Return the productSales and totalPages to the caller
             }
-        }, function(error) {
+        }).catch(function(error) {
             console.error('Error fetching product sales:', error);
+            throw error; // Throw error to be caught by the caller
         });
 };
+
 
 $scope.setCurrentPageProductSales2 = function(page) {
     if (page >= 0 && page < $scope.totalPages2) {
@@ -395,7 +438,7 @@ $scope.toggleProductSelection = function(productSale) {
 };
 
 // Initialize the filtering process
-$scope.filterProductSale(0);
+// $scope.filterProductSale(0);
     
 // Xóa sản phẩm ra khỏi đợt giảm giá \
    
@@ -414,8 +457,8 @@ $scope.deleteSelected = function() {
             $scope.allProductSales = $scope.allProductSales.filter(function(productSale) {
                 return !selectedIds.includes(productSale.id);
             });
-            $scope.filterProducts(0);
-            $scope.filterProductSale(0);
+            $scope.refreshDataProductSale();
+            $scope.refreshDataProduct();
             $scope.showSuccessNotification("Xóa sản phẩm thành công");
         }).catch(function(error) {
             $scope.showErrorNotification("Xóa sản phẩm thất bại");
@@ -425,18 +468,38 @@ $scope.deleteSelected = function() {
 };
 
 
-    $scope.deleteAll = function() {
-            $http.delete(baseUrl + '/product-sales/deleteAll').then(function(response) {
-                $scope.productSales = [];
-            $scope.showSuccessNotification("Xóa sản phẩm thành công");
-            $scope.filterProducts(0);
-            $scope.filterProductSale(0);
-            }).catch(function(error) {
-            $scope.showErrorNotification("Xóa sản phẩm thất bại");
-
-                console.error('Error deleting all product sales:', error);
+$scope.deleteAll = function() {
+    // Fetch all product sales to get their IDs
+    $scope.fetchAllProductSales().then(function(allProductSales) {
+        if (allProductSales && allProductSales.length > 0) {
+            var selectedIds = allProductSales.map(function(productSale) {
+                return productSale.id;
             });
-    };
+
+            // Call the API to delete the list of selected product sales
+            $http.post('http://localhost:8080/api/admin/sales/product-sales/deleteList', selectedIds)
+                .then(function(response) {
+                    $scope.productSales = [];
+                    $scope.refreshDataProductSale();
+                    $scope.refreshDataProduct();
+
+                    $scope.showSuccessNotification("Xóa sản phẩm thành công");
+
+                }).catch(function(error) {
+                    $scope.showErrorNotification("Xóa sản phẩm thất bại");
+                    console.error('Error deleting all product sales:', error);
+                });
+        } else {
+            $scope.showErrorNotification("Không có sản phẩm để xóa");
+        }
+    }).catch(function(error) {
+        $scope.showErrorNotification("Xóa sản phẩm thất bại");
+        console.error('Error fetching product sales:', error);
+    });
+};
+
+
+
 
     
     $scope.countCurrentSales();
@@ -515,8 +578,6 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/admin/infoProduct';
     
 // Function to calculate discount
 function calculateDiscount(sale, product) {
-    console.log(discount)
-    
         var discount = 0;
         if (sale.discountType === 1) {
             discount = sale.value;
@@ -553,7 +614,6 @@ function calculateDiscount(sale, product) {
             }).map(function(product) {
                 var discount = calculateDiscount(sale, product);
                 var promotionalPrice = product.price - discount;
-                console.log(discount)
                 return {
                     product: product,
                     sale: sale,
@@ -567,8 +627,8 @@ function calculateDiscount(sale, product) {
                     response.data.forEach(function(newProductSale) {
                         $scope.productSales.push(newProductSale);
                     });
-                    $scope.filterProducts(0);
-                    $scope.filterProductSale(0);
+                    $scope.refreshDataProductSale();
+                    $scope.refreshDataProduct();
                     $scope.showSuccessNotification("Thêm sản phẩm thành công")
                 }).catch(function(error) {
                     $scope.showErrorNotification("Thêm sản phẩm thất bại")
@@ -579,23 +639,102 @@ function calculateDiscount(sale, product) {
     };
 
         // Thêm tất cả sản phẩm vào đợt giảm giá
-$scope.addAllProductSales = function() {
-    var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.idSale;
-    $http.post(apiUrl)
-        .then(function(response) {
-            $scope.productSales = [];
-            response.data.forEach(function(newProductSale) {
-                $scope.productSales.push(newProductSale);
-            });
-            $scope.filterProducts(0);
-            $scope.filterProductSale(0);
-            $scope.showSuccessNotification("Thêm sản phẩm thành công")
-        })
-        .catch(function(error) {
-            $scope.showErrorNotification("Thêm sản phẩm thất bại")
-            console.error('Error adding all product sales:', error);
+// $scope.addAllProductSales = function() {
+//     var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.idSale;
+//     $http.post(apiUrl)
+//         .then(function(response) {
+//             $scope.productSales = [];
+//             response.data.forEach(function(newProductSale) {
+//                 $scope.productSales.push(newProductSale);
+//             });
+//             $scope.filterProducts(0);
+//             $scope.filterProductSale(0);
+//             $scope.showSuccessNotification("Thêm sản phẩm thành công")
+//         })
+//         .catch(function(error) {
+//             $scope.showErrorNotification("Thêm sản phẩm thất bại")
+//             console.error('Error adding all product sales:', error);
+//         });
+// };
+
+$scope.fetchAllProducts = function() {
+    var allProducts = [];
+    var fetchPage = function(page) {
+        return $scope.filterProducts(page).then(function(result) {
+            allProducts = allProducts.concat(result.products);
+            if (page < result.totalPages - 1) {
+                return fetchPage(page + 1); // Recursive call to fetch the next page
+            } else {
+                return allProducts; // Return all collected products
+            }
+        }).catch(function(error) {
+            console.error('Error in fetchPage:', error);
+            throw error; // Propagate error
         });
+    };
+    return fetchPage(0); // Start fetching from the first page
 };
+
+
+$scope.fetchAllProductSales = function() {
+    var allProductSales = [];
+    var fetchPage = function(page) {
+        return $scope.filterProductSale(page).then(function(result) {
+            allProductSales = allProductSales.concat(result.productSales);
+            if (page < result.totalPages - 1) {
+                return fetchPage(page + 1); // Recursive call to fetch the next page
+            } else {
+                return allProductSales; // Return all collected product sales
+            }
+        }).catch(function(error) {
+            console.error('Error in fetchPage:', error);
+            throw error; // Propagate error
+        });
+    };
+    return fetchPage(0); // Start fetching from the first page
+};
+
+
+
+
+$scope.addAllProductSales = function() {
+    // Call the fetchAllProducts function to get all products across multiple pages
+    $scope.fetchAllProducts().then(function(allProducts) {
+        if (allProducts && allProducts.length > 0) {
+        var sale = $scope.saleDetail;
+            var selectedProductsFromAll = allProducts.map(function(product) {
+                var discount = calculateDiscount(sale, product); // Assuming calculateDiscount is defined
+                var promotionalPrice = product.price - discount;
+                return {
+                    product: product,
+                    sale: sale,
+                    promotionalPrice: promotionalPrice,
+                    discountPrice: discount
+                };
+            });
+            // Call the API to add product sales
+            $http.post('http://localhost:8080/api/admin/sales/product-sales/addList', selectedProductsFromAll)
+                .then(function(response) {
+                    $scope.refreshDataProductSale();
+                    $scope.refreshDataProduct();
+
+                    $scope.showSuccessNotification("Thêm sản phẩm thành công")
+                }).catch(function(error) {
+                    $scope.showErrorNotification("Thêm sản phẩm thất bại");
+                    console.error('Error adding product sales:', error);
+                });
+        } else {
+            $scope.showErrorNotification("Không có sản phẩm để thêm");
+        }
+    }).catch(function(error) {
+        $scope.showErrorNotification("Thêm sản phẩm thất bại");
+        console.error('Error fetching products:', error);
+    });
+};
+
+
+
+
     
     if (!localStorage.getItem('selectedProducts')) {
         localStorage.setItem('selectedProducts', JSON.stringify([]));
@@ -660,10 +799,10 @@ $scope.addAllProductSales = function() {
             }
         };
     
-        $http.get('http://localhost:8080/api/admin/sales/products/filter', config)
+        return $http.get('http://localhost:8080/api/admin/sales/products/filter', config)
             .then(function(response) {
                 if (response.data.content.length === 0 && page > 0) {
-                    $scope.filterProducts(0);
+                    return $scope.filterProducts(0); // Recursive call to get the first page if the current page is empty
                 } else {
                     $scope.products = response.data.content;
                     $scope.totalPages = response.data.totalPages;
@@ -677,25 +816,28 @@ $scope.addAllProductSales = function() {
                         product.selected = !!selectedProduct;
                     });
     
-                    console.log($scope.products);
+                    return {
+                        products: $scope.products,
+                        totalPages: $scope.totalPages
+                    }; // Return the products and totalPages to the caller
                 }
-            }, function(error) {
+            }).catch(function(error) {
                 console.error('Error fetching products:', error);
+                throw error; // Throw error to be caught by the caller
             });
     };
+    
     
 
 
     $scope.setCurrentPageRateProduct = function(page) {
-        console.log(page)
-        console.log($scope.totalPages)
         if (page >= 0 && page < $scope.totalPages) {
             $scope.filterProducts(page);
         }
     };
 
 
-    $scope.filterProducts(0);
+    // $scope.filterProducts(0);
     
 
     // $scope.searchProducts = function() {
@@ -720,7 +862,6 @@ $scope.addAllProductSales = function() {
 
         $http.get(baseUrl + '/summary/' + saleId)
             .then(function(response) {
-                console.log(response.data)
                 $scope.summary = response.data;
                 $scope.summary.profitMargin = ($scope.summary.totalProfit / $scope.summary.totalRevenue) * 100;
             })
@@ -735,4 +876,19 @@ $scope.addAllProductSales = function() {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
 
+
+    $scope.getSaleStatusFromLocal = function() {
+        return localStorage.getItem('saleStatus');
+    };
+
+
+
 }]);
+
+
+
+
+
+
+
+// console.log("Check")

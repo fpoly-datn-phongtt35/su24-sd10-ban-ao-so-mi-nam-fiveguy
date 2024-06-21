@@ -21,12 +21,14 @@ public class DiscountStatusUpdater {
         List<Sale> sales = saleRepository.findAllByStatusNot(3);
 
         for (Sale sale : sales) {
-            if (sale.getEndDate() != null && now.after(sale.getStartDate()) && now.before(sale.getEndDate())) {
-                sale.setStatus(1);
-            } else if (sale.getEndDate() != null && sale.getEndDate().before(now)) {
-                sale.setStatus(3);
+            if (sale.getEndDate() != null && sale.getStartDate() != null) {
+                if (sale.getStatus() == 2 && now.after(sale.getStartDate()) && now.before(sale.getEndDate())) {
+                    sale.setStatus(1); // Đang hoạt động
+                } else if ((sale.getStatus() == 1 || sale.getStatus() == 4) && now.after(sale.getEndDate())) {
+                    sale.setStatus(3); // Hết hạn
+                }
+                saleRepository.save(sale);
             }
-            saleRepository.save(sale);
         }
     }
 }

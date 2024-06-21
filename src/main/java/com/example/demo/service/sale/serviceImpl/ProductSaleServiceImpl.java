@@ -25,11 +25,11 @@ public class ProductSaleServiceImpl implements ProductSaleService {
     @Autowired
     private ProductSaleRepository productSaleRepository;
 
-    @Autowired
-    private ProductService productService;
-
-    @Autowired
-    private SaleService saleService;
+//    @Autowired
+//    private ProductService productService;
+//
+//    @Autowired
+//    private SaleService saleService;
 
     @Override
     public ProductSale saveProductSale(ProductSale productSale) {
@@ -85,10 +85,10 @@ public class ProductSaleServiceImpl implements ProductSaleService {
         productSaleRepository.deleteAllById(ids);
     }
 
-    @Override
-    public void deleteAllProductSales() {
-        productSaleRepository.deleteAll();
-    }
+//    @Override
+//    public void deleteAllProductSales() {
+//        productSaleRepository.deleteAll();
+//    }
 
     @Override
     public Page<ProductSale> filterProductSales(Long saleId, Long productId, Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId, Integer status, String searchTerm, Pageable pageable) {
@@ -128,42 +128,42 @@ public class ProductSaleServiceImpl implements ProductSaleService {
         return productSaleRepository.findAll(spec, pageable);
     }
 
-    @Override
-    public List<ProductSale> addAllProductSales(Long saleId) {
-        Date now = new Date();
-
-        // Find the sale by ID
-        Sale sale = saleService.getSaleById(saleId);
-
-        // Get the products without sale or with expired sale
-        List<Product> products = productService.getProductsWithoutSaleOrExpiredPromotion();
-
-        // Create a list of ProductSale
-        List<ProductSale> productSales = new ArrayList<>();
-        for (Product product : products) {
-            int discount = 0;
-            if (sale.getDiscountType() == 1) {
-                discount = sale.getValue();
-            } else if (sale.getDiscountType() == 2) {
-                discount = product.getPrice().intValue() * sale.getValue() / 100;
-            }
-            if (sale.getMaximumDiscountAmount() != null && discount > sale.getMaximumDiscountAmount()) {
-                discount = sale.getMaximumDiscountAmount();
-            }
-            int promotionalPrice = product.getPrice().intValue() - discount;
-
-            ProductSale productSale = new ProductSale();
-            productSale.setCreatedAt(now);
-
-            productSale.setProduct(product);
-            productSale.setSale(sale);
-            productSale.setPromotionalPrice(promotionalPrice);
-            productSale.setDiscountPrice(discount);
-            productSales.add(productSale);
-        }
-
-        // Save all productSales
-        return productSaleRepository.saveAll(productSales);
-    }
+//    @Override
+//    public List<ProductSale> addAllProductSales(Long saleId) {
+//        Date now = new Date();
+//
+//        // Find the sale by ID
+//        Sale sale = saleService.getSaleById(saleId);
+//
+//        // Get the products without sale or with expired sale
+//        List<Product> products = productService.getProductsWithoutSaleOrExpiredPromotion();
+//
+//        // Create a list of ProductSale
+//        List<ProductSale> productSales = new ArrayList<>();
+//        for (Product product : products) {
+//            int discount = 0;
+//            if (sale.getDiscountType() == 1) {
+//                discount = sale.getValue();
+//            } else if (sale.getDiscountType() == 2) {
+//                discount = product.getPrice().intValue() * sale.getValue() / 100;
+//            }
+//            if (sale.getMaximumDiscountAmount() != null && discount > sale.getMaximumDiscountAmount()) {
+//                discount = sale.getMaximumDiscountAmount();
+//            }
+//            int promotionalPrice = product.getPrice().intValue() - discount;
+//
+//            ProductSale productSale = new ProductSale();
+//            productSale.setCreatedAt(now);
+//
+//            productSale.setProduct(product);
+//            productSale.setSale(sale);
+//            productSale.setPromotionalPrice(promotionalPrice);
+//            productSale.setDiscountPrice(discount);
+//            productSales.add(productSale);
+//        }
+//
+//        // Save all productSales
+//        return productSaleRepository.saveAll(productSales);
+//    }
 
 }

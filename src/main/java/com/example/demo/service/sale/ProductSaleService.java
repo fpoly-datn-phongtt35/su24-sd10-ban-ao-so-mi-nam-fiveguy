@@ -17,9 +17,9 @@ public interface ProductSaleService {
 
     List<ProductSale> addProductSales(List<ProductSale> productSales);
     void deleteProductSales(List<Long> ids);
-    void deleteAllProductSales();
+//    void deleteAllProductSales();
 
     Page<ProductSale> filterProductSales(Long saleId, Long productId, Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId, Integer status, String searchTerm, Pageable pageable);
 
-    List<ProductSale> addAllProductSales(Long id);
+//    List<ProductSale> addAllProductSales(Long id);
 }
