@@ -1,8 +1,10 @@
 package com.example.demo.security.RestControllerAccount;
 
 
+import com.example.demo.entity.Employee;
 import com.example.demo.security.jwt.JwtTokenUtil;
 import com.example.demo.security.service.AccountService;
+import com.example.demo.security.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +20,13 @@ public class TestSecurityRestController {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private EmployeeService employeeService;
+
     @GetMapping(value = "/security/test", produces = "text/plain")
     public String hi(@RequestHeader("Authorization") String token) {
         Optional<String> fullName = accountService.getFullNameByToken(token);
-        return "Hello, " + " Token " + token + " Name " + fullName.get();
+        Optional<Employee> employee = employeeService.getEmployeeByToken(token);
+        return "Hello, " + " Token " + token + " Name " + fullName.get() + employee.get();
     }
 }

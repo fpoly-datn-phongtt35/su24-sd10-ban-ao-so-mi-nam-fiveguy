@@ -12,4 +12,6 @@ public interface CustomerService {
 
     Customer createCustomer(Customer customerEntity);
 
+    Optional<Customer> getCustomerByToken(String token);
+
 }

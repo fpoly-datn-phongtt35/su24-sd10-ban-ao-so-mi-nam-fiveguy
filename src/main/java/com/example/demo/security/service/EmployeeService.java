@@ -9,4 +9,6 @@ public interface EmployeeService {
     Employee findByAccount_Id(Long accountId);
 
     Employee save(Employee employees);
+
+    Optional<Employee> getEmployeeByToken(String token);
 }

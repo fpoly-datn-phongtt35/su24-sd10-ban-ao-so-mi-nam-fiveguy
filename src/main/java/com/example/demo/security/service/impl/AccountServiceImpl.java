@@ -1,10 +1,12 @@
 package com.example.demo.security.service.impl;
 
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Customer;
 import com.example.demo.entity.Employee;
 import com.example.demo.security.Request.UserRequestDTO;
 import com.example.demo.security.jwt.JwtTokenUtil;
 import com.example.demo.security.repository.AccountRepository;
+import com.example.demo.security.repository.CustomerRepository;
 import com.example.demo.security.repository.EmployeeRepository;
 import com.example.demo.security.service.AccountService;
 import com.example.demo.security.service.CustomerService;
@@ -28,6 +30,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Override
     public Optional<Account> findByAccount(String username) {
@@ -73,24 +78,48 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Optional<String> getFullNameByToken(String token) {
         try {
-            String actualToken = token.replace("Bearer ", "");
-            String accountName = jwtTokenUtil.getUsernameFromToken(actualToken);
-
-            Optional<Account> account = accountRepository.findByAccount(accountName);
-
-            if (account.isPresent()) {
-                Employee employee = employeeRepository.findByAccount_Id(account.get().getId());
-                if (employee != null) {
-                    return Optional.of(employee.getFullName());
-                }
+            // Validate token
+            if (token == null || !token.startsWith("Bearer ")) {
+                return Optional.empty();
             }
+
+            // Extract actual token
+            String actualToken = token.replace("Bearer ", "");
+
+            // Get account name from token
+            String accountName = jwtTokenUtil.getUsernameFromToken(actualToken);
+            if (accountName == null) {
+                return Optional.empty();
+            }
+
+            // Retrieve account
+            Optional<Account> optionalAccount = accountRepository.findByAccount(accountName);
+            if (optionalAccount.isEmpty()) {
+                return Optional.empty();
+            }
+
+            Account account = optionalAccount.get();
+
+            // Check for Employee
+            Employee employee = employeeRepository.findByAccount_Id(account.getId());
+            if (employee != null && employee.getFullName() != null) {
+                return Optional.of(employee.getFullName());
+            }
+
+            // Check for Customer
+            Customer customer = customerRepository.findByAccount_Id(account.getId());
+            if (customer != null && customer.getFullName() != null) {
+                return Optional.of(customer.getFullName());
+            }
+
         } catch (Exception e) {
-            // Log exception if needed
-            System.err.println("Error occurred while getting user name by token: " + e.getMessage());
+            // Log exception (use a logging framework in real applications)
+            System.err.println("Error occurred while getting full name by token: " + e.getMessage());
         }
 
         return Optional.empty();
     }
+
 
     @Override
     public Optional<Account> findByAccount2(String accountName) {
