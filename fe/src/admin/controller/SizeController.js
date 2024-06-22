@@ -88,6 +88,7 @@ app.controller("SizeController", function($scope, $http){
                 $('#addSizeModel').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
            }).catch(error => {
+                console.log(error);
                 if (error.status === 400) $scope.errors = error.data
                 else toastr["error"](error);
            })

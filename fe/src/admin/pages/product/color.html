@@ -61,7 +61,7 @@
                         <tr ng-repeat="color in colors.content">
                             <th>{{color.id}}</th>
                             <th>{{color.name}}</th>
-                            <th><input type="color" class="form-control form-control-color" value="{{color.colorCode}}" id="exampleColorInput" title="{{color.colorCode}}" disabled></th>
+                            <th><input type="color" class="form-control form-control-color" ng-value="color.colorCode" id="exampleColorInput" title="{{color.colorCode}}" disabled></th>
                             <th>{{color.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
                             <th>{{color.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
                             <th>

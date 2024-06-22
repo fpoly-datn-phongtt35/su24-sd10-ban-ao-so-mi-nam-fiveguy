@@ -21,6 +21,7 @@ input[type=number] {
 }
 
 
+
 /*==========================================================
   material-icon font-style
   ================================*/
@@ -38,7 +39,13 @@ input[type=number] {
     url(https://example.com/MaterialIcons-Regular.ttf) format('truetype');
 }
 
+.status {
+	color: #2196F3;
+}
 
+.pagination li {
+	cursor: pointer;
+}
 
 .material-icons {
   font-family: 'Material Icons';
