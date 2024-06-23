@@ -20,13 +20,47 @@
     background-color: #fff;
     border: 1px solid #ced4da;
 }
+
 .chosen-container .chosen-choices {
     border: 1px solid #ced4da;
     background-color: #fff;
 }
+
 .chosen-container .chosen-choices li.search-choice {
     line-height: 1.5;
 }
+
 .modal-dialog-custom {
     width: 800px;
+}
+
+/* radio visibility */
+.form-check {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+
+/* search by code */
+.input-with-clear {
+    position: relative;
+}
+
+.input-with-clear input {
+    padding-right: 30px;
+    /* Để dành chỗ cho nút x */
+}
+
+.input-with-clear .clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 30px;
+    color: #aaa;
+}
+
+.input-with-clear .clear-btn:hover {
+    color: #000;
 }

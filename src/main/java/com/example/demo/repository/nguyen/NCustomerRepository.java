@@ -15,7 +15,7 @@ public interface NCustomerRepository extends JpaRepository<Customer, Long> {
             "(:fullName IS NULL OR c.fullName LIKE %:fullName%) AND " +
             "(:phoneNumber IS NULL OR c.account.phoneNumber LIKE %:phoneNumber%) AND " +
             "(:email IS NULL OR c.account.email LIKE %:email%) AND " +
-            "(:customerTypeId IS NULL OR c.customerType.id = :customerTypeId)")
+            "(:customerTypeId IS NULL OR c.customerType.id = :customerTypeId) order by c.createdAt DESC")
     Page<Customer> findCustomers(@Param("fullName") String fullName,
                                  @Param("phoneNumber") String phoneNumber,
                                  @Param("email") String email,

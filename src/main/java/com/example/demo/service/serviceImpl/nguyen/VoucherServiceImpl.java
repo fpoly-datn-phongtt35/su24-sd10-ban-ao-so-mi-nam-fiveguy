@@ -40,7 +40,6 @@ public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private NBillRepository billRepository;
 
-
     @Override
     public List<Voucher> getAllVoucher() {
 //        updateStatus();
@@ -107,11 +106,18 @@ public class VoucherServiceImpl implements VoucherService {
 
     public void updateStatus() {
         for (Voucher v : voucherRepository.findAll()) {
-            if (v.getStartDate() != null && v.getEndDate() != null) {
-                if (v.getStatus() != checkDate(v.getStartDate(), v.getEndDate())) {
-                    v.setStatus(checkDate(v.getStartDate(), v.getEndDate()));
-                    voucherRepository.save(v);
+            if (v.getStatus() != 4) {
+                if (v.getStartDate() != null && v.getEndDate() != null) {
+                    if (v.getStatus() != checkDate(v.getStartDate(), v.getEndDate())) {
+                        v.setStatus(checkDate(v.getStartDate(), v.getEndDate()));
+                        voucherRepository.save(v);
+                    }
                 }
+            }
+            Date currentDate = new Date();
+            if(v.getStatus() == 4 && currentDate.after(v.getEndDate())){
+                v.setStatus(checkDate(v.getStartDate(), v.getEndDate()));
+                voucherRepository.save(v);
             }
         }
     }
@@ -191,6 +197,7 @@ public class VoucherServiceImpl implements VoucherService {
         existingVoucher.setCode(updatedVoucher.getCode());
         existingVoucher.setName(updatedVoucher.getName());
         existingVoucher.setValue(updatedVoucher.getValue());
+        existingVoucher.setVisibility(updatedVoucher.getVisibility());
         existingVoucher.setDiscountType(updatedVoucher.getDiscountType());
         existingVoucher.setMaximumReductionValue(updatedVoucher.getMaximumReductionValue());
         existingVoucher.setMinimumTotalAmount(updatedVoucher.getMinimumTotalAmount());
@@ -203,7 +210,7 @@ public class VoucherServiceImpl implements VoucherService {
         existingVoucher.setCreatedBy(updatedVoucher.getCreatedBy());
         existingVoucher.setUpdatedAt(new Date());
         existingVoucher.setUpdatedBy("Admin update");
-        existingVoucher.setStatus(checkDate(updatedVoucher.getStartDate(), updatedVoucher.getEndDate()));
+        existingVoucher.setStatus(updatedVoucher.getStatus() == 4 ? 4 : checkDate(updatedVoucher.getStartDate(), updatedVoucher.getEndDate()));
 
         updateStatus();
 
@@ -228,31 +235,36 @@ public class VoucherServiceImpl implements VoucherService {
         }
 
         // Update CustomerVouchers associated with the Voucher
-        List<CustomerVoucher> existingCustomerVouchers = returnVoucher.getCustomerVouchers();
-        List<Long> existingCustomerVoucherIds = existingCustomerVouchers.stream()
-                .map(CustomerVoucher::getId)
-                .collect(Collectors.toList());
+//        List<CustomerVoucher> existingCustomerVouchers = returnVoucher.getCustomerVouchers();
+//        List<Long> existingCustomerVoucherIds = existingCustomerVouchers.stream()
+//                .map(CustomerVoucher::getId)
+//                .collect(Collectors.toList());
+
+        List<CustomerVoucher> existingCustomerVouchers = customerVoucherRepository.findAllByVoucherId(voucherId);
+        for (CustomerVoucher existingCustomerVoucher : existingCustomerVouchers) {
+            customerVoucherRepository.delete(existingCustomerVoucher);
+        }
 
         // Delete CustomerVouchers not in updated list
-        for (CustomerVoucher existingCustomerVoucher : existingCustomerVouchers) {
-            if (!customerList.contains(existingCustomerVoucher.getCustomer())) {
-                returnVoucher.getCustomerVouchers().remove(existingCustomerVoucher);
-                existingCustomerVoucher.setVoucher(null);
-                customerVoucherRepository.delete(existingCustomerVoucher);
-            }
-        }
+//        for (CustomerVoucher existingCustomerVoucher : existingCustomerVouchers) {
+//            if (!customerList.contains(existingCustomerVoucher.getCustomer())) {
+//                returnVoucher.getCustomerVouchers().remove(existingCustomerVoucher);
+//                existingCustomerVoucher.setVoucher(null);
+//                customerVoucherRepository.delete(existingCustomerVoucher);
+//            }
+//        }
 
         // Add new CustomerVouchers if any in updated list
         for (Customer customer : customerList) {
-            if (!existingCustomerVoucherIds.contains(customer.getId())) {
-                CustomerVoucher newCustomerVoucher = new CustomerVoucher();
-                newCustomerVoucher.setVoucher(returnVoucher);
-                newCustomerVoucher.setCustomer(customer);
-                newCustomerVoucher.setCreatedAt(new Date());
-                newCustomerVoucher.setUpdatedAt(new Date());
-                newCustomerVoucher.setStatus(1); // Set initial status as needed
-                customerVoucherRepository.save(newCustomerVoucher);
-            }
+//            if (!existingCustomerVoucherIds.contains(customer.getId())) {
+            CustomerVoucher newCustomerVoucher = new CustomerVoucher();
+            newCustomerVoucher.setVoucher(returnVoucher);
+            newCustomerVoucher.setCustomer(customer);
+            newCustomerVoucher.setCreatedAt(new Date());
+            newCustomerVoucher.setUpdatedAt(new Date());
+            newCustomerVoucher.setStatus(1); // Set initial status as needed
+            customerVoucherRepository.save(newCustomerVoucher);
+//            }
         }
 
         return returnVoucher;

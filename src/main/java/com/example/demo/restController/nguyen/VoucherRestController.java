@@ -38,12 +38,14 @@ public class VoucherRestController {
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody Voucher voucher) {
-        return ResponseEntity.ok(voucherService.createVoucher(voucher));
+//        return ResponseEntity.ok(voucherService.createVoucher(voucher));
+        return null;
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@RequestBody Voucher voucher, @PathVariable Long id) {
-        return ResponseEntity.ok(voucherService.updateVoucher(voucher, id));
+//        return ResponseEntity.ok(voucherService.updateVoucher(voucher, id));
+        return null;
     }
 
     @GetMapping("/page")
@@ -74,7 +76,9 @@ public class VoucherRestController {
     @PostMapping("/saveVoucher")
     public ResponseEntity<?> saveVoucher(@RequestBody VoucherRequest voucherRequest) {
         System.out.println(voucherRequest.getVoucher());
+        System.out.println(voucherRequest.getCustomerTypeList().size());
         System.out.println(voucherRequest.getCustomerTypeList());
+        System.out.println(voucherRequest.getCustomerList().size());
         System.out.println(voucherRequest.getCustomerList());
         return ResponseEntity.ok(voucherService
                 .createVoucher(voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList(),
@@ -83,9 +87,13 @@ public class VoucherRestController {
     }
 
     @PutMapping("/updateVoucher/{id}")
-    public ResponseEntity<?> updateVoucher(@RequestBody VoucherRequest voucherRequest, @PathVariable Long id) {
+    public ResponseEntity<?> updateVoucher(@RequestBody VoucherRequest voucherRequest,@PathVariable Long id) {
         System.out.println(voucherRequest.getVoucher());
+        System.out.println(voucherRequest.getCustomerTypeList().size());
         System.out.println(voucherRequest.getCustomerTypeList());
+        System.out.println(voucherRequest.getCustomerList().size());
+        System.out.println(voucherRequest.getCustomerList());
+//        return null;
         return ResponseEntity.ok(voucherService
                 .updateVoucher(id, voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList(),
                         voucherRequest.getCustomerList()));
