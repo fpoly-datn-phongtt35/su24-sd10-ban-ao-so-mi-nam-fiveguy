@@ -7,12 +7,48 @@ import java.util.Date;
 
 public class VoucherSpecification {
 
-//    public static Specification<Voucher> hasName(String name) {
-//        return (root, query, criteriaBuilder) ->
-//                name == null ? criteriaBuilder.conjunction() :
-//                        criteriaBuilder.equal(root.get("name"), name);
-//    }
-    //gpt
+    public static Specification<Voucher> hasCodeOrName1(String keyword) {
+        return (root, query, criteriaBuilder) -> {
+            if (keyword == null || keyword.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            } else {
+                String formattedKeyword = "%" + StringUtils.toLowerCaseNonAccentVietnamese(keyword) + "%";
+                return criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("code")), formattedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), formattedKeyword)
+                );
+            }
+        };
+    }
+
+    public static Specification<Voucher> hasCodeOrName(String keyword) {
+        return (root, query, criteriaBuilder) -> {
+            if (keyword == null || keyword.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            } else {
+                String formattedKeyword = "%" + keyword.toLowerCase() + "%";
+                return criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("code")), formattedKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), formattedKeyword)
+                );
+            }
+        };
+    }
+
+    public static Specification<Voucher> hasCode(String code) {
+        return (root, query, criteriaBuilder) -> {
+            if (code == null || code.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            } else {
+                String formattedCode = "%" + code + "%"; // Tìm kiếm đường dẫn chứa tên
+
+                return criteriaBuilder.or(
+                        criteriaBuilder.like(root.get("code"), formattedCode), // Tìm kiếm tên chính xác
+                        criteriaBuilder.like(root.get("code"), "%" + code.replaceAll("\\s", "") + "%") // Kiếm tên kết hợp với các từ khác
+                );
+            }
+        };
+    }
     public static Specification<Voucher> hasName(String name) {
         return (root, query, criteriaBuilder) -> {
             if (name == null || name.isEmpty()) {
@@ -28,20 +64,10 @@ public class VoucherSpecification {
         };
     }
 
-    public static Specification<Voucher> hasName1(String name) {
-        return (root, query, criteriaBuilder) -> {
-            if (name == null || name.isEmpty()) {
-                return criteriaBuilder.conjunction();
-            } else {
-                String likePattern = "%" + name.replace(" ", "%") + "%";
-                return criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), likePattern.toLowerCase());
-            }
-        };
-    }
-    public static Specification<Voucher> hasCode(String code) {
+    public static Specification<Voucher> hasVisibility(Integer visibility) {
         return (root, query, criteriaBuilder) ->
-                code == null ? criteriaBuilder.conjunction() :
-                        criteriaBuilder.equal(root.get("code"), code);
+                visibility == null ? criteriaBuilder.conjunction() :
+                        criteriaBuilder.equal(root.get("visibility"), visibility);
     }
 
     public static Specification<Voucher> hasDiscountType(Integer discountType) {

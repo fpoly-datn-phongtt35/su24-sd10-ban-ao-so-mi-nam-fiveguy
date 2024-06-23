@@ -50,8 +50,9 @@ public class VoucherRestController {
 
     @GetMapping("/page")
     public PaginationResponse<Voucher> getVouchers(
-            @RequestParam(required = false) String name,
             @RequestParam(required = false) String code,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer visibility,
             @RequestParam(required = false) Integer discountType,
             @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date startDate,
             @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date endDate,
@@ -68,7 +69,7 @@ public class VoucherRestController {
         }
 
         Pageable pageable = PageRequest.of(pageNumber, 5);
-        Page<Voucher> page = voucherService.findVouchers(name, code,
+        Page<Voucher> page = voucherService.findVouchers(code, name, visibility,
                 discountType, startDate, endDate, status, pageable);
         return new PaginationResponse<>(page);
     }

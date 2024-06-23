@@ -4,14 +4,14 @@
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#homefilter"
-                    type="button" role="tab" aria-controls="home" aria-selected="true" ng-click="resetFilter()">Tìm theo
-                    mã
+                    type="button" role="tab" aria-controls="home" aria-selected="true"
+                    ng-click="resetFilter(); clearKeyword()">Tìm kiếm
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#detailfilter" t
-                    ype="button" role="tab" aria-controls="profile" aria-selected="false" ng-click="resetFilter()">Tìm
-                    kiếm nâng cao
+                    ype="button" role="tab" aria-controls="profile" aria-selected="false"
+                    ng-click="resetFilter(); clearKeyword()">Tìm kiếm nâng cao
                 </button>
             </li>
         </ul>
@@ -21,10 +21,9 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="input-with-clear mt-2">
-                        <input type="text" ng-model="searchKeyword" placeholder="Nhập mã"
-                            class="form-control">
-                        <span class="clear-btn" ng-if="searchKeyword"
-                            ng-click="searchKeyword=''">&times;</span>
+                        <input type="text" ng-model="searchKeyword" ng-change="searchByKeyword()"
+                            placeholder="Nhập mã hoặc tên" class="form-control">
+                        <span class="clear-btn" ng-if="searchKeyword" ng-click="clearKeyword()">&times;</span>
                     </div>
                 </div>
             </div>
@@ -35,13 +34,18 @@
                     <div class="col-10">
                         <div class="row">
                             <div class="col-md-3">
-                                <label>Tên</label>
-                                <input type="text" ng-model="filters.name" placeholder="Nhập tên" class="form-control">
                                 <label>Loại giảm giá:</label>
                                 <select class="form-select" ng-model="filters.discountType">
                                     <option selected value="">Chọn loại giảm giá:</option>
                                     <option ng-value="1">Giảm theo %</option>
                                     <option ng-value="2">Giảm theo số tiền</option>
+                                </select>
+                                <label>Hiển thị:</label>
+                                <select class="form-select" ng-model="filters.visibility">
+                                    <option selected value="">Chọn loại hiển thị:</option>
+                                    <option ng-value="0">Công khai</option>
+                                    <option ng-value="1">Loại khách hàng</option>
+                                    <option ng-value="2">Cá nhân</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -66,12 +70,10 @@
                         <div class="row mt-4">
                             <div class="col-md-3"></div>
                             <div class="col-md-9">
-                                <button type="submit" class="btn btn-outline-primary mb-2 form-control">
-                                    Tìm kiếm
-                                </button>
+                                <button type="submit" class="btn btn-outline-primary mb-2 form-control">Tìm
+                                    kiếm</button>
                                 <button type="button" class="btn btn-outline-info mb-2 form-control"
-                                    ng-click="resetFilters()">Reset
-                                </button>
+                                    ng-click="resetFilters()">Reset</button>
                             </div>
                         </div>
                     </div>

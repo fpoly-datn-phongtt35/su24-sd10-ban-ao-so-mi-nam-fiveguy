@@ -72,8 +72,6 @@ public class VoucherServiceImpl implements VoucherService {
         Optional<Voucher> voucherOptional = voucherRepository.findById(id);
         if (voucherOptional.isPresent()) {
             Voucher v = voucherOptional.get();
-            v.setCode(voucher.getCode());
-            v.setName(voucher.getName());
             v.setValue(voucher.getValue());
             v.setDiscountType(voucher.getDiscountType());
             v.setMaximumReductionValue(voucher.getMaximumReductionValue());
@@ -128,9 +126,11 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<Voucher> findVouchers(String name, String code, Integer discountType, Date startDate, Date endDate, Integer status, Pageable pageable) {
-        Specification<Voucher> spec = Specification.where(VoucherSpecification.hasName(name))
-                .and(VoucherSpecification.hasCode(code))
+    public Page<Voucher> findVouchers(String code, String name, Integer visibility, Integer discountType, Date startDate, Date endDate, Integer status, Pageable pageable) {
+        Specification<Voucher> spec = Specification.where(VoucherSpecification.hasCodeOrName(code))
+//        Specification<Voucher> spec = Specification.where(VoucherSpecification.hasCode(code == null ? code : code.toUpperCase()))
+//                .and(VoucherSpecification.hasName(name))
+                .and(VoucherSpecification.hasVisibility(visibility))
                 .and(VoucherSpecification.hasDiscountType(discountType))
                 .and(VoucherSpecification.hasStartDate(startDate))
                 .and(VoucherSpecification.hasEndDate(endDate))
@@ -143,6 +143,8 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher createVoucher(Voucher voucher, List<CustomerType> customerTypeList,
                                  List<Customer> customerList) {
+        voucher.setCode(voucher.getCode().trim().toUpperCase());
+        voucher.setName(voucher.getName().trim());
         voucher.setCreatedAt(new Date());
         voucher.setCreatedBy("Admin add");
         voucher.setUpdatedAt(new Date());
@@ -194,8 +196,8 @@ public class VoucherServiceImpl implements VoucherService {
 
         // Update voucher details
 
-        existingVoucher.setCode(updatedVoucher.getCode());
-        existingVoucher.setName(updatedVoucher.getName());
+        existingVoucher.setCode(updatedVoucher.getCode().trim().toUpperCase());
+        existingVoucher.setName(updatedVoucher.getName().trim());
         existingVoucher.setValue(updatedVoucher.getValue());
         existingVoucher.setVisibility(updatedVoucher.getVisibility());
         existingVoucher.setDiscountType(updatedVoucher.getDiscountType());

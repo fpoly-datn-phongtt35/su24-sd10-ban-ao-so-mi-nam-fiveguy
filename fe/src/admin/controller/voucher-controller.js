@@ -547,70 +547,119 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         localStorage.setItem('selectedCustomers', []);
     }
 
-    // pagination and filter voucher **
+    //ham chuyen tieng viet co dau sang khong dau
+    function toLowerCaseNonAccentVietnamese(str) {
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        // Some system encode vietnamese combining accent as individual utf-8 characters
+        str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // Huyền sắc hỏi ngã nặng 
+        str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
+        return str;
+    }
+
+    // pagination and filter voucher *************
     //#region 
-    $scope.filterVoucher = function () {
-        $http.get(apiVoucher + "/all").then(function (res) {
-            $scope.vouchers = res.data;
-        })
-    }
+    // $scope.filterVoucher = function () {
+    //     $http.get(apiVoucher + "/all").then(function (res) {
+    //         $scope.vouchers = res.data;
+    //     })
+    // }
 
-    $scope.filtervouchers = [];
-    $scope.totalPages = 0;
-    $scope.currentPage = 0;
-    $scope.desiredPage = 1;
-    $scope.filters = {
-        name: null,
-        code: null,
-        discountType: null,
-        startDate: null,
-        endDate: null,
-        status: null
-    };
+    // $scope.filtervouchers = [];
+    // $scope.totalPages = 0;
+    // $scope.currentPage = 0;
+    // $scope.desiredPage = 1;
+    // $scope.filters = {
+    //     name: null,
+    //     code: null,
+    //     discountType: null,
+    //     startDate: null,
+    //     endDate: null,
+    //     status: null
+    // };
 
-    $scope.getVouchers = function (pageNumber) {
-        // let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
-        // $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function(response) {
-        //     $scope.filtervouchers = response.data.content;
-        //     $scope.totalPages = response.data.totalPages;
-        //     $scope.currentPage = pageNumber;
-        // });
-        let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
-        $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function (response) {
-            $scope.filtervouchers = response.data.content;
-            $scope.totalPages = response.data.totalPages;
-            $scope.currentPage = pageNumber;
-            $scope.desiredPage = pageNumber + 1;
-        });
-    };
+    // $scope.getVouchers = function (pageNumber) {
+    //     // let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+    //     // $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function(response) {
+    //     //     $scope.filtervouchers = response.data.content;
+    //     //     $scope.totalPages = response.data.totalPages;
+    //     //     $scope.currentPage = pageNumber;
+    //     // });
 
-    $scope.applyFilters = function () {
-        $scope.getVouchers(0);
-    };
+    //     if ($scope.filters.name != null) {
+    //         $scope.filters.name = toLowerCaseNonAccentVietnamese($scope.filters.name.toLowerCase())
+    //     }
 
-    $scope.goToPage = function () {
-        let pageNumber = $scope.desiredPage - 1;
-        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
-            $scope.getVouchers(pageNumber);
-        } else {
-            // Reset desiredPage to currentPage if the input is invalid
-            $scope.desiredPage = $scope.currentPage + 1;
-        }
-    };
-    // Initial load
-    $scope.getVouchers(0);
+    //     let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+    //     $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function (response) {
+    //         $scope.filtervouchers = response.data.content;
+    //         $scope.totalPages = response.data.totalPages;
+    //         $scope.currentPage = pageNumber;
+    //         $scope.desiredPage = pageNumber + 1;
+    //     });
+    // };
 
-    $scope.resetFilters = function () {
-        $scope.filters = {
-            name: null,
-            code: null,
-            discountType: null,
-            startDate: null,
-            endDate: null,
-            status: null
-        };
-        $scope.getVouchers(0);
-    }
+    // $scope.applyFilters = function () {
+    //     $scope.getVouchers(0);
+    // };
+
+    // $scope.goToPage = function () {
+    //     let pageNumber = $scope.desiredPage - 1;
+    //     if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+    //         $scope.getVouchers(pageNumber);
+    //     } else {
+    //         // Reset desiredPage to currentPage if the input is invalid
+    //         $scope.desiredPage = $scope.currentPage + 1;
+    //     }
+    // };
+    // // Initial load
+    // $scope.getVouchers(0);
+
+    // $scope.search = function (code1) {
+    //     $scope.filters.code = code1
+
+    //     let pageNumber = 0
+
+    //     let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+    //     $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function (response) {
+    //         $scope.filtervouchers = response.data.content;
+    //         $scope.totalPages = response.data.totalPages;
+    //         $scope.currentPage = pageNumber;
+    //         $scope.desiredPage = pageNumber + 1;
+    //     });
+    // };
+
+    // $scope.clearSearch = function () {
+    //     $scope.filters = {
+    //         name: null,
+    //         code: null,
+    //         discountType: null,
+    //         startDate: null,
+    //         endDate: null,
+    //         status: null
+    //     };
+    //     $scope.search();
+    //     $scope.getVouchers(0);
+    // };
+
+    // $scope.resetFilters = function () {
+    //     $scope.filters = {
+    //         name: null,
+    //         code: null,
+    //         discountType: null,
+    //         startDate: null,
+    //         endDate: null,
+    //         status: null
+    //     };
+    //     $scope.getVouchers(0);
+    // }
+
     var now = new Date();
     var year = now.getFullYear();
     var month = String(now.getMonth() + 1).padStart(2, '0');
@@ -620,6 +669,84 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     $scope.currentDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
     //#endregion
+
+    $scope.filters = {
+        code: null,
+        name: null,
+        visibility: null,
+        discountType: null,
+        startDate: null,
+        endDate: null,
+        status: null
+    };
+
+    $scope.filtervouchers = [];
+    $scope.totalPages = 0;
+    $scope.currentPage = 0;
+    $scope.desiredPage = 1;
+
+    $scope.getVouchers = function(pageNumber) {
+        if ($scope.filters.name) {
+            $scope.filters.name = toLowerCaseNonAccentVietnamese($scope.filters.name.toLowerCase());
+        }
+
+        let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+        $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function(response) {
+            $scope.filtervouchers = response.data.content;
+            $scope.totalPages = response.data.totalPages;
+            $scope.currentPage = pageNumber;
+            $scope.desiredPage = pageNumber + 1;
+        });
+    };
+
+    $scope.applyFilters = function() {
+        $scope.getVouchers(0);
+    };
+
+    $scope.goToPage = function() {
+        let pageNumber = $scope.desiredPage - 1;
+        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+            $scope.getVouchers(pageNumber);
+        } else {
+            $scope.desiredPage = $scope.currentPage + 1;
+        }
+    };
+
+    $scope.searchByKeyword = function() {
+        let keyword = $scope.searchKeyword || null;
+        $scope.filters.code = keyword;
+        $scope.filters.name = keyword;
+        $scope.filters.visibility = null;
+        $scope.filters.discountType = null;
+        $scope.filters.startDate = null;
+        $scope.filters.endDate = null;
+        $scope.filters.status = null;
+
+        // console.log($scope.filters.name);
+        $scope.getVouchers(0);
+    };
+
+    $scope.clearKeyword = function() {
+        $scope.searchKeyword = null;
+        $scope.searchByKeyword();
+    };
+
+    $scope.resetFilters = function() {
+        $scope.filters = {
+            name: null,
+            code: null,
+            visibility: null,
+            discountType: null,
+            startDate: null,
+            endDate: null,
+            status: null
+        };
+        $scope.getVouchers(0);
+    };
+
+    // Initial load
+    $scope.getVouchers(0);
+
 
 
     //filter customer
