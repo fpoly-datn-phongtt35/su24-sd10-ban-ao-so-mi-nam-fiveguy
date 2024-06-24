@@ -114,11 +114,12 @@
                                         <label for="selectAll"></label></th> -->
                                 <th scope="col-1">Mã</th>
                                 <th scope="col-2">Tên</th>
+                                <th scope="col-2">Hiển thị</th>
                                 <th scope="col-2">Giá trị</th>
-                                <th scope="col-1">Loại</th>
+                                <!-- <th scope="col-1">Loại</th> -->
                                 <th scope="col-1">Số lượng</th>
-                                <th scope="col-1">Ngày bắt đầu</th>
-                                <th scope="col-1">Ngày kết thúc</th>
+                                <th scope="col-1">Bắt đầu</th>
+                                <th scope="col-1">Kết thúc</th>
                                 <th scope="col-2">Trạng thái</th>
                                 <th scope="col-1">Action</th>
                             </tr>
@@ -130,14 +131,16 @@
                                         <input type="checkbox" id="checkbox1" name="option[]" value="1">
                                         <label for="checkbox1"></label></th> -->
                                 <td scope="col-1">{{v.code}}</td>
-                                <td scope="col-2">{{v.name}}</td>
-                                <td scope="col-2">{{v.value}}</td>
-                                <td scope="col-1">{{v.discountType == 1 ? '%' : 'vnđ'}}</td>
+                                <td class="col-2">{{v.name}}</td>
+                                <td scope="col-2">{{v.visibility == 0 ? 'Công khai' :
+                                    v.visibility == 1 ? 'Loại KH' : 'Cá nhân'}}</td>
+                                <td scope="col-2">{{v.value}} {{v.discountType == 1 ? '%' : 'vnđ'}}</td>
+                                <!-- <td scope="col-1">{{v.discountType == 1 ? '%' : 'vnđ'}}</td> -->
                                 <td scope="col-1">{{v.quantity}}</td>
-                                <td scope="col-1">{{v.startDate | date: 'dd/MM/yyyy HH:mm'}}</td>
-                                <td scope="col-1">{{v.endDate | date: 'dd/MM/yyyy HH:mm'}}</td>
+                                <td class="col-1 text-center">{{v.startDate | date: 'dd/MM/yyyy HH:mm'}}</td>
+                                <td class="col-1 text-center">{{v.endDate | date: 'dd/MM/yyyy HH:mm'}}</td>
                                 <!-- <td>{{v.status == 1 ? 'Hoạt động' : ' Ngừng'}}</td> -->
-                                <td scope="col-2" ng-switch="v.status" style="font-size: 18px;">
+                                <td class="col-2" ng-switch="v.status" style="font-size: 18px;">
                                     <span ng-switch-when="1">
                                         <div class="badge bg-success text-wrap" style="width: 65%;">
                                             Đang diễn ra
