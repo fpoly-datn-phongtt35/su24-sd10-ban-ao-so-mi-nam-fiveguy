@@ -61,6 +61,14 @@
         </dependency>
         <!--        XỬ lí ảnh-->
 
+        <!--Xuất file excel       -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <!--Xuất file excel       -->
+
         <dependency>
             <groupId>com.cloudinary</groupId>
             <artifactId>cloudinary-http44</artifactId>

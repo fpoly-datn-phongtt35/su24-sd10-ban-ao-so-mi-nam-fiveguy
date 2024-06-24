@@ -245,20 +245,28 @@ public class AccountServiceImpl  implements AccountService {
 //    }
 // END OL
     // Nhánh Tịnh
+    @Override
+    public boolean checkEmailExists(String email) {
+        return accountRepository.existsByEmail(email);
+    }
 
     @Override
     public Account saveAccountEmployee(Account accountEntity) {
-        Account account2 = new Account();
-        Role role = new Role();
-        role.setId(1L);
-        account2.setAccount(accountEntity.getAccount());
-        account2.setPassword("123456789");
-        account2.setEmail(accountEntity.getEmail());
-        account2.setPhoneNumber(accountEntity.getPhoneNumber());
-        account2.setRole(role);
-        account2.setStatus(1);
+        if (checkEmailExists(accountEntity.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+            Account account2 = new Account();
+            Role role = new Role();
+            role.setId(1L);
+            account2.setAccount(accountEntity.getAccount());
+            account2.setPassword("123456789");
+            account2.setEmail(accountEntity.getEmail());
+            account2.setPhoneNumber(accountEntity.getPhoneNumber());
+            account2.setRole(role);
+            account2.setStatus(1);
 
-        return accountRepository.save(account2);
+            return accountRepository.save(account2);
+
     }
 
     @Override
@@ -267,11 +275,11 @@ public class AccountServiceImpl  implements AccountService {
         if (existingAddress.isPresent()) {
             Account account = existingAddress.get();
             account.setAccount(accountEntity.getAccount());
-            account.setPassword(accountEntity.getPassword());
+//            account.setPassword(accountEntity.getPassword());
             account.setEmail(accountEntity.getEmail());
             account.setPhoneNumber(accountEntity.getPhoneNumber());
             account.setRole(accountEntity.getRole());
-            account.setStatus(accountEntity.getStatus());
+            account.setStatus(1);
 
             return accountRepository.save(account); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
         } else {

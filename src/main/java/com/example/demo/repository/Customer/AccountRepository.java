@@ -34,6 +34,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT m FROM Account m WHERE m.email = :status")
     Account getByEmailAccount(String status);
+
 //OL
 //    Optional<Account> findByAccountLogin(String username);
 //END OL

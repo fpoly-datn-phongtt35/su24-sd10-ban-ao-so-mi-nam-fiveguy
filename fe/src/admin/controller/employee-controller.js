@@ -18,11 +18,18 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.unload = function () {
     $scope.loading = false;
   };
+
+  $scope.uploadedImageData = null;
+
+  const elInput = document.getElementById("file");
+  const img = document.getElementById("img");
+  // const uploadBtn = document.getElementById("upload");
+
   const apiEmployee = "http://localhost:8080/api/admin/employee";
   const apiAccount = "http://localhost:8080/api/admin/account";
 
   imgShow("image", "image-preview");
-  // imgShow("image-update", "image-preview-update");
+  imgShow("image-update", "image-preview-update");
   // Hàm hiển thị thông báo thành công
   $scope.showSuccessNotification = function (message) {
     toastr["success"](message);
@@ -57,6 +64,38 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     $scope.showError = true;
   };
 
+  //Hàm check email ko được bắt đầu bằng số
+  $scope.checkEmail = function () {
+    var email = $scope.formInputAccount.email;
+    if (!email) {
+      // Trường hợp trường input trống, coi như hợp lệ
+      $scope.emailError = "";
+      return true;
+    }
+
+    // Kiểm tra nếu email không bắt đầu bằng số
+    var EMAIL_REGEXP = /^[^\d].*/;
+    if (EMAIL_REGEXP.test(email)) {
+      // Hợp lệ
+      $scope.emailError = "";
+      return true;
+    }
+
+    // Không hợp lệ
+    $scope.emailError = "Email không được bắt đầu bằng số";
+    return false;
+  };
+
+  // $scope.submitForm = function () {
+  //   if ($scope.formCreateEmployee.$valid && $scope.checkEmail()) {
+  //     // Gửi form đi
+  //   } else {
+  //     // Hiển thị lỗi
+  //     $scope.formCreateEmployee.$submitted = true;
+  //   }
+  // };
+
+  //search theo mã
   $scope.search = function () {
     // Kiểm tra từ khóa tìm kiếm
     if ($scope.searchKeyword.trim() !== "") {
@@ -82,7 +121,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
       //   $scope.employee = angular.copy($scope.originalEmployee);
     });
   };
-
   $scope.getAll();
 
   // Hàm tìm account theo email
@@ -95,6 +133,88 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
       throw error;
     }
   };
+
+  //update ảnh
+  $scope.uploadBtn = function () {
+    const fileInput = document.getElementById("image");
+    const file = fileInput.files[0];
+    if (!file) {
+      $scope.showError = true;
+      $scope.$apply();
+      return;
+    }
+
+    $scope.showError = false;
+    $scope.uploading = true; // Đang trong quá trình upload
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      const data = reader.result.split(",")[1];
+      const postData = {
+        name: file.name,
+        type: file.type,
+        data: data,
+      };
+      $scope.postFile(postData).then(function () {
+        $scope.uploading = false; // Hoàn thành quá trình upload
+        $scope.$apply(); // Áp dụng thay đổi vào scope
+        if (!$scope.uploading) {
+          $scope.submitForm();
+        }
+      });
+    };
+  };
+  $scope.uploadBtn2 = function () {
+    const fileInputupdate = document.getElementById("image-update");
+    const file = fileInputupdate.files[0];
+
+    if (!file) {
+      $scope.showError = true;
+      $scope.$apply();
+      return;
+    }
+
+    $scope.showError = false;
+    $scope.uploading = true; // Đang trong quá trình upload
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      const data = reader.result.split(",")[1];
+      const postData = {
+        name: file.name,
+        type: file.type,
+        data: data,
+      };
+      $scope.postFile(postData).then(function () {
+        $scope.uploading = false; // Hoàn thành quá trình upload
+        $scope.$apply(); // Áp dụng thay đổi vào scope
+        
+      });
+    };
+  };
+
+  $scope.postFile = async function (postData) {
+    try {
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbyVkDrfWiVgO0GoGdY1WlGuKt2tJLUZR-2qXGdgaZMfEK694pQgtiL7SHDPwoP8LHFrvA/exec",
+        {
+          method: "POST",
+          body: JSON.stringify(postData),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      $scope.uploadedImageData = data.link; // Store the image link globally
+      // const image = document.getElementById("image");
+      // image.src = data.link + "&sz=s500";
+      $scope.$apply();
+    } catch (error) {
+      alert("Vui lòng thử lại");
+    }
+  };
+  // End upload ảnh
 
   //Thêm mới Nhân Viên
   // api thêm mới account
@@ -118,6 +238,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     if (email) {
       const dataAccount = {
         account: $scope.formInputAccount.account,
+        // password: password,
         email: email,
         phoneNumber: $scope.formInputAccount.phoneNumber,
       };
@@ -150,9 +271,9 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     }
   };
 
-  // Form submit
+  // Form submit thêm
   $scope.submitForm = async function () {
-    if ($scope.formCreateEmployee.$valid) {
+    if ($scope.formCreateEmployee.$valid && $scope.checkEmail()) {
       const addAccountData = await $scope.themAccount();
       if (addAccountData) {
         const dataObject = {
@@ -163,15 +284,68 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
           gender: $scope.formInput.gender,
           birthDate: $scope.formInput.birthDate,
           address: $scope.formInput.address,
+          avatar: $scope.uploadedImageData, // Add the image data here
         };
         const addEmployeesData = await $scope.addEmployee(dataObject);
-
         console.log("addEmployeesData = ", addEmployeesData);
+        $scope.getEmployee(0);
+        $scope.resetFormUpdate();
+        $("#modalUpdate").modal("hide");
       }
+    } else {
+      // Hiển thị lỗi
+      $scope.formCreateEmployee.$submitted = true;
     }
   };
   // END thêm Nhân Viên
 
+  //Add employee Bằng file excel
+  // $scope.insertExcelEmployee = function () {
+  //   var inputElement = $("#fileInput")[0];
+
+  //   if (inputElement && inputElement.files && inputElement.files.length > 0) {
+  //     var files = inputElement.files;
+  //     var reader = new FileReader();
+  //     reader.onloadend = async () => {
+  //       var workbook = new ExcelJS.Workbook();
+  //       await workbook.xlsx.load(reader.result);
+  //       const worksheet = workbook.getWorksheet("Sheet1");
+  //       for (let index = 2; index <= worksheet.rowCount; index++) {
+  //         let row = worksheet.getRow(index);
+  //         var BirthDate = new Date(row.getCell(2).value);
+  //         var Gender = Boolean(row.getCell(3).value);
+
+  //         let account = {
+  //           account: row.getCell(5).value,
+  //           email: row.getCell(6).value,
+  //           phoneNumber: row.getCell(7).value,
+  //         };
+
+  //         // Add account first
+  //         const addAccountData = await $scope.addAccount(account);
+
+  //         if (addAccountData) {
+  //           let employee = {
+  //             fullName: row.getCell(1).value,
+  //             birthDate: BirthDate,
+  //             gender: Gender,
+  //             account: { id: addAccountData.id },
+  //             address: row.getCell(4).value,
+  //           };
+
+  //           // Add employee using the account id
+  //           console.log(employee);
+  //           await $scope.addEmployee(employee);
+  //         }
+  //       }
+  //     };
+  //     reader.readAsArrayBuffer(files[0]);
+  //   } else {
+  //     $scope.showErrorNotification("Không có file nào được chọn");
+  //   }
+  // };
+
+  //hàm làm mới form input (modal thêm)
   $scope.resetFormInput = function () {
     $scope.formInput = {};
     $scope.formInputAccount = {};
@@ -187,20 +361,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   };
 
   //Sửa Nhân Viên
-  //Sửa nhân viên demo
-  // $scope.suaNhanVien = function () {
-  //   let item = angular.copy($scope.formUpdate);
-  //   $http
-  //     .put(apiEmployee + `/${item.id}`, item)
-  //     .then(function (response) {
-  //       console.log(response);
-  //       $scope.getEmployee();
-  //       $("#modalUpdate").modal("hide");
-  //     })
-  //     .catch(function () {
-  //       console.log("Error", error);
-  //     });
-  // };
   $scope.updateAccount = async (objectAccount) => {
     // let email = $scope.edit(employee.account.email);
 
@@ -227,6 +387,8 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         email: email,
         phoneNumber: $scope.formUpdateAccount.phoneNumber,
         role: $scope.formUpdateAccount.role,
+        // password: password
+        // status: status
       };
 
       try {
@@ -248,19 +410,20 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   // Thêm mới nhân viên
   $scope.updateEmployee = async (objectData) => {
     let item = angular.copy($scope.formUpdate);
-    console.log(item.id);
+    console.log(item);
     try {
       const result = await $http.put(`${apiEmployee}/${item.id}`, objectData);
-      console.log("Thêm mới nhân viên thành công", result.data);
+      console.log("Sửa account thành công", result.data);
       return result.data;
     } catch (error) {
-      console.error("Lỗi thêm mới tài khoản nhân viên", error);
+      console.error("Lỗi sửae tài khoản account", error);
       throw error;
     }
   };
 
-  // Form submit
+  // Form submit update
   $scope.submitFormUpdate = async function () {
+    console.log("hihi" + $scope.uploadedImageData);
     if ($scope.formUpdateEmployee.$valid) {
       const addAccountData = await $scope.suaAccount();
       console.log(addAccountData);
@@ -271,6 +434,8 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
           account: {
             id: addAccountData.id,
           },
+
+          avatar: $scope.uploadedImageData, // Add the image data here
           fullName: $scope.formUpdate.fullName,
           gender: $scope.formUpdate.gender,
           birthDate: $scope.formUpdate.birthDate,
@@ -283,15 +448,17 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         };
         console.log(dataObject);
         const updateEmployeesData = await $scope.updateEmployee(dataObject);
-        $scope.getEmployee();
+        $scope.getEmployee(0);
         $scope.resetFormUpdate();
         console.log("updateEmployeesData = ", updateEmployeesData);
+        $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
       }
+      // $uibModalInstance.close(); // Đóng modal
     }
-    $scope.getEmployee();
   };
   // END Sửa nhân viên
 
+  //Hàm gọi id chi tiết nhân viên
   $scope.edit = function (employee) {
     $scope.emailAccount = employee.account.email;
     // console.log($scope.emailAccount);
@@ -301,18 +468,19 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     } else {
       $scope.formUpdate = angular.copy(employee);
       $scope.formUpdate.birthDate = new Date(birthDateNew);
-      $scope.formUpdate.birthDate = new Date(birthDateNew);
       $scope.formUpdate.updatedAt = new Date();
       $scope.formUpdateAccount = angular.copy(employee.account);
+      $scope.formUpdate.avatar = angular.copy(employee.avatar);
     }
   };
 
+  // hàm làm mới form update
   $scope.resetFormUpdate = function () {
     $scope.formUpdate = {};
     $scope.formUpdateAccount = {};
     let fileInput = document.getElementById("image-update");
     let imagePreviewUpdate = document.getElementById("image-preview-update");
-    imagePreviewUpdate.src = "/assets/img/no-img.png";
+    imagePreviewUpdate.src = "/fe/src/admin/common/img/no-img.png";
     fileInput.value = "";
     fileInput.value = "";
     fileInput.type = "file";
@@ -349,7 +517,9 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.getEmployee = function (pageNumber) {
     let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
     $http
-      .get("http://localhost:8080/api/admin/employee/page", { params: params })
+      .get("http://localhost:8080/api/admin/employee/page", {
+        params: params,
+      })
       .then(function (response) {
         $scope.filteremployee = response.data.content;
         $scope.totalPages = response.data.totalPages;

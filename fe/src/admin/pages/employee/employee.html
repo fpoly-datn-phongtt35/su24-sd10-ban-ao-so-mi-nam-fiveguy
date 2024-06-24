@@ -1,3 +1,9 @@
+<div class="overlay" ng-show="loading">
+    <div class="spinner-border" role="status" style="position: absolute;left: 50%;top: 50%;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
 <div class="container">
     <!-- Modal Add Voucher-->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -43,6 +49,7 @@
                     <input type="text" ng-model="searchKeyword" ng-change="search()" placeholder="Nhập mã"
                         class="form-control mt-2">
                 </div>
+
                 <!-- <div class="col-8">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -243,10 +250,10 @@
     <!-- End table -->
 </div>
 <!--Modal Add nhân viên -->
-<div class="modal fade" tabindex="-1" id="modalAdd" role="dialog">
+<div class="modal fade" tabindex="-1" id="modalAdd" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form name="formCreateEmployee" ng-submit="submitForm()" novalidate>
+            <form name="formCreateEmployee" ng-submit="formCreateEmployee.$valid && submitForm()" novalidate>
                 <div class="modal-header">
                     <h5 class="modal-title">Thêm mới nhân viên</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -260,6 +267,16 @@
                     </div>
                     <div class="col-lg-9">
                         <div class="row mb-3">
+                            <label for="image" class="col-sm-3 col-form-label">Ảnh</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="path" type="file" id="image" onchange="angular.element(this).scope().uploadBtn(this)"
+                                   />
+                                <span ng-if="showError" class="error-message text-danger form-text">
+                                    {{alertErrorImg}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
                             <label for="inputFullName" class="col-sm-3 col-form-label">Họ Tên</label>
                             <div class="col-sm-9">
                                 <input name="fullName" id="inputFullName" type="text" class="form-control"
@@ -269,15 +286,6 @@
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="image" class="col-sm-3 col-form-label">Ảnh</label>
-                            <div class="col-sm-9">
-                                <input class="form-control" name="path" type="file" id="image" />
-                                <span ng-if="showError" class="error-message text-danger form-text">
-                                    {{alertErrorImg}}
                                 </span>
                             </div>
                         </div>
@@ -318,27 +326,21 @@
                             <label for="inputemail" class="col-sm-3 col-form-label">Email</label>
                             <div class="col-sm-9">
                                 <input name="email" id="inputemail" type="email" class="form-control"
-                                    ng-model="formInputAccount.email" required />
-                                <span ng-show="formCreateEmployee.$submitted">
-                                    <div ng-show="formCreateEmployee.email.$error.required"
-                                        class="error-message text-danger form-text">
-                                        Không được để trống
-                                    </div>
-                                    <div ng-show="!formCreateEmployee.email.$error.required && formCreateEmployee.email.$error.email"
-                                        class="error-message text-danger form-text">
-                                        Email không hợp lệ
-                                    </div>
+                                    ng-model="formInputAccount.email" ng-change="checkEmail()" required>
+                                <div ng-show="formCreateEmployee.email.$error.required"
+                                    class="error-message text-danger form-text">
+                                    Không được để trống
+                                </div>
+                                <div ng-show="!formCreateEmployee.email.$error.required && formCreateEmployee.email.$error.email"
+                                    class="error-message text-danger form-text">
+                                    Email không hợp lệ
+                                </div>
+                                <div ng-show="emailError" class="error-message text-danger form-text">
+                                    {{emailError}}
+                                </div>
                                 </span>
                             </div>
                         </div>
-                        <!-- End create account -->
-
-                        <!-- <div class="row mb-3">
-                            <div class="col-sm-9">
-                                <input name="account" id="inputaccount" type="hidden" class="form-control"
-                                    ng-model="formInput.account" value="getByEmailAccount()" required />
-                            </div>
-                        </div> -->
                         <div class="row mb-3">
                             <label for="inputBirthDate" class="col-sm-3 col-form-label">Ngày Sinh</label>
                             <div class="col-sm-9">
@@ -397,10 +399,12 @@
                         </div> -->
                     </div>
                     <div class="modal-footer">
+
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                            data-bs-target="#modalAddExcel" style="background-color: rgb(9, 141, 9)">
+                            data-bs-target="#modalAddExcel" style="background-color: rgb(9, 141, 9);">
                             Thêm file Excel
                         </button>
+
                         <button type="submit" class="btn btn-primary">Thêm</button>
                         <button ng-click="resetFormInput()" type="button" class="btn btn-warning">
                             Xoá form
@@ -414,11 +418,11 @@
         </div>
     </div>
 </div>
-
 <!-- End modal add -->
 
 <!--Modal update -->
-<div class="modal fade" tabindex="-1" id="modalUpdate" role="dialog">
+<div class="modal fade" tabindex="-1" id="modalUpdate" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && submitFormUpdate()" novalidate>
@@ -429,10 +433,24 @@
                 <div class="modal-body row">
                     <div class="col-lg-6">
                         <!-- <h1>Avatar</h1> -->
-                        <div><label for="image">
-                                <img src="/fe/src/admin/common/img/no-img.png" id="image-preview"
-                                    style="width: 100px; height: 100px" />
-                            </label></div>
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="image">
+                                    <img id="image-preview-update" ng-src="{{formUpdate.avatar ? formUpdate.avatar : '/fe/src/admin/common/img/no-img.png'}}"
+                                         style="width: 100px; height: 100px;" />
+                                </label>
+                            </div>
+                            <div class="col-8">
+                                <label for="image-update" class="col-sm-4 col-form-label">Hình Ảnh</label>
+                                <div>
+                                    <input class="form-control" name="path" type="file" id="image-update" onchange="angular.element(this).scope().uploadBtn2(this)"
+                                     />
+                                    <span ng-if="showError" class="error-message text-danger form-text">
+                                        {{alertErrorImg}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <label for="inputCode" class="col-sm-4 col-form-label">Mã</label>
                             <div class="col-sm-8">
@@ -452,15 +470,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="image-update" class="col-sm-4 col-form-label">Hình Ảnh</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" name="path" type="file" id="image-update" />
-                                <span ng-if="showError" class="error-message text-danger form-text">
-                                    {{alertErrorImg}}
-                                </span>
-                            </div>
-                        </div>
+
                         <div class="row mb-3">
                             <label for="inputaccount" class="col-sm-4 col-form-label">Tài khoản</label>
                             <div class="col-sm-8">
@@ -494,7 +504,7 @@
                         <div class="row mb-4">
                             <label for="inputemail" class="col-sm-4 col-form-label">Email</label>
                             <div class="col-sm-8">
-                                <input name="email" id="inputemail" type="email" class="form-control"
+                                <input name="email" id="inputemail" type="mail" class="form-control"
                                     ng-model="formUpdateAccount.email" required>
                                 <span ng-show="formUpdateEmployee.$submitted">
                                     <div ng-show="formUpdateEmployee.email.$error.required"
@@ -504,6 +514,10 @@
                                     <div ng-show="!formUpdateEmployee.email.$error.required && formUpdateEmployee.email.$error.email"
                                         class="error-message text-danger form-text">
                                         Email không hợp lệ
+                                    </div>
+                                    <div ng-show="formUpdateEmployee.email.$error.noLeadingNumber"
+                                        class="error-message text-danger form-text">
+                                        Email không được bắt đầu bằng số
                                     </div>
                                 </span>
                             </div>
@@ -556,7 +570,7 @@
                             <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Tạo</label>
                             <div class="col-sm-8">
                                 <input name="createdAt" id="inputUpdatedAt" type="text" class="form-control"
-                                    ng-value="currentDate | date:'yyyy-MM-dd'" readonly>
+                                    ng-model="formUpdate.createdAt" readonly>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -570,7 +584,7 @@
                             <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Sửa</label>
                             <div class="col-sm-8">
                                 <input name="updatedAt" id="inputUpdatedAt" type="text" class="form-control"
-                                    ng-value="currentDate | date:'yyyy-MM-dd'" readonly>
+                                    ng-model="formUpdate.updatedAt" ng-value="currentDate | date:'yyyy-MM-dd'" readonly>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -612,7 +626,7 @@
                             </div>
                         </div>
 
-
+                    </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Sửa</button>
@@ -628,6 +642,27 @@
 </div>
 <!-- End modal update -->
 
-<!----delete-modal --------->
-
-<!----edit-modal end--------->
+<!----Modal thêm employee bằng exxel end --------->
+<div class="modal fade" id="modalAddExcel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    role="document">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                        <label>Chọn file Excel: </label>
+                        <input type="file" placeholder="Thêm bằng Excel" id="fileInput" />
+                       
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="insertExcelEmployee()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!----Modal thêm employee bằng exxel end--------->

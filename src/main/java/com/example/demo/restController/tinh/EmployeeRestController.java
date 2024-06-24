@@ -6,6 +6,12 @@ import com.example.demo.entity.Employee;
 import com.example.demo.repository.tinh.EmployeeRepository;
 import com.example.demo.service.tinh.EmployeeService;
 import com.example.demo.untility.tinh.PaginationResponse;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +21,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -126,5 +137,92 @@ public class EmployeeRestController {
         Page<Employee> page = employeeService.findEmployee(fullName, code, avatar, birthDate, gender, address, account, email, phoneNumber, idRole, status, pageable);
         return new PaginationResponse<>(page);
     }
+
+//    private static CellStyle cellStyleFormatNumber = null;
+//    @GetMapping("/excel")
+//    public void fileExcel() {
+//        try {
+//            XSSFWorkbook worbook = new XSSFWorkbook();
+//            XSSFSheet sheet = worbook.createSheet("List of Employee");
+//
+//            XSSFRow row = null;
+//            Cell cell = null;
+//            LocalDateTime date = LocalDateTime.now();
+//            DateTimeFormatter getDate = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+//            row = sheet.createRow(0);
+//            cell = row.createCell(0, CellType.NUMERIC);
+//            cell.setCellValue("STT");
+//
+//            cell = row.createCell(1, CellType.STRING);
+//            cell.setCellValue("Code");
+//
+//            cell = row.createCell(2, CellType.STRING);
+//            cell.setCellValue("Full Name");
+//
+//            cell = row.createCell(3, CellType.STRING);
+//            cell.setCellValue("Account");
+//
+//            cell = row.createCell(4, CellType.STRING);
+//            cell.setCellValue("Phone Number");
+//
+//            cell = row.createCell(5, CellType.STRING);
+//            cell.setCellValue("Email");
+//
+//            cell = row.createCell(6, CellType.STRING);
+//            cell.setCellValue("Address");
+//
+//            List<Employee> list = employeeService.getAll();
+//
+//            if (list != null) {
+//                int s = list.size();
+//                for (int i = 0; i < s; i++) {
+//                    Employee hd = list.get(i);
+//                    row = sheet.createRow(1 + i);
+//
+//                    cell = row.createCell(0, CellType.NUMERIC);
+//                    cell.setCellValue(i + 1);
+//
+//                    cell = row.createCell(1, CellType.STRING);
+//                    cell.setCellValue(hd.getCode());
+//
+//                    cell = row.createCell(2, CellType.STRING);
+//                    cell.setCellValue(hd.getFullName());
+//
+//                    cell = row.createCell(3, CellType.STRING);
+//                    cell.setCellValue(hd.getAccount().getAccount());
+////
+//                    cell = row.createCell(4, CellType.STRING);
+//                    cell.setCellValue(hd.getAccount().getPhoneNumber());
+////
+//                    cell = row.createCell(5, CellType.STRING);
+//                    cell.setCellValue(hd.getAccount().getEmail());
+//
+////                    cell = row.createCell(6, CellType.STRING);
+////                    cell.setCellValue(new Da);
+//
+////                    cell = row.createCell(6, CellType.BOOLEAN);
+////                    cell.setCellValue(hd.getGender().toString());
+//
+//                    cell = row.createCell(6, CellType.STRING);
+//                    cell.setCellValue(hd.getAddress());
+//
+//
+//                }
+//                File e = new File("E:\\"+"FileEmployee"+date.format(getDate)+".xlsx");
+//                try {
+//                    FileOutputStream fis = new FileOutputStream(e);
+//                    worbook.write(fis);
+//                    fis.close();
+//                } catch (FileNotFoundException x) {
+//                    x.printStackTrace();
+//                }
+//            }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//
+//    }
+
+
 
 }
