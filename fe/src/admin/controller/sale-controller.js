@@ -855,20 +855,7 @@ $scope.addAllProductSales = function() {
     // };
 
 
-    // summary sale
 
-    $scope.getSaleSummary = function() {
-        var saleId = $routeParams.idSale;
-
-        $http.get(baseUrl + '/summary/' + saleId)
-            .then(function(response) {
-                $scope.summary = response.data;
-                $scope.summary.profitMargin = ($scope.summary.totalProfit / $scope.summary.totalRevenue) * 100;
-            })
-            .catch(function(error) {
-                console.error('Error fetching sale summary:', error);
-            });
-    };
     
     // formatCurrency
     $scope.formatCurrency = function(value) {
@@ -882,6 +869,65 @@ $scope.addAllProductSales = function() {
     };
 
 
+    // summary sale
+
+    $scope.getSaleSummary = function(saleId) {
+
+        $http.get(baseUrl + '/summary/' + saleId)
+            .then(function(response) {
+                $scope.summary = response.data;
+                $scope.summary.profitMargin = ($scope.summary.totalProfit / $scope.summary.totalRevenue) * 100;
+            })
+            .catch(function(error) {
+                console.error('Error fetching sale summary:', error);
+            });
+    };
+
+    $scope.getCustomerDetailsBySaleId = function(saleId) {
+        $http.get(baseUrl + '/staticCustomer/' + saleId )
+            .then(function(response) {
+                $scope.customerDetails = response.data;
+                // Các xử lý dữ liệu khác nếu cần thiết
+            })
+            .catch(function(error) {
+                console.error('Error fetching customer details:', error);
+            });
+    };
+
+    
+
+
+    $scope.showSaleDetails = function(sale) {
+        $scope.saleInfo = sale;
+        $scope.getSaleSummary(sale.id);
+        $scope.getCustomerDetailsBySaleId(sale.id);
+        $('#staticSale').modal('show');
+    };
+
+    $scope.getTotalNumberOfPurchases = function() {
+        return $scope.customerDetails.reduce(function(total, customer) {
+            return total + customer.numberOfPurchases;
+        }, 0);
+    };
+    
+    $scope.getTotalAmountBeforeDiscount = function() {
+        return $scope.customerDetails.reduce(function(total, customer) {
+            return total + customer.totalAmountBeforeDiscount;
+        }, 0);
+    };
+    
+    $scope.getTotalAmountAfterDiscount = function() {
+        return $scope.customerDetails.reduce(function(total, customer) {
+            return total + customer.totalAmountAfterDiscount;
+        }, 0);
+    };
+    
+    $scope.getTotalDiscountAmount = function() {
+        return $scope.customerDetails.reduce(function(total, customer) {
+            return total + customer.totalDiscountAmount;
+        }, 0);
+    };
+    
 
 }]);
 

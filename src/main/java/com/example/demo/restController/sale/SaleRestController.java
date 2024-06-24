@@ -1,6 +1,7 @@
 package com.example.demo.restController.sale;
 
 import com.example.demo.entity.Sale;
+import com.example.demo.model.response.sale.SaleDetailResponse;
 import com.example.demo.model.response.sale.SaleSummaryResponse;
 import com.example.demo.security.service.AccountService;
 import com.example.demo.service.sale.SaleService;
@@ -126,5 +127,10 @@ public class SaleRestController {
         return saleService.getSaleSummaryById(saleId);
     }
 
+
+    @GetMapping("/staticCustomer/{saleId}")
+    public List<SaleDetailResponse> getCustomerDetailsBySaleId(@PathVariable("saleId") Long saleId) {
+        return saleService.findSaleDetailsById(saleId);
+    }
 
 }
