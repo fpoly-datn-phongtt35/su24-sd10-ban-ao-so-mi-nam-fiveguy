@@ -89,4 +89,8 @@ public class Bill {
     @JsonIgnore
     @OneToMany(mappedBy = "bill",  cascade = CascadeType.ALL)
     private List<BillDetail> billDetail;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
+    private List<BillHistory> billHistories;
 }
