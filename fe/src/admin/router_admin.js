@@ -5,12 +5,13 @@ app.config(function ($routeProvider, $locationProvider) {
   $routeProvider
     .when("/admin/dashboard", {
       templateUrl: "pages/dashboard.html",
-      controller: 'dashboardController'
-    })   
-   
-    // <!-- Hiếu -->
-    .when("/admin/staff", {
-      templateUrl: "pages/staff/staff.html",
+      controller: "dashboardController",
+    })
+
+    // <!-- Tịnh -->
+    .when("/admin/employee", {
+      templateUrl: "pages/employee/employee.html",
+      controller: "tinh-employee-controller",
     })
     // <!-- Thưởng -->
     .when("/admin/product", {
@@ -25,9 +26,11 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/material", {
       templateUrl: "pages/product/material.html",
     })
-    // <!-- Tịnh -->
+    // <!-- Hiếu -->
     .when("/admin/customer", {
       templateUrl: "pages/customer/customer.html",
+      controller: 'customerCtrl'
+
     })
     // <!-- Nguyên -->
     .when("/admin/voucher", {
@@ -44,10 +47,11 @@ app.config(function ($routeProvider, $locationProvider) {
     })
 
 
+
     .otherwise({
       templateUrl: "pages/dashboard.html",
-      controller: 'dashboardController'
-    })   
+      controller: "dashboardController",
+    });
 });
 
 
