@@ -1,0 +1,259 @@
+<!--Main Navigation-->
+
+<!-- sidebar + content -->
+<section style="    margin-top: 82px;"  class="container-fluid" ng-init="loadPage()">
+    <div style="display: flex;justify-content: center;">
+      <div class="category-container">
+        <div class="heading-data__title" id="headingTitle">
+          DANH MỤC SẢN PHẨM
+        </div>
+        <div class="category-body">
+          <div class="col-md-4">
+            <div class="category-data" id="categoryDataContainer">
+              <ul >
+              <li ng-repeat="category in dataFill.categoryList">
+                <a ng-href="#!product?categoryId={{category.id}}" class="text-dark">{{category.name}}</a>
+              </li>
+              </ul>
+            </div>
+          </div>
+          <button class="btn btn-primary" ng-click="goToOfView()" ng-show="isAdmin">Chức năng Admin</button>
+        </div>
+    
+    
+        <div class=" d-flex justify-content-start" style="width: 32%;">
+          <div style=" border-radius: 10px;    width: 100%;" class="input-group">
+            <div class="form-outline">
+              <input style="border-bottom: 1px solid #cdcdcd;" type="search" ng-click="openOverlaySearch()" 
+                class="form-control" readonly />
+              <label class="form-label">Tìm kiếm sản phẩm</label>
+            </div>
+            <button type="button" class="btn btn-primary shadow-0" onclick="openOverlay()">
+              <i class="fas fa-search fa-lg"></i>
+            </button>
+    
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="overlay" id="overlay" class="inactive" ng-click="closeOverlay($event)">
+      <div class="header-search">
+        <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
+          <i class="fa-solid fa-xmark fa-lg"></i>
+        </button>
+        <form class="from-search"  >
+          <div class="input-group">
+            <div class="form-outline w-100">
+            <input style="border-bottom: 1px solid #cdcdcd;" type="search" id="form1" class="form-control"
+      ng-model="searchText" ng-change="loadProductSearch()" />
+  
+  
+            </div>
+            <button type="button" class="btn btn-primary shadow-0">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="product-display">
+        <div class="container-fluid">
+          <div  class="row" id="productDisplay">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="row">
+        <!-- sidebar -->
+        <div style="padding: 46px;" class="col-lg-2">
+          <div class="collapse  d-lg-block mb-5" id="navbarSupportedContent">
+            <div class="accordion-item">
+                <h5>Màu sắc</h5>  
+              
+              </h2>
+              <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo">
+                <div class="accordion-body">
+                  <div class="row">
+                    <div class="col-md-3" ng-repeat="color in dataFill.colorList">
+                      <div class="color-circle" ng-style="{ 'background-color': color.colorCode }"
+                        ng-class="{ 'btn-selected2': color.isSelected }" ng-click="updateSelectedColors(color)">
+                      </div>
+                      <p class="center-text">{{color.name}}</p>
+  
+                    </div>
+                  </div>
+                </div>
+  
+              </div>
+            </div>
+            <hr>
+            <!-- Kích cỡ -->
+            <div class="accordion-item">
+                 <h5> Kích cỡ</h5>
+              </h2>
+  
+              <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show"
+                aria-labelledby="headingThree">
+                <div class="accordion-body">
+                  <div class="row">
+                    <div style="margin-bottom: 4px;" class="col-md-3" ng-repeat="size in dataFill.sizeList">
+                      <label class="btn btn-white mb-1 px-1" style="width: 60px;border: 1px solid #ccc;"
+                        ng-class="{ 'btn-selected': size.isSelected }" ng-click="updateSelectedSizes(size)">{{ size.name
+                        }}</label>
+                    </div>
+  
+                  </div>
+                </div>
+  
+              </div>
+  
+            </div>
+            <hr>
+  
+            <!-- Chất liệu -->
+  
+            <div class="accordion-item">
+               <h5>Chất liệu</h5>
+                  
+              </h2>
+              <!-- Danh sách chất liệu -->
+              <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show"
+                aria-labelledby="headingFour">
+                <div class="accordion-body">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div ng-repeat="material in dataFill.materialList" class="form-check">
+                        <input type="checkbox" class="form-check-input" id="{{ material.id }}"
+                          ng-model="material.isSelected" ng-true-value="true" ng-false-value="false"
+                          ng-click="updateSelectedMaterials(material)" />
+                        <label class="form-check-label" for="{{ material.id }}">{{ material.name }}</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- <hr> -->
+  
+            <!-- Giá -->
+            <!-- <div class="accordion-item">
+               <h5>Giá</h5>
+  
+              </h2>
+              <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show" aria-labelledby="headingThree">
+                <div class="accordion-body">
+                  <div class="row mb-3">
+                    <div class="col-6">
+                      <p class="mb-0">
+                        Thấp
+                      </p>
+                      <div style="border: 1px solid rgb(204, 204, 204);" class="form-outline ">
+                        <input id="typeNumberMin" class="form-control" value="0" />
+                      </div>
+                    </div>
+  
+                    <div class="col-6">
+                      <p class="mb-0">
+                        Cao
+                      </p>
+                      <div style="border: 1px solid rgb(204, 204, 204);" class="form-outline ">
+                        <input id="typeNumberMax" class="form-control" value="1000000" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="range">
+                    <input type="range" class="form-range" id="customRange1" />
+                  </div>
+                </div>
+              </div>
+            </div> -->
+          </div>
+        </div>
+      <!-- sidebar -->
+      <!-- content -->
+      <div style="padding: 46px;" class="col-lg-10">
+        <header class="d-sm-flex align-items-center border-bottom mb-4 pb-3">
+          <strong class="d-block py-2">{{ products.length }} Kết quả</strong>
+          <div class="ms-auto">
+            <select class="form-select d-inline-block w-auto border pt-1" ng-model="selectedSortType"
+              ng-change="loadPage()">
+              <option value="0">Mới nhất</option>
+              <option value="1">Bán chạy</option>
+              <option value="2">Giá thấp đến cao</option>
+              <option value="3">Giá cao đến thấp</option>
+            </select>
+  
+          </div>
+        </header>
+  
+        <div class="row">
+  
+          <div style="margin-bottom: 8px;" ng-repeat="product in products" class="col-lg-3 col-md-6 col-sm-6 ">
+            <div class="card w-98 my-2 ">
+          
+              <a href="#!product-detail/{{product.id}}">
+                <div class="d-flex justify-content-between align-items-center info-product_header">
+                  <div class="d-flex align-items-center">
+                    <p style="    color: black;" class="mb-0 me-1">{{product.rate}}</p>
+                    <i style="    margin: 0 2px;color: black;
+                    font-size: 10px;" class="fa-solid fa-star"></i>
+                  </div>
+                  <p class="mb-0">({{product.totalQuantity}})</p>
+                </div>
+                <img style="position: relative;" class="card-img-top" width="100%" height="100%" class="rounded-2" loading="lazy"
+                  ng-src="{{ product.path }}" />
+              </a>
+              <div class="card-body d-flex flex-column">
+                <div style="display: flex; justify-content: space-between;">
+                  <span class="product-price"> {{ product.price | number}} đ</span>
+             
+                </div>
+                <p class="card-title">
+                  {{ product.name }}
+                  {{ product.nameCategory }}
+                  {{ product.nameMaterial }}
+                  {{ product.code }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+  
+        <div  class="row">
+          <div class="text-center mt-3 col-12">
+            <button ng-if="showLoadMoreProduct" ng-click="loadFullProduct()"  class="btn btn-main btn-light">   
+              Xem thêm
+            </button>
+          </div>
+        </div>
+        <!-- <hr /> -->
+  
+        <!-- Pagination -->
+        <!-- <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+          <ul class="pagination">
+            <li class="page-item" ng-class="{disabled: currentPage === 0}">
+              <a class="page-link" href="#!product" ng-click="prevPage()" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
+              ng-class="{active: currentPage === $index}">
+              <a class="page-link" href="#!product" ng-click="loadPage($index)">{{ $index + 1 }}</a>
+            </li>
+            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+              <a class="page-link" href="#!product" ng-click="nextPage()" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav> -->
+        <!-- Pagination -->
+      </div>
+    </div>
+  
+    
+  
+    <!-- </div> -->
+  </section>
+  <!-- sidebar + content -->

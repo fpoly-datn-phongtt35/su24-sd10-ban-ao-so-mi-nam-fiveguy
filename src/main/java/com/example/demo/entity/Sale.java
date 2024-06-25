@@ -30,26 +30,33 @@ public class Sale {
     private String name;
 
     @Column(name = "Value")
-    private Double value;
+    private Integer value;
 
     @Column(name = "NumberOfUses")
     private Integer numberOfUses;
 
     @Column(name = "DiscountType")
-    private String discountType;
+    private Integer discountType;
 
     @Column(name = "Describe", columnDefinition = "nvarchar(500)")
     private String describe;
 
-    @Column(name = "StartDate")
+    @Column(name = "MaximumDiscountAmount")
+    private Integer maximumDiscountAmount;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "StartDate", nullable = false)
     private Date startDate;
 
-    @Column(name = "EndDate")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "EndDate", nullable = false)
     private Date endDate;
 
-    @Column(name = "CreatedAt")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "CreatedAt", nullable = false, updatable = false)
     private Date createdAt;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "UpdatedAt")
     private Date updatedAt;
 

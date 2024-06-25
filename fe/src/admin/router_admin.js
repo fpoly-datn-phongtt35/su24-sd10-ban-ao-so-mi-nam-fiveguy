@@ -36,8 +36,12 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Hải -->
     .when("/admin/sale", {
       templateUrl: "pages/sale/sale.html",
+      controller: 'SaleController'
     })
-
+    .when("/admin/sale/update/:idSale", {
+      templateUrl: "pages/sale/saleDetail.html",
+      controller: "SaleController"
+    })
 
 
     .otherwise({
