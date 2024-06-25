@@ -53,9 +53,11 @@ public class Voucher {
     @Column(name = "Describe", columnDefinition = "nvarchar(max)")
     private String describe;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "StartDate")
     private Date startDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "EndDate")
     private Date endDate;
 
@@ -77,6 +79,10 @@ public class Voucher {
     @JsonIgnore
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
     private List<Bill> bills;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
+    private List<CustomerTypeVoucher> customerTypeVouchers;
 
     @JsonIgnore
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)

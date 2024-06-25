@@ -39,6 +39,4 @@ public class Account {
 
     @Column(name = "Status")
     private Integer status;
-
-  
 }

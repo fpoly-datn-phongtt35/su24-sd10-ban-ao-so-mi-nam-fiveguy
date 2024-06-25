@@ -4,14 +4,13 @@
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#homefilter"
-                    type="button" role="tab" aria-controls="home" aria-selected="true"
-                    ng-click="resetFilter(); clearKeyword()">Tìm kiếm
+                    type="button" role="tab" aria-controls="home" aria-selected="true" ng-click="resetFilter()">Tìm kiếm
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#detailfilter" t
-                    ype="button" role="tab" aria-controls="profile" aria-selected="false"
-                    ng-click="resetFilter(); clearKeyword()">Tìm kiếm nâng cao
+                    ype="button" role="tab" aria-controls="profile" aria-selected="false" ng-click="resetFilter()">Tìm
+                    kiếm nâng cao
                 </button>
             </li>
         </ul>
@@ -114,12 +113,11 @@
                                         <label for="selectAll"></label></th> -->
                                 <th scope="col-1">Mã</th>
                                 <th scope="col-2">Tên</th>
-                                <th scope="col-2">Hiển thị</th>
                                 <th scope="col-2">Giá trị</th>
-                                <!-- <th scope="col-1">Loại</th> -->
+                                <th scope="col-1">Loại</th>
                                 <th scope="col-1">Số lượng</th>
-                                <th scope="col-1">Bắt đầu</th>
-                                <th scope="col-1">Kết thúc</th>
+                                <th scope="col-1">Ngày bắt đầu</th>
+                                <th scope="col-1">Ngày kết thúc</th>
                                 <th scope="col-2">Trạng thái</th>
                                 <th scope="col-1">Action</th>
                             </tr>
@@ -131,16 +129,14 @@
                                         <input type="checkbox" id="checkbox1" name="option[]" value="1">
                                         <label for="checkbox1"></label></th> -->
                                 <td scope="col-1">{{v.code}}</td>
-                                <td class="col-2">{{v.name}}</td>
-                                <td scope="col-2">{{v.visibility == 0 ? 'Công khai' :
-                                    v.visibility == 1 ? 'Loại KH' : 'Cá nhân'}}</td>
-                                <td scope="col-2">{{v.value}} {{v.discountType == 1 ? '%' : 'vnđ'}}</td>
-                                <!-- <td scope="col-1">{{v.discountType == 1 ? '%' : 'vnđ'}}</td> -->
+                                <td scope="col-2">{{v.name}}</td>
+                                <td scope="col-2">{{v.value}}</td>
+                                <td scope="col-1">{{v.discountType == 1 ? '%' : 'vnđ'}}</td>
                                 <td scope="col-1">{{v.quantity}}</td>
-                                <td class="col-1 text-center">{{v.startDate | date: 'dd/MM/yyyy HH:mm'}}</td>
-                                <td class="col-1 text-center">{{v.endDate | date: 'dd/MM/yyyy HH:mm'}}</td>
+                                <td scope="col-1">{{v.startDate | date: 'dd/MM/yyyy HH:mm'}}</td>
+                                <td scope="col-1">{{v.endDate | date: 'dd/MM/yyyy HH:mm'}}</td>
                                 <!-- <td>{{v.status == 1 ? 'Hoạt động' : ' Ngừng'}}</td> -->
-                                <td class="col-2" ng-switch="v.status" style="font-size: 18px;">
+                                <td scope="col-2" ng-switch="v.status" style="font-size: 18px;">
                                     <span ng-switch-when="1">
                                         <div class="badge bg-success text-wrap" style="width: 65%;">
                                             Đang diễn ra
@@ -207,13 +203,9 @@
 
             <!-- add-modal start -->
             <div class="modal fade" tabindex="-1" id="addVoucherModal" role="dialog">
-                <!-- <div class="modal-dialog modal-lg"
-                    ng-class="{'modal-xl': formInputVoucher.visibility == 1, 'modal-xl': formInputVoucher.visibility == 2, 'modal-lg': formInputVoucher.visibility == 3}"
-                    role="document"> -->
-                <div class="modal-dialog modal-lg" ng-class="{
-                        'modal-xl': formInputVoucher.visibility == 1 || formInputVoucher.visibility == 2,
-                        'modal-lg': formInputVoucher.visibility == 0
-                      }">
+                <div class="modal-dialog modal-lg"
+                    ng-class="{'modal-xl': formInputVoucher.visibility == 2, 'modal-lg': formInputVoucher.visibility == 1}"
+                    role="document">
                     <div class="modal-content">
                         <form name="formAddVoucher" ng-submit="formAddVoucher.$valid && addVoucher()" novalidate>
                             <div class="modal-header">
@@ -224,7 +216,7 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div
-                                        ng-class="{'col-12': formInputVoucher.visibility == 0, 'col-8': formInputVoucher.visibility == 1, 'col-6': formInputVoucher.visibility == 2}">
+                                        ng-class="{'col-12': formInputVoucher.visibility == 1, 'col-6': formInputVoucher.visibility == 2}">
                                         <!-- Form nội dung -->
                                         <div class="row mb-1">
                                             <div class="col-6">
@@ -380,47 +372,35 @@
                                             </div>
                                         </div>
                                         <div class="row mb-1">
-                                            <!-- <div class="col-6">
+                                            <div class="col-6">
                                                 <div class="form-group">
                                                     <label>Hiển thị</label>
                                                     <select name="addVisibility" class="form-select"
                                                         ng-model="formInputVoucher.visibility">
-                                                        <option ng-value="0">Công khai 1</option>
                                                         <option ng-value="1">Công khai</option>
                                                         <option ng-value="2">Cá nhân</option>
                                                     </select>
                                                 </div>
-                                            </div> -->
-                                            <div class="col-6">
                                             </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <label>Hiển thị</label>
-                                            <div class="col-12">
-                                                <div class="form-check">
+                                            <div class="col-6">
+                                                <!-- <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault0" ng-value="0"
-                                                        ng-model="formInputVoucher.visibility">
-                                                    <label class="form-check-label" for="flexRadioDefault0">
+                                                        id="flexRadioDefault1" value="2"
+                                                        ng-model="formInputVoucher.visibility1"
+                                                        ng-change="aaa(formInputVoucher.visibility1)">
+                                                    <label class="form-check-label" for="flexRadioDefault1">
                                                         Công khai
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault1" ng-value="1"
-                                                        ng-model="formInputVoucher.visibility">
-                                                    <label class="form-check-label" for="flexRadioDefault1">
-                                                        Loại khách hàng
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault2" ng-value="2"
-                                                        ng-model="formInputVoucher.visibility">
+                                                        id="flexRadioDefault2" value="1"
+                                                        ng-model="formInputVoucher.visibility1"
+                                                        ng-change="aaa(formInputVoucher.visibility1)">
                                                     <label class="form-check-label" for="flexRadioDefault2">
                                                         Cá nhân
                                                     </label>
-                                                </div>
+                                                </div> -->
                                             </div>
                                         </div>
                                         <div class="row mb-1">
@@ -491,8 +471,6 @@
                                         <!-- Các phần còn lại của form -->
                                         <!-- Add other form fields here with similar ng-class conditions -->
                                     </div>
-
-                                    <!-- Customer -->
                                     <div class="col-6" ng-if="formInputVoucher.visibility == 2">
                                         <div class="container mt-4">
                                             <div class="row mb-0">
@@ -537,7 +515,6 @@
                                                     <tr ng-repeat="customer in customers">
                                                         <td>
                                                             <input type="checkbox" ng-model="customer.selected"
-                                                                id="{{customer.id}}"
                                                                 ng-change="updateSelectedCustomers(customer)">
                                                         </td>
                                                         <td style="font-size: 13px;">{{ customer.fullName }}</td>
@@ -572,28 +549,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- CustomerType -->
-                                    <div class="col-4" ng-if="formInputVoucher.visibility == 1">
-                                        <ul class="list-group">
-                                            <li class="list-group-item">
-                                                <input type="checkbox" id="selectAll" class="form-check-input me-1"
-                                                    ng-checked="allChecked" ng-click="toggleSelectAll()">
-                                                <label for="selectAll" class="form-check-label"><strong>Select
-                                                        All</strong></label>
-                                            </li>
-                                            <li class="list-group-item" ng-repeat="ct in customerTypes">
-                                                <input type="checkbox" id="{{ct.id}}" name="items"
-                                                    ng-model="ct.selected" class="form-check-input me-1"
-                                                    ng-change="updateSelectAll()">
-                                                <label for="{{ct.id}}" class="form-check-label">{{ct.name}}</label>
-                                            </li>
-                                        </ul>
-                                        <!-- <button type="button" class="btn btn-secondary mt-3"
-                                            ng-click="resetCheckboxes()">Reset</button>
-                                        <button type="button" class="btn btn-primary mt-3"
-                                            ng-click="logCheckedCheckboxes()">Log Checked Checkboxes</button> -->
-                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -608,10 +563,9 @@
 
             <!----edit-modal start--------->
             <div class="modal fade" tabindex="-1" id="updateVoucherModal" role="dialog">
-                <div class="modal-dialog modal-lg" ng-class="{
-                    'modal-xl': formUpdateVoucher.visibility == 1 || formUpdateVoucher.visibility == 2,
-                    'modal-lg': formUpdateVoucher.visibility == 0
-                  }">
+                <div class="modal-dialog modal-lg"
+                    ng-class="{'modal-xl': formUpdateVoucher.visibility == 2, 'modal-lg': formUpdateVoucher.visibility == 1}"
+                    role="document">
                     <div class="modal-content">
                         <form name="formEditVoucher"
                             ng-submit="formEditVoucher.$valid && updateVoucher(formUpdateVoucher.id)" novalidate>
@@ -623,7 +577,7 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div
-                                        ng-class="{'col-12': formUpdateVoucher.visibility == 0, 'col-8': formUpdateVoucher.visibility == 1, 'col-6': formUpdateVoucher.visibility == 2}">
+                                        ng-class="{'col-12': formUpdateVoucher.visibility == 1, 'col-6': formUpdateVoucher.visibility == 2}">
                                         <div class="row mb-1">
                                             <div class="col-6">
                                                 <div class="form-group">
@@ -760,7 +714,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- <div class="row mb-1">
+                                        <div class="row mb-1">
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label>Hiển thị</label>
@@ -769,35 +723,6 @@
                                                         <option ng-value="1">Công khai</option>
                                                         <option ng-value="2">Cá nhân</option>
                                                     </select>
-                                                </div>
-                                            </div>
-                                        </div> -->
-                                        <div class="row mb-1">
-                                            <label>Hiển thị</label>
-                                            <div class="col-12">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioUpdate"
-                                                        id="flexRadioUpdate0" ng-value="0"
-                                                        ng-model="formUpdateVoucher.visibility">
-                                                    <label class="form-check-label" for="flexRadioUpdate0">
-                                                        Công khai
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioUpdate"
-                                                        id="flexRadioUpdate1" ng-value="1"
-                                                        ng-model="formUpdateVoucher.visibility">
-                                                    <label class="form-check-label" for="flexRadioUpdate1">
-                                                        Loại khách hàng
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioUpdate"
-                                                        id="flexRadioUpdate2" ng-value="2"
-                                                        ng-model="formUpdateVoucher.visibility">
-                                                    <label class="form-check-label" for="flexRadioUpdate2">
-                                                        Cá nhân
-                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -865,8 +790,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Customer -->
                                     <div class="col-6" ng-if="formUpdateVoucher.visibility == 2">
                                         <div class="container mt-4">
                                             <div class="row mb-0">
@@ -943,28 +866,6 @@
                                                 </ul>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <!-- Customer Type -->
-                                    <div class="col-4" ng-if="formUpdateVoucher.visibility == 1">
-                                        <ul class="list-group">
-                                            <li class="list-group-item">
-                                                <input type="checkbox" id="selectAll1" class="form-check-input me-1"
-                                                    ng-checked="allChecked" ng-click="toggleSelectAll()">
-                                                <label for="selectAll1" class="form-check-label"><strong>Select
-                                                        All</strong></label>
-                                            </li>
-                                            <li class="list-group-item" ng-repeat="ct in customerTypes">
-                                                <input type="checkbox" id="{{ct.id}}" name="items"
-                                                    ng-model="ct.selected" class="form-check-input me-1"
-                                                    ng-change="updateSelectAll()">
-                                                <label for="{{ct.id}}" class="form-check-label">{{ct.name}}</label>
-                                            </li>
-                                        </ul>
-                                        <!-- <button type="button" class="btn btn-secondary mt-3"
-                                            ng-click="resetCheckboxes()">Reset</button>
-                                        <button type="button" class="btn btn-primary mt-3"
-                                            ng-click="logCheckedCheckboxes()">Log Checked Checkboxes</button> -->
                                     </div>
                                 </div>
                             </div>
@@ -1067,9 +968,8 @@
                                             </tr>
                                             <tr>
                                                 <td>Hiển thị</td>
-                                                <td class="fs-6">{{voucherInfo.visibility == 0 ? 'Công khai' :
-                                                    voucherInfo.visibility == 1 ? 'Loại khách hàng' : 'Cá nhân'}}
-                                                </td>
+                                                <td class="fs-6">{{voucherInfo.visibility == 1 ? 'Công khai' : 'Cá
+                                                    nhân'}}</td>
                                             </tr>
                                             <tr>
                                                 <td>Mô tả</td>
@@ -1188,9 +1088,6 @@
                     </div>
                 </div>
             </div>
-            <!-- END STATIC VOUCHER -->
-
-
         </div>
     </div>
 </div>
