@@ -5,7 +5,7 @@ import com.example.demo.entity.CustomerTypeVoucher;
 
 import java.util.List;
 
-public interface CustomerTypeVoucherService {
+public interface NCustomerTypeVoucherService {
 
     List<CustomerTypeVoucher> getAllCusomerTypeVouchers();
 

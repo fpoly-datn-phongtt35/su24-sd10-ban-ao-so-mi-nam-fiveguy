@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Date;
 import java.util.List;
 
-public interface VoucherService {
+public interface NVoucherService {
 
     List<Voucher> getAllVoucher();
 

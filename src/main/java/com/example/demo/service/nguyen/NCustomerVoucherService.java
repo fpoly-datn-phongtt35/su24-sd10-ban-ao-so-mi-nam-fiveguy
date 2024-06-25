@@ -5,7 +5,7 @@ import com.example.demo.entity.CustomerVoucher;
 
 import java.util.List;
 
-public interface CustomerVoucherService {
+public interface NCustomerVoucherService {
 
     List<CustomerVoucher> getAll();
 

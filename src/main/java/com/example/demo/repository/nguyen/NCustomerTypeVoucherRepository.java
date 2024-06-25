@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CustomerTypeVoucherRepository extends JpaRepository<CustomerTypeVoucher, Long> {
+public interface NCustomerTypeVoucherRepository extends JpaRepository<CustomerTypeVoucher, Long> {
 
     List<CustomerTypeVoucher> findAllByVoucherId(Long id);
 }

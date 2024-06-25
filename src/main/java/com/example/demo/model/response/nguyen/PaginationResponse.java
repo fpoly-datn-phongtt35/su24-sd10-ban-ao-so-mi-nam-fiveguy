@@ -1,4 +1,4 @@
-package com.example.demo.untility.nguyen;
+package com.example.demo.model.response.nguyen;
 
 import lombok.Getter;
 import lombok.Setter;

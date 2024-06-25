@@ -1,4 +1,4 @@
-package com.example.demo.service.serviceImpl.nguyen;
+package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.CustomerType;
 import com.example.demo.repository.nguyen.NCustomerTypeRepository;

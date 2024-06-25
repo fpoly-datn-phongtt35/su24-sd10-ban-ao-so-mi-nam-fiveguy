@@ -1,10 +1,10 @@
-package com.example.demo.service.serviceImpl.nguyen;
+package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.*;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
 import com.example.demo.repository.nguyen.*;
-import com.example.demo.service.nguyen.VoucherService;
+import com.example.demo.service.nguyen.NVoucherService;
 //import org.hibernate.query.Page;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,42 +16,39 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class VoucherServiceImpl implements VoucherService {
+public class NVoucherServiceImpl implements NVoucherService {
 
     @Autowired
-    VoucherRepository voucherRepository;
+    NVoucherRepository NVoucherRepository;
 
     @Autowired
-    CustomerTypeVoucherRepository customerTypeVoucherRepository;
+    NCustomerTypeVoucherRepository NCustomerTypeVoucherRepository;
 
     @Autowired
-    CustomerVoucherRepository customerVoucherRepository;
+    NCustomerVoucherRepository NCustomerVoucherRepository;
 
     @Autowired
-    private NBillRepository billRepository;
+    private NBillRepository NBillRepository;
 
     @Override
     public List<Voucher> getAllVoucher() {
 //        updateStatus();
 
-        return voucherRepository.findAllByOrderByCreatedAtDesc();
+        return NVoucherRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
     public Voucher getVoucherById(Long id) {
 //        updateStatus();
 
-        return voucherRepository.findById(id).get();
+        return NVoucherRepository.findById(id).get();
     }
 
     @Override
@@ -64,12 +61,12 @@ public class VoucherServiceImpl implements VoucherService {
 
         updateStatus();
 
-        return voucherRepository.save(voucher);
+        return NVoucherRepository.save(voucher);
     }
 
     @Override
     public Voucher updateVoucher(Voucher voucher, Long id) {
-        Optional<Voucher> voucherOptional = voucherRepository.findById(id);
+        Optional<Voucher> voucherOptional = NVoucherRepository.findById(id);
         if (voucherOptional.isPresent()) {
             Voucher v = voucherOptional.get();
             v.setValue(voucher.getValue());
@@ -89,7 +86,7 @@ public class VoucherServiceImpl implements VoucherService {
 
             updateStatus();
 
-            return voucherRepository.save(v);
+            return NVoucherRepository.save(v);
         }
         return null;
     }
@@ -103,19 +100,19 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     public void updateStatus() {
-        for (Voucher v : voucherRepository.findAll()) {
+        for (Voucher v : NVoucherRepository.findAll()) {
             if (v.getStatus() != 4) {
                 if (v.getStartDate() != null && v.getEndDate() != null) {
                     if (v.getStatus() != checkDate(v.getStartDate(), v.getEndDate())) {
                         v.setStatus(checkDate(v.getStartDate(), v.getEndDate()));
-                        voucherRepository.save(v);
+                        NVoucherRepository.save(v);
                     }
                 }
             }
             Date currentDate = new Date();
-            if(v.getStatus() == 4 && currentDate.after(v.getEndDate())){
+            if (v.getStatus() == 4 && currentDate.after(v.getEndDate())) {
                 v.setStatus(checkDate(v.getStartDate(), v.getEndDate()));
-                voucherRepository.save(v);
+                NVoucherRepository.save(v);
             }
         }
     }
@@ -126,8 +123,11 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<Voucher> findVouchers(String code, String name, Integer visibility, Integer discountType, Date startDate, Date endDate, Integer status, Pageable pageable) {
-        Specification<Voucher> spec = Specification.where(VoucherSpecification.hasCodeOrName(code))
+    public Page<Voucher> findVouchers(String code, String name, Integer visibility,
+                                      Integer discountType, Date startDate, Date endDate,
+                                      Integer status, Pageable pageable) {
+        Specification<Voucher> spec = Specification
+                .where(VoucherSpecification.hasCodeOrName(code))
 //        Specification<Voucher> spec = Specification.where(VoucherSpecification.hasCode(code == null ? code : code.toUpperCase()))
 //                .and(VoucherSpecification.hasName(name))
                 .and(VoucherSpecification.hasVisibility(visibility))
@@ -136,8 +136,10 @@ public class VoucherServiceImpl implements VoucherService {
                 .and(VoucherSpecification.hasEndDate(endDate))
                 .and(VoucherSpecification.hasStatus(status));
 
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.desc("CreatedAt")));
-        return voucherRepository.findAll(spec, sortedPageable);
+        Pageable sortedPageable = PageRequest
+                .of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Order.desc("CreatedAt")));
+        return NVoucherRepository.findAll(spec, sortedPageable);
     }
 
     @Override
@@ -153,7 +155,7 @@ public class VoucherServiceImpl implements VoucherService {
 
         updateStatus();
 
-        Voucher returnVoucher = voucherRepository.save(voucher);
+        Voucher returnVoucher = NVoucherRepository.save(voucher);
 
         for (CustomerType customerType :
                 customerTypeList) {
@@ -164,7 +166,7 @@ public class VoucherServiceImpl implements VoucherService {
             customerTypeVoucher.setUpdatedAt(new Date());
             customerTypeVoucher.setStatus(1);
 
-            customerTypeVoucherRepository.save(customerTypeVoucher);
+            NCustomerTypeVoucherRepository.save(customerTypeVoucher);
         }
 
         for (Customer customer : customerList) {
@@ -176,7 +178,7 @@ public class VoucherServiceImpl implements VoucherService {
             customerVoucher.setUpdatedAt(new Date());
             customerVoucher.setStatus(1);
 
-            customerVoucherRepository.save(customerVoucher);
+            NCustomerVoucherRepository.save(customerVoucher);
         }
 
         return returnVoucher;
@@ -187,7 +189,7 @@ public class VoucherServiceImpl implements VoucherService {
                                  List<CustomerType> updatedCustomerTypeList,
                                  List<Customer> customerList) {
         // Retrieve the existing voucher by ID
-        Optional<Voucher> optionalVoucher = voucherRepository.findById(voucherId);
+        Optional<Voucher> optionalVoucher = NVoucherRepository.findById(voucherId);
         if (!optionalVoucher.isPresent()) {
             throw new EntityNotFoundException("Voucher not found with id " + voucherId);
         }
@@ -201,7 +203,8 @@ public class VoucherServiceImpl implements VoucherService {
         existingVoucher.setValue(updatedVoucher.getValue());
         existingVoucher.setVisibility(updatedVoucher.getVisibility());
         existingVoucher.setDiscountType(updatedVoucher.getDiscountType());
-        existingVoucher.setMaximumReductionValue(updatedVoucher.getMaximumReductionValue());
+        existingVoucher
+                .setMaximumReductionValue(updatedVoucher.getMaximumReductionValue());
         existingVoucher.setMinimumTotalAmount(updatedVoucher.getMinimumTotalAmount());
         existingVoucher.setQuantity(updatedVoucher.getQuantity());
         existingVoucher.setNumberOfUses(updatedVoucher.getNumberOfUses());
@@ -212,16 +215,18 @@ public class VoucherServiceImpl implements VoucherService {
         existingVoucher.setCreatedBy(updatedVoucher.getCreatedBy());
         existingVoucher.setUpdatedAt(new Date());
         existingVoucher.setUpdatedBy("Admin update");
-        existingVoucher.setStatus(updatedVoucher.getStatus() == 4 ? 4 : checkDate(updatedVoucher.getStartDate(), updatedVoucher.getEndDate()));
+        existingVoucher.setStatus(updatedVoucher.getStatus() == 4 ? 4 : checkDate(
+                updatedVoucher.getStartDate(), updatedVoucher.getEndDate()));
 
         updateStatus();
 
-        Voucher returnVoucher = voucherRepository.save(existingVoucher);
+        Voucher returnVoucher = NVoucherRepository.save(existingVoucher);
 
         // Remove existing customer type vouchers associated with the voucher
-        List<CustomerTypeVoucher> existingCustomerTypeVouchers = customerTypeVoucherRepository.findAllByVoucherId(voucherId);
+        List<CustomerTypeVoucher> existingCustomerTypeVouchers = NCustomerTypeVoucherRepository
+                .findAllByVoucherId(voucherId);
         for (CustomerTypeVoucher existingCustomerTypeVoucher : existingCustomerTypeVouchers) {
-            customerTypeVoucherRepository.delete(existingCustomerTypeVoucher);
+            NCustomerTypeVoucherRepository.delete(existingCustomerTypeVoucher);
         }
 
         // Add updated customer type vouchers
@@ -233,7 +238,7 @@ public class VoucherServiceImpl implements VoucherService {
             customerTypeVoucher.setUpdatedAt(new Date());
             customerTypeVoucher.setStatus(1);
 
-            customerTypeVoucherRepository.save(customerTypeVoucher);
+            NCustomerTypeVoucherRepository.save(customerTypeVoucher);
         }
 
         // Update CustomerVouchers associated with the Voucher
@@ -242,9 +247,10 @@ public class VoucherServiceImpl implements VoucherService {
 //                .map(CustomerVoucher::getId)
 //                .collect(Collectors.toList());
 
-        List<CustomerVoucher> existingCustomerVouchers = customerVoucherRepository.findAllByVoucherId(voucherId);
+        List<CustomerVoucher> existingCustomerVouchers = NCustomerVoucherRepository
+                .findAllByVoucherId(voucherId);
         for (CustomerVoucher existingCustomerVoucher : existingCustomerVouchers) {
-            customerVoucherRepository.delete(existingCustomerVoucher);
+            NCustomerVoucherRepository.delete(existingCustomerVoucher);
         }
 
         // Delete CustomerVouchers not in updated list
@@ -265,7 +271,7 @@ public class VoucherServiceImpl implements VoucherService {
             newCustomerVoucher.setCreatedAt(new Date());
             newCustomerVoucher.setUpdatedAt(new Date());
             newCustomerVoucher.setStatus(1); // Set initial status as needed
-            customerVoucherRepository.save(newCustomerVoucher);
+            NCustomerVoucherRepository.save(newCustomerVoucher);
 //            }
         }
 
@@ -274,13 +280,13 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public VoucherStatistics calculateVoucherStatistics(Long voucherId) {
-        Voucher voucher = voucherRepository.findByIdN(voucherId);
+        Voucher voucher = NVoucherRepository.findByIdN(voucherId);
 
         if (voucher == null) {
             throw new IllegalArgumentException("Voucher not found");
         }
 
-        List<Bill> bills = billRepository.findByVoucherId(voucherId);
+        List<Bill> bills = NBillRepository.findByVoucherId(voucherId);
         int usageCount = bills.size();
 
         BigDecimal totalRevenue = BigDecimal.ZERO;
@@ -288,17 +294,21 @@ public class VoucherServiceImpl implements VoucherService {
 
         for (Bill bill : bills) {
             totalRevenue = totalRevenue.add(bill.getTotalAmount());
-            totalRevenueAfterDiscount = totalRevenueAfterDiscount.add(bill.getTotalAmountAfterDiscount());
+            totalRevenueAfterDiscount = totalRevenueAfterDiscount
+                    .add(bill.getTotalAmountAfterDiscount());
         }
 
         BigDecimal profit = totalRevenueAfterDiscount.subtract(totalRevenue);
-        BigDecimal profitMargin = (totalRevenue.compareTo(BigDecimal.ZERO) > 0) ? profit.divide(totalRevenue, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
+        BigDecimal profitMargin = (totalRevenue.compareTo(BigDecimal.ZERO) > 0) ? profit
+                .divide(totalRevenue, BigDecimal.ROUND_HALF_UP) : BigDecimal.ZERO;
 
-        return new VoucherStatistics(usageCount, totalRevenue, totalRevenueAfterDiscount, profit, profitMargin);
+        return new VoucherStatistics(usageCount, totalRevenue, totalRevenueAfterDiscount,
+                profit, profitMargin);
     }
 
     @Override
-    public Page<CustomerVoucherStatsDTO> getCustomerVoucherStats(Long voucherId, Pageable pageable) {
-        return billRepository.findCustomerVoucherStatsByVoucherId(voucherId, pageable);
+    public Page<CustomerVoucherStatsDTO> getCustomerVoucherStats(Long voucherId,
+                                                                 Pageable pageable) {
+        return NBillRepository.findCustomerVoucherStatsByVoucherId(voucherId, pageable);
     }
 }

@@ -46,6 +46,13 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/voucher/voucher-create.html",
       controller: "nguyen-voucher-create-ctrl"
     })
+    .when("/admin/bill", {
+      templateUrl: "pages/bill-nguyen/bill.html",
+      controller: "nguyen-bill-ctrl"
+    }).when("/admin/bill/:idBill", {
+      templateUrl: "pages/bill-nguyen/bill-detail.html",
+      controller: "nguyen-bill-detail-ctrl"
+    })
     // <!-- Hải -->
     .when("/admin/sale", {
       templateUrl: "pages/sale/sale.html",

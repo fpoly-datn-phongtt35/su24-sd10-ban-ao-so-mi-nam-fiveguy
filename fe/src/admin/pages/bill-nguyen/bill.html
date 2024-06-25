@@ -1,0 +1,162 @@
+<div class="container mt-5">
+    <h1 class="mb-4">Quản lý hóa đơn</h1>
+
+    <div class="border rounded p-3 mb-4">
+        <div class="row">
+            <div class="col-md-2">
+                <input type="text" class="form-control" placeholder="Mã hóa đơn" ng-model="filters.code">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" placeholder="Tên khách hàng" ng-model="filters.customerName">
+            </div>
+            <div class="col-md-2">
+                <input type="text" class="form-control" placeholder="Số điện thoại" ng-model="filters.phoneNumber">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" placeholder="Loại hóa đơn" ng-model="filters.typeBill">
+            </div>
+            <div class="col-md-2">
+                <input type="date" class="form-control" ng-model="filters.startDate">
+            </div>
+            <div class="col-md-2">
+                <input type="date" class="form-control" ng-model="filters.endDate">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-2">
+                <button class="btn btn-primary me-2" ng-click="applyFilters()">Lọc</button>
+                <button class="btn btn-secondary" ng-click="resetFilters()">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for filtering invoice status -->
+    <ul class="nav nav-tabs" id="invoiceTabs" role="tablist">
+        <li class="nav-item" role="presentation" ng-repeat="tab in tabs">
+            <button class="nav-link" ng-class="{'active': currentTab === tab.status}" ng-click="setTab(tab.status)"
+                type="button" role="tab">
+                {{tab.label}} <span class="badge bg-secondary">{{tab.count}}</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Table for invoices -->
+    <div class="tab-content" id="invoiceTabsContent">
+        <div class="tab-pane fade show active" role="tabpanel">
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã hóa đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Nhân viên</th>
+                        <th>Ngày tạo</th>
+                        <th>Thành tiền</th>
+                        <th>Loại</th>
+                        <th ng-if="currentTab == null">Trạng thái</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="bill in bills">
+                        <td>{{bill.id}}</td>
+                        <td>{{bill.code}}</td>
+                        <td>{{bill.customer.fullName}}</td>
+                        <td>admin</td>
+                        <td>{{bill.createdAt | date: 'dd/MM/yyyy HH:mm'}}</td>
+                        <td>{{bill.totalAmountAfterDiscount| number:0}} đ</td>
+                        <!-- <td>{{bill.typeBill}}</td> -->
+                        <td ng-switch="bill.typeBill" style="font-size: 20px;">
+                            <span ng-switch-when="1">
+                                <div class="badge bg-info text-wrap" style="width: 65%;">
+                                    Tại quầy
+                                </div>
+                            </span>
+                            <span ng-switch-when="2">
+                                <div class="badge bg-secondary text-wrap" style="width: 65%;">
+                                    Giao hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="3">
+                                <div class="badge bg-success text-wrap" style="width: 65%;">
+                                    Online
+                                </div>
+                            </span>
+                        </td>
+                        <td ng-if="currentTab == null" ng-switch="bill.status" style="font-size: 20px;">
+                            <span ng-switch-when="1">
+                                <div class="badge bg-warning text-wrap" style="width: 65%;">
+                                    Chờ xác nhận
+                                </div>
+                            </span>
+                            <span ng-switch-when="2">
+                                <div class="badge bg-info text-wrap" style="width: 65%;">
+                                    Đã xác nhận
+                                </div>
+                            </span>
+                            <span ng-switch-when="3">
+                                <div class="badge bg-primary text-wrap" style="width: 65%;">
+                                    Chờ giao hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="4">
+                                <div class="badge bg-secondary text-wrap" style="width: 65%;">
+                                    Đang giao hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="5">
+                                <div class="badge bg-success text-wrap" style="width: 65%;">
+                                    Hoàn thành
+                                </div>
+                            </span>
+                            <span ng-switch-when="6">
+                                <div class="badge bg-danger text-wrap" style="width: 65%;">
+                                    Đã hủy
+                                </div>
+                            </span>
+                        </td>
+                        <td>
+                            <a type="button" class="edit" data-bs-toggle="modal" data-bs-target="#updateVoucherModal"
+                                ng-click="getVoucherById(v)">
+                                <i class="material-icons" title="Edit">&#xE254;</i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination and items per page -->
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <label for="itemsPerPage">Hiển thị:</label>
+                    <select id="itemsPerPage" ng-model="pageSize" ng-change="applyFilters()"
+                        class="form-select d-inline-block w-auto">
+                        <option value="2">2</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                    <span>/ trang</span>
+                </div>
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination mb-0">
+                        <li class="page-item" ng-class="{'disabled': currentPage === 0}">
+                            <a class="page-link" href="" ng-click="loadPage(currentPage - 1)" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" ng-repeat="page in pages" ng-class="{'active': page === currentPage}">
+                            <a class="page-link" href="" ng-click="loadPage(page)">{{page + 1}}</a>
+                        </li>
+                        <li class="page-item" ng-class="{'disabled': currentPage === totalPages - 1}">
+                            <a class="page-link" href="" ng-click="loadPage(currentPage + 1)" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>

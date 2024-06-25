@@ -27,7 +27,7 @@ public class Bill {
     @Column(name = "Code")
     private String code;
 
-    @Column(name = "CreatedAt")
+        @Column(name = "CreatedAt")
     private Date createdAt;
 
     @Column(name = "PaymentDate")

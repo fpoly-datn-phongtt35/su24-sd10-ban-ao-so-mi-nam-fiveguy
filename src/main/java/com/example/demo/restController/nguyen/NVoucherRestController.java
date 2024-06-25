@@ -4,8 +4,8 @@ import com.example.demo.entity.Voucher;
 import com.example.demo.model.request.nguyen.VoucherRequest;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
-import com.example.demo.service.nguyen.VoucherService;
-import com.example.demo.untility.nguyen.PaginationResponse;
+import com.example.demo.service.nguyen.NVoucherService;
+import com.example.demo.model.response.nguyen.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,19 +21,19 @@ import java.util.Date;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/admin/voucher")
-public class VoucherRestController {
+public class NVoucherRestController {
 
     @Autowired
-    VoucherService voucherService;
+    NVoucherService NVoucherService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(voucherService.getAllVoucher());
+        return ResponseEntity.ok(NVoucherService.getAllVoucher());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(voucherService.getVoucherById(id));
+        return ResponseEntity.ok(NVoucherService.getVoucherById(id));
     }
 
     @PostMapping("/save")
@@ -69,7 +69,7 @@ public class VoucherRestController {
         }
 
         Pageable pageable = PageRequest.of(pageNumber, 5);
-        Page<Voucher> page = voucherService.findVouchers(code, name, visibility,
+        Page<Voucher> page = NVoucherService.findVouchers(code, name, visibility,
                 discountType, startDate, endDate, status, pageable);
         return new PaginationResponse<>(page);
     }
@@ -81,28 +81,30 @@ public class VoucherRestController {
         System.out.println(voucherRequest.getCustomerTypeList());
         System.out.println(voucherRequest.getCustomerList().size());
         System.out.println(voucherRequest.getCustomerList());
-        return ResponseEntity.ok(voucherService
+        return ResponseEntity.ok(NVoucherService
                 .createVoucher(voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList(),
                         voucherRequest.getCustomerList()));
 //        return null;
     }
 
     @PutMapping("/updateVoucher/{id}")
-    public ResponseEntity<?> updateVoucher(@RequestBody VoucherRequest voucherRequest,@PathVariable Long id) {
+    public ResponseEntity<?> updateVoucher(@RequestBody VoucherRequest voucherRequest,
+                                           @PathVariable Long id) {
         System.out.println(voucherRequest.getVoucher());
         System.out.println(voucherRequest.getCustomerTypeList().size());
         System.out.println(voucherRequest.getCustomerTypeList());
         System.out.println(voucherRequest.getCustomerList().size());
         System.out.println(voucherRequest.getCustomerList());
 //        return null;
-        return ResponseEntity.ok(voucherService
-                .updateVoucher(id, voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList(),
+        return ResponseEntity.ok(NVoucherService
+                .updateVoucher(id, voucherRequest.getVoucher(),
+                        voucherRequest.getCustomerTypeList(),
                         voucherRequest.getCustomerList()));
     }
 
     @GetMapping("/{voucherId}/statistics")
     public VoucherStatistics getVoucherStatistics(@PathVariable Long voucherId) {
-        return voucherService.calculateVoucherStatistics(voucherId);
+        return NVoucherService.calculateVoucherStatistics(voucherId);
     }
 
     @GetMapping("/{voucherId}/stats")
@@ -111,6 +113,6 @@ public class VoucherRestController {
             @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
 
         Pageable pageable = PageRequest.of(pageNumber, 5);
-        return voucherService.getCustomerVoucherStats(voucherId, pageable);
+        return NVoucherService.getCustomerVoucherStats(voucherId, pageable);
     }
 }
