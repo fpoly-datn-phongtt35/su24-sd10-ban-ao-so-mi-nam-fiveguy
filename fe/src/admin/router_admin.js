@@ -14,6 +14,9 @@ app.config(function ($routeProvider, $locationProvider) {
       controller: "tinh-employee-controller",
     })
     // <!-- Thưởng -->
+    .when("/admin/category", {
+      templateUrl: "pages/product/category.html",
+    })
     .when("/admin/product", {
       templateUrl: "pages/product/product.html",
     })
@@ -26,7 +29,17 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/material", {
       templateUrl: "pages/product/material.html",
     })
-    // <!-- Hiếu -->
+
+    .when("/admin/size", {
+      templateUrl: "pages/product/size.html",
+    })
+    .when("/admin/color", {
+      templateUrl: "pages/product/color.html",
+    })
+    .when("/admin/supplier", {
+      templateUrl: "pages/product/supplier.html",
+    })
+    // <!-- Tịnh -->
     .when("/admin/customer", {
       templateUrl: "pages/customer/customer.html",
       controller: 'customerCtrl'
