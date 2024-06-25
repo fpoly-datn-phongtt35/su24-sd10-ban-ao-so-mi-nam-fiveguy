@@ -45,15 +45,16 @@
                         <a class="nav-link" href="#/home/cart"><i class="fas fa-shopping-cart"></i> Giỏ hàng</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="">
+                        <a class="nav-link" href="http://127.0.0.1:5555/src/login/login.html">
                             <i class="fas fa-sign-in-alt"></i> Đăng nhập
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#/logout">
+                        <a class="nav-link" href="#" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i> Đăng xuất
                         </a>
                     </li>
+                    
                 </ul>
             </div>
         </div>
@@ -125,6 +126,22 @@
 
 
 
+
+
+
+
+
+
+
+
+    
+<script>
+    function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    window.location.href = 'http://127.0.0.1:5555/src/user/index.html#/home';
+}
+</script>
 
 </body>
 </html>
