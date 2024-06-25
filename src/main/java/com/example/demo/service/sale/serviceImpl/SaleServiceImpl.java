@@ -3,6 +3,7 @@ package com.example.demo.service.sale.serviceImpl;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductSale;
 import com.example.demo.entity.Sale;
+import com.example.demo.model.response.sale.ProductDetailResponse;
 import com.example.demo.model.response.sale.SaleDetailResponse;
 import com.example.demo.model.response.sale.SaleSummaryResponse;
 import com.example.demo.repository.sale.ProductSaleRepository;
@@ -155,6 +156,11 @@ public class SaleServiceImpl implements SaleService {
     @Override
     public List<SaleDetailResponse> findSaleDetailsById(Long saleId) {
         return saleRepository.findSaleDetailsById(saleId);
+    }
+
+    @Override
+    public List<ProductDetailResponse> getProductDetailsBySaleAndCustomer(Long saleId, Long customerId) {
+        return saleRepository.findProductDetailsBySaleAndCustomer(saleId, customerId);
     }
 
 

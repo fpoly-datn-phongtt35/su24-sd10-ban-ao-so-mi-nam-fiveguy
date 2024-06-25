@@ -20,7 +20,7 @@
 <!-- Include the modal HTML code below or in your main HTML file where appropriate -->
 <div class="modal fade" tabindex="-1" id="staticSale" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
+        <div class="modal-content" style="width: 120%;">
             <div class="modal-header">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -71,7 +71,7 @@
                                 </tr>
                                 <tr>
                                     <td>Giá trị giảm tối đa</td>
-                                    <td class="fs-6">{{formatCurrency(saleInfo.maximumDiscountAmount)}}</td>
+                                    <td class="fs-6">{{formatCurrency(saleInfo.maximumDiscountAmount)}} VNĐ</td>
                                 </tr>
                                 <tr>
                                     <td>Lượt sử dụng / người</td>
@@ -161,16 +161,51 @@
                                                 <th>Tổng tiền trước khi giảm giá</th>
                                                 <th>Tổng tiền sau khi giảm giá</th>
                                                 <th>Tổng giá trị giảm giá</th>
+                                                <th>Chi tiết sản phẩm</th> <!-- Cột mới để thêm nút "Xem chi tiết" -->
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="customerDetail in customerDetails">
-                                                <td>{{ customerDetail.customerName }}</td>
-                                                <td>{{ customerDetail.customerPhone }} <br> {{ customerDetail.customerEmail }}</td>
-                                                <td>{{ customerDetail.numberOfPurchases }}</td>
-                                                <td>{{ formatCurrency(customerDetail.totalAmountBeforeDiscount) }} VNĐ</td>
-                                                <td>{{ formatCurrency(customerDetail.totalAmountAfterDiscount) }} VNĐ</td>
-                                                <td>{{ formatCurrency(customerDetail.totalDiscountAmount) }} VNĐ</td>
+                                            <tr ng-repeat="staticCustomer in staticCustomers">
+                                                <td>{{ staticCustomer.customerName }}</td>
+                                                <td>{{ staticCustomer.customerPhone }} <br> {{ staticCustomer.customerEmail }}</td>
+                                                <td>{{ staticCustomer.numberOfPurchases }}</td>
+                                                <td>{{ formatCurrency(staticCustomer.totalAmountBeforeDiscount) }} VNĐ</td>
+                                                <td>{{ formatCurrency(staticCustomer.totalAmountAfterDiscount) }} VNĐ</td>
+                                                <td>{{ formatCurrency(staticCustomer.totalDiscountAmount) }} VNĐ</td>
+                                                <td>
+                                                    <button class="btn btn-primary" ng-click="showCustomerDetails(staticCustomer, $index)">
+                                                        Xem chi tiết
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                       <tr ng-repeat-start="productDetail in selectedCustomerProducts" ng-if="selectedCustomerProducts.length > 0">
+                                        <td colspan="7">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sản phẩm</th>
+                                                        <th>Số lượng</th>
+                                                        <th>Giá gốc</th>
+                                                        <th>Giá giảm</th>
+                                                        <th>Tổng tiền trước khi giảm giá</th>
+                                                        <th>Tổng tiền sau khi giảm giá</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{{ productDetail.productName }}</td>
+                                                        <td>{{ productDetail.totalQuantityBought }}</td>
+                                                        <td>{{formatCurrency (productDetail.originalPrice) }} VNĐ</td>
+                                                        <td>{{ formatCurrency(productDetail.promotionalPrice) }} VNĐ</td>
+                                                        <td>{{ formatCurrency(productDetail.totalAmountBeforeDiscount) }} VNĐ</td>
+                                                        <td>{{ formatCurrency(productDetail.totalAmountAfterDiscount) }} VNĐ</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                    </tr>
+                                            <tr ng-repeat-end ng-if="$index == selectedCustomerIndex">
+                                                <td colspan="7"></td>
                                             </tr>
                                             <tr>
                                                 <td><strong>Tổng cộng</strong></td>
@@ -179,16 +214,21 @@
                                                 <td><strong>{{ formatCurrency(getTotalAmountBeforeDiscount()) }} VNĐ</strong></td>
                                                 <td><strong>{{ formatCurrency(getTotalAmountAfterDiscount()) }} VNĐ</strong></td>
                                                 <td><strong>{{ formatCurrency(getTotalDiscountAmount()) }} VNĐ</strong></td>
+                                                <td></td> <!-- Cột trống để căn chỉnh -->
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
                     
                 </div>
             </div>
+
+
+
         </div>
     </div>
 </div>

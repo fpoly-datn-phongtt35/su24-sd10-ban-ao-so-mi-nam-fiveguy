@@ -883,10 +883,12 @@ $scope.addAllProductSales = function() {
             });
     };
 
+    $scope.staticCustomers = [];
+
     $scope.getCustomerDetailsBySaleId = function(saleId) {
         $http.get(baseUrl + '/staticCustomer/' + saleId )
             .then(function(response) {
-                $scope.customerDetails = response.data;
+                $scope.staticCustomers = response.data;
                 // Các xử lý dữ liệu khác nếu cần thiết
             })
             .catch(function(error) {
@@ -894,6 +896,30 @@ $scope.addAllProductSales = function() {
             });
     };
 
+    $scope.getCustomerDetails = function(saleId, customerId) {
+        $http.get(baseUrl + '/customerDetails', {
+            params: { saleId: saleId, customerId: customerId }
+        })
+        .then(function(response) {
+            $scope.selectedCustomerProducts = response.data; // Assign data to variable
+            console.log($scope.selectedCustomerProducts);
+        })
+        .catch(function(error) {
+            console.error('Error fetching customer details:', error);
+        });
+    };
+    
+    $scope.showCustomerDetails = function(customer, index) {
+        if ($scope.selectedCustomerIndex === index) {
+            $scope.selectedCustomerProducts = []; // Close details if already open
+            $scope.selectedCustomerIndex = -1;
+        } else {
+            $scope.selectedCustomerIndex = index; // Save the index of the selected customer
+            // Call API to get customer product details
+            $scope.getCustomerDetails(customer.saleId, customer.customerId);
+        }
+    };
+    
     
 
 
@@ -905,28 +931,41 @@ $scope.addAllProductSales = function() {
     };
 
     $scope.getTotalNumberOfPurchases = function() {
-        return $scope.customerDetails.reduce(function(total, customer) {
+        if (!Array.isArray($scope.staticCustomers)) {
+            return 0;
+        }
+        return $scope.staticCustomers.reduce(function(total, customer) {
             return total + customer.numberOfPurchases;
         }, 0);
     };
     
     $scope.getTotalAmountBeforeDiscount = function() {
-        return $scope.customerDetails.reduce(function(total, customer) {
+        if (!Array.isArray($scope.staticCustomers)) {
+            return 0;
+        }
+        return $scope.staticCustomers.reduce(function(total, customer) {
             return total + customer.totalAmountBeforeDiscount;
         }, 0);
     };
     
     $scope.getTotalAmountAfterDiscount = function() {
-        return $scope.customerDetails.reduce(function(total, customer) {
+        if (!Array.isArray($scope.staticCustomers)) {
+            return 0;
+        }
+        return $scope.staticCustomers.reduce(function(total, customer) {
             return total + customer.totalAmountAfterDiscount;
         }, 0);
     };
     
     $scope.getTotalDiscountAmount = function() {
-        return $scope.customerDetails.reduce(function(total, customer) {
+        if (!Array.isArray($scope.staticCustomers)) {
+            return 0;
+        }
+        return $scope.staticCustomers.reduce(function(total, customer) {
             return total + customer.totalDiscountAmount;
         }, 0);
     };
+    
     
 
 }]);

@@ -1,6 +1,7 @@
 package com.example.demo.repository.sale;
 
 import com.example.demo.entity.Sale;
+import com.example.demo.model.response.sale.ProductDetailResponse;
 import com.example.demo.model.response.sale.SaleDetailResponse;
 import com.example.demo.model.response.sale.SaleSummaryResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,7 +35,7 @@ public interface SaleRepository extends JpaRepository<Sale, Long> , JpaSpecifica
             "    s.id AS saleId, " +
             "    SUM(bd.quantity) AS totalProductsSold, " +
             "    SUM(bd.promotionalPrice * bd.quantity) AS totalRevenue, " +
-            "    SUM((p.price - bd.promotionalPrice) * bd.quantity) AS totalProfit " +
+            "    SUM((bd.price - bd.promotionalPrice) * bd.quantity) AS totalProfit " +
             "FROM " +
             "    Sale s " +
             "    JOIN ProductSale ps ON s.id = ps.sale.id " +
@@ -48,15 +49,16 @@ public interface SaleRepository extends JpaRepository<Sale, Long> , JpaSpecifica
             "    s.id")
     SaleSummaryResponse findSaleSummaryById(@Param("saleId") Long saleId);
 
-    // Hàm thực hiện truy vấn thứ hai: Chi tiết về số lượng sản phẩm mà khách hàng đã mua từng sale
     @Query("SELECT " +
+            "    s.id AS saleId, " +
+            "    c.id AS customerId, " +
             "    c.fullName AS customerName, " +
             "    a.phoneNumber AS customerPhone, " +
             "    a.email AS customerEmail, " +
             "    SUM(bd.quantity) AS numberOfPurchases, " +
-            "    SUM(bd.quantity * p.price) AS totalAmountBeforeDiscount, " +
+            "    SUM(bd.quantity * bd.price) AS totalAmountBeforeDiscount, " +
             "    SUM(bd.quantity * bd.promotionalPrice) AS totalAmountAfterDiscount, " +
-            "    SUM(bd.quantity * (p.price - bd.promotionalPrice)) AS totalDiscountAmount " +
+            "    SUM(bd.quantity * (bd.price - bd.promotionalPrice)) AS totalDiscountAmount " +
             "FROM " +
             "    Sale s " +
             "    JOIN ProductSale ps ON s.id = ps.sale.id " +
@@ -69,6 +71,34 @@ public interface SaleRepository extends JpaRepository<Sale, Long> , JpaSpecifica
             "WHERE " +
             "    s.id = :saleId AND b.status = 1 AND bd.promotionalPrice > 0 " +
             "GROUP BY " +
-            "    c.fullName, a.phoneNumber, a.email")
+            "    s.id, c.id, c.fullName, a.phoneNumber, a.email")
     List<SaleDetailResponse> findSaleDetailsById(@Param("saleId") Long saleId);
+
+
+    // Hàm thực hiện lấy thông tin sản phẩm của khách hàng
+    @Query("SELECT " +
+            "    p.name AS productName, " +
+            "    SUM(bd.quantity) AS totalQuantityBought, " +
+            "    bd.price AS originalPrice, " +
+            "    bd.promotionalPrice AS promotionalPrice, " +
+            "    SUM(bd.quantity * bd.price) AS totalAmountBeforeDiscount, " +
+            "    SUM(bd.quantity * bd.promotionalPrice) AS totalAmountAfterDiscount " +
+            "FROM " +
+            "    Sale s " +
+            "    JOIN ProductSale ps ON s.id = ps.sale.id " +
+            "    JOIN ProductDetail pd ON ps.product.id = pd.product.id " +
+            "    JOIN BillDetail bd ON pd.id = bd.productDetail.id " +
+            "    JOIN Product p ON pd.product.id = p.id " +
+            "    JOIN Bill b ON bd.bill.id = b.id " +
+            "    JOIN Customer c ON b.customer.id = c.id " +
+            "    JOIN Account a ON c.account.id = a.id " +
+            "WHERE " +
+            "    s.id = :saleId AND b.status = 1 AND c.id = :customerId " +
+            "GROUP BY " +
+            "    p.name, bd.price, bd.promotionalPrice " +
+            "ORDER BY " +
+            "    p.name")
+    List<ProductDetailResponse> findProductDetailsBySaleAndCustomer(@Param("saleId") Long saleId, @Param("customerId") Long customerId);
+
+
 }

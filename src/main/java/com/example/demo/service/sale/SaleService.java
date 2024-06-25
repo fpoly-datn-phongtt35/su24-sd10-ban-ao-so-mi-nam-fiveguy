@@ -1,6 +1,7 @@
 package com.example.demo.service.sale;
 
 import com.example.demo.entity.Sale;
+import com.example.demo.model.response.sale.ProductDetailResponse;
 import com.example.demo.model.response.sale.SaleDetailResponse;
 import com.example.demo.model.response.sale.SaleSummaryResponse;
 import org.springframework.data.domain.Page;
@@ -25,4 +26,7 @@ public interface SaleService {
 
 
     List<SaleDetailResponse> findSaleDetailsById(Long saleId);
+
+    List<ProductDetailResponse> getProductDetailsBySaleAndCustomer(Long saleId, Long customerId);
+
 }
