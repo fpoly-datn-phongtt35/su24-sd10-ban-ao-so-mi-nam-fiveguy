@@ -1,271 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="progressApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết hóa đơn</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Progress Step</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        .track-line {
-            height: 2px !important;
-            background-color: #488978;
-            opacity: 1;
+
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgb(255, 255, 255);
         }
 
-        .dot {
-            height: 10px;
-            width: 10px;
-            margin-left: 3px;
-            margin-right: 3px;
-            margin-top: 0px;
-            background-color: #488978;
+        .step {
+            position: relative;
+            width: 150px;
+            height: 100px;
+            background-color: #ccc;
+            border-radius: 8px;
+            margin: 0 10px;
+            text-align: center;
+            padding-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        .step.active {
+            background-color: #1e90ff;
+            color: white;
+        }
+
+        .step.cancelled {
+            background-color: red;
+            color: white;
+        }
+
+        .step.inactive {
+            background-color: #eee;
+        }
+
+        .step .step-circle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            display: inline-block
+            background: white;
+            color: black;
+            margin: 0 auto 10px;
+            font-size: 24px;
+            font-weight: bold;
         }
 
-        .big-dot {
-            height: 25px;
-            width: 25px;
-            margin-left: 0px;
-            margin-right: 0px;
-            margin-top: 0px;
-            background-color: #488978;
-            border-radius: 50%;
-            display: inline-block;
+        .step .material-icons {
+            font-size: 32px;
+            color: #1e90ff;
         }
 
-        .big-dot i {
-            font-size: 12px;
+        .step-title {
+            font-size: 16px;
+            font-weight: bold;
         }
 
-        .card-stepper {
-            z-index: 0
+        .step-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .arrow {
+            font-size: 36px;
+            margin: 0 10px;
+            color: #1e90ff;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            background-color: #1e90ff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .controls button:hover {
+            background-color: #104e8b;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
         }
     </style>
 </head>
 
-<body>
-    <div class="container mt-5">
-        <h1 class="mb-4">Chi tiết hóa đơn</h1>
-
-        <section class="vh-100" style="background-color: #eee;">
-            <div class="container py-5 h-100">
-                <div class="row d-flex justify-content-center align-items-center h-100">
-                    <div class="col">
-                        <div class="card card-stepper" style="border-radius: 10px;">
-                            <div class="card-body p-4">
-
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex flex-column">
-                                        <span class="lead fw-normal">Your order has been delivered</span>
-                                        <span class="text-muted small">by DHFL on 21 Jan, 2020</span>
-                                    </div>
-                                    <div>
-                                        <button data-mdb-button-init data-mdb-ripple-init
-                                            class="btn btn-outline-primary" type="button">Track order details</button>
-                                    </div>
-                                </div>
-                                <hr class="my-4">
-
-                                <div
-                                    class="d-flex flex-row justify-content-between align-items-center align-content-center">
-                                    <span class="dot"></span>
-                                    <hr class="flex-fill track-line"><span class="dot"></span>
-                                    <hr class="flex-fill track-line"><span class="dot"></span>
-                                    <hr class="flex-fill track-line"><span class="dot"></span>
-                                    <hr class="flex-fill track-line"><span
-                                        class="d-flex justify-content-center align-items-center big-dot dot">
-                                        <i class="fa fa-check text-white"></i></span>
-                                </div>
-
-                                <div class="d-flex flex-row justify-content-between align-items-center">
-                                    <div class="d-flex flex-column align-items-start"><span>15 Mar</span><span>Order
-                                            placed</span>
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-center"><span>15
-                                            Mar</span><span>Order
-                                            placed</span></div>
-                                    <div class="d-flex flex-column justify-content-center align-items-center"><span>15
-                                            Mar</span><span>Order Dispatched</span></div>
-                                    <div class="d-flex flex-column align-items-center"><span>15 Mar</span><span>Out for
-                                            delivery</span></div>
-                                    <div class="d-flex flex-column align-items-end"><span>15
-                                            Mar</span><span>Delivered</span></div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<body ng-controller="ProgressController">
+    <div class="progress-container">
+        <div class="step" ng-class="{'active': status >= 1, 'inactive': status < 1}">
+            <div class="step-circle">
+                <span class="material-icons">schedule</span>
             </div>
-        </section>
-        <!-- Timeline Step -->
-        <div class="row">
-            <div class="col">
-                <ul class="timeline">
-                    <li class="timeline-item">
-                        <span class="timeline-step bg-primary"></span>
-                        <div class="timeline-content">
-                            <h5 class="mb-2">Đã đặt hàng</h5>
-                            <p class="text-muted">Ngày: 01/06/2024</p>
-                        </div>
-                    </li>
-                    <li class="timeline-item">
-                        <span class="timeline-step bg-secondary"></span>
-                        <div class="timeline-content">
-                            <h5 class="mb-2">Đang giao hàng</h5>
-                            <p class="text-muted">Dự kiến giao: 05/06/2024</p>
-                        </div>
-                    </li>
-                    <li class="timeline-item">
-                        <span class="timeline-step bg-info"></span>
-                        <div class="timeline-content">
-                            <h5 class="mb-2">Hoàn thành</h5>
-                            <p class="text-muted">Hoàn thành vào: 07/06/2024</p>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+            <div class="step-title">Chờ xác nhận</div>
+            <div class="step-desc">16:37:35 23-12-2023</div>
         </div>
-
-        <!-- Bảng thông tin giao dịch -->
-        <div class="row mt-4">
-            <div class="col">
-                <h4>Thông tin giao dịch</h4>
-                <table class="table table-bordered">
-                    <tr>
-                        <th scope="col">Mã đơn hàng</th>
-                        <td>#123456</td>
-                    </tr>
-                    <tr>
-                        <th scope="col">Khách hàng</th>
-                        <td>Nguyễn Văn A</td>
-                    </tr>
-                    <tr>
-                        <th scope="col">Ngày đặt hàng</th>
-                        <td>01/06/2024</td>
-                    </tr>
-                    <tr>
-                        <th scope="col">Tổng tiền</th>
-                        <td>500,000 VND</td>
-                    </tr>
-                </table>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">Chỉnh sửa</button>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#updateModal">Cập nhật</button>
+        <div class="arrow" ng-class="{'active': status >= 2, 'inactive': status < 2}">&gt;</div>
+        <div class="step" ng-class="{'active': status >= 2, 'inactive': status < 2}">
+            <div class="step-circle">
+                <span class="material-icons">check_circle</span>
             </div>
+            <div class="step-title">Đã xác nhận</div>
+            <div class="step-desc">16:39:23 23-12-2023</div>
         </div>
-
-        <!-- Modal Chỉnh sửa thông tin đơn hàng -->
-        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin đơn hàng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Form chỉnh sửa thông tin đơn hàng -->
-                        <form>
-                            <div class="mb-3">
-                                <label for="orderCode" class="form-label">Mã đơn hàng</label>
-                                <input type="text" class="form-control" id="orderCode" value="#123456" disabled>
-                            </div>
-                            <div class="mb-3">
-                                <label for="customerName" class="form-label">Khách hàng</label>
-                                <input type="text" class="form-control" id="customerName" value="Nguyễn Văn A">
-                            </div>
-                            <div class="mb-3">
-                                <label for="orderDate" class="form-label">Ngày đặt hàng</label>
-                                <input type="text" class="form-control" id="orderDate" value="01/06/2024">
-                            </div>
-                            <div class="mb-3">
-                                <label for="totalAmount" class="form-label">Tổng tiền</label>
-                                <input type="text" class="form-control" id="totalAmount" value="500,000 VND">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-primary">Lưu thay đổi</button>
-                    </div>
-                </div>
+        <div class="arrow" ng-class="{'active': status >= 3, 'inactive': status < 3}">&gt;</div>
+        <div class="step" ng-class="{'active': status >= 3, 'inactive': status < 3}">
+            <div class="step-circle">
+                <span class="material-icons">local_shipping</span>
             </div>
+            <div class="step-title">Chờ vận chuyển</div>
+            <div class="step-desc">16:39:47 23-12-2023</div>
         </div>
-
-        <!-- Modal Cập nhật thông tin đơn hàng -->
-        <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="updateModalLabel">Cập nhật thông tin đơn hàng</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Form cập nhật thông tin đơn hàng -->
-                        <form>
-                            <div class="mb-3">
-                                <label for="orderCodeUpdate" class="form-label">Mã đơn hàng</label>
-                                <input type="text" class="form-control" id="orderCodeUpdate" value="#123456" disabled>
-                            </div>
-                            <div class="mb-3">
-                                <label for="customerNameUpdate" class="form-label">Khách hàng</label>
-                                <input type="text" class="form-control" id="customerNameUpdate" value="Nguyễn Văn A">
-                            </div>
-                            <div class="mb-3">
-                                <label for="orderDateUpdate" class="form-label">Ngày đặt hàng</label>
-                                <input type="text" class="form-control" id="orderDateUpdate" value="01/06/2024">
-                            </div>
-                            <div class="mb-3">
-                                <label for="totalAmountUpdate" class="form-label">Tổng tiền</label>
-                                <input type="text" class="form-control" id="totalAmountUpdate" value="500,000 VND">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-success">Cập nhật</button>
-                    </div>
-                </div>
+        <div class="arrow" ng-class="{'active': status >= 4, 'inactive': status < 4}">&gt;</div>
+        <div class="step" ng-class="{'active': status >= 4, 'inactive': status < 4}">
+            <div class="step-circle">
+                <span class="material-icons">directions_car</span>
             </div>
+            <div class="step-title">Đang giao</div>
+            <div class="step-desc">--:--:-- --/--/----</div>
         </div>
-
-        <!-- Bảng sản phẩm trong giỏ hàng -->
-        <div class="row mt-4">
-            <div class="col">
-                <h4>Sản phẩm trong đơn hàng</h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th scope="col">STT</th>
-                            <th scope="col">Tên sản phẩm</th>
-                            <th scope="col">Số lượng</th>
-                            <th scope="col">Đơn giá</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Sản phẩm A</td>
-                            <td>2</td>
-                            <td>250,000 VND</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Sản phẩm B</td>
-                            <td>1</td>
-                            <td>150,000 VND</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="arrow" ng-class="{'active': status >= 5, 'inactive': status < 5}">&gt;</div>
+        <div class="step" ng-class="{'active': status >= 5, 'inactive': status < 5}">
+            <div class="step-circle">
+                <span class="material-icons">home</span>
             </div>
+            <div class="step-title">Đã giao</div>
+            <div class="step-desc">--:--:-- --/--/----</div>
+        </div>
+        <div class="arrow" ng-class="{'cancelled': status == 6, 'inactive': status < 6}">&gt;</div>
+        <div class="step" ng-class="{'cancelled': status == 6, 'inactive': status < 6}">
+            <div class="step-circle">
+                <span class="material-icons">cancel</span>
+            </div>
+            <div class="step-title">Đã hủy</div>
+            <div class="step-desc">--:--:-- --/--/----</div>
         </div>
     </div>
 
-    <!-- Bootstrap JS và Popper.js (được yêu cầu bởi Bootstrap) -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <div class="controls">
+        <button ng-if="status == 1" ng-click="showModal(2)">Xác nhận</button>
+        <button ng-if="status == 2" ng-click="showModal(3)">Chờ vận chuyển</button>
+        <button ng-if="status == 3" ng-click="showModal(4)">Vận chuyển</button>
+        <button ng-if="status == 4" ng-click="showModal(5)">Thành công</button>
+        <button ng-if="status < 5" ng-click="showModal(6)">Hủy</button>
+    </div>
+
+    <!-- The Modal -->
+    <div class="modal" ng-show="modalVisible">
+        <div class="modal-content">
+            <span class="close" ng-click="hideModal()">&times;</span>
+            <p>Trạng thái hiện tại: {{status}}</p>
+            <ul>
+                <li ng-if="status >= 1">Chờ xác nhận: 16:37:35 23-12-2023</li>
+                <li ng-if="status >= 2">Đã xác nhận: 16:39:23 23-12-2023</li>
+                <li ng-if="status >= 3">Chờ vận chuyển: 16:39:47 23-12-2023</li>
+                <li ng-if="status >= 4">Đang giao: --:--:-- --/--/----</li>
+                <li ng-if="status >= 5">Đã giao: --:--:-- --/--/----</li>
+                <li ng-if="status == 6">Đã hủy: --:--:-- --/--/----</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script>
+        angular.module('progressApp', [])
+            .controller('ProgressController', function ($scope) {
+                $scope.status = 1; // Initial status
+
+                // Modal visibility
+                $scope.modalVisible = false;
+
+                // Function to show modal and set current status
+                $scope.showModal = function (step) {
+                    $scope.modalVisible = true;
+                    $scope.status = step;
+                };
+
+                // Function to hide modal
+                $scope.hideModal = function () {
+                    $scope.modalVisible = false;
+                };
+            });
+    </script>
 </body>
 
 </html>

@@ -6,8 +6,8 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/dashboard", {
       templateUrl: "pages/dashboard.html",
       controller: 'dashboardController'
-    })   
-   
+    })
+
     // <!-- Hiếu -->
     .when("/admin/staff", {
       templateUrl: "pages/staff/staff.html",
@@ -49,7 +49,8 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/bill", {
       templateUrl: "pages/bill-nguyen/bill.html",
       controller: "nguyen-bill-ctrl"
-    }).when("/admin/bill/:idBill", {
+    })
+    .when("/admin/bill/:idBill", {
       templateUrl: "pages/bill-nguyen/bill-detail.html",
       controller: "nguyen-bill-detail-ctrl"
     })
@@ -63,7 +64,7 @@ app.config(function ($routeProvider, $locationProvider) {
     .otherwise({
       templateUrl: "pages/dashboard.html",
       controller: 'dashboardController'
-    })   
+    })
 });
 
 
