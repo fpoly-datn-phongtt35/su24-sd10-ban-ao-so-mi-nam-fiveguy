@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AddressRepository extends JpaRepository<Address, Long> {
+public interface AddressRepositoryH extends JpaRepository<Address, Long> {
     @Query("SELECT a FROM Address a WHERE a.customer.id = :customerId")
     List<Address> findByCustomerId(@Param("customerId") Long customerId);
 

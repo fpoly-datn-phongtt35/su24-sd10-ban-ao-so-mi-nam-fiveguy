@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface RatingRepository extends JpaRepository<Rating, Long> {
+public interface RatingRepositoryH extends JpaRepository<Rating, Long> {
 
     @Modifying
     @Transactional

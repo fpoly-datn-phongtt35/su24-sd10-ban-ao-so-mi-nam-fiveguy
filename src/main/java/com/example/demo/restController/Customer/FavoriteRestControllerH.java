@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/admin/favorite")
 @CrossOrigin("*")
 
-public class FavoriteRestController {
+public class FavoriteRestControllerH {
     @Autowired
     FavoriteService favoriteService;
 

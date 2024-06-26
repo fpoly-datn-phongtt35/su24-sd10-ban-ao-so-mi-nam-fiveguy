@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/admin/rating")
 @CrossOrigin("*")
 
-public class RatingRestController {
+public class RatingRestControllerH {
    @Autowired
    RatingService ratingService;
 

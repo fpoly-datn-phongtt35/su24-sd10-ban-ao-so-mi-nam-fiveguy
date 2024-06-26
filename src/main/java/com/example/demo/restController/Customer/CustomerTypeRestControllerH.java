@@ -24,7 +24,7 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("/api/admin/customerType")
 
-public class CustomerTypeRestController {
+public class CustomerTypeRestControllerH {
 
     @Autowired
     CustomerTypeService customerTypeService;

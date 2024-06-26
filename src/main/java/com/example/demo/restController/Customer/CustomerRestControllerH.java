@@ -1,8 +1,7 @@
 package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Customer;
-import com.example.demo.repository.Customer.CustomerRepository;
-import com.example.demo.service.Customer.AccountService;
+import com.example.demo.repository.Customer.CustomerRepositoryH;
 import com.example.demo.service.Customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,7 +25,7 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("/api/admin/customer")
 
-public class CustomerRestController {
+public class CustomerRestControllerH {
 
     @Autowired
     CustomerService customerService;
@@ -35,7 +34,7 @@ public class CustomerRestController {
 //    AccountService accountService;
 
     @Autowired
-    CustomerRepository customerRepository;
+    CustomerRepositoryH customerRepositoryH;
 
 
     @GetMapping("")
@@ -72,7 +71,7 @@ public class CustomerRestController {
     }
     @PutMapping("/update-status-nhan-vien/{id}")
     public void updateStatus(@PathVariable Long id){
-        customerRepository.updateStatusCustomer(id);
+        customerRepositoryH.updateStatusCustomer(id);
     }
 
 

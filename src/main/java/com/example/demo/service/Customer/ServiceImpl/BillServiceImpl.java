@@ -2,7 +2,7 @@ package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.ProductDetail;
-import com.example.demo.repository.Customer.BillRepository;
+import com.example.demo.repository.Customer.BillRepositoryH;
 import com.example.demo.service.Customer.BillService;
 import com.example.demo.service.Customer.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class BillServiceImpl implements BillService {
 
     @Autowired
-    private BillRepository billRepository;
+    private BillRepositoryH billRepositoryH;
 
 //    @Autowired
 //    ProductDetailService productDetailService;
@@ -33,28 +33,28 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<Bill> getAllBill() {
-        return billRepository.findAllByOrderByCreatedAtDesc();
+        return billRepositoryH.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
     public Bill getBillById(Long id) {
-        return billRepository.findById(id).orElse(null);
+        return billRepositoryH.findById(id).orElse(null);
     }
 
     @Override
     public Page<Bill> getAllBillPage(Integer page) {
         Pageable pageable = PageRequest.of(page, 1);
-        return billRepository.findAll(pageable);
+        return billRepositoryH.findAll(pageable);
     }
 
     @Override
     public Bill createBill(Bill bill) {
-        return billRepository.save(bill);
+        return billRepositoryH.save(bill);
     }
 
     @Override
     public Bill updateBill(Bill bill, Long id) {
-        Optional<Bill> existingBill = billRepository.findById(id);
+        Optional<Bill> existingBill = billRepositoryH.findById(id);
         if (existingBill.isPresent()){
             Bill bill1 = existingBill.get();
             bill1.setCode(bill.getCode());
@@ -73,7 +73,7 @@ public class BillServiceImpl implements BillService {
             bill1.setPaymentMethod(bill.getPaymentMethod());
             bill1.setVoucher(bill.getVoucher());
             bill1.setStatus(bill.getStatus());
-            return billRepository.save(bill1);
+            return billRepositoryH.save(bill1);
         }else{
             throw new IllegalArgumentException("Không tìm thấy bill với Id "+ id);
         }
@@ -81,8 +81,8 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public void deleteBill(Long id) {
-        if (billRepository.existsById(id)){
-            billRepository.deleteById(id);
+        if (billRepositoryH.existsById(id)){
+            billRepositoryH.deleteById(id);
         }else{
             throw new IllegalArgumentException("Không tìm thấy bill với Id "+ id);
         }
@@ -90,7 +90,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill updateStatus(Integer status, Long id) {
-        Optional<Bill> existingBill = billRepository.findById(id);
+        Optional<Bill> existingBill = billRepositoryH.findById(id);
         if (existingBill.isPresent()){
             Bill bill1 = existingBill.get();
             bill1.setStatus(status);
@@ -114,7 +114,7 @@ public class BillServiceImpl implements BillService {
 //                    productDetailService.updateStatus(1, pd.getId());
 //                }
 //            }
-            return billRepository.save(bill1);
+            return billRepositoryH.save(bill1);
         }else{
             throw new IllegalArgumentException("Không tìm thấy bill với Id "+ id);
         }
@@ -122,13 +122,13 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<Bill> getAllExportExcel() {
-        return billRepository.findAll();
+        return billRepositoryH.findAll();
     }
 
 //OL
 
     @Autowired
-    private BillRepository olProductDetailRepository;
+    private BillRepositoryH olProductDetailRepository;
 
 //    @Autowired
 //    private BillDetailRepository olBillDetailRepository;
@@ -143,7 +143,7 @@ public class BillServiceImpl implements BillService {
 //    private VouchersRepository olVouchersRepository;
 
     @Autowired
-    private BillRepository olBillRepository;
+    private BillRepositoryH olBillRepositoryH;
 
     @Autowired
     private RatingService olRatingService;
@@ -275,16 +275,16 @@ public class BillServiceImpl implements BillService {
     @Override
     public Page<Bill> findLatestBillsByCustomerId(Long customerId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return   olBillRepository.findLatestBillByCustomerId(customerId, pageRequest);
+        return   olBillRepositoryH.findLatestBillByCustomerId(customerId, pageRequest);
     }
 
     @Override
     public boolean updatePaymentStatus(Long billId, int paymentStatus) {
-        Optional<Bill> optionalBill = olBillRepository.findById(billId);
+        Optional<Bill> optionalBill = olBillRepositoryH.findById(billId);
         if (optionalBill.isPresent()) {
             Bill bill = optionalBill.get();
             bill.setStatus(paymentStatus);
-            olBillRepository.save(bill);
+            olBillRepositoryH.save(bill);
             return true;
         }
         return false;
@@ -348,12 +348,12 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill save(Bill bill) {
-        return olBillRepository.save(bill);
+        return olBillRepositoryH.save(bill);
     }
 
     @Override
     public Bill findById(Long id) {
-        Optional<Bill> bill = olBillRepository.findById(id);
+        Optional<Bill> bill = olBillRepositoryH.findById(id);
         if (bill.isPresent()){
             return bill.get();
         }
@@ -363,7 +363,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public List<Bill> findByPhoneNumber(String pn) {
 
-        List<Bill> bill = olBillRepository.findByPhoneNumberOrderByCreatedAtDesc(pn);
+        List<Bill> bill = olBillRepositoryH.findByPhoneNumberOrderByCreatedAtDesc(pn);
         if (bill.size() > 0){
             return bill;
         }

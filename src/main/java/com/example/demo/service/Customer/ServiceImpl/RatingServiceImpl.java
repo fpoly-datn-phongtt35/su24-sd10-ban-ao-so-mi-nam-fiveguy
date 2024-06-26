@@ -3,7 +3,7 @@ package com.example.demo.service.Customer.ServiceImpl;
 import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.Rating;
-import com.example.demo.repository.Customer.RatingRepository;
+import com.example.demo.repository.Customer.RatingRepositoryH;
 import com.example.demo.service.Customer.AccountService;
 import com.example.demo.service.Customer.CustomerService;
 import com.example.demo.service.Customer.RatingService;
@@ -19,46 +19,46 @@ import java.util.Optional;
 @Service
 public class RatingServiceImpl implements RatingService {
 
-    private final RatingRepository ratingRepository;
+    private final RatingRepositoryH ratingRepositoryH;
 
     @Override
     public void updateStatusRatingXacNhan(Long id){
-        ratingRepository.updateStatusRatingXacNhan(id);
+        ratingRepositoryH.updateStatusRatingXacNhan(id);
     }
     @Override
     public void updateStatusRatingHuy(Long id){
-        ratingRepository.updateStatusRatingHuy(id);
+        ratingRepositoryH.updateStatusRatingHuy(id);
     }
 
     @Autowired
-    public RatingServiceImpl(RatingRepository ratingRepository) {
-        this.ratingRepository = ratingRepository;
+    public RatingServiceImpl(RatingRepositoryH ratingRepositoryH) {
+        this.ratingRepositoryH = ratingRepositoryH;
     }
 
     @Override
     public List<Rating> getAllRating() {
-        return ratingRepository.findAll();
+        return ratingRepositoryH.findAll();
     }
 
     @Override
     public Rating getRatingById(Long id) {
-        return ratingRepository.findById(id).orElse(null);
+        return ratingRepositoryH.findById(id).orElse(null);
     }
 
     @Override
     public Page<Rating> getAllRatingPage(Integer page) {
         Pageable pageable = PageRequest.of(page, 1);
-        return ratingRepository.findAll(pageable);
+        return ratingRepositoryH.findAll(pageable);
     }
 
     @Override
     public Rating createRating(Rating ratingEntity) {
-        return ratingRepository.save(ratingEntity);
+        return ratingRepositoryH.save(ratingEntity);
     }
 
     @Override
     public Rating updateRating(Rating ratingEntity, Long id) {
-        Optional<Rating> existingRating = ratingRepository.findById(id);
+        Optional<Rating> existingRating = ratingRepositoryH.findById(id);
         if (existingRating.isPresent()) {
             Rating rating = existingRating.get();
             rating.setContent(ratingEntity.getContent());
@@ -70,7 +70,7 @@ public class RatingServiceImpl implements RatingService {
             rating.setBillDetail(ratingEntity.getBillDetail());
             rating.setStatus(ratingEntity.getStatus());
 
-            return ratingRepository.save(rating); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
+            return ratingRepositoryH.save(rating); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
         } else {
             // Trả về null hoặc thông báo lỗi nếu không tìm thấy khách hàng với ID này
             throw new IllegalArgumentException("Không tìm thấy Địa chỉ với ID " + id);
@@ -81,8 +81,8 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public void deleteRating(Long id) {
         // Kiểm tra xem khách hàng có tồn tại trước khi xóa
-        if (ratingRepository.existsById(id)) {
-            ratingRepository.deleteById(id);
+        if (ratingRepositoryH.existsById(id)) {
+            ratingRepositoryH.deleteById(id);
         } else {
             // Xử lý lỗi nếu không tìm thấy khách hàng với ID này
             throw new IllegalArgumentException("Không tìm thấy Địa chỉ với ID " + id);
@@ -91,7 +91,7 @@ public class RatingServiceImpl implements RatingService {
 
 //OL
 @Autowired
-private RatingRepository olRatingRepository;
+private RatingRepositoryH olRatingRepositoryH;
 
     @Autowired
     private CustomerService olCustomerService;
@@ -187,24 +187,24 @@ private RatingRepository olRatingRepository;
 
     @Override
     public List<Rating> findByBillDetailAndStatus(BillDetail billDetail,int status) {
-        return olRatingRepository.findByBillDetailAndStatus(billDetail , status);
+        return olRatingRepositoryH.findByBillDetailAndStatus(billDetail , status);
     }
 
     @Override
     public List<Rating> findByBillDetail_Id(Long idBillDetail) {
-        return olRatingRepository.findByBillDetail_Id(idBillDetail);
+        return olRatingRepositoryH.findByBillDetail_Id(idBillDetail);
     }
 
     @Override
     public Page<Rating> findAllByCustomer_IdOrderByYourFieldDesc(Long customerId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return olRatingRepository.findAllByCustomer_IdOrderByYourFieldDesc(customerId,pageRequest);
+        return olRatingRepositoryH.findAllByCustomer_IdOrderByYourFieldDesc(customerId,pageRequest);
     }
 
     @Override
     public Page<Rating> findByProductId(Long productId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return olRatingRepository.findByProductId(productId,pageRequest);
+        return olRatingRepositoryH.findByProductId(productId,pageRequest);
     }
 // END OL
 }

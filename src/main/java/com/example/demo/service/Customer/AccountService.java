@@ -27,6 +27,8 @@ public interface AccountService {
 
     void deleteAccount(Long id);
 
+    Account save(Account accountEntity);
+
     List<Account> getAll();
 
     List<Account> getSStatus(Integer status);

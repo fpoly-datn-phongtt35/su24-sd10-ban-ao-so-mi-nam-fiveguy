@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepositoryH extends JpaRepository<Account, Long> {
     @Query(value = "SELECT A.Id, A.Account, A.Password, A.Email, A.PhoneNumber, A.ConfirmationCode, A.IdRole, A.Status\n" +
             "FROM Accounts A\n" +
             "LEFT JOIN Customers C ON A.Id = C.IdAccount\n" +
