@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductSaleServiceImpl implements ProductSaleService {
+public class SaleProductSaleServiceImpl implements ProductSaleService {
 
     @Autowired
     private ProductSaleRepository productSaleRepository;

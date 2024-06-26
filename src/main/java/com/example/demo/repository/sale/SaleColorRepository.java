@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 
-public interface ColorRepository extends JpaRepository<Color, Long> {
+public interface SaleColorRepository extends JpaRepository<Color, Long> {
 }

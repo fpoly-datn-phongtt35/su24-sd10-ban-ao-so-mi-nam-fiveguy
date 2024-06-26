@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ProductServiceImpl implements ProductService {
+public class SaleProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;

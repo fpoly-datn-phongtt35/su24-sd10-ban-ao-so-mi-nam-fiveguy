@@ -1,10 +1,10 @@
 package com.example.demo.repository.sale;
 
-import com.example.demo.entity.Collar;
+import com.example.demo.entity.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 
-public interface CollarRepository extends JpaRepository<Collar, Long> {
+public interface SaleBrandRepository extends JpaRepository<Brand, Long> {
 }

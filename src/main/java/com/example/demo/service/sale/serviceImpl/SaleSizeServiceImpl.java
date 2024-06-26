@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SizeServiceImpl implements SizeService {
+public class SaleSizeServiceImpl implements SizeService {
 
     @Autowired
     private SizeRepository sizeRepository;

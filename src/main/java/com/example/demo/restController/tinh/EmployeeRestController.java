@@ -3,15 +3,9 @@ package com.example.demo.restController.tinh;
 //import com.example.demo.entity.AccountEntity
 
 import com.example.demo.entity.Employee;
-import com.example.demo.repository.tinh.EmployeeRepository;
+import com.example.demo.repository.tinh.SEmployeeRepository;
 import com.example.demo.service.tinh.EmployeeService;
 import com.example.demo.untility.tinh.PaginationResponse;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,11 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +29,7 @@ public class EmployeeRestController {
 //    AccountService accountService;
 
     @Autowired
-    EmployeeRepository employeeRepository;
+    SEmployeeRepository employeeRepository;
 
 
     @GetMapping("")

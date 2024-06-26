@@ -1,44 +1,23 @@
-package com.example.demo.service.serviceImpl.tinh;
+package com.example.demo.service.tinh.tinh;
 
-import com.cloudinary.Cloudinary;
-import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
-import com.example.demo.repository.tinh.EmployeeRepository;
+import com.example.demo.repository.tinh.SEmployeeRepository;
 import com.example.demo.repository.tinh.EmployeeSpecification;
 import com.example.demo.service.tinh.EmployeeService;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class EEmployeeServiceImpl implements EmployeeService {
 
     @Autowired
-    EmployeeRepository employeeRepository;
+    SEmployeeRepository employeeRepository;
 
     // get all Employee
     @Override
