@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
+public interface EmployeeRepositoryTinh extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
     // gen Code Tăng dần
     @Query("SELECT code FROM Employee code")
     List<Employee> genCode();

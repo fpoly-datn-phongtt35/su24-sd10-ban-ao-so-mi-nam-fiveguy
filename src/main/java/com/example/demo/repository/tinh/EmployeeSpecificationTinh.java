@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 
-public class EmployeeSpecification {
+public class EmployeeSpecificationTinh {
     public static Specification<Employee> hasfullName(String fullName) {
         return (root, query, criteriaBuilder) -> {
             if (fullName == null || fullName.isEmpty()) {

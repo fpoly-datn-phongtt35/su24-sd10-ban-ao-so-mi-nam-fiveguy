@@ -1,44 +1,23 @@
-package com.example.demo.service.serviceImpl.tinh;
+package com.example.demo.service.tinh.serviceImpl;
 
-import com.cloudinary.Cloudinary;
-import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
-import com.example.demo.repository.tinh.EmployeeRepository;
-import com.example.demo.repository.tinh.EmployeeSpecification;
-import com.example.demo.service.tinh.EmployeeService;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.example.demo.repository.tinh.EmployeeRepositoryTinh;
+import com.example.demo.repository.tinh.EmployeeSpecificationTinh;
+import com.example.demo.service.tinh.EmployeeServiceTinh;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class EmployeeServiceImplTinh implements EmployeeServiceTinh {
 
     @Autowired
-    EmployeeRepository employeeRepository;
+    EmployeeRepositoryTinh employeeRepository;
 
     // get all Employee
     @Override
@@ -171,17 +150,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Page<Employee> findEmployee(String fullName, String code, String avatar, Date birthDate, Boolean gender, String address,String account, String email, String phoneNumber, Long id, Integer status, Pageable pageable) {
 
-        Specification<Employee> spec = Specification.where(EmployeeSpecification.hasCode(code))
-                .and(EmployeeSpecification.hasfullName(fullName))
-                .and(EmployeeSpecification.hasAvatar(avatar))
-                .and(EmployeeSpecification.hasBrithDate(birthDate))
-                .and(EmployeeSpecification.hasGenDer(gender))
-                .and(EmployeeSpecification.hasAddRess(address))
-                .and(EmployeeSpecification.hasAccountByAccount(account))
-                .and(EmployeeSpecification.hasAccountByEmail(email))
-                .and(EmployeeSpecification.hasAccountByPhoneNumber(phoneNumber))
-                .and(EmployeeSpecification.hasAccountByRole(id))
-                .and(EmployeeSpecification.hasStatus(status));
+        Specification<Employee> spec = Specification.where(EmployeeSpecificationTinh.hasCode(code))
+                .and(EmployeeSpecificationTinh.hasfullName(fullName))
+                .and(EmployeeSpecificationTinh.hasAvatar(avatar))
+                .and(EmployeeSpecificationTinh.hasBrithDate(birthDate))
+                .and(EmployeeSpecificationTinh.hasGenDer(gender))
+                .and(EmployeeSpecificationTinh.hasAddRess(address))
+                .and(EmployeeSpecificationTinh.hasAccountByAccount(account))
+                .and(EmployeeSpecificationTinh.hasAccountByEmail(email))
+                .and(EmployeeSpecificationTinh.hasAccountByPhoneNumber(phoneNumber))
+                .and(EmployeeSpecificationTinh.hasAccountByRole(id))
+                .and(EmployeeSpecificationTinh.hasStatus(status));
 
         return employeeRepository.findAll(spec, pageable);
     }

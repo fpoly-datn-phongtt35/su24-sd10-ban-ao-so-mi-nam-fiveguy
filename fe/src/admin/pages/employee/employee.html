@@ -5,7 +5,7 @@
 </div>
 
 <div class="container">
-    <!-- Modal Add Voucher-->
+    
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -158,12 +158,16 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6 p-0 flex justify-content-lg-start justify-content-center">
-                            <h2 class="ml-lg-2">Quản lý Nhân Viên</h2>
+                            <h2 class="ml-lg-2">Danh Sách Nhân Viên</h2>
                         </div>
                         <div class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
                             <a type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAdd">
                                 <i class="material-icons">&#xE147;</i>
                                 <span>Thêm mới</span>
+                            </a>
+                            <a type="button" class="btn btn-success" ng-click="xuatFile()">
+                                <i class="material-icons">&#xE147;</i>
+                                <span>Xuất Excel</span>
                             </a>
                             <!-- <a href="#deleteEmployeeModal" class="btn btn-danger" data-toggle="modal">
                                     <i class="material-icons">&#xE15C;</i>
@@ -253,7 +257,7 @@
 <div class="modal fade" tabindex="-1" id="modalAdd" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form name="formCreateEmployee" ng-submit="formCreateEmployee.$valid && submitForm()" novalidate>
+            <form name="formCreateEmployee" ng-submit="formCreateEmployee.$valid && uploadBtnAdd()" novalidate>
                 <div class="modal-header">
                     <h5 class="modal-title">Thêm mới nhân viên</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -269,7 +273,7 @@
                         <div class="row mb-3">
                             <label for="image" class="col-sm-3 col-form-label">Ảnh</label>
                             <div class="col-sm-9">
-                                <input class="form-control" name="path" type="file" id="image" onchange="angular.element(this).scope().uploadBtn(this)"
+                                <input class="form-control" name="path" type="file" id="image" 
                                    />
                                 <span ng-if="showError" class="error-message text-danger form-text">
                                     {{alertErrorImg}}
@@ -425,7 +429,7 @@
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && submitFormUpdate()" novalidate>
+            <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && uploadBtnUpdate()" novalidate>
                 <div class="modal-header">
                     <h5 class="modal-title">Cập nhật nhân viên</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -443,7 +447,7 @@
                             <div class="col-8">
                                 <label for="image-update" class="col-sm-4 col-form-label">Hình Ảnh</label>
                                 <div>
-                                    <input class="form-control" name="path" type="file" id="image-update" onchange="angular.element(this).scope().uploadBtn2(this)"
+                                    <input class="form-control" name="path" type="file" id="image-update" 
                                      />
                                     <span ng-if="showError" class="error-message text-danger form-text">
                                         {{alertErrorImg}}

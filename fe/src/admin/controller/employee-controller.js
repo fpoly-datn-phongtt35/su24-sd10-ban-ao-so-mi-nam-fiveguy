@@ -134,67 +134,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     }
   };
 
-  //update ảnh
-  $scope.uploadBtn = function () {
-    const fileInput = document.getElementById("image");
-    const file = fileInput.files[0];
-    if (!file) {
-      $scope.showError = true;
-      $scope.$apply();
-      return;
-    }
-
-    $scope.showError = false;
-    $scope.uploading = true; // Đang trong quá trình upload
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      const data = reader.result.split(",")[1];
-      const postData = {
-        name: file.name,
-        type: file.type,
-        data: data,
-      };
-      $scope.postFile(postData).then(function () {
-        $scope.uploading = false; // Hoàn thành quá trình upload
-        $scope.$apply(); // Áp dụng thay đổi vào scope
-        if (!$scope.uploading) {
-          $scope.submitForm();
-        }
-      });
-    };
-  };
-  $scope.uploadBtn2 = function () {
-    const fileInputupdate = document.getElementById("image-update");
-    const file = fileInputupdate.files[0];
-
-    if (!file) {
-      $scope.showError = true;
-      $scope.$apply();
-      return;
-    }
-
-    $scope.showError = false;
-    $scope.uploading = true; // Đang trong quá trình upload
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      const data = reader.result.split(",")[1];
-      const postData = {
-        name: file.name,
-        type: file.type,
-        data: data,
-      };
-      $scope.postFile(postData).then(function () {
-        $scope.uploading = false; // Hoàn thành quá trình upload
-        $scope.$apply(); // Áp dụng thay đổi vào scope
-        
-      });
-    };
-  };
-
+  //hàm đưa ảnh lên drive
   $scope.postFile = async function (postData) {
     try {
       const response = await fetch(
@@ -219,6 +159,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   //Thêm mới Nhân Viên
   // api thêm mới account
   $scope.addAccount = async (objectAccount) => {
+    console.log(objectAccount);
     try {
       const result = await $http.post(
         `${apiAccount}/saveAccountEmployee`,
@@ -259,7 +200,38 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     }
   };
 
-  // Thêm mới nhân viên
+  //upload ảnh
+  $scope.uploadBtnAdd = function () {
+    const fileInput = document.getElementById("image");
+    const file = fileInput.files[0];
+    if (!file) {
+      $scope.showError = true;
+      $scope.$apply();
+      return;
+    }
+
+    $scope.showError = false;
+    $scope.uploading = true; // Đang trong quá trình upload
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      const data = reader.result.split(",")[1];
+      const postData = {
+        name: file.name,
+        type: file.type,
+        data: data,
+      };
+      $scope.postFile(postData).then(function () {
+        $scope.uploading = false; // Hoàn thành quá trình upload
+        $scope.$apply(); // Áp dụng thay đổi vào scope
+        if (!$scope.uploading) {
+          $scope.submitForm();
+        }
+      });
+    };
+  };
+
   $scope.addEmployee = async (objectData) => {
     try {
       const result = await $http.post(`${apiEmployee}/save`, objectData);
@@ -300,50 +272,85 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   // END thêm Nhân Viên
 
   //Add employee Bằng file excel
-  // $scope.insertExcelEmployee = function () {
-  //   var inputElement = $("#fileInput")[0];
+  $scope.insertExcelEmployee = function () {
+    var inputElement = $("#fileInput")[0];
 
-  //   if (inputElement && inputElement.files && inputElement.files.length > 0) {
-  //     var files = inputElement.files;
-  //     var reader = new FileReader();
-  //     reader.onloadend = async () => {
-  //       var workbook = new ExcelJS.Workbook();
-  //       await workbook.xlsx.load(reader.result);
-  //       const worksheet = workbook.getWorksheet("Sheet1");
-  //       for (let index = 2; index <= worksheet.rowCount; index++) {
-  //         let row = worksheet.getRow(index);
-  //         var BirthDate = new Date(row.getCell(2).value);
-  //         var Gender = Boolean(row.getCell(3).value);
+    if (inputElement && inputElement.files && inputElement.files.length > 0) {
+      var file = inputElement.files[0];
+      var reader = new FileReader();
+      reader.onload = async () => {
+        var workbook = new ExcelJS.Workbook();
+        try {
+          await workbook.xlsx.load(reader.result);
+          const worksheet = workbook.getWorksheet("Sheet1");
 
-  //         let account = {
-  //           account: row.getCell(5).value,
-  //           email: row.getCell(6).value,
-  //           phoneNumber: row.getCell(7).value,
-  //         };
+          let isFirstRow = true; // Biến flag để kiểm tra dòng đầu tiên
+          let firstRowAdded = false; // Biến flag để kiểm tra dữ liệu dòng đầu tiên đã được thêm thành công hay chưa
 
-  //         // Add account first
-  //         const addAccountData = await $scope.addAccount(account);
+          worksheet.eachRow({ includeEmpty: false }, async (row, rowNumber) => {
+            if (rowNumber === 1) {
+              // Xử lý dòng header
+              var BirthDate = new Date(row.getCell(2).value);
+              var Gender = Boolean(row.getCell(3).value);
 
-  //         if (addAccountData) {
-  //           let employee = {
-  //             fullName: row.getCell(1).value,
-  //             birthDate: BirthDate,
-  //             gender: Gender,
-  //             account: { id: addAccountData.id },
-  //             address: row.getCell(4).value,
-  //           };
+              let account = {
+                account: row.getCell(5).value,
+                email: row.getCell(6).value,
+                phoneNumber: row.getCell(7).value,
+              };
 
-  //           // Add employee using the account id
-  //           console.log(employee);
-  //           await $scope.addEmployee(employee);
-  //         }
-  //       }
-  //     };
-  //     reader.readAsArrayBuffer(files[0]);
-  //   } else {
-  //     $scope.showErrorNotification("Không có file nào được chọn");
-  //   }
-  // };
+              console.log("Row data:", account);
+
+              const responseData = await $scope.addAccount(account);
+              if (responseData) {
+                firstRowAdded = true; // Đánh dấu dòng đầu tiên đã được thêm thành công
+              } else {
+                console.log("Failed to add account for email:", account.email);
+              }
+            } else if (firstRowAdded) {
+              // Nếu dòng đầu tiên đã được thêm thành công, tiếp tục xử lý các dòng sau
+              var BirthDate = new Date(row.getCell(2).value);
+              var Gender = Boolean(row.getCell(3).value);
+
+              let account = {
+                account: row.getCell(5).value,
+                email: row.getCell(6).value,
+                phoneNumber: row.getCell(7).value,
+              };
+
+              // Kiểm tra email có tồn tại hay không
+              const resAccount = await $scope.getByEmailAccount(account.email);
+              // if (resAccount) {
+              //   console.log("Email already exists:", account.email);
+              // } else {
+              //   const getByEmail = await $scope.getByEmailAccount(
+              //     account.email
+              //   );
+                if (getByEmail) {
+                  let employee = {
+                    fullName: row.getCell(1).value,
+                    birthDate: BirthDate,
+                    gender: Gender,
+                    account: { id: getByEmail.id },
+                    address: row.getCell(4).value,
+                  };
+
+                  // Thêm nhân viên sử dụng account id
+                  const addEmployeesData = await $scope.addEmployee(employee);
+                  console.log("Added Employee Data:", addEmployeesData);
+                }
+              // }
+            }
+          });
+        } catch (error) {
+          console.error("Error loading Excel file:", error);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      $scope.showErrorNotification("Không có file nào được chọn");
+    }
+  };
 
   //hàm làm mới form input (modal thêm)
   $scope.resetFormInput = function () {
@@ -361,10 +368,74 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   };
 
   //Sửa Nhân Viên
+  $scope.uploadBtnUpdate = async function () {
+    const fileInputupdate = document.getElementById("image-update");
+    const file = fileInputupdate.files[0];
+
+    if (!file) {
+      $scope.showError = true;
+      //submit form khi ảnh ko được thay đổi
+      if ($scope.formUpdateEmployee.$valid) {
+        const addAccountData = await $scope.suaAccount();
+        console.log(addAccountData);
+        if (addAccountData) {
+          const dataObject = {
+            code: $scope.formUpdate.code,
+            avata: $scope.formUpdate.avata,
+            account: {
+              id: addAccountData.id,
+            },
+
+            avatar: $scope.formUpdate.avatar, // Add the image data here
+            fullName: $scope.formUpdate.fullName,
+            gender: $scope.formUpdate.gender,
+            birthDate: $scope.formUpdate.birthDate,
+            address: $scope.formUpdate.address,
+            createdAt: $scope.formUpdate.createdAt,
+            updatedAt: $scope.formUpdate.updatedAt,
+            createdBy: $scope.formUpdate.createdBy,
+            updatedBy: $scope.formUpdate.updatedBy,
+            status: $scope.formUpdate.status,
+          };
+          console.log(dataObject);
+          const updateEmployeesData = await $scope.updateEmployee(dataObject);
+          $scope.getEmployee(0);
+          $scope.resetFormUpdate();
+          console.log("updateEmployeesData = ", updateEmployeesData);
+          $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
+        }
+        // $uibModalInstance.close(); // Đóng modal
+      }
+      $scope.$apply();
+      return;
+    } else {
+      $scope.showError = false;
+      $scope.uploading = true; // Đang trong quá trình upload
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        const data = reader.result.split(",")[1];
+        const postData = {
+          name: file.name,
+          type: file.type,
+          data: data,
+        };
+        $scope.postFile(postData).then(function () {
+          $scope.uploading = false; // Hoàn thành quá trình upload
+          $scope.$apply(); // Áp dụng thay đổi vào scope
+          if (!$scope.uploading) {
+            $scope.submitFormUpdate();
+          }
+        });
+      };
+    }
+  };
+
   $scope.updateAccount = async (objectAccount) => {
     // let email = $scope.edit(employee.account.email);
 
-    console.log(emailAccount);
+    console.log($scope.emailAccount);
     try {
       const result = await $http.put(
         `${apiAccount}/email/${$scope.emailAccount}`,
@@ -423,7 +494,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   // Form submit update
   $scope.submitFormUpdate = async function () {
-    console.log("hihi" + $scope.uploadedImageData);
     if ($scope.formUpdateEmployee.$valid) {
       const addAccountData = await $scope.suaAccount();
       console.log(addAccountData);
@@ -450,6 +520,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         const updateEmployeesData = await $scope.updateEmployee(dataObject);
         $scope.getEmployee(0);
         $scope.resetFormUpdate();
+        $scope.showSuccessNotification("Sửa thông tin thành công");
         console.log("updateEmployeesData = ", updateEmployeesData);
         $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
       }
@@ -470,8 +541,8 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
       $scope.formUpdate.birthDate = new Date(birthDateNew);
       $scope.formUpdate.updatedAt = new Date();
       $scope.formUpdateAccount = angular.copy(employee.account);
-      $scope.formUpdate.avatar = angular.copy(employee.avatar);
     }
+    $scope.formUpdate.avatar = angular.copy(employee.avatar);
   };
 
   // hàm làm mới form update
@@ -486,6 +557,18 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     fileInput.type = "file";
     $scope.formUpdateEmployee.$setPristine();
     $scope.formUpdateEmployee.$setUntouched();
+  };
+
+  // xuát file danh sách excel Employee
+  $scope.xuatFile = function () {
+    $http
+      .get(apiEmployee + "/excel")
+      .then(function (response) {
+        $scope.showSuccessNotification("Xuất thông tin thành công");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   $scope.show = function (employee) {
