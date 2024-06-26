@@ -665,4 +665,10 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
     return formattedDate;
   };
+
+
+
+// Lịch sử Nhân viên
+
+
 });
