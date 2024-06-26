@@ -326,19 +326,19 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
               //   const getByEmail = await $scope.getByEmailAccount(
               //     account.email
               //   );
-                if (getByEmail) {
-                  let employee = {
-                    fullName: row.getCell(1).value,
-                    birthDate: BirthDate,
-                    gender: Gender,
-                    account: { id: getByEmail.id },
-                    address: row.getCell(4).value,
-                  };
+              if (getByEmail) {
+                let employee = {
+                  fullName: row.getCell(1).value,
+                  birthDate: BirthDate,
+                  gender: Gender,
+                  account: { id: getByEmail.id },
+                  address: row.getCell(4).value,
+                };
 
-                  // Thêm nhân viên sử dụng account id
-                  const addEmployeesData = await $scope.addEmployee(employee);
-                  console.log("Added Employee Data:", addEmployeesData);
-                }
+                // Thêm nhân viên sử dụng account id
+                const addEmployeesData = await $scope.addEmployee(employee);
+                console.log("Added Employee Data:", addEmployeesData);
+              }
               // }
             }
           });
