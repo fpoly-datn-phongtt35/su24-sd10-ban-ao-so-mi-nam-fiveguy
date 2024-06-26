@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 
-public interface CustomerTypeRepository extends JpaRepository<CustomerType, Long> {
+public interface CustomerTypeRepositoryH extends JpaRepository<CustomerType, Long> {
 
 }

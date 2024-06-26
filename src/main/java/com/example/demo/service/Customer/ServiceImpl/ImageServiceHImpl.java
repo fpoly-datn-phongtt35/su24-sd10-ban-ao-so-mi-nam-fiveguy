@@ -2,8 +2,8 @@ package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Image;
 import com.example.demo.entity.ProductDetail;
-import com.example.demo.repository.Customer.ImageRepostitory;
-import com.example.demo.service.Customer.ImageService;
+import com.example.demo.repository.Customer.ImageRepostitoryH;
+import com.example.demo.service.Customer.ImageServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class    ImageServiceImpl implements ImageService {
+public class ImageServiceHImpl implements ImageServiceH {
 
     @Autowired
-    ImageRepostitory imageRepository;
+   private ImageRepostitoryH imageRepository;
 
     @Override
     public List<Image> getAll() {
@@ -87,10 +87,10 @@ public class    ImageServiceImpl implements ImageService {
         }
     }
 
-    @Override
-    public List<Image> getByPDid(Long id) {
-        return imageRepository.findAllByProductDetailId(id);
-    }
+//    @Override
+//    public List<Image> getByPDid(Long id) {
+//        return imageRepository.findAllByProductId(id);
+//    }
 
 
 

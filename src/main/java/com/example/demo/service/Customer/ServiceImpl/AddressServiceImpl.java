@@ -1,7 +1,7 @@
 package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Address;
-import com.example.demo.repository.Customer.AddressRepository;
+import com.example.demo.repository.Customer.AddressRepositoryH;
 import com.example.demo.service.Customer.AccountService;
 import com.example.demo.service.Customer.AddressService;
 import com.example.demo.service.Customer.CustomerService;
@@ -18,43 +18,43 @@ import java.util.Optional;
 @Service
 public class AddressServiceImpl implements AddressService {
 
-    private final AddressRepository addressRepository;
+    private final AddressRepositoryH addressRepositoryH;
 
     @Autowired
-    public AddressServiceImpl(AddressRepository addressRepository) {
-        this.addressRepository = addressRepository;
+    public AddressServiceImpl(AddressRepositoryH addressRepositoryH) {
+        this.addressRepositoryH = addressRepositoryH;
     }
 
 
     @Override
     public List<Address> getAllAddress() {
-        return addressRepository.findAll();
+        return addressRepositoryH.findAll();
     }
 
     @Override
     public List<Address> findByCustomerId(Long customerId) {
-        return addressRepository.findByCustomerId(customerId);
+        return addressRepositoryH.findByCustomerId(customerId);
     }
 
     @Override
     public Address getAddressById(Long id) {
-        return addressRepository.findById(id).orElse(null);
+        return addressRepositoryH.findById(id).orElse(null);
     }
 
     @Override
     public Page<Address> getAllAddressPage(Integer page) {
         Pageable pageable = PageRequest.of(page, 1);
-        return addressRepository.findAll(pageable);
+        return addressRepositoryH.findAll(pageable);
     }
 
     @Override
     public Address createAddress(Address addressEntity) {
-        return addressRepository.save(addressEntity);
+        return addressRepositoryH.save(addressEntity);
     }
 
     @Override
     public Address updateAddress(Address addressEntity, Long id) {
-        Optional<Address> existingAddress = addressRepository.findById(id);
+        Optional<Address> existingAddress = addressRepositoryH.findById(id);
         if (existingAddress.isPresent()) {
             Address address = existingAddress.get();
             address.setName(addressEntity.getName());
@@ -67,7 +67,7 @@ public class AddressServiceImpl implements AddressService {
             address.setUpdatedAt(addressEntity.getUpdatedAt());
             address.setStatus(addressEntity.getStatus());
 
-            return addressRepository.save(address); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
+            return addressRepositoryH.save(address); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
         } else {
             // Trả về null hoặc thông báo lỗi nếu không tìm thấy khách hàng với ID này
             throw new IllegalArgumentException("Không tìm thấy Địa chỉ với ID " + id);
@@ -78,8 +78,8 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public void deleteAddress(Long id) {
         // Kiểm tra xem khách hàng có tồn tại trước khi xóa
-        if (addressRepository.existsById(id)) {
-            addressRepository.deleteById(id);
+        if (addressRepositoryH.existsById(id)) {
+            addressRepositoryH.deleteById(id);
         } else {
             // Xử lý lỗi nếu không tìm thấy khách hàng với ID này
             throw new IllegalArgumentException("Không tìm thấy Địa chỉ với ID " + id);
@@ -88,7 +88,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<Address> getSStatus(Integer status) {
-        List<Address> a = addressRepository.getSStatus(status);
+        List<Address> a = addressRepositoryH.getSStatus(status);
         return a;
     }
 
@@ -101,7 +101,7 @@ public class AddressServiceImpl implements AddressService {
 //OL
 
     @Autowired
-    private AddressRepository repository;
+    private AddressRepositoryH repository;
 
     @Autowired
     private AccountService olAccountService;

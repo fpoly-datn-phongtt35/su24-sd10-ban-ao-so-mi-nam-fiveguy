@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface FavoriteReposiroty  extends JpaRepository<Favorite, Long> {
+public interface FavoriteReposirotyH extends JpaRepository<Favorite, Long> {
     @Query("SELECT f FROM Favorite f WHERE f.customer.id = :customerId AND f.productDetail.id = :productDetail")
     List<Favorite> findByCustomerAndProductDetail(
             @Param("customerId") Long customerId,

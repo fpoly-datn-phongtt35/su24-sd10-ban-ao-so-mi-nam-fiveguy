@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BillRepository  extends JpaRepository<Bill, Long> {
+public interface BillRepositoryH extends JpaRepository<Bill, Long> {
 
     List<Bill> findAllByOrderByCreatedAtDesc();
 //OL

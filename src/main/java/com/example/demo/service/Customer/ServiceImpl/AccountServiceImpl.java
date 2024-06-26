@@ -1,9 +1,8 @@
 package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Account;
-import com.example.demo.repository.Customer.AccountRepository;
+import com.example.demo.repository.Customer.AccountRepositoryH;
 import com.example.demo.service.Customer.AccountService;
-import com.example.demo.service.Customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,26 +19,26 @@ public class AccountServiceImpl  implements AccountService {
 //    private AccountEmailSender accountEmailSender;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountRepositoryH accountRepositoryH;
 
     @Override
     public List<Account> getAllAccount() {
-        return accountRepository.findAll();
+        return accountRepositoryH.findAll();
     }
 
     @Override
     public List<Account> loadAccount() {
-        return accountRepository.loadAccount();
+        return accountRepositoryH.loadAccount();
     }
 
     @Override
     public Account getAccountById(Long id) {
-        return accountRepository.findById(id).orElse(null);
+        return accountRepositoryH.findById(id).orElse(null);
     }
 
     @Override
     public Optional<Account> findByAccount(String account) {
-        Optional<Account> accountEntity = accountRepository.findByAccount(account);
+        Optional<Account> accountEntity = accountRepositoryH.findByAccount(account);
         if (accountEntity.isPresent()){
             return accountEntity;
         }
@@ -49,12 +48,12 @@ public class AccountServiceImpl  implements AccountService {
     @Override
     public Page<Account> getAllAccountPage(Integer page) {
         Pageable pageable = PageRequest.of(page, 1);
-        return accountRepository.findAll(pageable);
+        return accountRepositoryH.findAll(pageable);
     }
 
     @Override
     public Account createAccount(Account accountEntity) {
-        return accountRepository.save(accountEntity);
+        return accountRepositoryH.save(accountEntity);
     }
 
     @Override
@@ -70,7 +69,7 @@ public class AccountServiceImpl  implements AccountService {
 //        if (existingAccount != null) {
 //            throw new IllegalArgumentException("Account đã tồn tại");
 //        }
-        return accountRepository.save(accountEntity);
+        return accountRepositoryH.save(accountEntity);
     }
 //    @Override
 //    public Account createAccount(Account accountEntity) {
@@ -89,7 +88,7 @@ public class AccountServiceImpl  implements AccountService {
 
     @Override
     public Account updateAccount(Account accountEntity, Long id) {
-        Optional<Account> existingAddress = accountRepository.findById(id);
+        Optional<Account> existingAddress = accountRepositoryH.findById(id);
         if (existingAddress.isPresent()) {
             Account account = existingAddress.get();
             account.setAccount(accountEntity.getAccount());
@@ -99,7 +98,7 @@ public class AccountServiceImpl  implements AccountService {
             account.setRole(accountEntity.getRole());
             account.setStatus(accountEntity.getStatus());
 
-            return accountRepository.save(account); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
+            return accountRepositoryH.save(account); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
         } else {
             // Trả về null hoặc thông báo lỗi nếu không tìm thấy khách hàng với ID này
             throw new IllegalArgumentException("Không tìm thấy Accout với ID " + id);
@@ -110,8 +109,8 @@ public class AccountServiceImpl  implements AccountService {
     @Override
     public void deleteAccount(Long id) {
         // Kiểm tra xem khách hàng có tồn tại trước khi xóa
-        if (accountRepository.existsById(id)) {
-            accountRepository.deleteById(id);
+        if (accountRepositoryH.existsById(id)) {
+            accountRepositoryH.deleteById(id);
         } else {
             // Xử lý lỗi nếu không tìm thấy khách hàng với ID này
             throw new IllegalArgumentException("Không tìm thấy Địa chỉ với ID " + id);
@@ -120,12 +119,12 @@ public class AccountServiceImpl  implements AccountService {
 
     @Override
     public List<Account> getAll() {
-        return accountRepository.findAll();
+        return accountRepositoryH.findAll();
     }
 
     @Override
     public List<Account> getSStatus(Integer status) {
-        List<Account> a = accountRepository.getSStatus(status);
+        List<Account> a = accountRepositoryH.getSStatus(status);
         return a;
     }
 
@@ -141,7 +140,7 @@ public class AccountServiceImpl  implements AccountService {
 
     @Override
     public Optional<Account> findByAccount2(String username) {
-        Optional<Account> account = accountRepository.findByAccount(username);
+        Optional<Account> account = accountRepositoryH.findByAccount(username);
         if (account.isPresent()){
             return account;
         }
@@ -166,7 +165,7 @@ public class AccountServiceImpl  implements AccountService {
     @Override
     public List<Account> findByEmail(String email) {
 
-        List<Account> account = accountRepository.findByEmail(email);
+        List<Account> account = accountRepositoryH.findByEmail(email);
         if (account != null){
             return account;
         }
@@ -196,7 +195,7 @@ public class AccountServiceImpl  implements AccountService {
 
     @Override
     public Optional<Account> findByAccountLogin(String username) {
-        Optional<Account> account = accountRepository.findByAccount(username);
+        Optional<Account> account = accountRepositoryH.findByAccount(username);
         if (account.isPresent()) {
             return account;
         }

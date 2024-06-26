@@ -1,6 +1,6 @@
 package com.example.demo.restController.Customer;
 
-import com.example.demo.service.Customer.ServiceImpl.ImageCloud;
+import com.example.demo.service.Customer.ServiceImpl.ImageCloudH;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -17,12 +17,12 @@ import java.util.List;
 
 @RestController
 
-public class ImageCloudController {
+public class ImageCloudControllerH {
     @Autowired
-    ImageCloud imageCloud;
+    ImageCloudH imageCloudH;
     @PostMapping("/rest/upload")
     public JsonNode upload(@PathParam("file") MultipartFile file)  throws IOException {
-        String url = imageCloud.saveImage(file);
+        String url = imageCloudH.saveImage(file);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode response = mapper.createObjectNode();
         response.put("name", url);
@@ -34,7 +34,7 @@ public class ImageCloudController {
         List<JsonNode> responses = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            String url = imageCloud.saveImage(file);
+            String url = imageCloudH.saveImage(file);
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode response = mapper.createObjectNode();
             response.put("name", url);

@@ -1,7 +1,7 @@
 package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Customer;
-import com.example.demo.repository.Customer.CustomerRepository;
+import com.example.demo.repository.Customer.CustomerRepositoryH;
 import com.example.demo.service.Customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,34 +17,34 @@ import java.util.Random;
 @Service
 public class CustomerServiceImpl implements CustomerService {
     @Autowired
-    CustomerRepository customerRepository;
+    CustomerRepositoryH customerRepositoryH;
 
     // get all Customer
     @Override
     public List<Customer> getAll(){
-        return customerRepository.findAll();
+        return customerRepositoryH.findAll();
     }
 
     //get all Employ status = 1 (dang làm)
     @Override
     public List<Customer> getAllStatusDangLam(){
-        return customerRepository.getAllStatusDangLam();
+        return customerRepositoryH.getAllStatusDangLam();
     }
 
     @Override
     public Customer getById(Long id){
-        return customerRepository.findById(id).orElse(null);
+        return customerRepositoryH.findById(id).orElse(null);
     }
 
     @Override
     public Page<Customer> phanTrang(Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);
-        return customerRepository.findAll(pageable);
+        return customerRepositoryH.findAll(pageable);
     }
 
     @Override
     public List<Customer> getAllStatus(Integer status){
-        return customerRepository.getAllStatus(status);
+        return customerRepositoryH.getAllStatus(status);
     }
 
     @Override
@@ -64,18 +64,18 @@ public class CustomerServiceImpl implements CustomerService {
         customers1.setCustomerType(customers.getCustomerType());
         customers1.setStatus(1);
 
-        return customerRepository.save(customers1);
+        return customerRepositoryH.save(customers1);
 
     }
 
     @Override
     public void delete(Long id){
-        customerRepository.deleteById(id);
+        customerRepositoryH.deleteById(id);
     }
 
     @Override
     public  Customer update(Long id, Customer customers){
-        Optional<Customer> Customer = customerRepository.findById(id);
+        Optional<Customer> Customer = customerRepositoryH.findById(id);
         if (Customer.isPresent()) {
             Customer customers1 = Customer.get();
             customers1.setCode(customers.getCode());
@@ -91,7 +91,7 @@ public class CustomerServiceImpl implements CustomerService {
             customers1.setCustomerType(customers.getCustomerType());
             customers1.setStatus(customers.getStatus());
 
-            return customerRepository.save(customers1); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
+            return customerRepositoryH.save(customers1); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
         } else {
             // Trả về null hoặc thông báo lỗi nếu không tìm thấy khách hàng với ID này
             throw new IllegalArgumentException("Không tìm thấy khách hàng với ID " + id);
@@ -116,7 +116,7 @@ public class CustomerServiceImpl implements CustomerService {
     //delete theo status
     @Override
     public  Customer updateRole(Long id, Customer customers){
-        Optional<Customer> existingCustomer = customerRepository.findById(id);
+        Optional<Customer> existingCustomer = customerRepositoryH.findById(id);
         if (existingCustomer.isPresent()) {
             Customer customers1 = existingCustomer.get();
             customers1.setCode(customers.getCode());
@@ -132,7 +132,7 @@ public class CustomerServiceImpl implements CustomerService {
             customers1.setCustomerType(customers.getCustomerType());
             customers1.setStatus(2);
 
-            return customerRepository.save(customers1); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
+            return customerRepositoryH.save(customers1); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
         } else {
             // Trả về null hoặc thông báo lỗi nếu không tìm thấy khách hàng với ID này
             throw new IllegalArgumentException("Không tìm thấy Customer với ID " + id);
@@ -144,7 +144,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Page<Customer>  searchMa(String ma, Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);
-        Page<Customer> customersList = customerRepository.searchMa(ma, pageable);
+        Page<Customer> customersList = customerRepositoryH.searchMa(ma, pageable);
         return customersList;
     }
 }

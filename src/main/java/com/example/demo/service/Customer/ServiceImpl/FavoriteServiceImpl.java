@@ -1,7 +1,7 @@
 package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Favorite;
-import com.example.demo.repository.Customer.FavoriteReposiroty;
+import com.example.demo.repository.Customer.FavoriteReposirotyH;
 import com.example.demo.service.Customer.AccountService;
 import com.example.demo.service.Customer.CustomerService;
 import com.example.demo.service.Customer.FavoriteService;
@@ -17,10 +17,10 @@ import java.util.Optional;
 @Service
 public class FavoriteServiceImpl  implements FavoriteService {
 
-    private final FavoriteReposiroty favoriteRepository;
+    private final FavoriteReposirotyH favoriteRepository;
 
     @Autowired
-    public FavoriteServiceImpl(FavoriteReposiroty favoriteRepository) {
+    public FavoriteServiceImpl(FavoriteReposirotyH favoriteRepository) {
         this.favoriteRepository = favoriteRepository;
     }
 
@@ -81,7 +81,7 @@ public class FavoriteServiceImpl  implements FavoriteService {
 //    private OLAddressRepository repository;
 
     @Autowired
-    private FavoriteReposiroty olFavoritesRepository;
+    private FavoriteReposirotyH olFavoritesRepository;
 
     @Autowired
     private AccountService olAccountService;

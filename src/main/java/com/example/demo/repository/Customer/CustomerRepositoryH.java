@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CustomerRepository  extends JpaRepository<Customer, Long> {
+public interface CustomerRepositoryH extends JpaRepository<Customer, Long> {
     // gen Code Tăng dần
     @Query("SELECT code FROM Customer code")
     List<Customer> genCode();

@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/admin/account")
 @CrossOrigin("*")
 
-public class AccountRestController {
+public class AccountRestControllerH {
     @Autowired
     AccountService accountService;
 

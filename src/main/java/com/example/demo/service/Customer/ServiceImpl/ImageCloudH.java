@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-public class ImageCloud {
+public class ImageCloudH {
     @Autowired
     Cloudinary config;
     public String saveImage(MultipartFile multipartFile) throws IOException {

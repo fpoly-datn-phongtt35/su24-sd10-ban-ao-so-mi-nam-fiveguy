@@ -1,7 +1,7 @@
 package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Cart;
-import com.example.demo.repository.Customer.CartRepository;
+import com.example.demo.repository.Customer.CartRepositoryH;
 import com.example.demo.service.Customer.AccountService;
 import com.example.demo.service.Customer.CartService;
 import com.example.demo.service.Customer.CustomerService;
@@ -17,7 +17,7 @@ public class CartServiceImpl implements CartService {
     private AccountService accountService;
 
     @Autowired
-    private CartRepository olCartRepository;
+    private CartRepositoryH olCartRepositoryH;
 
     @Autowired
     private CustomerService olCustomerService;
@@ -36,12 +36,12 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart findByCustomerId(Long id) {
-        return olCartRepository.findByCustomerId(id);
+        return olCartRepositoryH.findByCustomerId(id);
     }
 
     @Override
     public Cart save(Cart gioHang) {
-        return olCartRepository.save(gioHang);
+        return olCartRepositoryH.save(gioHang);
     }
 
     @Override

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ImageRepostitory extends JpaRepository<Image, Long> {
+public interface ImageRepostitoryH extends JpaRepository<Image, Long> {
 
-    List<Image> findAllByProductDetailId(Long id);
+//    List<Image> findAllByProductId(Long id);
 }
