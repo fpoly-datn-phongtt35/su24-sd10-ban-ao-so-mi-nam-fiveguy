@@ -4,7 +4,7 @@ import com.example.demo.entity.Sale;
 import com.example.demo.model.response.sale.ProductDetailResponse;
 import com.example.demo.model.response.sale.SaleDetailResponse;
 import com.example.demo.model.response.sale.SaleSummaryResponse;
-import com.example.demo.security.service.AccountService;
+import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.sale.SaleService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class SaleRestController2 {
     private SaleService2 saleService2;
 
     @Autowired
-    private AccountService accountService;
+    private SCAccountService accountService;
 
     @PostMapping
     public ResponseEntity<Sale> createOrUpdateSale(@RequestBody Sale sale, @RequestHeader("Authorization") String token) {

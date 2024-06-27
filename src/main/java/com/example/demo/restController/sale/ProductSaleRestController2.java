@@ -1,7 +1,7 @@
 package com.example.demo.restController.sale;
 
 import com.example.demo.entity.ProductSale;
-import com.example.demo.security.service.AccountService;
+import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.sale.ProductSaleService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +23,7 @@ public class ProductSaleRestController2 {
     private ProductSaleService2 productSaleService2;
 
     @Autowired
-    private AccountService accountService;
+    private SCAccountService accountService;
 
     @PostMapping
     public ResponseEntity<ProductSale> createProductSale(@RequestBody ProductSale productSale, @RequestHeader("Authorization") String token) {

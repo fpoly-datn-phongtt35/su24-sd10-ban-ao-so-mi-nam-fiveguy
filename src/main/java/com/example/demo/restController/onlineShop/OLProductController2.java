@@ -64,7 +64,7 @@ public class OLProductController2 {
 
 
 
-    @GetMapping("/products/filter2")
+    @GetMapping("/products/filter")
     public Page<ProductSaleDetails> filterProducts(
             @RequestParam(required = false) Set<String> categoryIds,
             @RequestParam(required = false) Set<String> collarIds,

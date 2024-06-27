@@ -1,0 +1,20 @@
+.color-circle {
+    width: 50px; /* Điều chỉnh kích thước nếu cần */
+    height: 50px; /* Điều chỉnh kích thước nếu cần */
+    border-radius: 50%; /* Đảm bảo hình tròn */
+    text-align: center; /* Canh giữa văn bản */
+    line-height: 50px; /* Canh giữa văn bản */
+    cursor: pointer; /* Con trỏ chuột là con trỏ */
+}
+
+.btn-selected {
+    background-color: blue !important; /* Màu nền khi được chọn */
+    color: white !important; /* Màu chữ khi được chọn */
+}
+
+  .btn-selected2 {
+    border-color: blue !important;
+    /* padding: 2px; */
+    box-shadow: 0 0 0 0px rgba(0, 128, 255, 0.5), inset 0 0 0 3px white;
+  }
+

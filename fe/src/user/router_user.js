@@ -26,8 +26,12 @@ app.config(function ($routeProvider, $locationProvider) {
       controller: 'cartController'
     })
     .when("/home/product", {
-      templateUrl: "pages/product.html",
+      templateUrl: "pages/onlineShop/product.html",
       controller: 'productController'
+    })
+    .when("/home/product/product-detail/:id", {
+      templateUrl : "pages/onlineShop/product-detail.html",
+      controller : "productDetailController"
     })
 
 

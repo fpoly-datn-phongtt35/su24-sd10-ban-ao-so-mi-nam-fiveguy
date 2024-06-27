@@ -71,30 +71,20 @@ app.controller("productController", function ($scope, $http, $window) {
     $scope.getAllBrands();
 
 
-    
-      // Initialize scope variables
-      $scope.selectedCategory = null;
-      $scope.selectedCollar = null;
-      $scope.selectedWrist = null;
-      $scope.selectedColor = null;
-      $scope.selectedSize = null;
-      $scope.selectedMaterial = null;
-      $scope.currentPage = 0;
-      $scope.pageSize = 10; // Default page size
-      $scope.searchTerm = null;
-      $scope.minPrice = null;
-      $scope.maxPrice = null;
-      $scope.totalPages = 0;
-      $scope.products = [];
-  
-      // Function to filter products
-  // formatCurrency
+      // formatCurrency
 $scope.formatCurrency = function(value) {
     if (!value) return '';
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
-// filterProducts
+
+$scope.selectedColors = [];
+$scope.selectedSizes = [];
+$scope.selectedMaterials = [];
+$scope.selectedCollars = [];
+$scope.selectedWrists = [];
+$scope.searchTerm;
+
 $scope.filterProducts = function(page) {
     if (page === undefined) {
         page = $scope.currentPage;
@@ -102,22 +92,25 @@ $scope.filterProducts = function(page) {
 
     var config = {
         params: {
-            name: $scope.searchTerm,
-            colorNames: $scope.selectedColor ? [$scope.selectedColor] : null,
-            sizeNames: $scope.selectedSize ? [$scope.selectedSize] : null,
-            materialNames: $scope.selectedMaterial ? [$scope.selectedMaterial] : null,
-            collarNames: $scope.selectedCollar ? [$scope.selectedCollar] : null,
-            wristNames: $scope.selectedWrist ? [$scope.selectedWrist] : null,
+            searchTerm: $scope.searchTerm,
+            colorIds: $scope.selectedColors.length > 0 ? $scope.selectedColors : null,
+            sizeIds: $scope.selectedSizes.length > 0 ? $scope.selectedSizes : null,
+            materialIds: $scope.selectedMaterials.length > 0 ? $scope.selectedMaterials : null,
+            collarIds: $scope.selectedCollars.length > 0 ? $scope.selectedCollars : null,
+            wristIds: $scope.selectedWrists.length > 0 ? $scope.selectedWrists : null,
             minPrice: $scope.minPrice,
             maxPrice: $scope.maxPrice,
             page: page,
             size: $scope.pageSize,
-            sortDir: 'asc', // Example sort direction, adjust as needed
-            sort: 'price'   // Example sort field, adjust as needed
+            sortDir: $scope.selectedSortType == 1 ? 'asc' : ($scope.selectedSortType == 2 ? 'desc' : 'desc'),
+            sort: $scope.selectedSortType == 0 ? 'createdAt' : 'price'
         }
     };
+    console.log(config);
 
-    return $http.get('http://localhost:8080/api/home/product/filter', config)
+
+
+    return $http.get('http://localhost:8080/api/home/products/filter', config)
         .then(function(response) {
             console.log(response);
 
@@ -128,11 +121,56 @@ $scope.filterProducts = function(page) {
             $scope.totalPages = response.data.totalPages;
             $scope.currentPage = page;
 
-            return response.data; // Return data to caller if needed
+            return response.data;
         }).catch(function(error) {
             console.error('Error fetching products:', error);
             throw error;
         });
+};
+
+$scope.updateSelectedColors = function(color) {
+    if (color.isSelected) {
+        $scope.selectedColors.push(color.id);
+    } else {
+        $scope.selectedColors = $scope.selectedColors.filter(id => id !== color.id);
+    }
+    $scope.filterProducts();
+};
+
+$scope.updateSelectedSizes = function(size) {
+    if (size.isSelected) {
+        $scope.selectedSizes.push(size.id);
+    } else {
+        $scope.selectedSizes = $scope.selectedSizes.filter(id => id !== size.id);
+    }
+    $scope.filterProducts();
+};
+
+$scope.updateSelectedMaterials = function(material) {
+    if (material.isSelected) {
+        $scope.selectedMaterials.push(material.id);
+    } else {
+        $scope.selectedMaterials = $scope.selectedMaterials.filter(id => id !== material.id);
+    }
+    $scope.filterProducts();
+};
+
+$scope.updateSelectedCollars = function(collar) {
+    if (collar.isSelected) {
+        $scope.selectedCollars.push(collar.id);
+    } else {
+        $scope.selectedCollars = $scope.selectedCollars.filter(id => id !== collar.id);
+    }
+    $scope.filterProducts();
+};
+
+$scope.updateSelectedWrists = function(wrist) {
+    if (wrist.isSelected) {
+        $scope.selectedWrists.push(wrist.id);
+    } else {
+        $scope.selectedWrists = $scope.selectedWrists.filter(id => id !== wrist.id);
+    }
+    $scope.filterProducts();
 };
 
 $scope.setCurrentPage = function(page) {
@@ -140,6 +178,11 @@ $scope.setCurrentPage = function(page) {
         $scope.filterProducts(page);
     }
 };
+
+$scope.loadPage = function() {
+    $scope.filterProducts();
+};
+
 
       // Function to refresh data (reset filters and reload products)
       $scope.refreshDataProduct = function() {
