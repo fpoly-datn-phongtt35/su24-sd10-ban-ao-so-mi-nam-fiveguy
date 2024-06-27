@@ -1,6 +1,7 @@
 package com.example.demo.security.RestControllerAccount;
 
 
+import com.example.demo.entity.Customer;
 import com.example.demo.entity.Employee;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.security.service.SCCustomerService;
@@ -30,6 +31,15 @@ public class TestSecurityRestController {
     public String hi(@RequestHeader("Authorization") String token) {
         Optional<String> fullName = accountService.getFullNameByToken(token);
         Optional<Employee> employee = SCEmployeeService.getEmployeeByToken(token);
-        return "Hello, " + " Token " + token + " Name " + fullName.get() + employee.get();
+        Optional<Customer> customer = SCCustomerService.getCustomerByToken(token);
+        if (employee.isPresent()){
+            return "Hello, " + " Token " + token + " Name " + fullName.get() + employee.get().getFullName();
+
+        }else if(customer.isPresent()){
+            return "Hello, " + " Token " + token + " Name " + fullName.get() + customer.get().getFullName();
+
+        }
+        return "Hello, " + " Token " + token + " Name " + fullName.get() ;
     }
+
 }
