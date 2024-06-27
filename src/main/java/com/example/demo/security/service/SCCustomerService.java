@@ -4,12 +4,14 @@ import com.example.demo.entity.Customer;
 
 import java.util.Optional;
 
-public interface CustomerService {
+public interface SCCustomerService {
 
     Customer findByAccount_Id(Long accountId);
 
     Customer save(Customer customerEntity);
 
     Customer createCustomer(Customer customerEntity);
+
+    Optional<Customer> getCustomerByToken(String token);
 
 }

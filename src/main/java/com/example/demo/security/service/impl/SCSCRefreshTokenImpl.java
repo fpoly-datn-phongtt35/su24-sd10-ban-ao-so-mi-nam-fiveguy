@@ -2,8 +2,8 @@ package com.example.demo.security.service.impl;
 
 import com.example.demo.entity.Account;
 import com.example.demo.entity.RefreshToken;
-import com.example.demo.security.service.RefreshTokenRepository;
-import com.example.demo.security.service.RefreshTokenService;
+import com.example.demo.security.service.SCRefreshTokenRepository;
+import com.example.demo.security.service.SCRefreshTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -13,24 +13,24 @@ import java.util.Optional;
 import java.util.UUID;
 @Service
 
-public class RefreshTokenImpl implements RefreshTokenService {
+public class SCSCRefreshTokenImpl implements SCRefreshTokenService {
 
 
 
     @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private SCRefreshTokenRepository SCRefreshTokenRepository;
 
 //    @Autowired
 //    private AccountService accountService;
 
     @Override
     public RefreshToken save(RefreshToken refreshToken) {
-        return refreshTokenRepository.save(refreshToken);
+        return SCRefreshTokenRepository.save(refreshToken);
     }
 
     @Override
     public void delete(Long id) {
-        refreshTokenRepository.deleteById(id);
+        SCRefreshTokenRepository.deleteById(id);
     }
 
 
@@ -43,18 +43,18 @@ public class RefreshTokenImpl implements RefreshTokenService {
         refreshToken.setExpiryDate(new Date(System.currentTimeMillis() + JWT_TOKENRFRESH_VALIDITY * 1000));
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshToken.setAccount(accountEntity);
-        return refreshTokenRepository.save(refreshToken);
+        return SCRefreshTokenRepository.save(refreshToken);
     }
 
     @Override
     public Account verifyExpiration(String token) {
-        Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findByToken(token);
+        Optional<RefreshToken> refreshTokenOptional = SCRefreshTokenRepository.findByToken(token);
         if (refreshTokenOptional.isPresent()) {
             RefreshToken refreshToken = refreshTokenOptional.get();
 
             Date expiryDate = refreshToken.getExpiryDate();
             if (expiryDate != null && expiryDate.before(new Date())) {
-                refreshTokenRepository.delete(refreshToken);
+                SCRefreshTokenRepository.delete(refreshToken);
                 return null; // Token đã hết hạn
             }
             return refreshToken.getAccount();
@@ -65,7 +65,7 @@ public class RefreshTokenImpl implements RefreshTokenService {
 
     @Override
     public void deleteByAccount(Account accountEntity) {
-        refreshTokenRepository.deleteByAccount(accountEntity);
+        SCRefreshTokenRepository.deleteByAccount(accountEntity);
     }
 
 

@@ -6,7 +6,7 @@ import com.example.demo.security.Request.UserRequestDTO;
 import com.example.demo.security.jwt_model.JwtRequest;
 import com.example.demo.senderMail.Respone.ResponseObject;
 
-public interface UserService {
+public interface SCUserService {
 
     ResponseObject register(UserRequestDTO userRequestDTO);
 

@@ -6,7 +6,7 @@ import com.example.demo.security.Request.UserRequestDTO;
 import java.util.List;
 import java.util.Optional;
 
-public interface AccountService {
+public interface SCAccountService {
 
 
     Optional<Account> findByAccount(String account);

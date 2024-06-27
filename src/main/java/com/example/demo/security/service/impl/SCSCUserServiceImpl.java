@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class SCSCUserServiceImpl implements SCUserService {
 //    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
@@ -43,31 +43,31 @@ public class UserServiceImpl implements UserService {
     private JavaMailSender javaMailSender;
 
     @Autowired
-    private AccountService accountService;
+    private SCAccountService accountService;
 
     @Autowired
-    private CustomerService customerService;
+    private SCCustomerService SCCustomerService;
 
     @Autowired
-    private EmployeeService employeeService;
+    private SCEmployeeService SCEmployeeService;
 
     @Autowired
-    private RefreshTokenService refreshTokenService;
+    private SCRefreshTokenService SCRefreshTokenService;
 
     @Autowired
-    private RoleService roleService;
+    private SCRoleService SCRoleService;
 
     private final ModelMapper mapper;
     private final PasswordEncoder bcryptEncoder;
     private final Helper helper;
-    private final AccountEmailSender accountEmailSender;
+    private final SCAccountEmailSender SCAccountEmailSender;
 
     @Autowired
-    public UserServiceImpl(AccountServiceImpl accountService, ModelMapper mapper, PasswordEncoder bcryptEncoder, Helper helper, AccountEmailSender accountEmailSender) {
+    public SCSCUserServiceImpl(SCSCAccountServiceImpl accountService, ModelMapper mapper, PasswordEncoder bcryptEncoder, Helper helper, SCAccountEmailSender SCAccountEmailSender) {
         this.mapper = mapper;
         this.bcryptEncoder = bcryptEncoder;
         this.helper = helper;
-        this.accountEmailSender = accountEmailSender;
+        this.SCAccountEmailSender = SCAccountEmailSender;
     }
 
 
@@ -102,13 +102,13 @@ public class UserServiceImpl implements UserService {
             user.setPassword(bcryptEncoder.encode(user.getPassword()));
             Account savedUser = mapper.map(user, Account.class);
 
-            Optional<Role> roles = roleService.findByFullNameAndStatus("CUSTOMER",1);
+            Optional<Role> roles = SCRoleService.findByFullNameAndStatus("CUSTOMER",1);
             if (!roles.isPresent()){
                 Role rolesNew = new Role();
                 rolesNew.setFullName("CUSTOMER");
                 rolesNew.setCreatedAt(new Date());
                 rolesNew.setStatus(1);
-                Role roles1 =  roleService.save(rolesNew);
+                Role roles1 =  SCRoleService.save(rolesNew);
                 savedUser.setRole(roles1);
 
             }else {
@@ -122,9 +122,9 @@ public class UserServiceImpl implements UserService {
                 customerEntity.setAvatar("https://res.cloudinary.com/dvtz5mjdb/image/upload/v1703880421/image/InfoHome/a2mnm9slz4bf7n3ivkhf.jpg");
                 customerEntity.setStatus(1);
                 customerEntity.setCreatedAt(new Date());
-                customerService.createCustomer(customerEntity);
+                SCCustomerService.createCustomer(customerEntity);
 
-                accountEmailSender.sendAccountCreationEmail(user.getEmail(), user.getAccount(), savedUser.getId(), otp);
+                SCAccountEmailSender.sendAccountCreationEmail(user.getEmail(), user.getAccount(), savedUser.getId(), otp);
                 return new ResponseObject("200", "Người dùng " + user.getAccount() + "Đã đăng ký thành công", savedUser);
             } else {
                 // Xử lý lỗi nếu không lưu được người dùng vào cơ sở dữ liệu
@@ -158,18 +158,18 @@ public class UserServiceImpl implements UserService {
         Optional<Account> account = accountService.findByAccount(authenticationRequest.getUsername());
         TokenResponse tokenResponse = new TokenResponse();
         if (account.isPresent()) {
-            Optional<Customer> customerEntity = Optional.ofNullable(customerService.findByAccount_Id(account.get().getId()));
-            Optional<Employee> employeeEntity = Optional.ofNullable(employeeService.findByAccount_Id(account.get().getId()));
-            refreshTokenService.deleteByAccount(account.get());
+            Optional<Customer> customerEntity = Optional.ofNullable(SCCustomerService.findByAccount_Id(account.get().getId()));
+            Optional<Employee> employeeEntity = Optional.ofNullable(SCEmployeeService.findByAccount_Id(account.get().getId()));
+            SCRefreshTokenService.deleteByAccount(account.get());
             if (customerEntity.isPresent()) {
-                RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails,account.get());
+                RefreshToken refreshToken = SCRefreshTokenService.createRefreshToken(userDetails,account.get());
 
                 tokenResponse.setAccessToken(token);
                 tokenResponse.setRefreshToken(refreshToken.getToken());
                 return tokenResponse;
 
             } else if (employeeEntity.isPresent()) {
-                RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails,account.get());
+                RefreshToken refreshToken = SCRefreshTokenService.createRefreshToken(userDetails,account.get());
                 tokenResponse.setAccessToken(token);
                 tokenResponse.setRefreshToken(refreshToken.getToken());
                 return tokenResponse;
