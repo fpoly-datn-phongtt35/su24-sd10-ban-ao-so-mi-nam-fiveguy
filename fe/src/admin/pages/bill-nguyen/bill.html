@@ -29,6 +29,7 @@
             </div>
         </div>
     </div>
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createBillModal">Thêm hóa đơn</button>
 
     <!-- Tabs for filtering invoice status -->
     <ul class="nav nav-tabs" id="invoiceTabs" role="tablist">
@@ -156,6 +157,119 @@
                         </li>
                     </ul>
                 </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal createBill-->
+    <div class="modal fade" id="createBillModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Tạo hóa đơn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form ng-submit="addBill()">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="code" class="form-label">Code</label>
+                                    <input type="text" class="form-control" id="code" ng-model="bill.code" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="totalAmount" class="form-label">Total Amount</label>
+                                    <input type="number" class="form-control" id="totalAmount"
+                                        ng-model="bill.totalAmount" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="totalAmountAfterDiscount" class="form-label">Total Amount After
+                                        Discount</label>
+                                    <input type="number" class="form-control" id="totalAmountAfterDiscount"
+                                        ng-model="bill.totalAmountAfterDiscount">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="voucher" class="form-label">Voucher</label>
+                                    <select class="form-select" ng-model="bill.voucher">
+                                        <option selected value="">Chọn voucher</option>
+                                        <option ng-value="1">voucher</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="paymentMethod" class="form-label">Payment method</label>
+                                    <select class="form-select" ng-model="bill.paymentMethod">
+                                        <option selected value="">Chọn Payment method</option>
+                                        <option ng-value="1">Payment method</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="typeBill" class="form-label">Khách hàng</label>
+                                    <select class="form-select" ng-model="bill.customer">
+                                        <option selected value="">Chọn khách hàng</option>
+                                        <option ng-value="1">Khách hàng</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reciverName" class="form-label">Người nhận</label>
+                                    <input type="text" class="form-control" id="reciverName"
+                                        ng-model="bill.reciverName">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <input type="text" class="form-control" id="address" ng-model="bill.address">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phoneNumber" class="form-label">Phone Number</label>
+                                    <input type="text" class="form-control" id="phoneNumber"
+                                        ng-model="bill.phoneNumber">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="typeBill" class="form-label">Type Bill</label>
+                                    <select class="form-select" ng-model="bill.typeBill">
+                                        <option selected value="">Chọn loại giảm giá:</option>
+                                        <option ng-value="1">Tại quầy</option>
+                                        <option ng-value="2">Giao hàng</option>
+                                        <option ng-value="3">Online</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="note" class="form-label">Note</label>
+                                    <input type="text" class="form-control" id="note" ng-model="bill.note">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Sản phẩm</th>
+                                        <th scope="col">Số lượng</th>
+                                        <th scope="col">Giá bán</th>
+                                        <th scope="col">Tổng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>Áo Đỏ XL</td>
+                                        <td>4</td>
+                                        <td>100,000</td>
+                                        <th>400,000</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
             </div>
         </div>
     </div>

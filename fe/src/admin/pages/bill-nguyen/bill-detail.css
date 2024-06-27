@@ -8,6 +8,11 @@
     /* background-color: rgb(255, 255, 255); */
 }
 
+h5{
+    font-weight: bold;
+    color: #555;
+}
+
 .step {
     position: relative;
     width: 150px;
@@ -64,12 +69,13 @@
     color: #555;
 }
 
-.arrow {
+.arrow.inactive {
     font-size: 36px;
     margin: 0 10px;
-    color: #1e90ff;
+    color: #c0c2c2;
 }
-.arrow {
+
+.arrow.active {
     font-size: 36px;
     margin: 0 10px;
     color: #1e90ff;
@@ -82,7 +88,7 @@
     gap: 10px;
 } */
 
-.controls button {
+/* .controls button {
     padding: 10px 15px;
     font-size: 16px;
     border: none;
@@ -91,8 +97,33 @@
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s;
-}
+} */
 
-.controls button:hover {
+/* .controls button:hover {
     background-color: #104e8b;
+} */
+
+
+dl {
+    display: flex;
+    flex-wrap: wrap;
+}
+dt {
+    flex-basis: 150px;
+    margin-right: 10px;
+    align-self: flex-start;
+    font-weight: normal;
+}
+dd {
+    flex-grow: 1;
+    margin-left: 0;
+}
+.info-item {
+    display: flex;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+.info-item dd {
+    flex-grow: 1;
+    margin-left: 0;
 }

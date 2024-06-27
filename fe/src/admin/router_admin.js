@@ -50,10 +50,15 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/bill-nguyen/bill.html",
       controller: "nguyen-bill-ctrl"
     })
+    .when("/admin/bill/create", {
+      templateUrl: "pages/bill-nguyen/bill-create.html",
+      controller: "nguyen-bill-create-ctrl"
+    })
     .when("/admin/bill/:idBill", {
       templateUrl: "pages/bill-nguyen/bill-detail.html",
       controller: "nguyen-bill-detail-ctrl"
     })
+    
     // <!-- Hải -->
     .when("/admin/sale", {
       templateUrl: "pages/sale/sale.html",

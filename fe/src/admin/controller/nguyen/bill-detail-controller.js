@@ -2,9 +2,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $routeParams)
 
     // Access the idBill parameter from the route
     $scope.idBill = $routeParams.idBill;
-
-    // Use the retrieved idBill for further processing, e.g.,
     console.log("Bill ID:", $scope.idBill);
+
+    $scope.getBillById = function (id){
+        $http.get()
+    }
 
     $scope.status = $scope.idBill;
 

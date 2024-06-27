@@ -16,7 +16,7 @@
             </li>
         </ul>
     </div>
-    <div class="tab-content mb-3" id="myTabContent">
+    <div class="tab-content mb-3 rounded border p-3 shadow bg-body" id="myTabContent">
         <div class="tab-pane fade show active" id="homefilter" role="tabpanel" aria-labelledby="home-tab">
             <div class="row">
                 <div class="col-md-4">
@@ -81,7 +81,7 @@
             </form>
         </div>
     </div>
-    <div class=""> <!--main-content -->
+    <div class="rounded border p-3 shadow mb-5 bg-body"> <!--main-content -->
         <div class="row">
             <div class="col-md-12">
                 <div class="table-wrapper">
@@ -97,7 +97,7 @@
                                     <i class="material-icons">&#xE147;</i>
                                     <span>Thêm mới</span>
                                 </a>
-                                <a href="#/admin/voucher/create" class="btn btn-info">Create page</a>
+                                <!-- <a href="#/admin/voucher/create" class="btn btn-info">Create page</a> -->
                                 <!-- <a href="#deleteEmployeeModal" class="btn btn-danger" data-toggle="modal">
                                     <i class="material-icons">&#xE15C;</i>
                                     <span>Delete</span>
@@ -106,7 +106,7 @@
                         </div>
                     </div>
 
-                    <table class="table table-striped table-hover">
+                    <table class="table table-striped table-hover ">
                         <thead>
                             <tr>
                                 <!-- <th><span class="custom-checkbox">
@@ -576,12 +576,12 @@
                                     <!-- CustomerType -->
                                     <div class="col-4" ng-if="formInputVoucher.visibility == 1">
                                         <ul class="list-group">
-                                            <li class="list-group-item">
+                                            <!-- <li class="list-group-item">
                                                 <input type="checkbox" id="selectAll" class="form-check-input me-1"
                                                     ng-checked="allChecked" ng-click="toggleSelectAll()">
                                                 <label for="selectAll" class="form-check-label"><strong>Select
                                                         All</strong></label>
-                                            </li>
+                                            </li> -->
                                             <li class="list-group-item" ng-repeat="ct in customerTypes">
                                                 <input type="checkbox" id="{{ct.id}}" name="items"
                                                     ng-model="ct.selected" class="form-check-input me-1"
@@ -609,7 +609,7 @@
             <!----edit-modal start--------->
             <div class="modal fade" tabindex="-1" id="updateVoucherModal" role="dialog">
                 <div class="modal-dialog modal-lg" ng-class="{
-                    'modal-xl': formUpdateVoucher.visibility == 1 || formUpdateVoucher.visibility == 2,
+                    'modal-xl': (formUpdateVoucher.visibility == 1 || formUpdateVoucher.visibility == 2) && formUpdateVoucher.status != 2,
                     'modal-lg': formUpdateVoucher.visibility == 0
                   }">
                     <div class="modal-content">
@@ -623,7 +623,7 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div
-                                        ng-class="{'col-12': formUpdateVoucher.visibility == 0, 'col-8': formUpdateVoucher.visibility == 1, 'col-6': formUpdateVoucher.visibility == 2}">
+                                        ng-class="{'col-12': formUpdateVoucher.visibility == 0, 'col-8': formUpdateVoucher.visibility == 1 && formUpdateVoucher.status != 2, 'col-6': formUpdateVoucher.visibility == 2 && formUpdateVoucher.status != 2}">
                                         <div class="row mb-1">
                                             <div class="col-6">
                                                 <div class="form-group">
@@ -867,7 +867,8 @@
                                     </div>
 
                                     <!-- Customer -->
-                                    <div class="col-6" ng-if="formUpdateVoucher.visibility == 2">
+                                    <div class="col-6"
+                                        ng-if="formUpdateVoucher.visibility == 2 && formUpdateVoucher.status != 2">
                                         <div class="container mt-4">
                                             <div class="row mb-0">
                                                 <div class="col-4">
@@ -946,14 +947,15 @@
                                     </div>
 
                                     <!-- Customer Type -->
-                                    <div class="col-4" ng-if="formUpdateVoucher.visibility == 1">
+                                    <div class="col-4"
+                                        ng-if="formUpdateVoucher.visibility == 1 && formUpdateVoucher.status != 2">
                                         <ul class="list-group">
-                                            <li class="list-group-item">
+                                            <!-- <li class="list-group-item">
                                                 <input type="checkbox" id="selectAll1" class="form-check-input me-1"
                                                     ng-checked="allChecked" ng-click="toggleSelectAll()">
                                                 <label for="selectAll1" class="form-check-label"><strong>Select
                                                         All</strong></label>
-                                            </li>
+                                            </li> -->
                                             <li class="list-group-item" ng-repeat="ct in customerTypes">
                                                 <input type="checkbox" id="{{ct.id}}" name="items"
                                                     ng-model="ct.selected" class="form-check-input me-1"
