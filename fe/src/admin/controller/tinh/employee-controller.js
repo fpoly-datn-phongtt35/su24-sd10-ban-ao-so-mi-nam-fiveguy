@@ -27,6 +27,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   const apiEmployee = "http://localhost:8080/api/admin/employee";
   const apiAccount = "http://localhost:8080/api/admin/account";
+  const apiAuditLog = "http://localhost:8080/api/admin/audit-log";
 
   imgShow("image", "image-preview");
   imgShow("image-update", "image-preview-update");
@@ -260,97 +261,89 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         };
         const addEmployeesData = await $scope.addEmployee(dataObject);
         console.log("addEmployeesData = ", addEmployeesData);
+        $scope.showSuccessNotification("Thêm thông tin thành công");
         $scope.getEmployee(0);
         $scope.resetFormUpdate();
         $("#modalUpdate").modal("hide");
       }
     } else {
       // Hiển thị lỗi
+      $scope.showErrorNotification("Không thành công");
       $scope.formCreateEmployee.$submitted = true;
     }
   };
   // END thêm Nhân Viên
 
   //Add employee Bằng file excel
-  $scope.insertExcelEmployee = function () {
-    var inputElement = $("#fileInput")[0];
+  // $scope.uploadExcelFile = function (event) {
+  //   const file = event.target.files[0];
+  //   const reader = new FileReader();
 
-    if (inputElement && inputElement.files && inputElement.files.length > 0) {
-      var file = inputElement.files[0];
-      var reader = new FileReader();
-      reader.onload = async () => {
-        var workbook = new ExcelJS.Workbook();
-        try {
-          await workbook.xlsx.load(reader.result);
-          const worksheet = workbook.getWorksheet("Sheet1");
+  //   reader.onload = async function (e) {
+  //     const data = new Uint8Array(e.target.result);
+  //     const workbook = XLSX.read(data, { type: "array" });
+  //     const sheetName = workbook.SheetNames[0];
+  //     const worksheet = workbook.Sheets[sheetName];
+  //     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-          let isFirstRow = true; // Biến flag để kiểm tra dòng đầu tiên
-          let firstRowAdded = false; // Biến flag để kiểm tra dữ liệu dòng đầu tiên đã được thêm thành công hay chưa
+  //     // Assuming the first row contains headers
+  //     const headers = jsonData[0];
+  //     const rows = jsonData.slice(1);
 
-          worksheet.eachRow({ includeEmpty: false }, async (row, rowNumber) => {
-            if (rowNumber === 1) {
-              // Xử lý dòng header
-              var BirthDate = new Date(row.getCell(2).value);
-              var Gender = Boolean(row.getCell(3).value);
+  //     for (const row of rows) {
+  //       const accountData = {
+  //         account: row[headers.indexOf("account")],
+  //         email: row[headers.indexOf("email")],
+  //         phoneNumber: row[headers.indexOf("phoneNumber")],
+  //       };
 
-              let account = {
-                account: row.getCell(5).value,
-                email: row.getCell(6).value,
-                phoneNumber: row.getCell(7).value,
-              };
+  //       const employeeData = {
+  //         fullName: row[headers.indexOf("fullName")],
+  //         gender: row[headers.indexOf("gender")],
+  //         birthDate: row[headers.indexOf("birthDate")],
+  //         address: row[headers.indexOf("address")],
+  //       };
 
-              console.log("Row data:", account);
+  //       try {
+  //         const existingAccount = await $scope.getByEmailAccount(
+  //           accountData.email
+  //         );
+  //         if (existingAccount) {
+  //           console.warn(
+  //             `Email ${accountData.email} already exists. Skipping this entry.`
+  //           );
+  //           $scope.showErrorNotification("Email đã tồn tại");
+  //           continue; // Skip this entry and move to the next one
+  //         }
 
-              const responseData = await $scope.addAccount(account);
-              if (responseData) {
-                firstRowAdded = true; // Đánh dấu dòng đầu tiên đã được thêm thành công
-              } else {
-                console.log("Failed to add account for email:", account.email);
-              }
-            } else if (firstRowAdded) {
-              // Nếu dòng đầu tiên đã được thêm thành công, tiếp tục xử lý các dòng sau
-              var BirthDate = new Date(row.getCell(2).value);
-              var Gender = Boolean(row.getCell(3).value);
+  //         const addAccountResponse = await $scope.addAccount(accountData);
+  //         if (addAccountResponse) {
+  //           const getByEmail = await $scope.getByEmailAccount(
+  //             addAccountResponse.email
+  //           );
+  //           if (getByEmail) {
+  //             const addEmployeeData = {
+  //               account: {
+  //                 id: getByEmail.id,
+  //               },
+  //               ...employeeData,
+  //             };
+  //             await $scope.addEmployee(addEmployeeData);
+  //             $scope.showSuccessNotification("Thêm thông tin thành công");
+  //             $scope.getEmployee(1);
+  //             $("#modalAddExcel").modal("hide");
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.error("Error adding employee from Excel row:", row, error);
+  //       }
+  //     }
+  //     $scope.getEmployee(0); // Refresh the employee list
+  //     $scope.$apply();
+  //   };
 
-              let account = {
-                account: row.getCell(5).value,
-                email: row.getCell(6).value,
-                phoneNumber: row.getCell(7).value,
-              };
-
-              // Kiểm tra email có tồn tại hay không
-              const resAccount = await $scope.getByEmailAccount(account.email);
-              // if (resAccount) {
-              //   console.log("Email already exists:", account.email);
-              // } else {
-              //   const getByEmail = await $scope.getByEmailAccount(
-              //     account.email
-              //   );
-              if (getByEmail) {
-                let employee = {
-                  fullName: row.getCell(1).value,
-                  birthDate: BirthDate,
-                  gender: Gender,
-                  account: { id: getByEmail.id },
-                  address: row.getCell(4).value,
-                };
-
-                // Thêm nhân viên sử dụng account id
-                const addEmployeesData = await $scope.addEmployee(employee);
-                console.log("Added Employee Data:", addEmployeesData);
-              }
-              // }
-            }
-          });
-        } catch (error) {
-          console.error("Error loading Excel file:", error);
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    } else {
-      $scope.showErrorNotification("Không có file nào được chọn");
-    }
-  };
+  //   reader.readAsArrayBuffer(file);
+  // };
 
   //hàm làm mới form input (modal thêm)
   $scope.resetFormInput = function () {
@@ -399,6 +392,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
           };
           console.log(dataObject);
           const updateEmployeesData = await $scope.updateEmployee(dataObject);
+          $scope.showSuccessNotification("Sửa thông tin thành công");
           $scope.getEmployee(0);
           $scope.resetFormUpdate();
           console.log("updateEmployeesData = ", updateEmployeesData);
@@ -666,9 +660,16 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     return formattedDate;
   };
 
-
-
-// Lịch sử Nhân viên
-
-
+  // Lịch sử Nhân viên
+  // xuát file danh sách excel Employee
+  $scope.xuatFileAuditLog = function () {
+    $http
+      .get(apiAuditLog + "/exce-lich-su")
+      .then(function (response) {
+        $scope.showSuccessNotification("Xuất thông tin thành công");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 });

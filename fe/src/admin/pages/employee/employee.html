@@ -279,7 +279,12 @@
                                 <div class="col-sm-6 p-0 flex justify-content-lg-start justify-content-center">
                                     <h2 class="ml-lg-2">Quản lý lịch sử hoạt động nhân viên</h2>
                                 </div>
-
+                                <div class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
+                                    <a type="button" class="btn btn-success" ng-click="xuatFileAuditLog()">
+                                        <i class="material-icons">&#xE147;</i>
+                                        <span>Xuất Excel</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         
@@ -502,10 +507,10 @@
                     </div>
                     <div class="modal-footer">
 
-                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        <!-- <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
                             data-bs-target="#modalAddExcel" style="background-color: rgb(9, 141, 9);">
                             Thêm file Excel
-                        </button>
+                        </button> -->
 
                         <button type="submit" class="btn btn-primary">Thêm</button>
                         <button ng-click="resetFormInput()" type="button" class="btn btn-warning">
@@ -745,7 +750,7 @@
 <!-- End modal update -->
 
 <!----Modal thêm employee bằng exxel end --------->
-<div class="modal fade" id="modalAddExcel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+<!-- <div class="modal fade" id="modalAddExcel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
     role="document">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -756,7 +761,8 @@
             <div class="modal-body">
                 <div>
                     <label>Chọn file Excel: </label>
-                    <input type="file" placeholder="Thêm bằng Excel" id="fileInput" />
+                   
+<input type="file" id="excelFile" accept=".xlsx, .xls" onchange="angular.element(this).scope().uploadExcelFile(event)" />
 
                 </div>
             </div>
@@ -766,5 +772,5 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <!----Modal thêm employee bằng exxel end--------->

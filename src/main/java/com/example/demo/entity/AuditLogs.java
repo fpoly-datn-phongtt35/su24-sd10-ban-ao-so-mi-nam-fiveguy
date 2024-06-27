@@ -19,7 +19,7 @@ public class AuditLogs {
     @Column(name = "Id")
     private Long id;
 
-    @Column(name="Emp_Code")
+    @Column(name="Emp__Code")
     private String empCode;
 
     @Column(name="Implementer")
