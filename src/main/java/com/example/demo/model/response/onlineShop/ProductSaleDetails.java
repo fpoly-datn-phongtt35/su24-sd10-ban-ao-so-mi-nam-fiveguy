@@ -1,5 +1,6 @@
 package com.example.demo.model.response.onlineShop;
 
+import com.example.demo.entity.Product;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,8 +14,10 @@ public class ProductSaleDetails {
     private Integer promotionalPrice;
     private Integer saleValue;
     private Integer discountType;
+    private String imagePath;
+    private Product product;
 
-    public ProductSaleDetails(Long productId, String productName, BigDecimal productPrice, Integer discountPrice, Integer promotionalPrice, Integer saleValue, Integer discountType) {
+    public ProductSaleDetails(Long productId, String productName, BigDecimal productPrice, Integer discountPrice, Integer promotionalPrice, Integer saleValue, Integer discountType, String imagePath, Product product) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
@@ -22,7 +25,10 @@ public class ProductSaleDetails {
         this.promotionalPrice = promotionalPrice;
         this.saleValue = saleValue;
         this.discountType = discountType;
+        this.imagePath = imagePath;
+        this.product = product;
     }
 
-    // Getters and setters
+
+// Getters and setters
 }
