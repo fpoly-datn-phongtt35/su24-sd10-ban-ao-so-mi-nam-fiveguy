@@ -1,6 +1,7 @@
 package com.example.demo.restController.nguyen;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.model.request.nguyen.BillRequest;
 import com.example.demo.service.nguyen.NBillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,16 +18,16 @@ import java.util.Date;
 public class NBillRestController {
 
     @Autowired
-    NBillService NBillService;
+    NBillService billService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(NBillService.getAll());
+        return ResponseEntity.ok(billService.getAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id){
-        return ResponseEntity.ok(NBillService.getById(id));
+        return ResponseEntity.ok(billService.getById(id));
     }
 
     @GetMapping("/page")
@@ -40,8 +41,20 @@ public class NBillRestController {
                                @RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return NBillService
+        return billService
                 .searchBills(code, customerName, phoneNumber, typeBill, startDate, endDate, status,
                         pageable);
+    }
+
+    @PutMapping("/shipUpdate/{id}")
+    public Bill updateShipmentDetail(@RequestBody Bill bill, @PathVariable Long id){
+        return billService.updateShipmentDetail(bill, id);
+    }
+
+    @PutMapping("/billStatusUpdate/{id}")
+    public Bill updateBillStatusAndSaveBillHistory(@RequestBody BillRequest billRequest, @PathVariable Long id){
+        System.out.println(billRequest.getBill());
+        System.out.println(billRequest.getBillHistory());
+        return billService.updateStatusAndBillStatus(billRequest.getBill(), id, billRequest.getBillHistory());
     }
 }

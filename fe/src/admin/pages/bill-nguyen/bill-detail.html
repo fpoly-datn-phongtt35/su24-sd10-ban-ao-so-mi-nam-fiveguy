@@ -1,79 +1,136 @@
 <div class="container mt-5">
     <h1 class="mb-4">Chi tiết hóa đơn</h1>
 
-    <div class="row shadow mb-5 py-3 bg-body border rounded">
-        <div class="row">
-            <div class="d-flex justify-content-between mb-2">
+    <!-- TRẠNG THÁI ĐƠN HÀNG -->
+    <div class="row  border rounded shadow mb-3 pt-3 bg-body">
+        <div class="row" ng-init="getBillHistoryByBillId(billId)">
+            <div class="d-flex justify-content-between mb-3">
                 <h5 class="ms-3">Trạng thái đơn hàng</h5>
-                <!-- <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#">Thêm sản phẩm</button> -->
+                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#billHistoryModal">Lịch
+                    sử</button>
             </div>
             <hr class="mx-4" style="width: 98%;">
             <div class="progress-container">
+
+                <!-- Chờ xác nhận -->
                 <div class="step" ng-class="{'active': status >= 1, 'inactive': status < 1}">
                     <div class="step-circle">
                         <span class="material-icons">schedule</span>
                     </div>
                     <div class="step-title">Chờ xác nhận</div>
-                    <div class="step-desc">16:37:35 23-12-2023</div>
+                    <div class="step-desc" style="margin-bottom: -7px;">{{ steps[0].time | date:'HH : mm : ss' }}</div>
+                    <div class="step-desc">{{ steps[0].time | date:'dd-MM-yyyy' }}</div>
+                    <!-- <div class="step-desc">{{ steps[0].time | date:'HH:mm:ss dd-MM-yyyy' }}</div> -->
                 </div>
-                <div class="arrow" ng-class="{'active': status >= 2, 'inactive': status < 2}">&gt;</div>
-                <div class="step" ng-class="{'active': status >= 2, 'inactive': status < 2}">
+
+                <!-- Đã xác nhận -->
+                <div class="arrow" ng-if="steps[1].time != null"
+                    ng-class="{'active': status >= 2, 'inactive': status < 2}">&gt;</div>
+                <div class="step" ng-if="steps[1].time != null"
+                    ng-class="{'active': status >= 2, 'inactive': status < 2}">
                     <div class="step-circle">
                         <span class="material-icons">check_circle</span>
                     </div>
                     <div class="step-title">Đã xác nhận</div>
-                    <div class="step-desc">16:39:23 23-12-2023</div>
+                    <div class="step-desc" style="margin-bottom: -7px;">{{ steps[1].time | date:'HH : mm : ss' }}</div>
+                    <div class="step-desc">{{ steps[1].time | date:'dd-MM-yyyy' }}</div>
+                    <!-- <div class="step-desc">{{ steps[1].time | date:'HH:mm:ss dd-MM-yyyy' }}</div> -->
                 </div>
-                <div class="arrow" ng-class="{'active': status >= 3, 'inactive': status < 3}">&gt;</div>
-                <div class="step" ng-class="{'active': status >= 3, 'inactive': status < 3}">
+
+                <!-- Chờ vận chuyển -->
+                <div class="arrow" ng-if="steps[2].time != null"
+                    ng-class="{'active': status >= 3, 'inactive': status < 3}">&gt;</div>
+                <div class="step" ng-if="steps[2].time != null"
+                    ng-class="{'active': status >= 3, 'inactive': status < 3}">
                     <div class="step-circle">
                         <span class="material-icons">local_shipping</span>
                     </div>
                     <div class="step-title">Chờ vận chuyển</div>
-                    <div class="step-desc">16:39:47 23-12-2023</div>
+                    <div class="step-desc" style="margin-bottom: -7px;">{{ steps[2].time | date:'HH : mm : ss' }}</div>
+                    <div class="step-desc">{{ steps[2].time | date:'dd-MM-yyyy' }}</div>
+                    <!-- <div class="step-desc">{{ steps[2].time | date:'HH:mm:ss dd-MM-yyyy' }}</div> -->
                 </div>
-                <div class="arrow" ng-class="{'active': status >= 4, 'inactive': status < 4}">&gt;</div>
-                <div class="step" ng-class="{'active': status >= 4, 'inactive': status < 4}">
+
+                <!-- Đang giao -->
+                <div class="arrow" ng-if="steps[3].time != null"
+                    ng-class="{'active': status >= 4, 'inactive': status < 4}">&gt;</div>
+                <div class="step" ng-if="steps[3].time != null"
+                    ng-class="{'active': status >= 4, 'inactive': status < 4}">
                     <div class="step-circle">
                         <span class="material-icons">directions_car</span>
                     </div>
                     <div class="step-title">Đang giao</div>
-                    <div class="step-desc">--:--:-- --/--/----</div>
+                    <div class="step-desc" style="margin-bottom: -7px;">{{ steps[3].time | date:'HH : mm : ss' }}</div>
+                    <div class="step-desc">{{ steps[3].time | date:'dd-MM-yyyy' }}</div>
+                    <!-- <div class="step-desc">{{ steps[3].time | date:'HH:mm:ss dd-MM-yyyy' }}</div> -->
                 </div>
-                <div class="arrow" ng-class="{'active': status >= 5, 'inactive': status < 5}">&gt;</div>
-                <div class="step" ng-class="{'active': status >= 5, 'inactive': status < 5}">
+
+                <!-- Thành công -->
+                <div class="arrow" ng-if="steps[4].time != null"
+                    ng-class="{'active': status >= 5, 'inactive': status < 5}">&gt;</div>
+                <div class="step" ng-if="steps[4].time != null"
+                    ng-class="{'active': status >= 5, 'inactive': status < 5}">
                     <div class="step-circle">
                         <span class="material-icons">home</span>
                     </div>
-                    <div class="step-title">Đã giao</div>
-                    <div class="step-desc">--:--:-- --/--/----</div>
+                    <div class="step-title">Thành công</div>
+                    <div class="step-desc" style="margin-bottom: -7px;">{{ steps[4].time | date:'HH : mm : ss' }}</div>
+                    <div class="step-desc">{{ steps[4].time | date:'dd-MM-yyyy' }}</div>
+                    <!-- <div class="step-desc">{{ steps[4].time | date:'HH:mm:ss dd-MM-yyyy' }}</div> -->
                 </div>
-                <div class="arrow" ng-class="{'cancelled': status == 6, 'inactive': status < 6}">&gt;</div>
-                <div class="step" ng-class="{'cancelled': status == 6, 'inactive': status < 6}">
+
+                <!-- Đã hủy -->
+                <div class="arrow" ng-if="status == 6" ng-class="{'active': status >= 5, 'inactive': status < 5}">
+                    &gt;
+                </div>
+                <div class="step" ng-if="status == 6" ng-class="{'cancelled': status == 6, 'inactive': status < 6}">
                     <div class="step-circle">
-                        <span class="material-icons">cancel</span>
+                        <span class="material-icons" style="color: red;">cancel</span>
                     </div>
                     <div class="step-title">Đã hủy</div>
-                    <div class="step-desc">--:--:-- --/--/----</div>
+                    <div class="step-desc" style="margin-bottom: -7px;">{{ steps[5].time | date:'HH : mm : ss' }}</div>
+                    <div class="step-desc">{{ steps[5].time | date:'dd-MM-yyyy' }}</div>
+                    <!-- <div class="step-desc">{{ steps[5].time | date:'HH:mm:ss dd-MM-yyyy' }}</div> -->
                 </div>
             </div>
         </div>
+
         <div class="row mt-2 mb-3">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="ms-3">
-                    <button class="btn btn-outline-primary me-3" ng-if="status == 1" ng-click="showModal(2)">Xác
-                        nhận</button>
-                    <button class="btn btn-outline-primary me-3" ng-if="status == 2" ng-click="showModal(3)">Chờ vận
-                        chuyển</button>
-                    <button class="btn btn-outline-primary me-3" ng-if="status == 3" ng-click="showModal(4)">Vận
-                        chuyển</button>
-                    <button class="btn btn-outline-primary me-3" ng-if="status == 4" ng-click="showModal(5)">Thành
-                        công</button>
-                    <button class="btn btn-outline-danger" ng-if="status < 5" ng-click="showModal(6)">Hủy</button>
+
                 </div>
                 <div>
-                    <button class="btn btn-warning me-3" data-bs-toggle="modal" data-bs-target="#billHistoryModal">Lịch
-                        sử</button>
+                    <button class="btn btn-outline-primary me-3" ng-if="status == 1" ng-click="showModalStatus(2)">Xác
+                        nhận</button>
+                    <button class="btn btn-outline-primary me-3" ng-if="status == 2" ng-click="showModalStatus(3)">Chờ
+                        vận
+                        chuyển</button>
+                    <button class="btn btn-outline-primary me-3" ng-if="status == 3" ng-click="showModalStatus(4)">Vận
+                        chuyển</button>
+                    <button class="btn btn-outline-primary me-3" ng-if="status == 4" ng-click="showModalStatus(5)">Thành
+                        công</button>
+                    <button class="btn btn-outline-danger" ng-if="status < 5" ng-click="showModalStatus(6)">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chuyển trạng thai -->
+    <div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Xác nhận chuyển trạng thái</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="description" class="form-label">Ghi chú</label>
+                    <input type="text" class="form-control" id="description" ng-model="billHistoryUpdate.description">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" ng-click="confirmChangeStatus()">Thay đổi</button>
                 </div>
             </div>
         </div>
@@ -99,26 +156,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Cho xac nhan</td>
-                                <td>02/09/2003 12:30</td>
-                                <td>Phan Văn Nguyên</td>
-                                <th>Xác nhận ok bro</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Da xac nhan</td>
-                                <td>02/09/2003 12:30</td>
-                                <td>Phan Văn Nguyên</td>
-                                <th>Xác nhận ok bro</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>Cho giao hang</td>
-                                <td>02/09/2003 12:30</td>
-                                <td>Phan Văn Nguyên</td>
-                                <th>Xác nhận ok bro</th>
+                            <tr ng-repeat="bh in listBillHistory">
+                                <th scope="row">{{$index + 1}}</th>
+                                <td>{{bh.status}}</td>
+                                <td>{{bh.createdAt | date : "dd/MM/yyyy : HH:mm"}}</td>
+                                <td>{{bh.createdBy}}</td>
+                                <th>{{bh.description}}</th>
                             </tr>
                         </tbody>
                     </table>
@@ -147,95 +190,125 @@
                 <tbody>
                     <tr>
                         <td class="col-2">VCC123</td>
-                        <td>Nguyễn Văn A</td>
-                        <td>100,000 đ</td>
+                        <td>{{billResponse.customer.fullName}}</td>
+                        <td>{{billResponse.totalAmountAfterDiscount}}</td>
                         <td class="col-3 fs-6">Đã thanh toán</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- Thông tin đơn hàng -->
     <div class="row card mt-4 border rounded p-4 shadow mb-5 bg-body">
         <div class="d-flex justify-content-between mb-3">
             <h5>Thông tin đơn hàng</h5>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editBillInfoModal">Cập nhật</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShipmentDetail">Cập
+                nhật</button>
         </div>
         <hr>
         <div class="row">
             <div class="col-md-5">
                 <div class="info-item">
                     <dt>Mã Hóa Đơn:</dt>
-                    <dd><span class="fw-bold border-bottom">HD02092003</span></dd>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.code}}</span></dd>
                 </div>
                 <div class="info-item">
                     <dt>Ngày đặt hàng:</dt>
-                    <dd><span class="fw-bold border-bottom">02-09-2003 12:30</span></dd>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.createdAt | date: "dd/MM/yyyy HH:mm"}}</span>
+                    </dd>
                 </div>
                 <div class="info-item">
                     <dt>Loại:</dt>
-                    <dd><span class="fw-bold border-bottom">Online</span></dd>
+                    <dd><span class="fw-bold border-bottom" ng-switch="billResponse.typeBill">
+                            <span ng-switch-when="1">Tại quầy</span>
+                            <span ng-switch-when="2">Giao hàng</span>
+                            <span ng-switch-when="3">Online</span>
+                        </span></dd>
                 </div>
                 <div class="info-item">
                     <dt>Trạng thái:</dt>
                     <dd>
-                        <div class="badge bg-primary text-wrap fs-6">
-                            Chờ giao hàng
+                        <div ng-switch="status" style="font-size: 20px;">
+                            <span ng-switch-when="1">
+                                <div class="badge bg-warning text-wrap">
+                                    Chờ xác nhận
+                                </div>
+                            </span>
+                            <span ng-switch-when="2">
+                                <div class="badge bg-info text-wrap">
+                                    Đã xác nhận
+                                </div>
+                            </span>
+                            <span ng-switch-when="3">
+                                <div class="badge bg-primary text-wrap">
+                                    Chờ giao hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="4">
+                                <div class="badge bg-secondary text-wrap">
+                                    Đang giao hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="5">
+                                <div class="badge bg-success text-wrap">
+                                    Hoàn thành
+                                </div>
+                            </span>
+                            <span ng-switch-when="6">
+                                <div class="badge bg-danger text-wrap">
+                                    Đã hủy
+                                </div>
+                            </span>
                         </div>
                     </dd>
                 </div>
             </div>
             <div class="col-md-7">
                 <div class="info-item">
-                    <dt>Tên Khách Hàng:</dt>
-                    <dd><span class="fw-bold border-bottom">Nguyễn Văn A</span></dd>
+                    <dt>Tên người nhận:</dt>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.reciverName}}</span></dd>
                 </div>
                 <div class="info-item">
                     <dt>Số điện thoại:</dt>
-                    <dd><span class="fw-bold border-bottom">0123456789</span></dd>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.phoneNumber}}</span></dd>
                 </div>
                 <div class="info-item row">
                     <div class="col-3">Địa chỉ:</div>
-                    <div class="col-9"><span class="fw-bold border-bottom">Cổng chào thôn Tân Văn, Thôn Tân Văn, Xã
-                            Thạch
-                            Văn, Huyện Thạch Hà, Tỉnh Hà Tĩnh</span></div>
+                    <div class="col-9"><span class="fw-bold border-bottom">{{billResponse.address}}</span></div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal Chỉnh sửa thông tin đơn hàng -->
-    <div class="modal fade" id="editBillInfoModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="editShipmentDetail" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin đơn hàng</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Form chỉnh sửa thông tin đơn hàng -->
-                    <form>
+                <form ng-submit="updateShipmentDetail()">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Chỉnh sửa thông tin giao hàng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
                         <div class="mb-3">
-                            <label for="orderCode" class="form-label">Mã đơn hàng</label>
-                            <input type="text" class="form-control" id="orderCode" value="#123456" disabled>
+                            <label for="reciverName" class="form-label">Tên người nhận</label>
+                            <input type="text" class="form-control" id="reciverName" ng-model="updateBill.reciverName">
                         </div>
                         <div class="mb-3">
-                            <label for="customerName" class="form-label">Khách hàng</label>
-                            <input type="text" class="form-control" id="customerName" value="Nguyễn Văn A">
+                            <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="phoneNumber" ng-model="updateBill.phoneNumber">
                         </div>
                         <div class="mb-3">
-                            <label for="orderDate" class="form-label">Ngày đặt hàng</label>
-                            <input type="text" class="form-control" id="orderDate" value="01/06/2024">
+                            <label for="address" class="form-label">Địa chỉ cụ thể</label>
+                            <input type="text" class="form-control" id="address" ng-model="updateBill.address">
                         </div>
-                        <div class="mb-3">
-                            <label for="totalAmount" class="form-label">Tổng tiền</label>
-                            <input type="text" class="form-control" id="totalAmount" value="500,000 VND">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary">Lưu thay đổi</button>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -245,7 +318,8 @@
         <div class="col">
             <div class="d-flex justify-content-between mb-3">
                 <h5>Sản phẩm trong đơn hàng</h5>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBillDetail">Thêm sản phẩm</button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBillDetail">Thêm sản
+                    phẩm</button>
             </div>
             <hr>
             <table class="table text-center">
@@ -287,21 +361,139 @@
 
 <!-- Modal Thêm sản phẩm vào hóa đơn -->
 <div class="modal fade" id="addBillDetail" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editModalLabel">Thêm sản phẩm</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div>
+                    <form>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="productName" class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="productName"
+                                    placeholder="Enter product name...">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category">
+                                    <option value="">All Categories</option>
+                                    <!-- Populate options dynamically if needed -->
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="material" class="form-label">Material</label>
+                                <select class="form-select" id="material">
+                                    <option value="">All Materials</option>
+                                    <!-- Populate options dynamically if needed -->
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="collar" class="form-label">Collar</label>
+                                <select class="form-select" id="collar">
+                                    <option value="">All Collars</option>
+                                    <!-- Populate options dynamically if needed -->
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="wrist" class="form-label">Wrist</label>
+                                <select class="form-select" id="wrist">
+                                    <option value="">All Wrists</option>
+                                    <!-- Populate options dynamically if needed -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label for="color" class="form-label">Color</label>
+                                <select class="form-select" id="color">
+                                    <option value="">All Colors</option>
+                                    <!-- Populate options dynamically if needed -->
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="size" class="form-label">Size</label>
+                                <select class="form-select" id="size">
+                                    <option value="">All Sizes</option>
+                                    <!-- Populate options dynamically if needed -->
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <label for="priceRange" class="form-label">Price Range</label>
+                                <div id="slider" class="slider"></div>
+                                <div class="labels-container">
+                                    <div id="minLabel" class="label"></div>
+                                    <div id="maxLabel" class="label"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    </form>
+                </div>
 
+                <table class="table">
+                    <thead>
+                        <tr class="table-warning">
+                            <th scope="col">#</th>
+                            <th scope="col">Sản phẩm</th>
+                            <th scope="col">Số lượng tồn</th>
+                            <th scope="col">Giá bán</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="pd in productDetails">
+                            <th scope="row">{{$index + 1}}</th>
+                            <td>{{pd.product.name + ' ' + pd.color.name + ' ' + pd.size.name}}</td>
+                            <td>{{pd.quantity}}</td>
+                            <td>{{pd.product.price}}</td>
+                            <td><button class="btn btn-warning">Thêm</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination and items per page -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <label for="itemsPerPage">Hiển thị:</label>
+                        <select id="itemsPerPage" ng-model="pageSize" ng-change="applyFilters()"
+                            class="form-select d-inline-block w-auto">
+                            <option value="2">2</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>/ trang</span>
+                    </div>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination mb-0">
+                            <li class="page-item" ng-class="{'disabled': currentPage === 0}">
+                                <a class="page-link" href="" ng-click="loadPage(currentPage - 1)" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" ng-repeat="page in pages" ng-class="{'active': page === currentPage}">
+                                <a class="page-link" href="" ng-click="loadPage(page)">{{page + 1}}</a>
+                            </li>
+                            <li class="page-item" ng-class="{'disabled': currentPage === totalPages - 1}">
+                                <a class="page-link" href="" ng-click="loadPage(currentPage + 1)" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
-            <!-- <div class="modal-footer">
+        </div>
+        <!-- <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 <button type="button" class="btn btn-primary">Lưu thay đổi</button>
             </div> -->
-        </div>
     </div>
+</div>
 </div>
 
 <!-- Bootstrap JS và Popper.js (được yêu cầu bởi Bootstrap) -->

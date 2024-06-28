@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductPropertyResponse {
+public class ProductFilterResponse {
 
     private List<Category> categories;
     private List<Material> materials;

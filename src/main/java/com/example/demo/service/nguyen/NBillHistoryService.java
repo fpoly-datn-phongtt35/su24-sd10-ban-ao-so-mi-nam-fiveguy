@@ -12,5 +12,5 @@ public interface NBillHistoryService {
 
     BillHistory save(BillHistory billHistory);
 
-    BillHistory getByBillId(Long id);
+    List<BillHistory> getByBillId(Long id);
 }

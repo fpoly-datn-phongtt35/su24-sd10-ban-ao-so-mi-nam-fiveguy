@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/admin/billHistory")
@@ -31,6 +33,7 @@ public class NBillHistoryRestController {
 
     @GetMapping("/bill/{billId}")
     public ResponseEntity<?> getByBillId(@PathVariable Long billId){
-        return ResponseEntity.ok(billHistoryService.getByBillId(billId));
+        List<BillHistory> billHistoryList = billHistoryService.getByBillId(billId);
+        return ResponseEntity.ok(billHistoryList);
     }
 }

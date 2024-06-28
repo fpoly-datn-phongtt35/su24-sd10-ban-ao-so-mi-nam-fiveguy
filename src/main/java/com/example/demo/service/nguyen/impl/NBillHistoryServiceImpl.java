@@ -32,7 +32,7 @@ public class NBillHistoryServiceImpl implements NBillHistoryService {
     }
 
     @Override
-    public BillHistory getByBillId(Long id) {
-        return billHistoryRepository.findBillHistoryByBillId(id);
+    public List<BillHistory> getByBillId(Long id) {
+        return billHistoryRepository.findByBillIdOrderByCreatedAtAsc(id);
     }
 }

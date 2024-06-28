@@ -9,6 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Setter
 @Getter
+@ToString
 @Entity
 @Table(name = "BillHistories")
 public class BillHistory {

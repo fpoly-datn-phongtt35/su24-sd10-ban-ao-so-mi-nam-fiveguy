@@ -58,6 +58,10 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/bill-nguyen/bill-detail.html",
       controller: "nguyen-bill-detail-ctrl"
     })
+    .when("/admin/billtest/:idBill", {
+      templateUrl: "pages/bill-nguyen/testbill.html",
+      controller: "nguyen-bill-detail-ctrl"
+    })
     
     // <!-- Hải -->
     .when("/admin/sale", {

@@ -8,14 +8,14 @@
     /* background-color: rgb(255, 255, 255); */
 }
 
-h5{
+h5 {
     font-weight: bold;
     color: #555;
 }
 
 .step {
     position: relative;
-    width: 150px;
+    width: 170px;
     /* height: 100px; */
     background-color: #ccc;
     border-radius: 8px;
@@ -44,8 +44,8 @@ h5{
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     background: white;
     color: black;
@@ -55,18 +55,19 @@ h5{
 }
 
 .step .material-icons {
-    font-size: 32px;
+    font-size: 50px;
     color: #1e90ff;
 }
 
 .step-title {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
 }
 
 .step-desc {
     font-size: 14px;
-    color: #555;
+    color: #ffffff;
+    font-weight: bold;
 }
 
 .arrow.inactive {
@@ -108,22 +109,68 @@ dl {
     display: flex;
     flex-wrap: wrap;
 }
+
 dt {
     flex-basis: 150px;
     margin-right: 10px;
     align-self: flex-start;
     font-weight: normal;
 }
+
 dd {
     flex-grow: 1;
     margin-left: 0;
 }
+
 .info-item {
     display: flex;
     margin-bottom: 0.5rem;
     width: 100%;
 }
+
 .info-item dd {
     flex-grow: 1;
     margin-left: 0;
+}
+
+
+
+/* Optional custom styles */
+.slider {
+    margin-top: 20px;
+}
+
+.noUi-connect {
+    background: linear-gradient(to right, #007bff, #007bff);
+    /* Màu sắc của dải kết nối */
+}
+
+.noUi-handle {
+    cursor: pointer;
+    /* Con trỏ chuột thành hình bàn tay khi di chuột vào cần kéo */
+}
+
+.noUi-tooltip {
+    display: block;
+    background: rgba(0, 0, 0, 0.8);
+    /* Màu nền của tooltip */
+    color: #fff;
+    /* Màu chữ của tooltip */
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #333;
+    /* Viền của tooltip */
+    text-align: center;
+}
+
+.labels-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.label {
+    flex: 1;
+    text-align: center;
 }

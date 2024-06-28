@@ -1,6 +1,7 @@
 package com.example.demo.service.nguyen;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.entity.BillHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,4 +21,7 @@ public interface NBillService {
                            Integer typeBill, Date startDate, Date endDate,
                            Integer status, Pageable pageable);
 
+    Bill updateStatusAndBillStatus(Bill bill, Long id, BillHistory billHistory);
+
+    Bill updateShipmentDetail(Bill bill, Long id);
 }
