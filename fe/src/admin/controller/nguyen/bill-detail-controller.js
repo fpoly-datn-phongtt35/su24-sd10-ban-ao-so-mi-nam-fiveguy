@@ -1,9 +1,10 @@
 app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $routeParams) {
 
     const apiBill = "http://localhost:8080/api/admin/bill";
-    const apiBillDetail = "";
+    const apiBillDetail = "http://localhost:8080/api/admin/billDetail";
     const apiBillHistory = "http://localhost:8080/api/admin/billHistory"
 
+    const apiProduct = "http://localhost:8080/api/admin/product"
     const apiProductDetail = "http://localhost:8080/api/admin/productDetail"
     const apiProductProperty = "http://localhost:8080/api/admin/productProperty"
 
@@ -39,6 +40,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.productDetail = {}
     $scope.productDetails = []
 
+    //billDetail
+    $scope.billDetails = []
+
     //product property for filter
     $scope.categories = []
     $scope.materials = []
@@ -46,6 +50,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.wrists = []
     $scope.colors = []
     $scope.sizes = []
+
+    $scope.priceRange = {
+        maxPrice: null,
+        minPrice: null
+    }
 
     //LẤY THÔNG TIN BILL ***************
     $scope.getBillById = function (id) {
@@ -61,7 +70,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.getBillById($scope.idBill)
 
     //XỬ LÝ STATUS BILL, HISTORY BILL, THÔNG TIN GIAO HÀNG, LOGIC CỦA HIỂN THỊ TRẠNG THÁI ĐƠN HÀNG
-    // #region MyRegion
+    // #region bill status & bill history
     $scope.showModalStatus = function (status) {
         $('#changeStatusModal').modal('show');
         $scope.currentStatus = status;
@@ -134,29 +143,92 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     }
     // #endregion
 
-    //Lấy thông tin product property để filter
+    //Lấy thông tin product property để filter và RANGE PRICE
+    // #region product property filter & price range
     $scope.getAllProductProperty = function () {
         $http.get(apiProductProperty + "/all").then(function (res) {
             console.log(res.data)
-        })
+
+            $scope.categories = res.data.categories
+            $scope.materials = res.data.materials
+            $scope.collars = res.data.collars
+            $scope.wrists = res.data.wrists
+            $scope.colors = res.data.colors
+            $scope.sizes = res.data.sizes
+        });
+
+        $http.get(apiProduct + "/maxPrice").then(function (res) {
+            $scope.priceRange.maxPrice = res.data;
+            return $http.get(apiProduct + "/minPrice");
+        }).then(function (res) {
+            $scope.priceRange.minPrice = res.data;
+            // console.log($scope.priceRange.minPrice);
+
+            // Call the slider initialization function
+            $scope.initSlider(); // Initialize the slider only after both prices are fetched
+        });
     }
-    $scope.getAllProductProperty()
+
+    //Range lọc giá
+    $scope.initSlider = function () {
+        var slider = document.getElementById('slider');
+        noUiSlider.create(slider, {
+            start: [$scope.priceRange.minPrice, $scope.priceRange.maxPrice],
+            tooltips: [
+                wNumb({
+                    decimals: 0,
+                    thousand: ','
+                }),
+                wNumb({
+                    decimals: 0,
+                    thousand: ','
+                }),
+            ],
+            step: 10000,
+            connect: true,
+            range: {
+                'min': $scope.priceRange.minPrice,
+                'max': $scope.priceRange.maxPrice
+            },
+            pips: {
+                mode: 'steps',
+                density: 5,
+                format: wNumb({
+                    decimals: 0,
+                    thousand: ','
+                })
+            }
+        });
+
+        // Example of updating AngularJS model on slider change
+        // slider.noUiSlider.on('update', function (values, handle) {
+        //     $scope.filters.minPrice = parseInt(values[0]);
+        //     $scope.filters.maxPrice = parseInt(values[1]);
+        //     $scope.$applyAsync(); // Apply changes to AngularJS model
+        // });
+    };
+
+    //Gọi ở đây để hiẻn thị được pricerange
+    $scope.getAllProductProperty();
+    // #endregion
+
 
     //FILTER, PAGINATION PRODUCT DETAIL
+    // #region FILTER, PAGINATION PRODUCT DETAIL
     // $scope.productDetails = [];
     $scope.currentPage = 0;
     $scope.pageSize = 5;
     $scope.totalPages = 0;
     $scope.filters = {
-        productName: '',
+        productName: null,
         categoryId: null,
         materialId: null,
         wristId: null,
         collarId: null,
+        colorId: null,
         sizeId: null,
         minPrice: null,
-        maxPrice: null,
-        colorId: null
+        maxPrice: null
     };
 
     $scope.getProductDetails = function (pageNumber) {
@@ -180,6 +252,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage = pageNumber;
                 $scope.pages = Array.from(Array($scope.totalPages).keys());
+
+                // Initialize inputQuantity for each productDetail
+                $scope.productDetails.forEach(function (pd) {
+                    pd.inputQuantity = 0; // Set default value to 0
+                });
             }, function (error) {
                 console.error('Error fetching products:', error);
             });
@@ -189,6 +266,14 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.getProductDetails(0);
 
     $scope.applyFilters = function () {
+
+        var slider = document.getElementById('slider');
+        slider.noUiSlider.on('update', function (values, handle) {
+            $scope.filters.minPrice = parseInt(values[0]);
+            $scope.filters.maxPrice = parseInt(values[1]);
+            $scope.$applyAsync(); // Apply changes to AngularJS model
+        });
+
         $scope.getProductDetails(0);
     };
 
@@ -200,40 +285,89 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     $scope.resetFilters = function () {
         $scope.filters = {
-            productName: '',
+            productName: null,
             categoryId: null,
             materialId: null,
             wristId: null,
             collarId: null,
+            colorId: null,
             sizeId: null,
             minPrice: null,
-            maxPrice: null,
-            colorId: null
+            maxPrice: null
         };
+        var slider = document.getElementById('slider');
+        slider.noUiSlider.reset();
         $scope.getProductDetails(0);
     };
+    // #endregion
 
-    //Range lọc giá
-    $scope.initSlider = function () {
-        var slider = document.getElementById('slider');
-        noUiSlider.create(slider, {
-            start: [0, 1000],
-            connect: true,
-            range: {
-                'min': 0,
-                'max': 1000
-            }
-        });
+    //XỬ LÝ BILL DETAIL
+    // #region hiển thị, thêm, xử lý số lượng, xóa sản phẩm ở billdetail
 
-        // Example of updating AngularJS model on slider change
-        slider.noUiSlider.on('update', function (values, handle) {
-            $scope.filters.minPrice = parseInt(values[0]);
-            $scope.filters.maxPrice = parseInt(values[1]);
-            $scope.$applyAsync(); // Apply changes to AngularJS model
+    $scope.getAllBillDetailByBillId = function (billId) {
+        $http.get(apiBillDetail + "/getAllByBillId/" + billId).then(function (res) {
+            $scope.billDetails = res.data
+            console.log(res.data);
+        })
+    }
+    $scope.getAllBillDetailByBillId($scope.idBill)
+
+    $scope.formBillDetail = {}
+
+    //add product to bill
+    $scope.addBillDetail = function (pdId, quantityInput, priceInput, pPriceInput) {
+        let params = {
+            productDetailId: pdId,
+            quantity: quantityInput,
+            price: priceInput,
+            promotionalPrice: pPriceInput
+        };
+        $http.get(apiBill + "/" + $scope.idBill + "/details", { params: params })
+            .then(function (res) {
+                $scope.showSuccess("Thêm thành công")
+                $scope.getAllBillDetailByBillId($scope.idBill)
+                $scope.getProductDetails(0);
+                $scope.productDetails.forEach(function (pd) {
+                    pd.inputQuantity = 0; // Set default value to 0
+                });
+            }, function (error) {
+                console.error('Thêm sản phẩm thất bại:', error);
+            });
+
+    }
+
+    //remove product in billdetail
+    $scope.removeBillDetail = function (billDetailId) {
+        $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
+            $scope.showSuccess("Xóa thành công")
+            $scope.getAllBillDetailByBillId($scope.idBill)
+        }, function (error) {
+            console.error('Xoá sản phẩm thất bại:', error);
+        })
+    }
+
+    //update quantity in billDetail
+    $scope.updateBillDetailQuantity = function (newQuantity, billDetailId) {
+        let params = {
+            newQuantity: newQuantity
+        };
+        $http({
+            method: 'PUT',
+            url: apiBill + "/details/" + billDetailId + "/quantity",
+            params: params
+        }).then(function (res) {
+            $scope.showSuccess("Sửa số lượng thành công");
+            $scope.getAllBillDetailByBillId($scope.idBill);
+        }, function (error) {
+            console.error('Sửa số lượng thất bại:', error);
         });
     };
 
-    // Call the slider initialization function
-    $scope.initSlider();
 
+    // #endregion
+
+    $scope.submitQ = function (q) {
+        console.log(q)
+        $scope.showSuccess("Thêm thành công")
+    }
 });

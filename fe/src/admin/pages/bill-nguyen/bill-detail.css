@@ -174,3 +174,10 @@ dd {
     flex: 1;
     text-align: center;
 }
+
+/* .noUi-marker.noUi-marker-horizontal.noUi-marker-sub{
+    display: none;
+} */
+.noUi-value.noUi-value-horizontal.noUi-value-sub {
+    display: none;
+}

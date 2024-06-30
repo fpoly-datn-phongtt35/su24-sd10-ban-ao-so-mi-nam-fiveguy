@@ -2,7 +2,11 @@ package com.example.demo.service.nguyen;
 
 import com.example.demo.model.response.nguyen.ProductFilterResponse;
 
+import java.math.BigDecimal;
+
 public interface NProductService {
 
-    ProductFilterResponse getAllProductFilterProperty();
+
+    BigDecimal getMaxPrice();
+    BigDecimal getMinPrice();
 }

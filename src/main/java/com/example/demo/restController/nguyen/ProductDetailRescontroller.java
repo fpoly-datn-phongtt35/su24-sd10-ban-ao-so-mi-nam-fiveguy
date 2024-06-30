@@ -28,15 +28,16 @@ public class ProductDetailRescontroller {
             @RequestParam(required = false) Long collarId,
             @RequestParam(required = false) Long sizeId,
             @RequestParam(required = false) Long colorId,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
+//        System.out.println(categoryId);
         return ResponseEntity.ok(productDetailService
                 .searchProductDetails(productName, categoryId, materialId, wristId, collarId,
-                        sizeId, colorId, minPrice, maxPrice, pageable));
+                        sizeId, colorId, minPrice == null ? null : BigDecimal.valueOf(minPrice), maxPrice== null ? null : BigDecimal.valueOf(maxPrice), pageable));
     }
 
 }

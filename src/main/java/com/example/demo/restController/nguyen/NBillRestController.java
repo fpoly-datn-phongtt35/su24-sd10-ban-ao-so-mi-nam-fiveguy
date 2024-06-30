@@ -1,7 +1,9 @@
 package com.example.demo.restController.nguyen;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.entity.BillDetail;
 import com.example.demo.model.request.nguyen.BillRequest;
+import com.example.demo.service.nguyen.NBillDetailService;
 import com.example.demo.service.nguyen.NBillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @RestController
@@ -20,13 +23,16 @@ public class NBillRestController {
     @Autowired
     NBillService billService;
 
+    @Autowired
+    NBillDetailService billDetailService;
+
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(billService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id){
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         return ResponseEntity.ok(billService.getById(id));
     }
 
@@ -47,14 +53,45 @@ public class NBillRestController {
     }
 
     @PutMapping("/shipUpdate/{id}")
-    public Bill updateShipmentDetail(@RequestBody Bill bill, @PathVariable Long id){
+    public Bill updateShipmentDetail(@RequestBody Bill bill, @PathVariable Long id) {
         return billService.updateShipmentDetail(bill, id);
     }
 
     @PutMapping("/billStatusUpdate/{id}")
-    public Bill updateBillStatusAndSaveBillHistory(@RequestBody BillRequest billRequest, @PathVariable Long id){
+    public Bill updateBillStatusAndSaveBillHistory(@RequestBody BillRequest billRequest,
+                                                   @PathVariable Long id) {
         System.out.println(billRequest.getBill());
         System.out.println(billRequest.getBillHistory());
-        return billService.updateStatusAndBillStatus(billRequest.getBill(), id, billRequest.getBillHistory());
+        return billService
+                .updateStatusAndBillStatus(billRequest.getBill(), id, billRequest.getBillHistory());
+    }
+
+    @PostMapping("/{billId}/details")
+    public ResponseEntity<BillDetail> addProductDetailToBill(
+            @PathVariable Long billId,
+            @RequestParam Long productDetailId,
+            @RequestParam int quantity,
+            @RequestParam BigDecimal price,
+            @RequestParam BigDecimal promotionalPrice) {
+
+        BillDetail billDetail = billDetailService
+                .addProductDetailToBill(billId, productDetailId, quantity, price, promotionalPrice);
+        return ResponseEntity.ok(billDetail);
+    }
+
+    @DeleteMapping("/details/{billDetailId}")
+    public ResponseEntity<Void> removeProductDetailFromBill(@PathVariable Long billDetailId) {
+        billDetailService.removeProductDetailFromBill(billDetailId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/details/{billDetailId}/quantity")
+    public ResponseEntity<BillDetail> updateBillDetailQuantity(
+            @PathVariable Long billDetailId,
+            @RequestParam Integer newQuantity) {
+
+        BillDetail updatedBillDetail = billDetailService
+                .updateBillDetailQuantity(billDetailId, newQuantity);
+        return ResponseEntity.ok(updatedBillDetail);
     }
 }

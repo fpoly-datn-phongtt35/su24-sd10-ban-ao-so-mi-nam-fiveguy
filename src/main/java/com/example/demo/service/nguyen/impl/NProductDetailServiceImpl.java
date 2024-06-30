@@ -29,6 +29,6 @@ public class NProductDetailServiceImpl implements NProductDetailService {
                                                     Pageable pageable) {
         return productDetailRepository
                 .searchProductDetails(productName, categoryId, materialId, wristId, collarId,
-                        sizeId, colorId, minPrice, maxPrice, pageable);
+                        sizeId, colorId, minPrice, maxPrice, 1, pageable);
     }
 }

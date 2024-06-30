@@ -23,7 +23,8 @@ public interface NProductDetailRepository extends JpaRepository<ProductDetail, L
             "AND (:sizeId IS NULL OR pd.size.id = :sizeId) " +
             "AND (:colorId IS NULL OR pd.color.id = :colorId) " +
             "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
-            "AND (:maxPrice IS NULL OR p.price <= :maxPrice)")
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice)" +
+            "AND (pd.status = :statusPd) ORDER BY pd.id desc")
     Page<ProductDetail> searchProductDetails(@Param("productName") String productName,
                                              @Param("categoryId") Long categoryId,
                                              @Param("materialId") Long materialId,
@@ -33,6 +34,7 @@ public interface NProductDetailRepository extends JpaRepository<ProductDetail, L
                                              @Param("colorId") Long colorId,
                                              @Param("minPrice") BigDecimal minPrice,
                                              @Param("maxPrice") BigDecimal maxPrice,
+                                             @Param("statusPd") Integer statusPd,
                                              Pageable pageable);
 
 }

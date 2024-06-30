@@ -2,6 +2,7 @@ package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillHistory;
+import com.example.demo.repository.nguyen.NBillDetailRepository;
 import com.example.demo.repository.nguyen.NBillHistoryRepository;
 import com.example.demo.repository.nguyen.NBillRepository;
 import com.example.demo.repository.nguyen.BillSpecification;
@@ -25,6 +26,10 @@ public class NBillServiceImpl implements NBillService {
 
     @Autowired
     NBillHistoryRepository billHistoryRepository;
+
+    @Autowired
+    NBillDetailRepository billDetailRepository;
+
 
     @Override
     public List<Bill> getAll() {
