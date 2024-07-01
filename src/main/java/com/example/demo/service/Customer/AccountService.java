@@ -53,6 +53,12 @@ public interface AccountService {
 
 //    Nhánh Tịnh
     Account getByEmailAccount(String id);
+
     Account updateAccountEmail(Account accountEntity, String email);
+
     boolean checkEmailExists(String email);
+
+    boolean checkAccountExists(String account);
+
+    boolean checkPhoneNumberExists(String account);
 }

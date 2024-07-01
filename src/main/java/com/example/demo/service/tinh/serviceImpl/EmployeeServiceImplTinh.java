@@ -1,5 +1,6 @@
 package com.example.demo.service.tinh.serviceImpl;
 
+import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.tinh.EmployeeRepositoryTinh;
 import com.example.demo.repository.tinh.EmployeeSpecificationTinh;
@@ -40,6 +41,13 @@ public class EmployeeServiceImplTinh implements EmployeeServiceTinh {
     public List<Employee> getAllStatus(Integer status){
         return employeeRepository.getAllStatus(status);
     }
+
+    @Override
+    public Employee getByAccount(String account){
+        return (Employee) employeeRepository.getByAccount(account);
+    }
+
+
 
     @Override
     public Employee create(Employee employees){

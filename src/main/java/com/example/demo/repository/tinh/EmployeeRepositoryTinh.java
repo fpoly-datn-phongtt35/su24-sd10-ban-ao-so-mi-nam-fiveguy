@@ -1,4 +1,5 @@
 package com.example.demo.repository.tinh;
+import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,12 @@ public interface EmployeeRepositoryTinh extends JpaRepository<Employee, Long>, J
     @Query("update Employee m set m.status = 2 where m.id=:id")
     void updateStatusEmployee(Long id);
 
+
+    @Query("SELECT m FROM Employee m WHERE m.account.account = :status")
+    Employee getByAccount(String status);
+
+    @Query("SELECT m FROM Employee m WHERE m.fullName = :fullName")
+    Optional<Employee> findByFullName(String fullName);
 
     Optional<Employee> findByAccount_Id(Long accountId);
 }

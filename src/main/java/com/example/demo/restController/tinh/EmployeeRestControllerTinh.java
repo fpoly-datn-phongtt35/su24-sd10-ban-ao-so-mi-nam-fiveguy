@@ -2,6 +2,7 @@ package com.example.demo.restController.tinh;
 
 //import com.example.demo.entity.AccountEntity
 
+import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.tinh.EmployeeRepositoryTinh;
 import com.example.demo.service.tinh.EmployeeServiceTinh;
@@ -46,6 +47,13 @@ public class EmployeeRestControllerTinh {
         List<Employee> customers = employeeService.getAll();
         return ResponseEntity.ok(customers);
 
+    }
+
+    //Get by employee từ trường account trong bảng account
+    @GetMapping("/account/{account}")
+    public ResponseEntity<Employee> getByAccount(@PathVariable String account) {
+        Employee account1 = employeeService.getByAccount(account);
+        return ResponseEntity.ok(account1);
     }
 
     //get employee status =1

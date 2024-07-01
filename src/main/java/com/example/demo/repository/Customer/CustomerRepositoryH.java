@@ -34,4 +34,8 @@ public interface CustomerRepositoryH extends JpaRepository<Customer, Long> {
 
 
     Optional<Customer> findByAccount_Id(Long accountId);
+
+    //Tịnh
+    @Query("SELECT m FROM Customer m WHERE m.fullName = :fullName")
+    Optional<Customer> findByFullName(String fullName);
 }

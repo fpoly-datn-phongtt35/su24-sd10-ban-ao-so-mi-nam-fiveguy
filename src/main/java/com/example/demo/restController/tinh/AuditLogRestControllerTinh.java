@@ -3,16 +3,19 @@ package com.example.demo.restController.tinh;
 import com.example.demo.entity.AuditLogs;
 import com.example.demo.entity.Employee;
 import com.example.demo.service.tinh.AuditLogServiceTinh;
+import com.example.demo.untility.tinh.PaginationResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,8 +37,20 @@ public class AuditLogRestControllerTinh {
         List<AuditLogs> customers = auditLogServiceTinh.getAll();
         return ResponseEntity.ok(customers);
     }
-    // Lịch sử nhân viên
 
+
+//
+//    @PostMapping("/save")
+//    public ResponseEntity<?> create(@RequestBody AuditLogs auditLogs) {
+//        try {
+//            AuditLogs createdAuditlog = auditLogServiceTinh.create(auditLogs);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(createdAuditlog);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+
+    //Xuất file excel lich sử nhân viên
     @GetMapping("/exce-lich-su")
     public void fileExcelAuditLog() {
         try {
@@ -151,5 +166,22 @@ public class AuditLogRestControllerTinh {
             ex.printStackTrace();
         }
 
+    }
+
+    @GetMapping("/auditlog-page")
+    public PaginationResponse<AuditLogs> getEmployees(
+            @RequestParam(required = false) String implementer,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String actionType,
+            @RequestParam(required = false) Date time,
+            @RequestParam(required = false) String detailAction,
+            @RequestParam(required = false) Integer status,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "5") int size,
+//            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 5);
+        Page<AuditLogs> page = auditLogServiceTinh.findAuditLog(implementer, code, actionType, time, detailAction, status, pageable);
+        return new PaginationResponse<>(page);
     }
 }

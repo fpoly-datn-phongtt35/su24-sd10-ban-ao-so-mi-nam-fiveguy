@@ -19,6 +19,8 @@ public interface EmployeeServiceTinh {
 
      void delete(Long id);
 
+     Employee getByAccount(String account);
+
      Employee update(Long id, Employee employees);
 
      Employee updateRole(Long id, Employee employees);

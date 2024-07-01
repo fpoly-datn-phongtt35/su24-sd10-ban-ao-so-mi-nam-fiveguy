@@ -65,36 +65,89 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     $scope.showError = true;
   };
 
-  //Hàm check email ko được bắt đầu bằng số
+  //Hàm check email ko được bắt đầu bằng số, check trùng
   $scope.checkEmail = function () {
     var email = $scope.formInputAccount.email;
+
+    // Kiểm tra nếu trường input trống, coi như hợp lệ
     if (!email) {
-      // Trường hợp trường input trống, coi như hợp lệ
       $scope.emailError = "";
       return true;
     }
 
     // Kiểm tra nếu email không bắt đầu bằng số
     var EMAIL_REGEXP = /^[^\d].*/;
-    if (EMAIL_REGEXP.test(email)) {
-      // Hợp lệ
-      $scope.emailError = "";
-      return true;
+    if (!EMAIL_REGEXP.test(email)) {
+      $scope.emailError = "Email không được bắt đầu bằng số";
+      return false;
     }
 
-    // Không hợp lệ
-    $scope.emailError = "Email không được bắt đầu bằng số";
-    return false;
+    // Email hợp lệ, tiếp tục kiểm tra trùng email
+    $http
+      .get(apiAccount + "/check-email", { params: { email: email } })
+      .then(function (response) {
+        if (response.data) {
+          // Email bị trùng
+          $scope.emailError = "Email đã tồn tại";
+          return false;
+        } else {
+          // Email hợp lệ và không bị trùng
+          $scope.emailError = "";
+          return true;
+        }
+      })
+      .catch(function (error) {
+        // Xử lý lỗi khi gọi API
+        $scope.emailError = "Có lỗi xảy ra khi kiểm tra email";
+        return false;
+      });
   };
 
-  // $scope.submitForm = function () {
-  //   if ($scope.formCreateEmployee.$valid && $scope.checkEmail()) {
-  //     // Gửi form đi
-  //   } else {
-  //     // Hiển thị lỗi
-  //     $scope.formCreateEmployee.$submitted = true;
-  //   }
-  // };
+  //Hàm check trùng tên tài khoản
+  $scope.checkAccount = function () {
+    var account = $scope.formInputAccount.account;
+    $http
+      .get(apiAccount + "/check-account", { params: { account: account } })
+      .then(function (response) {
+        if (response.data) {
+          // Email bị trùng
+          $scope.accountError = "Tài khoản đã tồn tại";
+          return false;
+        } else {
+          // Email hợp lệ và không bị trùng
+          $scope.accountError = "";
+          return true;
+        }
+      })
+      .catch(function (error) {
+        // Xử lý lỗi khi gọi API
+        $scope.accountError = "Có lỗi xảy ra khi kiểm tra Tài khoản";
+        return false;
+      });
+  };
+
+  //Hàm check trùng số điện thoại
+  $scope.checkPhoneNumber = function () {
+    var phoneNumber = $scope.formInputAccount.phoneNumber;
+    $http
+      .get(apiAccount + "/check-phone-number", { params: { phoneNumber: phoneNumber } })
+      .then(function (response) {
+        if (response.data) {
+          // Email bị trùng
+          $scope.phoneNumberError = "Số điện thoại đã tồn tại";
+          return false;
+        } else {
+          // Email hợp lệ và không bị trùng
+          $scope.phoneNumberError = "";
+          return true;
+        }
+      })
+      .catch(function (error) {
+        // Xử lý lỗi khi gọi API
+        $scope.phoneNumberError = "Có lỗi xảy ra khi kiểm tra số điện thoại";
+        return false;
+      });
+  };
 
   //search theo mã
   $scope.search = function () {
@@ -246,7 +299,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   // Form submit thêm
   $scope.submitForm = async function () {
-    if ($scope.formCreateEmployee.$valid && $scope.checkEmail()) {
+    if ($scope.formCreateEmployee.$valid && $scope.checkEmailValid()) {
       const addAccountData = await $scope.themAccount();
       if (addAccountData) {
         const dataObject = {
@@ -353,7 +406,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     $scope.formInputAccount.phoneNumber = null;
     let fileInput = document.getElementById("image");
     let imagePreview = document.getElementById("image-preview");
-    imagePreview.src = "/fe/src/admin/common/img/no-img.png";
+    imagePreview.src = "/src/admin/common/img/no-img.png";
     fileInput.value = "";
     fileInput.type = "file";
     $scope.formCreateEmployee.$setPristine();
@@ -445,13 +498,13 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   //Hàm xử lý sửa account. Check điều kiện kiểm tra và gọi api thêm mới account
   $scope.suaAccount = async function () {
-    const email = $scope.formUpdateAccount.email;
+    const email = $scope.formInputAccount.email;
     if (email) {
       const dataAccount = {
-        account: $scope.formUpdateAccount.account,
+        account: $scope.formInputAccount.account,
         email: email,
-        phoneNumber: $scope.formUpdateAccount.phoneNumber,
-        role: $scope.formUpdateAccount.role,
+        phoneNumber: $scope.formInputAccount.phoneNumber,
+        role: $scope.formInputAccount.role,
         // password: password
         // status: status
       };
@@ -534,7 +587,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
       $scope.formUpdate = angular.copy(employee);
       $scope.formUpdate.birthDate = new Date(birthDateNew);
       $scope.formUpdate.updatedAt = new Date();
-      $scope.formUpdateAccount = angular.copy(employee.account);
+      $scope.formInputAccount = angular.copy(employee.account);
     }
     $scope.formUpdate.avatar = angular.copy(employee.avatar);
   };
@@ -542,11 +595,10 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   // hàm làm mới form update
   $scope.resetFormUpdate = function () {
     $scope.formUpdate = {};
-    $scope.formUpdateAccount = {};
+    $scope.formInputAccount = {};
     let fileInput = document.getElementById("image-update");
     let imagePreviewUpdate = document.getElementById("image-preview-update");
-    imagePreviewUpdate.src = "/fe/src/admin/common/img/no-img.png";
-    fileInput.value = "";
+    imagePreviewUpdate.src = "/src/admin/common/img/no-img.png";
     fileInput.value = "";
     fileInput.type = "file";
     $scope.formUpdateEmployee.$setPristine();
@@ -571,7 +623,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     $scope.formShow.valid_until = new Date(employee.valid_until); // Hoặc là giá trị ngày mặc định của bạn
   };
 
-  //Phân trang
+  //Phân trang lọc
   $scope.filterEmployee = function () {
     $http.get(apiEmployee + "/status1").then(function (res) {
       $scope.employee = res.data;
@@ -588,7 +640,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     discountType: null,
     startDate: null,
     endDate: null,
-    status: null,
+
   };
 
   $scope.getEmployee = function (pageNumber) {
@@ -607,6 +659,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   $scope.applyFilters = function () {
     $scope.getEmployee(0);
+
   };
 
   $scope.goToPage = function () {
@@ -661,6 +714,8 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   };
 
   // Lịch sử Nhân viên
+
+
   // xuát file danh sách excel Employee
   $scope.xuatFileAuditLog = function () {
     $http
@@ -672,4 +727,79 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         console.log(error);
       });
   };
+
+  //phân trang + lọc auddit Log 
+  // get all da ta lịch sửa nv
+  $scope.getAuditlog = function () {
+    $http.get(apiAuditLog).then(function (resp) {
+      $scope.auditLog = resp.data;
+      //   $scope.employee = angular.copy($scope.originalEmployee);
+    });
+  };
+  $scope.getAuditlog = [];
+  $scope.filterAuditlog = {
+    status: null,
+    empCode: null,
+    implementer: null,
+    time: null,
+  };
+
+  $scope.getAllAuditLog = function (pageNumber) {
+    let params = angular.extend({ pageNumber: pageNumber }, $scope.filterAuditlog);
+    $http
+      .get("http://localhost:8080/api/admin/audit-log/auditlog-page", {
+        params: params,
+      })
+      .then(function (response) {
+        $scope.getAuditlog = response.data.content;
+        $scope.totalPages = response.data.totalPages;
+        $scope.currentPage = pageNumber;
+        $scope.desiredPage = pageNumber + 1;
+      });
+  };
+
+  $scope.applyFiltersAuditlog = function () {
+    $scope.getAllAuditLog(0);
+
+  };
+
+  $scope.goToPageAuditlog = function () {
+    let pageNumber = $scope.desiredPage - 1;
+    if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+      $scope.getAllAuditLog(pageNumber);
+    } else {
+      // Reset desiredPage to currentPage if the input is invalid
+      $scope.desiredPage = $scope.currentPage + 1;
+    }
+  };
+  // Initial load
+  $scope.getAllAuditLog(0);
+
+  $scope.resetfilterAuditlog = function () {
+    $scope.filterAuditlog = {
+      status: null,
+      empCode: null,
+      implementer: null,
+      time: null,
+    };
+    $scope.getAllAuditLog(0);
+  };
+
+  $scope.formatDateTime = function (dateString) {
+    // Tạo đối tượng Date từ chuỗi ngày tháng ISO
+    var date = new Date(dateString);
+
+    // Lấy ngày, tháng, năm
+    var day = String(date.getDate()).padStart(2, '0');
+    var month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0-11, cần +1
+    var year = date.getFullYear();
+
+    // Lấy giờ, phút, giây
+    var hours = String(date.getHours()).padStart(2, '0');
+    var minutes = String(date.getMinutes()).padStart(2, '0');
+    var seconds = String(date.getSeconds()).padStart(2, '0');
+
+    // Trả về chuỗi định dạng dd/MM/yyyy HH:mm:ss
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  }
 });

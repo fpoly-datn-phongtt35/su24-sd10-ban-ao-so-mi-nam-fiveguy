@@ -117,4 +117,16 @@ public class AccountRestControllerH {
         boolean emailExists = accountService.checkEmailExists(email);
         return ResponseEntity.ok(emailExists);
     }
+
+    @GetMapping("/check-account")
+    public ResponseEntity<Boolean> checkAccount(@RequestParam String account) {
+        boolean accountExists = accountService.checkAccountExists(account);
+        return ResponseEntity.ok(accountExists);
+    }
+
+    @GetMapping("/check-phone-number")
+    public ResponseEntity<Boolean> checkPhoneNumber(@RequestParam String phoneNumber) {
+        boolean phoneNumberExists = accountService.checkPhoneNumberExists(phoneNumber);
+        return ResponseEntity.ok(phoneNumberExists);
+    }
 }

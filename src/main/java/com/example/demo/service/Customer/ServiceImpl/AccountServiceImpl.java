@@ -260,8 +260,18 @@ public class AccountServiceImpl  implements AccountService {
 // END OL
     // Nhánh Tịnh
     @Override
+    public boolean checkAccountExists(String account) {
+        return accountRepositoryH.existsByAccount(account);
+    }
+
+    @Override
     public boolean checkEmailExists(String email) {
         return accountRepositoryH.existsByEmail(email);
+    }
+
+    @Override
+    public boolean checkPhoneNumberExists(String phoneNumber) {
+        return accountRepositoryH.existsByPhoneNumber(phoneNumber);
     }
 
     @Override
