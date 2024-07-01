@@ -27,18 +27,6 @@ public class Bill {
     @Column(name = "Code")
     private String code;
 
-    @Column(name = "CreatedAt")
-    private Date createdAt;
-
-    @Column(name = "PaymentDate")
-    private Date paymentDate;
-
-    @Column(name = "TotalAmount")
-    private BigDecimal totalAmount;
-
-    @Column(name = "TotalAmountAfterDiscount")
-    private BigDecimal totalAmountAfterDiscount;
-
     @Column(name = "ReciverName", columnDefinition = "nvarchar(300)")
     private String reciverName;
 
@@ -48,20 +36,14 @@ public class Bill {
     @Column(name = "ShippingFee")
     private BigDecimal shippingFee;
 
-    @Column(name = "Address", columnDefinition = "nvarchar(300)")
-    private String address;
-
     @Column(name = "TransId")
     private String transId;  // Mã giao dịch Momo dùng để hoàn tiền
 
+    @Column(name = "Address", columnDefinition = "nvarchar(300)")
+    private String address;
+
     @Column(name = "PhoneNumber")
     private String phoneNumber;
-
-    @Column(name = "Note", columnDefinition = "nvarchar(300)")
-    private String note;
-
-    @Column(name = "Reason")
-    private String reason;
 
     @ManyToOne
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
@@ -79,9 +61,8 @@ public class Bill {
     @JoinColumn(name = "IdVoucher", referencedColumnName = "Id")
     private Voucher voucher;
 
-    @Column(name = "typeBill")
+    @Column(name = "TypeBill")
     private int typeBill;
-
 
     @Column(name = "Status")
     private int status;
@@ -93,4 +74,8 @@ public class Bill {
     @JsonIgnore
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
     private List<BillHistory> billHistories;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
+    private List<PaymentStatus> paymentStatuses;
 }
