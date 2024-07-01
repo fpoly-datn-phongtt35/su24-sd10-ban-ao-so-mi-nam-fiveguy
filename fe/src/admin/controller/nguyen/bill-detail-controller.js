@@ -236,7 +236,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             productName: $scope.filters.productName,
             categoryId: $scope.filters.categoryId,
             materialId: $scope.filters.materialId,
-            wristId: $scope.filters.typeBill,
+            wristId: $scope.filters.wristId,
             collarId: $scope.filters.collarId,
             sizeId: $scope.filters.sizeId,
             colorId: $scope.filters.colorId,
@@ -255,7 +255,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
                 // Initialize inputQuantity for each productDetail
                 $scope.productDetails.forEach(function (pd) {
-                    pd.inputQuantity = 0; // Set default value to 0
+                    pd.inputQuantity = 1; // Set default value to 0
                 });
             }, function (error) {
                 console.error('Error fetching products:', error);
@@ -304,10 +304,18 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //XỬ LÝ BILL DETAIL
     // #region hiển thị, thêm, xử lý số lượng, xóa sản phẩm ở billdetail
 
+    //Tổng số lượng và tổng tiền
+    $scope.billDetailSummary = {}
+
     $scope.getAllBillDetailByBillId = function (billId) {
         $http.get(apiBillDetail + "/getAllByBillId/" + billId).then(function (res) {
             $scope.billDetails = res.data
             console.log(res.data);
+        })
+
+        $http.get(apiBillDetail + "/" + billId + "/summary").then(function (res) {
+            $scope.billDetailSummary = res.data
+            // console.log(res.data);
         })
     }
     $scope.getAllBillDetailByBillId($scope.idBill)
@@ -322,19 +330,31 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             price: priceInput,
             promotionalPrice: pPriceInput
         };
-        $http.get(apiBill + "/" + $scope.idBill + "/details", { params: params })
-            .then(function (res) {
-                $scope.showSuccess("Thêm thành công")
-                $scope.getAllBillDetailByBillId($scope.idBill)
-                $scope.getProductDetails(0);
-                $scope.productDetails.forEach(function (pd) {
-                    pd.inputQuantity = 0; // Set default value to 0
-                });
-            }, function (error) {
-                console.error('Thêm sản phẩm thất bại:', error);
+        $http({
+            method: 'POST',
+            url: apiBill + "/" + $scope.idBill + "/details",
+            params: params
+        }).then(function (res) {
+            $scope.showSuccess("Thêm thành công");
+            $scope.getAllBillDetailByBillId($scope.idBill);
+            $scope.getProductDetails(0);
+            $scope.productDetails.forEach(function (pd) {
+                pd.inputQuantity = 1; // Set default value to 0
             });
+        }, function (error) {
+            console.error('Thêm sản phẩm thất bại:', error);
+        });
+    };
 
-    }
+    $scope.validateQuantity = function (pdIn) {
+        // console.log(pdIn.inputQuantity);
+        $scope.productDetails.forEach(function (pd) {
+            if (pd == pdIn && pdIn.inputQuantity > pd.quantity) {
+                pd.inputQuantity = pd.quantity - 1;
+            }
+        });
+        // console.log(pdIn.inputQuantity);
+    };
 
     //remove product in billdetail
     $scope.removeBillDetail = function (billDetailId) {
@@ -346,14 +366,30 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         })
     }
 
+    //Validate max quantity in dillDetail
+    $scope.validateQuantityBd = function (bd, quantityNew) {
+
+        //total quantity
+        if (quantityNew > bd.productDetail.quantity + bd.quantity) {
+            bd.quantityNew = bd.productDetail.quantity + bd.quantity - 1;
+        }
+    };
+
     //update quantity in billDetail
-    $scope.updateBillDetailQuantity = function (newQuantity, billDetailId) {
+    $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
+
+        // $scope.billDetails.forEach(function (bd) {
+        //     if (bd == billDetail && newQuantity > bd.productDetail.quantity) {
+        //         bd.quantity = bd.productDetail.quantity - 1;
+        //     }
+        // });
+
         let params = {
             newQuantity: newQuantity
         };
         $http({
             method: 'PUT',
-            url: apiBill + "/details/" + billDetailId + "/quantity",
+            url: apiBill + "/details/" + billDetail.id + "/quantity",
             params: params
         }).then(function (res) {
             $scope.showSuccess("Sửa số lượng thành công");

@@ -70,7 +70,7 @@ public class NBillRestController {
     public ResponseEntity<BillDetail> addProductDetailToBill(
             @PathVariable Long billId,
             @RequestParam Long productDetailId,
-            @RequestParam int quantity,
+            @RequestParam Integer quantity,
             @RequestParam BigDecimal price,
             @RequestParam BigDecimal promotionalPrice) {
 

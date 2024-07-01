@@ -191,7 +191,7 @@
                     <tr>
                         <td class="col-2">VCC123</td>
                         <td>{{billResponse.customer.fullName}}</td>
-                        <td>{{billResponse.totalAmountAfterDiscount}}</td>
+                        <td>{{billResponse.totalAmount}}</td>
                         <td class="col-3 fs-6">Đã thanh toán</td>
                     </tr>
                 </tbody>
@@ -342,8 +342,16 @@
                             bd.productDetail.size.name}}
                         </td>
                         <td class="col-1">
+                            <!-- <input type="number" class="form-control" ng-value="bd.quantity" ng-model="bd.quantityNew"
+                                min="1"
+                                oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                ng-change="updateBillDetailQuantity(bd.quantityNew, bd)"> -->
+
                             <input type="number" class="form-control" ng-value="bd.quantity" ng-model="bd.quantityNew"
-                                min="1" max="1000" ng-change="updateBillDetailQuantity(bd.quantityNew, bd.id)">
+                                min="1"
+                                oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                ng-change="validateQuantityBd(bd, bd.quantityNew)"
+                                ng-blur="updateBillDetailQuantity(bd.quantityNew, bd)">
                         </td>
                         <td class="col-2">
                             <!-- <p style="margin-bottom: -15px;">{{bd.promotionalPrice}} đ</p>
@@ -358,9 +366,9 @@
                 <tfoot>
                     <tr>
                         <th colspan="2"></th>
-                        <th scope="col" class="fw-bold">**</th>
+                        <th scope="col" class="fw-bold">{{billDetailSummary.totalQuantity}}</th>
                         <th colspan="1"></th>
-                        <th scope="col" class="fw-bold">***,*** đ</th>
+                        <th scope="col" class="fw-bold">{{billDetailSummary.totalPromotionalPrice | number:0}} đ</th>
                         <th scope="col"></th>
                     </tr>
                 </tfoot>
@@ -383,52 +391,52 @@
                         <form ng-submit="applyFilters()">
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <label for="productName" class="form-label">Product Name</label>
+                                    <label for="productName" class="form-label">Tên sản phẩm</label>
                                     <input type="text" class="form-control" id="productName"
-                                        ng-model="filters.productName" placeholder="Enter product name...">
+                                        ng-model="filters.productName" placeholder="Nhập tên sản phẩm...">
                                 </div>
                                 <div class="col-md-2">
-                                    <label for="category" class="form-label">Category</label>
+                                    <label for="category" class="form-label">Loại</label>
                                     <select class="form-select" id="category" ng-model="filters.categoryId">
-                                        <option value="">All Categories</option>
+                                        <option value="">Tất cả</option>
                                         <option ng-repeat="c in categories" ng-value="c.id">{{c.name}}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <label for="material" class="form-label">Material</label>
+                                    <label for="material" class="form-label">Chất liệu</label>
                                     <select class="form-select" id="material" ng-model="filters.materialId">
-                                        <option value="">All Materials</option>
+                                        <option value="">Tất cả</option>
                                         <option ng-repeat="m in materials" ng-value="m.id">{{m.name}}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <label for="collar" class="form-label">Collar</label>
+                                    <label for="collar" class="form-label">Cổ áo</label>
                                     <select class="form-select" id="collar" ng-model="filters.collarId">
-                                        <option value="">All Collars</option>
+                                        <option value="">Tất cả</option>
                                         <option ng-repeat="collar in collars" ng-value="collar.id">{{collar.name}}
                                         </option>
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <label for="wrist" class="form-label">Wrist</label>
+                                    <label for="wrist" class="form-label">Tay áo</label>
                                     <select class="form-select" id="wrist" ng-model="filters.wristId">
-                                        <option value="">All Wrists</option>
+                                        <option value="">Tất cả</option>
                                         <option ng-repeat="w in wrists" ng-value="w.id">{{w.name}}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-2">
-                                    <label for="color" class="form-label">Color</label>
+                                    <label for="color" class="form-label">Màu sắc</label>
                                     <select class="form-select" id="color" ng-model="filters.colorId">
-                                        <option value="">All Colors</option>
+                                        <option value="">Tất cả</option>
                                         <option ng-repeat="color in colors" ng-value="color.id">{{color.name}}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <label for="size" class="form-label">Size</label>
+                                    <label for="size" class="form-label">Kích cỡ</label>
                                     <select class="form-select" id="size" ng-model="filters.sizeId">
-                                        <option value="">All Sizes</option>
+                                        <option value="">Tất cả</option>
                                         <option ng-repeat="s in sizes" ng-value="s.id">{{s.name}}</option>
                                     </select>
                                 </div>
@@ -443,9 +451,8 @@
                                         </div> -->
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Apply Filters</button>
-                            <button type="button" class="btn btn-secondary" ng-click="resetFilters()">Reset
-                                Filters</button>
+                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                            <button type="button" class="btn btn-secondary" ng-click="resetFilters()">Làm mới</button>
                         </form>
                     </div>
 
@@ -466,12 +473,13 @@
                                     {{pd.product.name + ' ' + pd.color.name + ' ' + pd.size.name}}</td>
                                 <td class="col-2">{{pd.product.price | number:0}} đ</td>
                                 <td class="col-2">
-                                    <p><input type="number" class="form-control w-50" min="1" max="{{pd.quantity}}"
-                                            ng-model="pd.inputQuantity"></p>
+                                    <p><input type="number" class="form-control w-50" min="1"
+                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                            ng-model="pd.inputQuantity" ng-change="validateQuantity(pd)"></p>
                                     <p>Còn lại: {{pd.quantity}}</p>
                                 </td>
                                 <td><button class="btn btn-warning"
-                                        ng-click="addBillDetail(pd.id, pd.inputQuantity, pd.price, pd.price)">Thêm</button>
+                                        ng-click="addBillDetail(pd.id, pd.inputQuantity, pd.product.price, pd.product.price)">Thêm</button>
                                 </td>
                                 <!-- Button trigger modal -->
                             </tr>

@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/admin/productDetail")
-public class ProductDetailRescontroller {
+public class ProductDetailRestController {
 
     @Autowired
     private NProductDetailService productDetailService;
