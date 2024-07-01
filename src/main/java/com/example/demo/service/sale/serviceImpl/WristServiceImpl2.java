@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class WristService2Impl2 implements WristService2 {
+public class WristServiceImpl2 implements WristService2 {
 
     @Autowired
     private WristRepository2 wristRepository2;

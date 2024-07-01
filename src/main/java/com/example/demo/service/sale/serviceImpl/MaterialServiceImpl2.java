@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MaterialService2Impl2 implements MaterialService2 {
+public class MaterialServiceImpl2 implements MaterialService2 {
 
     @Autowired
     private MaterialRepository2 materialRepository2;

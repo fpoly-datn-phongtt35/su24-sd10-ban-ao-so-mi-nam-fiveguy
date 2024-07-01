@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductSaleService2Impl2 implements ProductSaleService2 {
+public class ProductSaleServiceImpl2 implements ProductSaleService2 {
 
     @Autowired
     private ProductSaleRepository2 productSaleRepository2;

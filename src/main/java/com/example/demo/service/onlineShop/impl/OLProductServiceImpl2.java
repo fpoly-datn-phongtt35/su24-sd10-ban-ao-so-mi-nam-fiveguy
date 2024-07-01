@@ -1,25 +1,42 @@
 package com.example.demo.service.onlineShop.impl;
 
+import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.Product;
+import com.example.demo.entity.ProductDetail;
+import com.example.demo.model.response.onlineShop.ProductDetailsDTO;
+import com.example.demo.model.response.onlineShop.ProductInfoDTO;
 import com.example.demo.model.response.onlineShop.ProductSaleDetails;
 import com.example.demo.repository.onlineShop.OLProductRepository2;
-import com.example.demo.service.onlineShop.OLProductService2;
+import com.example.demo.service.onlineShop.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class OLProductService2Impl2 implements OLProductService2 {
+public class OLProductServiceImpl2 implements OLProductService2 {
 
 
     @Autowired
     private OLProductRepository2 productRepository;
+
+    @Autowired
+    private OLColorService2 olColorService2;
+
+    @Autowired
+    private OLSizeService2 olSizeService2;
+
+    @Autowired
+    private OLProductDetailService2 olProductDetailService2;
+
+    @Autowired
+    private OLBillDetailServiceImpl2 olBillDetailServiceImpl2;
+
+    @Autowired
+    private OLImageService2 olImageService2;
 
     // Phương thức để lọc sản phẩm dựa trên các thuộc tính và phân trang, sắp xếp
 
@@ -153,16 +170,68 @@ public class OLProductService2Impl2 implements OLProductService2 {
 
         return new PageImpl<>(output, pageable, filteredProductSaleDetails.size());
     }
+    private ProductInfoDTO convertToProductInfoDTO(Object[] productInfoArray) {
+        if (productInfoArray != null && productInfoArray.length > 0) {
+            Long productId = (productInfoArray[0] instanceof Long) ? (Long) productInfoArray[0] : null;
+            String productName = (String) productInfoArray[1];
+            BigDecimal price = (BigDecimal) productInfoArray[2];
+            String wristName = (String) productInfoArray[3];
+            String materialName = (String) productInfoArray[4];
+            String categoryName = (String) productInfoArray[5];
+            String collarName = (String) productInfoArray[6];
+            Integer promotionalPrice = (Integer) productInfoArray[7];
+            Integer discountType = (Integer) productInfoArray[8];
+            Integer value = (Integer) productInfoArray[9];
+            String brandName = (String) productInfoArray[10];
+            String supplierName = (String) productInfoArray[11];
+
+            return new ProductInfoDTO(productId, productName, price, wristName, materialName, categoryName, collarName, promotionalPrice, discountType,value,getTotalQuantitySold(productId),brandName,supplierName);
+        }
+        return null;
+    }
+
+    @Override
+    public ProductDetailsDTO getProductDetails(Long idProduct) {
+        List<Object[]> productInfoArray = productRepository.getProductInfo(idProduct);
+        ProductInfoDTO productInfo = convertToProductInfoDTO(!productInfoArray.isEmpty() ? productInfoArray.get(0) : null);
+
+        List<Object[]> colors = olColorService2.getColorsByProductId(idProduct);
+        List<Object[]> sizes = olSizeService2.getSizesByProductId(idProduct);
+
+
+        Long idColorFirst = colors.isEmpty() ? null : (Long) colors.get(0)[0];
+
+        List<String> listImage = colors.isEmpty() ? Collections.emptyList()
+                : olImageService2.getImagesByProductIdAndColorId(idProduct, (idColorFirst));
+
+        return new ProductDetailsDTO(productInfo, colors, sizes,listImage,0);
+    }
 
 
 
 
+    private int getTotalQuantitySold(Long idProduct) {
+        Optional<Product> product1 = productRepository.findById(idProduct);
+        if (product1.isPresent()){
+            List<ProductDetail> productDetails = olProductDetailService2.findByProduct(product1.get());
+            int totalQuantity = 0;
+            for (ProductDetail detail : productDetails) {
+                List<BillDetail> billDetails = olBillDetailServiceImpl2.findByProductDetail(detail);
+                for (BillDetail billDetail : billDetails) {
+                    if (billDetail.getBill().getStatus() == 3){
+                        totalQuantity += billDetail.getQuantity();
+                    }
+                }
+            }
+            return totalQuantity;
+        }
+        return 0;
+    }
 
-    // Implement getProduct method and other methods as needed
-
-
-
-
+@Override
+    public Integer findPromotionalPriceByProductId(Long productId) {
+        return productRepository.findPromotionalPriceByProductId(productId);
+    }
 
 
 }

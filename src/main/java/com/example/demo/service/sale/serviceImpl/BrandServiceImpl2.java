@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class BrandService2Impl2 implements BrandService2 {
+public class BrandServiceImpl2 implements BrandService2 {
 
     @Autowired
     private BrandRepository2 brandRepository2;

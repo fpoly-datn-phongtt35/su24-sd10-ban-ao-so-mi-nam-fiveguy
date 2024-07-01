@@ -508,7 +508,7 @@ $scope.deleteAll = function() {
     // $scope.getAllSales();
 
 
-var baseUrlInfoProduct = 'http://localhost:8080/api/admin/infoProduct';
+var baseUrlInfoProduct = 'http://localhost:8080/api/infoProduct';
 
     $scope.wrists = [];
     $scope.sizes = [];

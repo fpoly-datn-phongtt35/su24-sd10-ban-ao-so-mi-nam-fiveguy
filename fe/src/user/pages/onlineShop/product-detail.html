@@ -1,1 +1,358 @@
-<h1>Hello</h1>
+<!-- content -->
+<section style="    margin-top: 82px;" ng-init="getRates();loadProductDetails()">
+
+  
+    <div class="overlay" id="overlay" class="inactive" ng-click="closeOverlay($event)">
+      <div class="header-search">
+        <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
+          <i class="fa-solid fa-xmark fa-lg"></i>
+        </button>
+        <form class="from-search"  >
+          <div class="input-group">
+            <div class="form-outline w-100">
+            <input style="border-bottom: 1px solid #cdcdcd;" type="search" id="form1" class="form-control"
+      ng-model="searchText" ng-change="loadProductSearch()" />
+  
+  
+            </div>
+            <button type="button" class="btn btn-primary shadow-0">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="product-display">
+        <div class="container-fluid">
+          <div  class="row" id="productDisplay">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="container">
+      <div class="row " style="padding: 46px;">
+        <div class="col-lg-8">
+          <div class="row">
+              <aside class="col-lg-2">
+                  <!-- List ảnh repeat nằm hàng dọc bên trái -->
+                  <div class="d-flex flex-column align-items-center">
+                      <a ng-repeat="image in imagesD" ng-click="setMainImage(image)" class="border mb-2 rounded-2"
+                          data-type="image" class="item-thumb">
+                          <img width="90" height="100" class="rounded-2" ng-src="{{ image }}" />
+                      </a>
+                  </div>
+              </aside>
+              <aside class="col-lg-10">
+                  <!-- Ảnh main nằm bên phải -->
+                  <div class="border rounded-4 d-flex justify-content-center">
+                      <a data-fslightbox="mygalley" class="rounded-4" data-type="image">
+                          <img style="width: 656px; margin: auto" class="rounded-4 fit" ng-src="{{ mainImage }}" />
+                      </a>
+                  </div>
+              </aside>
+          </div>
+      </div>
+      
+  
+        <main class="col-lg-4">
+          <div class="ps-lg-3">
+            <div class="d-flex justify-content-between">
+              <div class="tile-product_left">
+                <span class="title-product">
+                    {{ productDetailInfo.productInfo.productName }} {{ productDetailInfo.productInfo.categoryName }} {{ productDetailInfo.productInfo.materialName }} {{ productDetailInfo.productInfo.code }}
+                </span>
+            </div>
+            
+              <div class="tile-right">
+                <button style="background-color: transparent;" ng-click="addFavorite(productDetailInfo.olViewProductDetailRespone.id)" class="btn btn-light border-0 py-2 icon-hover px-3 btn-heart">
+                  <i class="me-1 fa fa-heart fa-lg"></i>
+                </button>
+              </div>
+  
+  
+  
+            </div>
+  
+            <div class="d-flex flex-row mb-3">
+              <div class="mb-1 me-2">
+                  <span style="margin-right: 8px; font-size: 18px;" class="fa fa-star checked"
+                        ng-repeat="i in getNumber(productDetailInfo.productInfo.rate) track by $index"></span>
+                  <span>({{ productDetailInfo.productInfo.totalRate }})</span>
+              </div>
+              <span class="text-muted">
+                  <i class="fas fa-shopping-basket fa-sm mx-1"></i>
+                  Đã bán: {{ productDetailInfo.productInfo.totalQuantity }}
+              </span>
+          </div>
+          <div class="mb-3">
+            <div ng-if="productDetailInfo.productInfo.promotionalPrice">
+              <div>
+                  <span class="original-price">{{ formatCurrency(productDetailInfo.productInfo.price) }}₫</span>
+              </div>
+              <div>
+                  <span class="promotional-price">{{ formatCurrency(productDetailInfo.productInfo.promotionalPrice) }}₫</span>
+                  <span class="discount-value" ng-if="productDetailInfo.productInfo.discountType === 1">
+                      -{{ formatCurrency(productDetailInfo.productInfo.value) }}₫
+                  </span>
+                  <span class="discount-value" ng-if="productDetailInfo.productInfo.discountType === 2">
+                      -{{ productDetailInfo.productInfo.value }}%
+                  </span>
+              </div>
+          </div>
+          
+          <div ng-if="productDetailInfo.productInfo.value && !productDetailInfo.productInfo.promotionalPrice">
+              <div>
+                  <span class="original-price">{{ formatCurrency(productDetailInfo.productInfo.price) }}₫</span>
+              </div>
+              <div>
+                  <span class="discounted-price" ng-if="productDetailInfo.productInfo.discountType === 1">
+                      -{{ formatCurrency(productDetailInfo.productInfo.value) }}₫
+                  </span>
+                  <span class="discounted-price" ng-if="productDetailInfo.productInfo.discountType === 2">
+                      -{{ productDetailInfo.productInfo.value }}%
+                  </span>
+              </div>
+          </div>
+          
+          <div ng-if="!productDetailInfo.productInfo.promotionalPrice && !productDetailInfo.productInfo.value">
+              <span class="price">{{ formatCurrency(productDetailInfo.productInfo.price) }}₫</span>
+          </div>
+          
+          </div>
+          
+  
+  
+            <!-- Màu sắc -->
+          <!-- Màu sắc -->
+          <div class="row mb-4">
+            <div class="col-md-4 col-6">
+                <h6 class="mb-2">Màu sắc</h6>
+            </div>
+            <div class="d-flex">
+                <div class="btn-detail btncolorsize border border-secondary border-2"
+                    ng-repeat="color in productDetailInfo.colors"
+                    ng-style="{ 'background-color': color[2] }"
+                    ng-class="{ 'btn-selected2': color[0] === selectedColor }"
+                    ng-click="selectColor(color[0])"
+                    ng-init="$first && selectColor(color[0])">
+                </div>
+            </div>
+        </div>
+
+        <!-- Kích cỡ -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h6 class="mb-2 d-block">Kích cỡ</h6>
+                <div class="d-flex flex-wrap">
+                    <div class="btn-detail border border-secondary btncolorsize border-2"
+                        ng-repeat="size in productDetailInfo.sizes"
+                        ng-class="{ 'btn-selected': size[0] === selectedSize }"
+                        ng-click="selectSize(size[0])">
+                        {{ size[1] }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p>
+          <span ng-if="productDetail.quantity === 0" class="zero-quantity">Hiện sản phẩm chưa có</span>
+          <span ng-if="productDetail.quantity > 0">Còn lại: {{ productDetail.quantity }} sản phẩm</span>
+      </p>
+      
+      <div style="display: flex;">
+          <div class="quantity-input">
+              <input style="border: 1px solid; border-radius: 5px; margin-right: 4px;" type="number"
+                     ng-model="quantitySelected" min="1" max="100" ng-change="checkQuantityChange2(quantitySelected)" />
+          </div>
+      
+          <a ng-if="productDetail.quantity > 0" ng-click="cart.add(productDetail.id, quantitySelected,productDetailInfo.productInfo.promotionalPrice)"
+             class="add-to-cart btn btn-warning shadow-0">
+              Thêm vào giỏ hàng
+          </a>
+      
+          <a ng-if="productDetail.quantity === 0" class="no-product btn btn-warning shadow-0">
+              Hiện sản phẩm chưa có
+          </a>
+      </div>
+      
+  
+            </div>
+  
+            <hr />
+      
+            <div>
+              <div class="special-title">Đặc điểm nổi bật</div>
+  
+              <div class="tab-content" id="ex1-content">
+                <div class="tab-pane fade show active" id="ex1-pills-1" role="tabpanel" aria-labelledby="ex1-tab-1">
+                  <!-- <p style="padding-left: 24px;" class="py-2 ">Mô tả:
+                              {{ productDetailInfo.olViewProductDetailRespone.describe }}.
+                            </p> -->
+  
+                            <div class="single-column-container">
+                              <div class="data-item">
+                                  <span class="label">Chất liệu:</span>
+                                  <span class="value">{{ productDetailInfo.productInfo.materialName }}</span>
+                              </div>
+                              <div class="data-item">
+                                  <span class="label">Kiểu cổ áo:</span>
+                                  <span class="value">{{ productDetailInfo.productInfo.collarName }}</span>
+                              </div>
+                              <div class="data-item">
+                                  <span class="label">Kiểu cổ tay:</span>
+                                  <span class="value">{{ productDetailInfo.productInfo.wristName }}</span>
+                              </div>
+                              <div class="data-item">
+                                  <span class="label">Thương hiệu:</span>
+                                  <span class="value">{{ productDetailInfo.productInfo.brandName }}</span>
+                              </div>
+                              <div class="data-item">
+                                  <span class="label">Nhà cung cấp:</span>
+                                  <span class="value">{{ productDetailInfo.productInfo.supplierName }}</span>
+                              </div>
+                              <div class="data-item">
+                                  <span class="label">Mô tả:</span>
+                                  <span class="value">{{ productDetailInfo.productInfo.describe }}</span>
+                              </div>
+                          </div>
+                          
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  
+    <div style="padding: 46px;" class="row" ng-if="productDetailInfo.olViewProductDetailRespone.totalRate >= 1">
+  
+      <div class="col-md-2 rate-show">
+        <div class="reviews-leftside__rating">
+          <div class="reviews-rating-mb__title">
+            <h5>Đánh giá sản phẩm</h5>
+          </div>
+          <div class="reviews-rating-mb__rating">
+            <h5>{{ productDetailInfo.olViewProductDetailRespone.rate}}</h5>
+  
+          </div>
+          <div style="display: inline-block;">
+            <div class="star-container" style="display: inline-block;">
+              <span style="margin-right: 8px;    font-size: 2rem;" class="fa fa-star checked"
+                ng-repeat="i in getNumber(productDetailInfo.olViewProductDetailRespone.rate) track by $index"></span>
+            </div>
+          </div>
+  
+          <div class="reviews-rating-mb__count">
+  
+            {{productDetailInfo.olViewProductDetailRespone.totalRate}} đánh giá
+          </div>
+        </div>
+      </div>
+  
+  
+      <div class="col-md-10 " >
+  
+      <div class="row">
+        <div class="col-md-6" ng-repeat="rate in ratings.content">
+          <div class="rate-item">
+            <div style="display: flex;">
+              <div style="border-radius: 50%;">
+                <img style="width: 70px;height: 70px; margin: auto ;    margin-right: 16px;" class="rounded-4 fit" ng-src="{{ rate.customer.avatar }}" />
+              </div>
+              <div style="display: inline-block;">
+                <div class="star-container" style="display: inline-block;">
+                  <span style="margin-right: 8px;" class="fa fa-star checked"
+                    ng-repeat="i in getNumber(rate.rate) track by $index"></span>
+                </div>
+              <p><strong>{{rate.customer.fullName}}</strong></p>
+  
+              </div>
+       
+        
+            </div>
+            
+         
+  
+            <p> {{ rate.content }}</p>
+            <div style="display: flex;justify-content: space-between;    align-items: center;">
+              <p>{{ rate.createdAt | date:'dd/MM/yyyy' }}</p>
+    
+            </div>
+          </div>
+    </div>
+      </div>
+  
+   <div class="row text-center">
+    <div class="col-md-12" ng-if="ratings && (ratings.totalPages !== 1)">
+      <ul class="pagination">
+        <li ng-class="{disabled: ratings.first}">
+          <a href="#!/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(0)">
+            <i class="fa fa-angle-double-left"></i>
+          </a>
+        </li>
+        <li ng-class="{disabled: ratings.first}">
+          <a href="#!/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number - 1)">
+            <i class="fa fa-angle-left"></i>
+          </a>
+        </li>
+  
+        {{ ratings.number + 1 }}
+        <li ng-class="{disabled: ratings.last}">
+          <a href="#!/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number + 1)">
+            <i class="fa fa-angle-right"></i>
+          </a>
+        </li>
+        <li ng-class="{disabled: ratings.last}">
+          <a href="#!/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.totalPages - 1)">
+            <i class="fa fa-angle-double-right"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+      
+    
+      </div>
+    </div>
+    <div class="container-fluid">
+  
+  
+      <div style="padding: 46px;" class="row">
+        <div class="product-title">Sản phẩm cùng loại</div>
+  
+  
+        <div ng-repeat="product in productCate" class="col-lg-2 col-md-6 col-sm-6 mb-4">
+          <div class="card w-100 my-2 shadow-2-strong">
+            <!-- <img ng-src="{{ product.path }}"class="card-img-top" /> -->
+            <a href="#!product-detail/{{product.id}}">
+              <div class="d-flex justify-content-between align-items-center info-product_header">
+                <div class="d-flex align-items-center">
+                  <p style="    color: black;" class="mb-0 me-1">{{product.rate}}</p>
+                  <i style="    margin: 0 2px;color: black;
+                font-size: 10px;" class="fa-solid fa-star"></i>
+                </div>
+                <p class="mb-0">({{product.totalQuantity}})</p>
+              </div>
+              <img style="position: relative;" class="card-img-top" width="100%" height="100%" class="rounded-2"
+                loading="lazy" ng-src="{{ product.path }}" />
+            </a>
+            <div class="card-body d-flex flex-column">
+              <div style="display: flex; justify-content: space-between;">
+                <span class="product-price"> {{ product.price | number}} đ</span>
+                <!-- <a href="#" class="btn btn-light  py-2 icon-hover px-3">
+                <i class="me-1 fa fa-heart fa-lg"></i>
+              </a> -->
+              </div>
+              <p class="card-title">
+                {{ product.name }}
+                {{ product.nameCategory }}
+                {{ product.nameMaterial }}
+                <!-- {{ product.code }} -->
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </section>

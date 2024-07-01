@@ -18,3 +18,155 @@
     box-shadow: 0 0 0 0px rgba(0, 128, 255, 0.5), inset 0 0 0 3px white;
   }
 
+  .btn-detail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px;
+    width: 56px;
+    height: 40px;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .title-product{
+    font-size: 32px;
+    line-height: 1.25em;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .quantity-input {
+    display: flex;
+    align-items: center;
+  }
+
+  .add-to-cart {
+    background-color: #000;
+    font-size: 14px;
+    color: #fff;
+    width: 70%;
+    cursor: pointer;
+  }
+  
+  .no-product {
+    background-color: #ccc;
+    font-size: 14px;
+    color: #fff;
+    width: 70%;
+    cursor: not-allowed;
+  }
+
+  .zero-quantity {
+    color: grey;
+  }
+
+  .single-column-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .data-item {
+    padding-top: 10px;
+    /* border-top: 1px solid #ccc; */
+  }
+
+  .label {
+    font-weight: bold;
+  }
+
+
+  .product {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.discount-label {
+    color: blue;
+    margin-left: 5px;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: grey;
+  font-size: 14px; /* Smaller font size for the original price */
+}
+
+.promotional-price {
+  font-size: 20px; /* Larger font size for the promotional price */
+  font-weight: bold;
+}
+
+.discount-value {
+  color: red;
+  font-size: 16px; /* Adjust as needed */
+  font-weight: bold;
+}
+
+.discounted-price {
+  color: red;
+  font-size: 20px; /* Larger font size for the discounted price */
+  font-weight: bold;
+}
+
+.price {
+  font-size: 20px; /* Default font size for regular price */
+  font-weight: bold;
+}
+
+.selected-payment {
+  border: 1px solid #2f5acf !important;
+  border-radius: 14px; /* Góc cong */
+}
+
+
+.select-payment {
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc; /* Mặc định là viền xám */
+  border-radius: 14px; /* Góc cong */
+  display: flex;
+}
+.select-payment img{
+  width: 35px;
+  height: 35px;
+  margin: 0 12px;
+}
+
+.modal-dialogAddress{
+  max-height: 600px; 
+  max-width: 600px; 
+}
+.listAddress{
+  max-height: 500px; /* Điều chỉnh chiều cao tối đa của danh sách voucher */
+  overflow-y: auto; /* Tạo thanh cuộn nếu danh sách voucher dài hơn */
+  overflow-x: hidden;
+  position: relative;
+}
+.account-address__head {
+  align-items: center;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 18px; /* Kích thước lớn hơn cho Họ và tên */
+  margin-bottom: 5px; /* Khoảng cách dưới */
+}
+
+.default-address {
+  font-weight: bold; /* Đậm hơn */
+  color: red; /* Màu đỏ nổi bật hơn */
+  margin-top: 5px; /* Khoảng cách trên */
+}
+
+.address-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.address-info {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}

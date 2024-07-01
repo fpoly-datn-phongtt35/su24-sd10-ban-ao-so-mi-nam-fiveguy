@@ -13,7 +13,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/admin/infoProduct")
+@RequestMapping("/api/infoProduct")
 public class ProductAttributesController2 {
 
     @Autowired

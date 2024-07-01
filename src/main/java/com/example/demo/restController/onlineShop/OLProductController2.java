@@ -1,26 +1,37 @@
 package com.example.demo.restController.onlineShop;
 
+import com.example.demo.entity.Image;
+import com.example.demo.entity.ProductDetail;
+import com.example.demo.model.response.onlineShop.ProductDetailsDTO;
 import com.example.demo.model.response.onlineShop.ProductSaleDetails;
+import com.example.demo.service.onlineShop.OLImageService2;
+import com.example.demo.service.onlineShop.OLProductDetailService2;
 import com.example.demo.service.onlineShop.OLProductService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/home")
 public class OLProductController2 {
 
     @Autowired
     private OLProductService2 productService;
+
+    @Autowired
+    private OLProductDetailService2 olProductDetailService2;
+
+    @Autowired
+    private OLImageService2 olImageService2;
 
     @GetMapping("/product/filter")
     public Page<ProductSaleDetails> filterProducts(
@@ -114,6 +125,26 @@ public class OLProductController2 {
         return longSet;
     }
 
+    @GetMapping("/product/viewProduct/{id}")
+    public ProductDetailsDTO getProductDetails(@PathVariable("id") Long id) {
+        return productService.getProductDetails(id);
+    }
 
+    @GetMapping("/product/{productId}/color/{colorId}")
+    public List<String> getImagesByProductIdAndColorId(@PathVariable Long productId, @PathVariable Long colorId) {
+        return olImageService2.getImagesByProductIdAndColorId(productId, colorId);
+    }
+
+    @GetMapping("/product/productDetail/{productId}/{sizeId}/{colorId}")
+    public ResponseEntity<ProductDetail> getProductDetail(@PathVariable Long productId,
+                                                          @PathVariable Long sizeId,
+                                                          @PathVariable Long colorId) {
+        ProductDetail productDetail = olProductDetailService2.getProductDetail(productId, sizeId, colorId);
+        if (productDetail != null) {
+            return ResponseEntity.ok(productDetail);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }

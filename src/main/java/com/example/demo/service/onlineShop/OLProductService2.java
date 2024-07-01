@@ -1,10 +1,12 @@
 package com.example.demo.service.onlineShop;
 
 import com.example.demo.entity.Product;
+import com.example.demo.model.response.onlineShop.ProductDetailsDTO;
 import com.example.demo.model.response.onlineShop.ProductSaleDetails;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,7 +25,8 @@ import java.util.Set;
 
 
 
+        ProductDetailsDTO getProductDetails(Long idProduct);
 
-
+        Integer findPromotionalPriceByProductId(Long productId);
     }
 

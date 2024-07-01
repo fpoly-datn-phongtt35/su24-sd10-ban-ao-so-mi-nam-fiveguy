@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class SaleService2Impl2 implements SaleService2 {
+public class SaleServiceImpl2 implements SaleService2 {
 
     @Autowired
     private SaleRepository2 saleRepository2;

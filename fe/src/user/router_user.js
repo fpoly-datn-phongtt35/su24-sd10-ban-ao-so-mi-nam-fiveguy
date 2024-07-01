@@ -23,15 +23,15 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Hải -->
     .when("/home/cart", {
       templateUrl: "pages/cart/cart.html",
-      controller: 'cartController'
+      controller: 'productController'
     })
     .when("/home/product", {
       templateUrl: "pages/onlineShop/product.html",
       controller: 'productController'
     })
-    .when("/home/product/product-detail/:id", {
+    .when("/home/product/product-detail/:idProduct", {
       templateUrl : "pages/onlineShop/product-detail.html",
-      controller : "productDetailController"
+      controller : "productController"
     })
 
 

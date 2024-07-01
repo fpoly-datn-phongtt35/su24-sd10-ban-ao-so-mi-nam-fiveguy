@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ColorService2Impl2 implements ColorService2 {
+public class ColorServiceImpl2 implements ColorService2 {
 
     @Autowired
     private ColorRepository2 colorRepository2;

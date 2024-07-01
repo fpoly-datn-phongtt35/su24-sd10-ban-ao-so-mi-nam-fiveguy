@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CollarService2Impl2 implements CollarService2 {
+public class CollarServiceImpl2 implements CollarService2 {
 
     @Autowired
     private CollarRepository2 collarRepository2;
