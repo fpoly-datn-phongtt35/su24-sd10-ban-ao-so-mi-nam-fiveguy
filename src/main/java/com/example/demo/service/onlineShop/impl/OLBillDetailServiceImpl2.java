@@ -23,4 +23,9 @@ public class OLBillDetailServiceImpl2 implements OLBillDetailService2 {
         return olBillDetailRepository.findByProductDetailAndStatus(productDetail,5);
 
     }
+
+    @Override
+    public void saveAll(List<BillDetail> billDetails) {
+        olBillDetailRepository.saveAll(billDetails);
+    }
 }

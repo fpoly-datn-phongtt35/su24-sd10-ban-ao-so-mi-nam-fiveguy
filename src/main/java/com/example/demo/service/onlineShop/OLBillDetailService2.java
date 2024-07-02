@@ -9,5 +9,7 @@ public interface OLBillDetailService2 {
 
     List<BillDetail> findByProductDetail(ProductDetail productDetail);
 
+    void saveAll(List<BillDetail> billDetails);
+
 
 }
