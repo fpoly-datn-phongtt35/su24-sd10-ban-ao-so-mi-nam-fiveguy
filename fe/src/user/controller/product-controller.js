@@ -340,9 +340,12 @@ $scope.loadPage = function() {
 
         $scope.cart = {
             items: [],
-            add(productDetailId, quantity,promotionalPrice) {
+            add(productDetailId, quantity) {
                     // Thực hiện hành động khi đã đăng nhập
-                    $http.post('http://localhost:8080/api/home/cart/add', { productDetailId: productDetailId, quantity: quantity,promotionalPrice: promotionalPrice})
+                    $http.post('http://localhost:8080/api/home/cart/add', { productDetailId: productDetailId, quantity: quantity
+                        // ,promotionalPrice: promotionalPrice
+
+                    })
                         .then(function (response) {
                             if (response.data.employeeLoggedIn === true) {
                                 $scope.showErrorNotification("Nhân viên không thể mua hàng!");
@@ -690,12 +693,12 @@ $scope.province1 = function () {
       };
 
       $scope.selectedPayment = null; // Khởi tạo giá trị ban đầu
-      $scope.selectedPaymentName = null; // Khởi tạo giá trị ban đầu
+      $scope.selectedPaymentCode = null; // Khởi tạo giá trị ban đầu
       
       $scope.selectPaymentMethod = function(paymentMethod) {
           $scope.selectedPayment = paymentMethod; 
-          $scope.selectedPaymentName = paymentMethod.name
-          console.log($scope.selectedPaymentName)
+          $scope.selectedPaymentCode = paymentMethod.code
+          console.log($scope.selectedPaymentCode)
       };
 
 
@@ -848,6 +851,7 @@ $scope.dataCity.ProvinceName;
 
     // Chọn address
     $scope.fillDataToBill  = function(address) {
+        console.log(address)
         if (address != '') {
         
           $scope.defaultAddress = address;
@@ -864,17 +868,15 @@ $scope.dataCity.ProvinceName;
         
           var addressComponentsId = $scope.defaultAddress.addressId.split(',');
           if (addressComponentsId.length >= 1) {
-            $scope.dataCity.ProvinceID = addressComponentsId[2].trim();
-          $scope.dataDistrict.DistrictID = addressComponentsId[1].trim();
-          $scope.dataWard.WardCode = addressComponentsId[0].trim();
+            $scope.dataCity = addressComponentsId[2].trim();
+          $scope.dataDistrict = addressComponentsId[1].trim();
+          $scope.dataWard = addressComponentsId[0].trim();
           }
-        
-        $scope.getNameProvince($scope.dataCity.ProvinceID)
-        $scope.getNameDistrict($scope.dataCity.ProvinceID,$scope.dataDistrict.DistrictID)
-        $scope.getNameWard($scope.dataDistrict.DistrictID,$scope.dataWard.WardCode)
-        $scope.calculateShippingFee($scope.dataDistrict.DistrictID,$scope.dataWard.WardCode)
+        $scope.getNameProvince($scope.dataCity)
+        $scope.getNameDistrict($scope.dataCity,$scope.dataDistrict)
+        $scope.getNameWard($scope.dataDistrict,$scope.dataWard)
+        $scope.calculateShippingFee($scope.dataDistrict,$scope.dataWard)
         }
-         
         
         };
 

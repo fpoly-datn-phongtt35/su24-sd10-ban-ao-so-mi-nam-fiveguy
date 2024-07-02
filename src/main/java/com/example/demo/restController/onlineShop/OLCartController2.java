@@ -57,7 +57,8 @@ public class OLCartController2 {
                         CartResponseDTO olCartResponse = new CartResponseDTO();
                         olCartResponse.setId(cartDetail.getId());
                         olCartResponse.setQuantity(cartDetail.getQuantity());
-                        olCartResponse.setPrice(cartDetail.getPrice());
+//                        phh
+                        olCartResponse.setPrice(olProductService2.getProductPriceById(product.getId()));
                         olCartResponse.setPromotionalPrice(olProductService2.findPromotionalPriceByProductId(product.getId()));
                         olCartResponse.setCart(cartDetail.getCart());
                         olCartResponse.setName(product.getName() +  product.getCategory().getName() + product.getMaterial().getName());
@@ -102,17 +103,17 @@ public class OLCartController2 {
             if (cart == null) {
                 cart = new Cart();
                 cart.setCustomer(customer.get());
-                cart.setCreatedAt(new Date());
-                cart.setUpdatedAt(new Date());
+//                cart.setCreatedAt(new Date());
+//                cart.setUpdatedAt(new Date());
                 cart.setStatus(1);
                 cart = olCartService.save(cart);
             }
 
             Long productDetailId = Long.valueOf(orderData.get("productDetailId").asText());
             int quantity = orderData.get("quantity").asInt();
-            String promotionalPriceString = orderData.get("promotionalPrice").asText();
+//            String promotionalPriceString = orderData.get("promotionalPrice").asText();
 
-            BigDecimal promotionalPrice = new BigDecimal(promotionalPriceString);
+//            BigDecimal promotionalPrice = new BigDecimal(promotionalPriceString);
 
             Optional<ProductDetail> productDetail = olProductDetailService.findById(productDetailId);
 
@@ -132,8 +133,8 @@ public class OLCartController2 {
                         newCartDetail.setCart(cart);
                         newCartDetail.setProductDetail(productDetail.get());
                         newCartDetail.setQuantity(quantity);
-                        newCartDetail.setPrice(productDetail.get().getProduct().getPrice());
-                        newCartDetail.setPromotionalPrice(promotionalPrice);
+//                        newCartDetail.setPrice(productDetail.get().getProduct().getPrice());
+//                        newCartDetail.setPromotionalPrice(promotionalPrice);
                         newCartDetail.setStatus(1);
                         olCartDetailService.save(newCartDetail);
                     }

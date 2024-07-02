@@ -164,7 +164,7 @@
                      ng-model="quantitySelected" min="1" max="100" ng-change="checkQuantityChange2(quantitySelected)" />
           </div>
       
-          <a ng-if="productDetail.quantity > 0" ng-click="cart.add(productDetail.id, quantitySelected,productDetailInfo.productInfo.promotionalPrice)"
+          <a ng-if="productDetail.quantity > 0" ng-click="cart.add(productDetail.id, quantitySelected)"
              class="add-to-cart btn btn-warning shadow-0">
               Thêm vào giỏ hàng
           </a>

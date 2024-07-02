@@ -63,5 +63,6 @@ public interface OLProductRepository2 extends JpaRepository<Product, Long>, JpaS
         "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")
 Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
 
+//    Integer findPriceBy(@Param("productId") Long productId);
 
 }

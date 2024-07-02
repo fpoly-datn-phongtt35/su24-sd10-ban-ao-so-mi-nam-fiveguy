@@ -233,5 +233,15 @@ public class OLProductServiceImpl2 implements OLProductService2 {
         return productRepository.findPromotionalPriceByProductId(productId);
     }
 
+    @Override
+    public BigDecimal getProductPriceById(Long productId) {
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (productOptional.isPresent()) {
+            return productOptional.get().getPrice();
+        } else {
+            throw new RuntimeException("Product not found with id: " + productId);
+        }
+    }
+
 
 }
