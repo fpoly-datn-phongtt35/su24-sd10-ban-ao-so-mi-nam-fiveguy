@@ -22,10 +22,20 @@ app.controller("SuppilerController", function($scope, $http){
     $scope.brand = {};
     $scope.brands = [];
     $scope.selected = [];
-    $scope.selectedAll = false;
+    $scope.selectedUpdate = [];
+
+    $http.get('https://vapi.vnappmob.com/api/province/')
+    .then(function(response) {
+        $scope.provinces = response.data.results;
+    })
+    .catch(function(error) {
+        console.error('Lỗi khi gọi API:', error);
+    });
+
 
     $scope.searchBrands = () => {
         $scope.pageBrand = 0;
+        $scope.currentPageInput = 1;
         $scope.getAllBrands();
     }
 
@@ -53,6 +63,7 @@ app.controller("SuppilerController", function($scope, $http){
         } else {
             $scope.currentPageInput = 1;
             $scope.pageBrand = 0;
+            $scope.getAllBrands();
         }
        
     }
@@ -109,7 +120,7 @@ app.controller("SuppilerController", function($scope, $http){
     }
 
     $scope.exist = (item) => {
-        return $scope.selected.indexOf(item) > -1;
+        return $scope.selected.some(selectedItem => selectedItem.id === item.id);
     }
 
     $scope.toggleSelection = (item) => {
@@ -118,14 +129,32 @@ app.controller("SuppilerController", function($scope, $http){
         else $scope.selected.push(item);
     }
 
-    $scope.checkAll = () => {
-        if (!$scope.selectedAll) {
-            angular.forEach($scope.brands.content, (item) => {
-                index = $scope.selected.indexOf(item);
-                if (index >= 0) return true;
-                else $scope.selected.push(item);
-            })
-        } else $scope.selected = [];
+    $scope.existUpdate = (item) => {
+        return $scope.selectedUpdate.some(selectedItem => selectedItem.brand.id === item.id && selectedItem.status === 1);
+    }
+
+    $scope.toggleSelectionUpdate = (item) => {
+        let index = $scope.selectedUpdate.findIndex(selectedItem => selectedItem.brand.id === item.id);
+        if (index > -1 && $scope.selectedUpdate[index].id) $scope.selectedUpdate[index].status = $scope.selectedUpdate[index].status === 1 ? 0 : 1;
+        else if (index > -1) {
+            $scope.selectedUpdate.splice(index, 1);
+        }
+        else  {
+            $scope.selectedUpdate.push({
+                brand: item,
+                supplier: {
+                    id: $scope.supplierUpdate.id,
+                    brand: $scope.supplierUpdate.brand,
+                    address: $scope.supplierUpdate.address,
+                    createdAt: $scope.supplierUpdate.createdAt,
+                    email: $scope.supplierUpdate.email,
+                    name: $scope.supplierUpdate.name,
+                    phoneNumber: $scope.supplierUpdate.phoneNumber,
+                    updatedAt: $scope.supplierUpdate.updatedAt
+                },
+                status: 1
+            });
+        }
     }
     
     $scope.getAllSuppilers = () => {
@@ -146,93 +175,111 @@ app.controller("SuppilerController", function($scope, $http){
             })
     }
 
-    // $scope.searchSuppilers = () => {
-    //     $scope.page = 0;
-    //     $scope.getAllSuppilers();
-    // }
+    $scope.searchSuppilers = () => {
+        $scope.page = 0;
+        $scope.getAllSuppilers();
+    }
     
-    // $scope.changePage = (page) => {
-    //     if (page >= 0 && page < $scope.totalPages) {
-    //         $scope.page = page;
-    //         $scope.getAllSuppilers();
-    //     }
-    // }
+    $scope.changePage = (page) => {
+        if (page >= 0 && page < $scope.totalPages) {
+            $scope.page = page;
+            $scope.getAllSuppilers();
+        }
+    }
 
     $scope.getAllSuppilers();
 
     $scope.resetForm = () => {
         $scope.supplier = {};
         $scope.errors = {};
+        $scope.selected = [];
     }
 
-    // $scope.resetFormUpdate = () => {
-    //     $scope.supplierUpdate = {};
-    //     $scope.errorsUpdate = {};
-    // }
+    $scope.resetFormUpdate = () => {
+        $scope.supplierUpdate = {};
+        $scope.errorsUpdate = {};
+        $scope.selectedUpdate = [];
+    }
 
     
-    // $scope.handleDelete = (element) => {
-    //     $scope.supplier = element;
-    // }
+    $scope.handleDelete = (element) => {
+        $scope.supplier = element;
+    }
 
-    // $scope.handleStatus = (element) => {
-    //     $scope.supplier = element;
-    // }
+    $scope.handleStatus = (element) => {
+        $scope.supplier = element;
+    }
 
-    // $scope.updateStatus = () => {
-    //     $http.put(`${config.host}/supplier/status/${$scope.supplier.id}`).then(response => {
-    //         $scope.getAllSuppilers();
-    //         $scope.supplier = {};
-    //         $('#updateStatusModel').modal('hide');
-    //         toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
-    //     }).catch(error => {
-    //         console.log("Error", error);
-    //     })
-    // }
+    
+    $scope.delete = () => {
+        $http.delete(`${config.host}/supplier/${$scope.supplier.id}`).then(response => {
+            $scope.getAllSuppilers();
+            $scope.supplier = {};
+            $('#deleteSupplierModel').modal('hide');
+            toastr["success"]("Xóa " + response.data.name + " thành công");
+        }).catch(error => {
+            toastr["error"](error);
+        })
+    }
 
-    $scope.isAddress = () => {
-        if ($scope.provinceValue == undefined) {
+    $scope.updateStatus = () => {
+        $http.put(`${config.host}/supplier/status/${$scope.supplier.id}`).then(response => {
+            $scope.getAllSuppilers();
+            $scope.supplier = {};
+            $('#updateStatusModel').modal('hide');
+            toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
+        }).catch(error => {
+            console.log("Error", error);
+        })
+    }
+
+    $scope.isAddress = (provice, district, ward) => {
+        if (provice == undefined) {
             toastr["warning"]("Vui lòng chọn tỉnh thành");
             return false;
-        } else if ($scope.districtValue == "") {
+        } else if (district == "") {
             toastr["warning"]("Vui lòng chọn quận/huyện");
             return false;
-        }  else if ($scope.wardValue == "") {
+        }  else if (ward == "") {
             toastr["warning"]("Vui lòng chọn phường/xã");
             return false;
         } 
         return true;
     }
 
+    
+
     $scope.createSupplier = () => {
-        if ($scope.supplierForm.$valid && $scope.isAddress()) {
+        if ($scope.supplierForm.$valid && $scope.isAddress($scope.provinceValue, $scope.districtValue, $scope.wardValue)) {
             $scope.supplier.brands = $scope.selected;
             $scope.supplier.address = `${$scope.provinceValue}, ${$scope.districtValue}, ${$scope.wardValue}`;
            $http.post(`${config.host}/supplier`, $scope.supplier).then((response) => {
                 $scope.getAllSuppilers();
                 $scope.resetForm();
-                $('#addSuppilerModel').modal('hide');
+                $('#addSupplierModel').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
            }).catch(error => {
                 if (error.status === 400) $scope.errors = error.data
-                else toastr["error"](error);
+                else console.log(error);
            })
         }
     }
 
-    
-    $scope.selectedProvince = null;
-    $scope.selectedDistrict = null;
-    $scope.selectedWard = null;
-
-    // Load provinces
-    $http.get('https://vapi.vnappmob.com/api/province/')
-        .then(function(response) {
-            $scope.provinces = response.data.results;
-        })
-        .catch(function(error) {
-            console.error('Lỗi khi gọi API:', error);
-        });
+    $scope.updateSupplier = () => {
+        if ($scope.supplierUpdateForm.$valid && $scope.isAddress($scope.provinceName, $scope.districtName, $scope.wardName)) {
+            $scope.supplierUpdate.brandSuppilers = $scope.selectedUpdate;
+            $scope.supplierUpdate.address = `${$scope.provinceName}, ${$scope.districtName}, ${$scope.wardName}`;
+            $http.put(`${config.host}/supplier/${$scope.supplierUpdate.id}`, $scope.supplierUpdate).then((response) => {
+                $scope.getAllSuppilers();
+                $scope.resetFormUpdate();
+                $('#editSupplierModal').modal('hide');
+                toastr["success"]("Thêm mới " + response.data.name + " thành công");
+            }).catch(error => {
+                if (error.status === 400) $scope.errorsUpdate = error.data;
+                else console.log(error);
+            })
+        }
+    }
 
     // Initialize Select2 for provinces
     $('#id-update-province').select2({
@@ -242,12 +289,12 @@ app.controller("SuppilerController", function($scope, $http){
     }).on("select2:select", function(e) {
         $scope.$apply(function() {
             $scope.districts = [];
-            $scope.selectedDistrict = null;
+            $scope.districtName = "";
             $scope.wards = [];
-            $scope.selectedWard = null;
+            $scope.wardName = "";
 
             let provinceId = e.params.data.id;
-            $scope.selectedProvince = provinceId;
+            $scope.provinceName = e.params.data.text;
             if (provinceId) {
                 $("#id-update-district").prop("disabled", true);
                 $http.get(`https://vapi.vnappmob.com/api/province/district/${provinceId}`)
@@ -270,10 +317,10 @@ app.controller("SuppilerController", function($scope, $http){
     }).on("select2:select", function(e) {
         $scope.$apply(function() {
             $scope.wards = [];
-            $scope.selectedWard = null;
+            $scope.wardName = "";
 
             let districtId = e.params.data.id;
-            $scope.selectedDistrict = districtId;
+            $scope.districtName = e.params.data.text;
             if (districtId) {
                 $("#id-update-ward").prop("disabled", true);
                 $http.get(`https://vapi.vnappmob.com/api/province/ward/${districtId}`)
@@ -295,7 +342,7 @@ app.controller("SuppilerController", function($scope, $http){
         dropdownParent: $("#box-update-ward")
     }).on("select2:select", function(e) {
         $scope.$apply(function() {
-            $scope.selectedWard = e.params.data.id;
+            $scope.wardName = e.params.data.text;
         });
     });
 
@@ -303,7 +350,7 @@ app.controller("SuppilerController", function($scope, $http){
     $scope.editSupplier = function(key) {
         $http.get(`${config.host}/supplier/${key}`).then(function(response) {
             $scope.supplierUpdate = response.data;
-
+            
             // Split address and select corresponding values
             let address = response.data.address;
             let [provinceName, districtName, wardName] = address.split(', ').map(part => part.trim());
@@ -312,24 +359,32 @@ app.controller("SuppilerController", function($scope, $http){
             let province = $scope.provinces.find(p => p.province_name === provinceName);
             if (province) {
                 $scope.selectedProvince = province.province_id;
+                $scope.provinceName = province.province_name;
                 $('#id-update-province').val(province.province_id).trigger('change');
 
                 // Load districts and select corresponding district
-                $scope.loadDistricts(province.province_id).then(function() {
+                $scope.loadDistricts(province.province_id, '.districtUpdate').then(function() {
                     let district = $scope.districts.find(d => d.district_name === districtName);
                     if (district) {
                         $scope.selectedDistrict = district.district_id;
+                        $scope.districtName = district.district_name;
                         $('#id-update-district').val(district.district_id).trigger('change');
 
                         // Load wards and select corresponding ward
-                        $scope.loadWards(district.district_id).then(function() {
+                        $scope.loadWards(district.district_id, '.wardUpdate').then(function() {
                             let ward = $scope.wards.find(w => w.ward_name === wardName);
                             if (ward) {
                                 $scope.selectedWard = ward.ward_id;
+                                $scope.wardName = ward.ward_name;
                                 $('#id-update-ward').val(ward.ward_id).trigger('change');
                             }
                         });
                     }
+                });
+                $http.get(`${config.host}/brand-supplier/${key}`).then(response => {
+                    $scope.selectedUpdate = response.data;
+                }).catch(function(error) {
+                    toastr["error"](error);
                 });
             }
         }).catch(function(error) {
@@ -338,61 +393,33 @@ app.controller("SuppilerController", function($scope, $http){
     };
 
     // Load districts by province ID
-    $scope.loadDistricts = function(provinceId) {
-        return $http.get(`https://vapi.vnappmob.com/api/province/district/${provinceId}`)
-            .then(function(response) {
-                $scope.districts = response.data.results;
-            })
-            .catch(function(error) {
-                console.error('Lỗi khi gọi API:', error);
-            });
+    $scope.loadDistricts = function(provinceId, cls) {
+        $(cls).prop("disabled", true);
+        return  $http.get(`https://vapi.vnappmob.com/api/province/district/${provinceId}`)
+                .then(function(response) {
+                    $scope.districts = response.data.results;
+                    $(cls).prop("disabled", false);
+                 })
+                .catch(function(error) {
+                    console.error('Lỗi khi gọi API:', error);
+                });
     };
 
     // Load wards by district ID
-    $scope.loadWards = function(districtId) {
+    $scope.loadWards = function(districtId, cls) {
+        $(cls).prop("disabled", true);
         return $http.get(`https://vapi.vnappmob.com/api/province/ward/${districtId}`)
-            .then(function(response) {
-                $scope.wards = response.data.results;
-            })
-            .catch(function(error) {
-                console.error('Lỗi khi gọi API:', error);
-            });
+        .then(function(response) {
+            $scope.wards = response.data.results;
+            $(cls).prop("disabled", false);
+        })
+        .catch(function(error) {
+            console.error('Lỗi khi gọi API:', error);
+        });
     };
 
-    // $scope.updateSuppiler = () => {
-    //     if ($scope.supplierFormUpdate.$valid) {
-    //         $http.put(`${config.host}/supplier/${$scope.supplierUpdate.id}`, $scope.supplierUpdate).then(response => {
-    //             $scope.getAllSuppilers();
-    //             $scope.resetFormUpdate();
-    //             $('#editSuppilerModal').modal('hide');
-    //             toastr["success"]("Cập nhật " + response.data.name + " thành công");
-    //         }). catch(error => {
-    //             if (error.status === 400) $scope.errorsUpdate = error.data;
-    //             else toastr["error"](error);
-    //         })
-    //     }
-    // }
-
-    // $scope.delete = () => {
-    //     $http.delete(`${config.host}/supplier/${$scope.supplier.id}`).then(response => {
-    //         $scope.getAllSuppilers();
-    //         $scope.supplier = {};
-    //         $('#deleteSuppilerModel').modal('hide');
-    //         toastr["success"]("Xóa " + response.data.name + " thành công");
-    //     }).catch(error => {
-    //         toastr["error"](error);
-    //     })
-    // }
 
     // --------------------------------------------------------------------------------------------
-
-    $http.get('https://vapi.vnappmob.com/api/province/')
-    .then(function(response) {
-        $scope.provinces = response.data.results;
-    })
-    .catch(function(error) {
-        console.error('Lỗi khi gọi API:', error);
-    });
 
     $('.province').select2( {
         theme: "bootstrap-5",
@@ -406,15 +433,7 @@ app.controller("SuppilerController", function($scope, $http){
         let provinceCode = e.params.data.id;
         $scope.provinceValue = e.params.data.text;
         if (provinceCode) {
-            $(".district").prop("disabled", true);
-            $http.get(`https://vapi.vnappmob.com/api/province/district/${provinceCode}`)
-                .then(function(response) {
-                    $scope.districts = response.data.results;
-                    $(".district").prop("disabled", false);
-                })
-                .catch(function(error) {
-                    console.error('Lỗi khi gọi API:', error);
-                });
+            $scope.loadDistricts(provinceCode, '.district');
         } 
     });
 
@@ -428,15 +447,7 @@ app.controller("SuppilerController", function($scope, $http){
         let districtCode = e.params.data.id;
         $scope.districtValue = e.params.data.text;
         if (districtCode) {
-            $(".ward").prop("disabled", true);
-            $http.get(`https://vapi.vnappmob.com/api/province/ward/${districtCode}`)
-                .then(function(response) {
-                    $scope.wards = response.data.results;
-                    $(".ward").prop("disabled", false);
-                })
-                .catch(function(error) {
-                    console.error('Lỗi khi gọi API:', error);
-                });
+            $scope.loadWards(districtCode, '.ward');
         }
     });
 
