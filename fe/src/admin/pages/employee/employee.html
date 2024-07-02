@@ -210,7 +210,7 @@
                                     <th scope="col-1">Giới tính</th>
                                     <!-- <th scope="col-1">Địa chỉ</th> -->
                                     <th scope="col-1">Chức vụ</th>
-                                    <th scope="col-1.5">Trạng thái</th>
+                                    <th scope="col-1">Trạng thái</th>
                                     <th scope="col-1.5">Action</th>
                                 </tr>
                             </thead>
@@ -221,14 +221,14 @@
                                         {{ ($index + 1) + (desiredPage != 1 ? (desiredPage * 5) : 0)
                                         }}
                                     </td>
-                                    <td scope="col-1">{{employee.code}}</td>
-                                    <td scope="col-1">
+                                    <td scope="col-1" class="css-text-overfolow">{{employee.code}}</td>
+                                    <td scope="col-1" class="css-text-overfolow">
                                         <img ng-src="{{employee.avatar}}" alt="" style="width: 50px; height: 50px" />
                                     </td>
-                                    <td scope="col-1">{{employee.fullName}}</td>
-                                    <td scope="col-1">{{employee.account.account}}</td>
-                                    <td scope="col-1">{{employee.account.email}}</td>
-                                    <td scope="col-1">{{employee.account.phoneNumber}}</td>
+                                    <td scope="col-1" class="css-text-overfolow">{{employee.fullName}}</td>
+                                    <td scope="col-1" class="css-text-overfolow">{{employee.account.account}}</td>
+                                    <td scope="col-1" class="css-text-overfolow-email">{{employee.account.email}}</td>
+                                    <td scope="col-1" class="css-text-overfolow">{{employee.account.phoneNumber}}</td>
                                     <!-- <td scope="col-1">{{employee.birthDate}}</td> -->
                                     <td scope="col-1">
                                         {{employee.gender == true ? 'Nam' : 'Nữ'}}
@@ -356,7 +356,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col-1">STT</th>
-                                    <th scope="col-1">Mã nhân viên</th>
+                                    <th scope="col-1">Mã</th>
                                     <th scope="col-1">Người thực hiện</th>
                                     <th scope="col-2">Loại hành động</th>
                                     <th scope="col-3">Chi tiết hành động</th>
@@ -373,10 +373,10 @@
                                         }}
                                     </td>
                                     <td scope="col-1" class="">{{employee.empCode}}</td>
-                                    <td scope="col-1" class="">{{employee.implementer}}</td>
-                                    <td scope="col-1" class="">{{employee.actionType}}</td>
+                                    <td scope="col-1" class="css-text-overfolow">{{employee.implementer}}</td>
+                                    <td scope="col-1" class="css-text-overfolow">{{employee.actionType}}</td>
                                     <td scope="col-4" class="css-text-overfolow">{{employee.detailedAction}}</td>
-                                    <td scope="col-1" class="">{{formatDateTime(employee.time)}}</td>
+                                    <td scope="col-1" class="css-text-overfolow">{{formatDateTime(employee.time)}}</td>
                                     <td class="col-2" ng-switch="employee.status">
                                         <span ng-switch-when="1">
                                             <div class="badge bg-success text-wrap">
@@ -391,8 +391,8 @@
                                     </td>
                                     <td scope="col-1">
                                         <a type="button" class="edit" data-bs-toggle="modal"
-                                            data-bs-target="#modalUpdate" ng-click="edit(employee)">
-                                            <i class="material-icons" title="Edit">&#xE254;</i>
+                                            data-bs-target="#AuditLogUpdate" ng-click="detailAuditLog(employee)">
+                                            <i class="material-icons" title="Detail">&#xE254;</i>
                                         </a>
                                         <a type="button" class="btn" data-bs-toggle="modal" data-bs-target=""
                                             ng-click="delete(employee)">
@@ -836,6 +836,77 @@
     </div>
 </div>
 <!-- End modal update -->
+
+
+<!-- Modal detal chi tiết lịch sửa NV -->
+<div class="modal fade" tabindex="-1" id="AuditLogUpdate" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form name="formUpdateEmployee" ng-submit="" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết lịch sử nhân viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body ">
+
+                    <div class="row mb-3">
+                        <label for="inputCode" class="col-sm-4 col-form-label">Mã người thực hiện: </label>
+                        <div class="col-sm-8">
+                            <input name="empCode" id="inputCode" type="text" class="form-control"
+                                ng-model="formDetailAuditLog.empCode" readonly />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputImplementer" class="col-sm-4 col-form-label">Người thực hiện: </label>
+                        <div class="col-sm-8">
+                            <input name="implementer" id="inputImplementer" type="text" class="form-control"
+                                ng-model="formDetailAuditLog.implementer" readonly />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="inputTypeAction" class="col-sm-4 col-form-label">Loại hành đồng: </label>
+                        <div class="col-sm-8">
+                            <input name="actionType" id="inputTypeAction" type="text" class="form-control"
+                                ng-model="formDetailAuditLog.actionType" readonly />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputdetailaction" class="col-sm-4 col-form-label">Chi tiêt hành đồng: </label>
+                        <div class="col-sm-8">
+                            <textarea name="detailedAction" id="inputdetailaction" type="text" class="form-control"
+                                ng-model="formDetailAuditLog.detailedAction" readonly></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="inputTime" class="col-sm-4 col-form-label">Thời gian thực hiên: </label>
+                        <div class="col-sm-8">
+                            <input name="time" id="inputTime" type="text" class="form-control"
+                                ng-model="formDetailAuditLog.time" readonly />
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputStatus" class="col-sm-4 col-form-label">Loại tài khoản: </label>
+                        <div class="col-sm-8">
+                            <input name="status" class="form-control" aria-label="Small select example"
+                                ng-model="formDetailAuditLog.status"
+                                ng-value="formDetailAuditLog.status == 1 ? 'Nhân viên' : 'Khách hàng'" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 <!----Modal thêm employee bằng exxel end --------->
 <!-- <div class="modal fade" id="modalAddExcel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"

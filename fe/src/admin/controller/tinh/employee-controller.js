@@ -5,6 +5,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.formInput = {};
   $scope.formInputAccount = {};
   $scope.formUpdateAccount = {};
+  formDetailAuditLog = {};
   $scope.formDelete = {};
   $scope.showAlert = false;
   $scope.currentDate = new Date();
@@ -585,10 +586,11 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
       $scope.formUpdate = angular.copy(employee);
     } else {
       $scope.formUpdate = angular.copy(employee);
-      $scope.formUpdate.birthDate = new Date(birthDateNew);
+
       $scope.formUpdate.updatedAt = new Date();
       $scope.formInputAccount = angular.copy(employee.account);
     }
+    $scope.formUpdate.birthDate = new Date(birthDateNew);
     $scope.formUpdate.avatar = angular.copy(employee.avatar);
   };
 
@@ -714,8 +716,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   };
 
   // Lịch sử Nhân viên
-
-
   // xuát file danh sách excel Employee
   $scope.xuatFileAuditLog = function () {
     $http
@@ -802,4 +802,10 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     // Trả về chuỗi định dạng dd/MM/yyyy HH:mm:ss
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   }
+  //Hàm gọi id chi tiết nhân viên
+  $scope.detailAuditLog = function (employee) {
+    $scope.formDetailAuditLog = angular.copy(employee);
+    $scope.formDetailAuditLog.time = $scope.formatDateTime(employee.time);
+  };
+
 });
