@@ -1,4 +1,4 @@
-package com.example.demo.repository.nguyen;
+package com.example.demo.repository.nguyen.bill;
 
 import com.example.demo.entity.PaymentMethod;
 import org.springframework.data.jpa.repository.JpaRepository;

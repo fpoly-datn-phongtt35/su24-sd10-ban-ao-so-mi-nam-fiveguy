@@ -2,10 +2,10 @@ package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillHistory;
-import com.example.demo.repository.nguyen.NBillDetailRepository;
-import com.example.demo.repository.nguyen.NBillHistoryRepository;
-import com.example.demo.repository.nguyen.NBillRepository;
-import com.example.demo.repository.nguyen.BillSpecification;
+import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
+import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
+import com.example.demo.repository.nguyen.bill.NBillRepository;
+import com.example.demo.repository.nguyen.bill.BillSpecification;
 import com.example.demo.service.nguyen.NBillService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

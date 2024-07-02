@@ -1,7 +1,7 @@
 package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.BillHistory;
-import com.example.demo.repository.nguyen.NBillHistoryRepository;
+import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
 import com.example.demo.service.nguyen.NBillHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.example.demo.repository.nguyen;
+package com.example.demo.repository.nguyen.bill;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;

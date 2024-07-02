@@ -22,7 +22,7 @@ public interface NVoucherService {
 
     Voucher updateVoucher(Voucher voucher, Long id);
 
-    Page<Voucher> findVouchers(String code, String name, Integer visibility, Integer discountType,
+    Page<Voucher> findVouchers(String code, String name, Integer applyfor, Integer discountType,
                                Date startDate, Date endDate, Integer status, Pageable pageable);
 
     Voucher createVoucher(Voucher voucher, List<CustomerType> customerTypeList,

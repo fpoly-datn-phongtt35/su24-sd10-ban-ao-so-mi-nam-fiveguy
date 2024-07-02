@@ -52,7 +52,7 @@ public class NVoucherRestController {
     public PaginationResponse<Voucher> getVouchers(
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer visibility,
+            @RequestParam(required = false) Integer applyfor,
             @RequestParam(required = false) Integer discountType,
             @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date startDate,
             @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date endDate,
@@ -69,7 +69,7 @@ public class NVoucherRestController {
         }
 
         Pageable pageable = PageRequest.of(pageNumber, 5);
-        Page<Voucher> page = NVoucherService.findVouchers(code, name, visibility,
+        Page<Voucher> page = NVoucherService.findVouchers(code, name, applyfor,
                 discountType, startDate, endDate, status, pageable);
         return new PaginationResponse<>(page);
     }

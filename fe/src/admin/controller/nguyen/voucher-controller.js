@@ -218,7 +218,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     //END CUSTOMER
 
-    $scope.formInputVoucher.visibility = 0
+    $scope.formInputVoucher.applyfor = 0
 
     //set gia tri cua discountType trong add form
     $scope.formInputVoucher.discountType = 1
@@ -226,19 +226,24 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     //check trung ten va ma add
     $scope.duplicateNameError = false;
     $scope.duplicateCodeError = false;
+    $scope.codeLengthError = false;
 
     $scope.checkDuplicateName = function () {
         $scope.duplicateNameError = $scope.vouchers.some(voucher => voucher.name === $scope.formInputVoucher.name);
     };
 
     $scope.checkDuplicateCode = function () {
-        $scope.duplicateCodeError = $scope.vouchers.some(voucher => voucher.code === $scope.formInputVoucher.code);
+        const codeWithoutSpaces = $scope.formInputVoucher.code.replace(/\s+/g, '');
+        
+        $scope.duplicateCodeError = $scope.vouchers.some(voucher => 
+            voucher.code.toUpperCase() === $scope.formInputVoucher.code.toUpperCase()
+        );
+        $scope.codeLengthError = codeWithoutSpaces.length > 15;
     };
-
 
     $scope.listCustomerAdd = []
 
-    //add voucher
+    //ADD VOUCHER ***************
     $scope.addVoucher = function () {
 
         if ($scope.duplicateNameError || $scope.duplicateCodeError) {
@@ -250,16 +255,16 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         });
 
         let entitiesCustomerType = $scope.customerTypes.filter(ct => ct.selected)
-        console.log($scope.formInputVoucher.visibility);
+        console.log($scope.formInputVoucher.applyfor);
 
-        if ($scope.formInputVoucher.visibility == 0) {
+        if ($scope.formInputVoucher.applyfor == 0) {
             $scope.listCustomerAdd = [];
             entitiesCustomerType = [];
         }
-        if ($scope.formInputVoucher.visibility == 1) {
+        if ($scope.formInputVoucher.applyfor == 1) {
             $scope.listCustomerAdd = []
         }
-        if ($scope.formInputVoucher.visibility == 2) {
+        if ($scope.formInputVoucher.applyfor == 2) {
             entitiesCustomerType = []
         }
 
@@ -293,7 +298,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     //DISABLE FORM UPDATE
     $scope.setDisableUpdateForm = function (bool) {
-        document.getElementById("updateCode").disabled = bool;
+        document.getElementById("updateCode").disabled = true;
         document.getElementById("updateName").disabled = bool;
         document.getElementById("updateDiscountType").disabled = bool;
         document.getElementById("updateValue").disabled = bool;
@@ -441,7 +446,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
     $scope.listCustomerUpdate = []
 
-    //cap nhat voucher
+    //UPDATE VOUCHER ************
     $scope.updateVoucher = function (id) {
 
         if ($scope.duplicateUpdateNameError || $scope.duplicateUpdateCodeError) {
@@ -460,18 +465,18 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         }
 
         let entitiesCustomerType = $scope.customerTypes.filter(ct => ct.selected)
-        console.log($scope.formInputVoucher.visibility);
+        console.log($scope.formInputVoucher.applyfor);
 
         console.log(entitiesCustomerType);
 
-        if ($scope.formUpdateVoucher.visibility == 0) {
+        if ($scope.formUpdateVoucher.applyfor == 0) {
             $scope.listCustomerUpdate = [];
             entitiesCustomerType = [];
         }
-        if ($scope.formUpdateVoucher.visibility == 1) {
+        if ($scope.formUpdateVoucher.applyfor == 1) {
             $scope.listCustomerUpdate = []
         }
-        if ($scope.formUpdateVoucher.visibility == 2) {
+        if ($scope.formUpdateVoucher.applyfor == 2) {
             entitiesCustomerType = []
         }
 
@@ -512,7 +517,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         $scope.formInputVoucher = {}
         $scope.formInputVoucher.name = null
         $scope.formInputVoucher.discountType = 1
-        $scope.formInputVoucher.visibility = 0
+        $scope.formInputVoucher.applyfor = 0
 
         localStorage.setItem('selectedCustomers', []);
         $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
@@ -520,6 +525,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
         $scope.duplicateNameError = false;
         $scope.duplicateCodeError = false;
+        $scope.codeLengthError = false;
 
         $scope.formAddVoucher.$setPristine();
         $scope.formAddVoucher.$setUntouched();
@@ -670,10 +676,13 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     $scope.currentDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
     //#endregion
 
+
+    // PAGINATION, FILTER VOUCHER
+    //#region
     $scope.filters = {
         code: null,
         name: null,
-        visibility: null,
+        applyfor: null,
         discountType: null,
         startDate: null,
         endDate: null,
@@ -690,7 +699,13 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
             $scope.filters.name = toLowerCaseNonAccentVietnamese($scope.filters.name.toLowerCase());
         }
 
-        let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+        let keyword = $scope.searchKeyword || null;
+        $scope.filters.code = keyword;
+        $scope.filters.name = keyword;
+
+        params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+
+        
         $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function(response) {
             $scope.filtervouchers = response.data.content;
             $scope.totalPages = response.data.totalPages;
@@ -698,6 +713,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
             $scope.desiredPage = pageNumber + 1;
         });
     };
+    
 
     $scope.applyFilters = function() {
         $scope.getVouchers(0);
@@ -712,30 +728,30 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         }
     };
 
-    $scope.searchByKeyword = function() {
-        let keyword = $scope.searchKeyword || null;
-        $scope.filters.code = keyword;
-        $scope.filters.name = keyword;
-        $scope.filters.visibility = null;
-        $scope.filters.discountType = null;
-        $scope.filters.startDate = null;
-        $scope.filters.endDate = null;
-        $scope.filters.status = null;
+    // $scope.searchByKeyword = function() {
+    //     let keyword = $scope.searchKeyword || null;
+    //     $scope.filters.code = keyword;
+    //     $scope.filters.name = keyword;
+    //     $scope.filters.applyfor = null;
+    //     $scope.filters.discountType = null;
+    //     $scope.filters.startDate = null;
+    //     $scope.filters.endDate = null;
+    //     $scope.filters.status = null;
 
-        // console.log($scope.filters.name);
-        $scope.getVouchers(0);
-    };
+    //     $scope.getVouchers(0, 1);
+    // };
 
     $scope.clearKeyword = function() {
         $scope.searchKeyword = null;
-        $scope.searchByKeyword();
+        // $scope.getVouchers(0);
     };
 
     $scope.resetFilters = function() {
+        $scope.searchKeyword = null;
         $scope.filters = {
             name: null,
             code: null,
-            visibility: null,
+            applyfor: null,
             discountType: null,
             startDate: null,
             endDate: null,
@@ -747,9 +763,11 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     // Initial load
     $scope.getVouchers(0);
 
+    //#endregion
 
 
-    //filter customer
+    // PAGINATION, FILTER CUSTOMER
+    //#region
     $scope.customers = [];
     $scope.totalPagesCustomer = 0;
     $scope.currentPageCustomer = 0;
@@ -808,6 +826,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         };
         $scope.getCustomers(0);
     };
+    //#endregion
 
 
     // CHECK BOX CUSTOMER TYPE

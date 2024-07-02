@@ -65,10 +65,10 @@ public class VoucherSpecification {
         };
     }
 
-    public static Specification<Voucher> hasVisibility(Integer visibility) {
+    public static Specification<Voucher> hasApplyfor(Integer applyfor) {
         return (root, query, criteriaBuilder) ->
-                visibility == null ? criteriaBuilder.conjunction() :
-                        criteriaBuilder.equal(root.get("visibility"), visibility);
+                applyfor == null ? criteriaBuilder.conjunction() :
+                        criteriaBuilder.equal(root.get("applyfor"), applyfor);
     }
 
     public static Specification<Voucher> hasDiscountType(Integer discountType) {

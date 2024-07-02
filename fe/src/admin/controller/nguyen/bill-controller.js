@@ -11,14 +11,16 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http) {
         { label: 'Hoàn thành', status: 5, count: 0 },
         { label: 'Đã hủy', status: 6, count: 0 }
     ];
+
     $scope.bills = [];
     $scope.currentTab = null;
     $scope.currentPage = 0;
     $scope.pageSize = 5;
     $scope.totalPages = 0;
+    $scope.desiredPage = 1;
     $scope.filters = {};
 
-    $scope.loadBills = function(status, page) {
+    $scope.loadBills = function (status, page) {
         let params = {
             status: status,
             code: $scope.filters.code,
@@ -30,27 +32,28 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http) {
             page: page,
             size: $scope.pageSize
         };
-        $http.get(apiBill + "/page", {params: params}).then(function(response) {
+        $http.get(apiBill + "/page", { params: params }).then(function (response) {
             $scope.bills = response.data.content;
             $scope.totalPages = response.data.totalPages;
             $scope.currentPage = page;
             $scope.pages = Array.from(Array($scope.totalPages).keys());
+            $scope.desiredPage = page + 1;
         });
     };
 
-    $scope.setTab = function(status) {
+    $scope.setTab = function (status) {
         $scope.currentTab = status;
         $scope.loadBills(status, 0);
     };
 
-    $scope.loadPage = function(page) {
+    $scope.loadPage = function (page) {
         if (page >= 0 && page < $scope.totalPages) {
             $scope.loadBills($scope.currentTab, page);
         }
     };
 
-    $scope.countBillsByStatus = function() {
-        $scope.tabs.forEach(function(tab) {
+    $scope.countBillsByStatus = function () {
+        $scope.tabs.forEach(function (tab) {
             let params = {
                 status: tab.status,
                 code: $scope.filters.code,
@@ -62,20 +65,29 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http) {
                 page: 0,
                 size: 1
             };
-            $http.get(apiBill + "/page", {params: params}).then(function(response) {
+            $http.get(apiBill + "/page", { params: params }).then(function (response) {
                 tab.count = response.data.totalElements;
             });
         });
     };
 
-    $scope.applyFilters = function() {
+    $scope.applyFilters = function () {
         $scope.countBillsByStatus();
         $scope.setTab($scope.currentTab);
     };
 
-    $scope.resetFilters = function() {
+    $scope.resetFilters = function () {
         $scope.filters = {};
         $scope.applyFilters();
+    };
+
+    $scope.goToPage = function () {
+        let pageNumber = $scope.desiredPage - 1;
+        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+            $scope.loadBills($scope.currentTab, pageNumber);
+        } else {
+            $scope.desiredPage = $scope.currentPage + 1;
+        }
     };
 
     // Initialize

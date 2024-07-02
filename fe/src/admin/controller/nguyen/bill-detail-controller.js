@@ -69,7 +69,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     }
     $scope.getBillById($scope.idBill)
 
-    //XỬ LÝ STATUS BILL, HISTORY BILL, THÔNG TIN GIAO HÀNG, LOGIC CỦA HIỂN THỊ TRẠNG THÁI ĐƠN HÀNG
+    //XỬ LÝ STATUS BILL, HISTORY BILL, THÔNG TIN GIAO HÀNG, LOGIC CỦA HIỂN THỊ TRẠNG THÁI ĐƠN HÀNG, paymentStatus
     // #region bill status & bill history
     $scope.showModalStatus = function (status) {
         $('#changeStatusModal').modal('show');
@@ -141,6 +141,18 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getBillHistoryByBillId()
         })
     }
+
+    $scope.listPaymentStatus = []
+
+    //Hiển thị paymentStatus
+    $scope.getAllPaymentStatus = function (billId) {
+        $http.get(apiBill + "/" + billId + "/paymentStatus").then(function (res) {
+            $scope.listPaymentStatus = res.data
+        console.log(res.data);
+        })
+    }
+    $scope.getAllPaymentStatus($scope.idBill)
+
     // #endregion
 
     //Lấy thông tin product property để filter và RANGE PRICE
@@ -230,6 +242,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         minPrice: null,
         maxPrice: null
     };
+    $scope.desiredPage = 1;
 
     $scope.getProductDetails = function (pageNumber) {
         let params = {
@@ -253,6 +266,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 $scope.currentPage = pageNumber;
                 $scope.pages = Array.from(Array($scope.totalPages).keys());
 
+                $scope.desiredPage = pageNumber + 1;
+
                 // Initialize inputQuantity for each productDetail
                 $scope.productDetails.forEach(function (pd) {
                     pd.inputQuantity = 1; // Set default value to 0
@@ -261,6 +276,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 console.error('Error fetching products:', error);
             });
     };
+    
 
     // Initial load
     $scope.getProductDetails(0);
@@ -275,6 +291,15 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         });
 
         $scope.getProductDetails(0);
+    };
+
+    $scope.goToPage = function () {
+        let pageNumber = $scope.desiredPage - 1;
+        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+            $scope.loadBills($scope.currentTab, pageNumber);
+        } else {
+            $scope.desiredPage = $scope.currentPage + 1;
+        }
     };
 
     $scope.loadPage = function (page) {
@@ -323,7 +348,13 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.formBillDetail = {}
 
     //add product to bill
-    $scope.addBillDetail = function (pdId, quantityInput, priceInput, pPriceInput) {
+    $scope.addBillDetail = function (pdId, quantityInput, priceInput, pPriceInput, pd) {
+
+        if(quantityInput >= pd.quantity){
+            $scope.showWarning("Thêm thất bại, sửa lại số lượng")
+            return
+        }
+
         let params = {
             productDetailId: pdId,
             quantity: quantityInput,
@@ -349,7 +380,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.validateQuantity = function (pdIn) {
         // console.log(pdIn.inputQuantity);
         $scope.productDetails.forEach(function (pd) {
-            if (pd == pdIn && pdIn.inputQuantity > pd.quantity) {
+            if (pd == pdIn && pdIn.inputQuantity >= pd.quantity) {
                 pd.inputQuantity = pd.quantity - 1;
             }
         });
@@ -370,7 +401,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.validateQuantityBd = function (bd, quantityNew) {
 
         //total quantity
-        if (quantityNew > bd.productDetail.quantity + bd.quantity) {
+        if (quantityNew >= bd.productDetail.quantity + bd.quantity) {
             bd.quantityNew = bd.productDetail.quantity + bd.quantity - 1;
         }
     };
@@ -402,8 +433,15 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     // #endregion
 
-    $scope.submitQ = function (q) {
-        console.log(q)
-        $scope.showSuccess("Thêm thành công")
-    }
+
+    $scope.steptest = [
+        { status: 1, title: "Chờ xác nhận", icon: "schedule", time: null },
+        { status: 2, title: "Đã xác nhận", icon: "check_circle", time: null },
+        { status: 3, title: "Chờ vận chuyển", icon: "local_shipping", time: null },
+        { status: 4, title: "Đang giao", icon: "directions_car", time: null },
+        { status: 5, title: "Thành công", icon: "home", time: null },
+        { status: 6, title: "Đã hủy", icon: "cancel", time: null },
+        { status: 7, title: "Giao thất bại", icon: "home", time: null },
+        { status: 8, title: "Đang giao lại", icon: "home", time: null }
+    ];
 });

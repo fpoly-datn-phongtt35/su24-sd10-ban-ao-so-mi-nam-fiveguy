@@ -17,4 +17,6 @@ public interface NVoucherRepository extends JpaRepository<Voucher, Long>, JpaSpe
 
     @Query("SELECT v FROM Voucher v WHERE v.id = :id")
     Voucher findByIdN(@Param("id") Long id);
+
+    boolean existsByCode(String code);
 }

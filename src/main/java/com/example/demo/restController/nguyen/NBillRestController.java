@@ -5,6 +5,7 @@ import com.example.demo.entity.BillDetail;
 import com.example.demo.model.request.nguyen.BillRequest;
 import com.example.demo.service.nguyen.NBillDetailService;
 import com.example.demo.service.nguyen.NBillService;
+import com.example.demo.service.nguyen.NPaymentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,9 @@ public class NBillRestController {
 
     @Autowired
     NBillDetailService billDetailService;
+
+    @Autowired
+    NPaymentStatusService paymentStatusService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
@@ -93,5 +97,10 @@ public class NBillRestController {
         BillDetail updatedBillDetail = billDetailService
                 .updateBillDetailQuantity(billDetailId, newQuantity);
         return ResponseEntity.ok(updatedBillDetail);
+    }
+
+    @GetMapping("/{billId}/paymentStatus")
+    public ResponseEntity<?> getAllPaymentStatusByBillId(@PathVariable Long billId){
+        return ResponseEntity.ok(paymentStatusService.getAllByBillId(billId));
     }
 }

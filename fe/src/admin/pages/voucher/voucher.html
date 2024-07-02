@@ -1,6 +1,6 @@
 <h1>voucher</h1>
 <div class="container">
-    <div class="col-8">
+    <!-- <div class="col-8">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#homefilter"
@@ -29,39 +29,39 @@
             </div>
         </div>
         <div class="tab-pane fade" id="detailfilter" role="tabpanel" aria-labelledby="profile-tab">
-            <form ng-submit="applyFilters()">
+            <form ng-submit="applyFilters(1)">
                 <div class="row">
                     <div class="col-10">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label>Loại giảm giá:</label>
                                 <select class="form-select" ng-model="filters.discountType">
                                     <option selected value="">Chọn loại giảm giá:</option>
                                     <option ng-value="1">Giảm theo %</option>
                                     <option ng-value="2">Giảm theo số tiền</option>
                                 </select>
-                                <label>Hiển thị:</label>
-                                <select class="form-select" ng-model="filters.visibility">
-                                    <option selected value="">Chọn loại hiển thị:</option>
-                                    <option ng-value="0">Công khai</option>
+                                <label>Áp dụng:</label>
+                                <select class="form-select" ng-model="filters.applyfor">
+                                    <option selected value="">Chọn loại áp dụng:</option>
+                                    <option ng-value="0">Tất cả</option>
                                     <option ng-value="1">Loại khách hàng</option>
                                     <option ng-value="2">Cá nhân</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label>Ngày bắt đầu:</label>
                                 <input type="date" class="form-control" ng-model="filters.startDate">
                                 <label>Ngày kết thúc:</label>
                                 <input type="date" class="form-control" ng-model="filters.endDate">
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <label>Trạng thái</label>
                                 <select class="form-select" ng-model="filters.status">
                                     <option selected value="">Chọn trạng thái</option>
                                     <option value="1">Đang diễn ra</option>
                                     <option value="2">Đã hết hạn</option>
                                     <option value="3">Sắp diễn ra</option>
-                                    <!-- <option value="4">Tạm ngưng</option> -->
+                                    <option value="4">Tạm ngưng</option>
                                 </select>
                             </div>
                         </div>
@@ -73,7 +73,79 @@
                                 <button type="submit" class="btn btn-outline-primary mb-2 form-control">Tìm
                                     kiếm</button>
                                 <button type="button" class="btn btn-outline-info mb-2 form-control"
-                                    ng-click="resetFilters()">Reset</button>
+                                    ng-click="resetFilters()">Làm mới</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div> -->
+
+    <div class="col-8">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#homefilter"
+                    type="button" role="tab" aria-controls="home" aria-selected="true"
+                    ng-click="resetFilter(); clearKeyword()">Tìm kiếm
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content mb-3 rounded border p-3 shadow bg-body" id="myTabContent">
+        <div class="tab-pane fade show active" id="homefilter" role="tabpanel" aria-labelledby="home-tab">
+            <form ng-submit="applyFilters()">
+                <div class="row">
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Mã:</label>
+                                <div class="input-with-clear">
+                                    <input type="text" ng-model="searchKeyword"
+                                        placeholder="Nhập mã hoặc tên" class="form-control">
+                                    <span class="clear-btn" ng-if="searchKeyword" ng-click="clearKeyword()">&times;</span>
+                                </div>
+                                <label>Loại giảm giá:</label>
+                                <select class="form-select" ng-model="filters.discountType">
+                                    <option selected value="">Chọn loại giảm giá:</option>
+                                    <option ng-value="1">Giảm theo %</option>
+                                    <option ng-value="2">Giảm theo số tiền</option>
+                                </select>
+
+                            </div>
+                            <div class="col-md-4">
+                                <label>Áp dụng:</label>
+                                <select class="form-select" ng-model="filters.applyfor">
+                                    <option selected value="">Chọn loại áp dụng:</option>
+                                    <option ng-value="0">Tất cả</option>
+                                    <option ng-value="1">Loại khách hàng</option>
+                                    <option ng-value="2">Cá nhân</option>
+                                </select>
+                                <label>Trạng thái</label>
+                                <select class="form-select" ng-model="filters.status">
+                                    <option selected value="">Chọn trạng thái</option>
+                                    <option value="1">Đang diễn ra</option>
+                                    <option value="2">Đã hết hạn</option>
+                                    <option value="3">Sắp diễn ra</option>
+                                    <option value="4">Tạm ngưng</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Ngày bắt đầu:</label>
+                                <input type="date" class="form-control" ng-model="filters.startDate">
+                                <label>Ngày kết thúc:</label>
+                                <input type="date" class="form-control" ng-model="filters.endDate">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="row mt-4">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-9">
+                                <button type="submit" class="btn btn-outline-primary mb-2 form-control">Tìm
+                                    kiếm</button>
+                                <button type="button" class="btn btn-outline-info mb-2 form-control"
+                                    ng-click="resetFilters()">Làm mới</button>
                             </div>
                         </div>
                     </div>
@@ -81,6 +153,7 @@
             </form>
         </div>
     </div>
+
     <div class="rounded border p-3 shadow mb-5 bg-body"> <!--main-content -->
         <div class="row">
             <div class="col-md-12">
@@ -93,7 +166,7 @@
                             </div>
                             <div class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
                                 <a type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#addVoucherModal" ng-click="resetFormAdd()">
+                                    data-bs-target="#addVoucherModal" ng-click="resetFormAdd();resetFiltersCustomer">
                                     <i class="material-icons">&#xE147;</i>
                                     <span>Thêm mới</span>
                                 </a>
@@ -114,7 +187,7 @@
                                         <label for="selectAll"></label></th> -->
                                 <th scope="col-1">Mã</th>
                                 <th scope="col-2">Tên</th>
-                                <th scope="col-2">Hiển thị</th>
+                                <th scope="col-2">Áp dụng</th>
                                 <th scope="col-2">Giá trị</th>
                                 <!-- <th scope="col-1">Loại</th> -->
                                 <th scope="col-1">Số lượng</th>
@@ -132,8 +205,8 @@
                                         <label for="checkbox1"></label></th> -->
                                 <td scope="col-1">{{v.code}}</td>
                                 <td class="col-2">{{v.name}}</td>
-                                <td scope="col-2">{{v.visibility == 0 ? 'Công khai' :
-                                    v.visibility == 1 ? 'Loại KH' : 'Cá nhân'}}</td>
+                                <td scope="col-2">{{v.applyfor == 0 ? 'Tất cả' :
+                                    v.applyfor == 1 ? 'Loại KH' : 'Cá nhân'}}</td>
                                 <td scope="col-2">{{v.value}} {{v.discountType == 1 ? '%' : 'vnđ'}}</td>
                                 <!-- <td scope="col-1">{{v.discountType == 1 ? '%' : 'vnđ'}}</td> -->
                                 <td scope="col-1">{{v.quantity}}</td>
@@ -208,11 +281,11 @@
             <!-- add-modal start -->
             <div class="modal fade" tabindex="-1" id="addVoucherModal" role="dialog">
                 <!-- <div class="modal-dialog modal-lg"
-                    ng-class="{'modal-xl': formInputVoucher.visibility == 1, 'modal-xl': formInputVoucher.visibility == 2, 'modal-lg': formInputVoucher.visibility == 3}"
+                    ng-class="{'modal-xl': formInputVoucher.applyfor == 1, 'modal-xl': formInputVoucher.applyfor == 2, 'modal-lg': formInputVoucher.applyfor == 3}"
                     role="document"> -->
                 <div class="modal-dialog modal-lg" ng-class="{
-                        'modal-xl': formInputVoucher.visibility == 1 || formInputVoucher.visibility == 2,
-                        'modal-lg': formInputVoucher.visibility == 0
+                        'modal-xl': formInputVoucher.applyfor == 1 || formInputVoucher.applyfor == 2,
+                        'modal-lg': formInputVoucher.applyfor == 0
                       }">
                     <div class="modal-content">
                         <form name="formAddVoucher" ng-submit="formAddVoucher.$valid && addVoucher()" novalidate>
@@ -224,25 +297,33 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div
-                                        ng-class="{'col-12': formInputVoucher.visibility == 0, 'col-8': formInputVoucher.visibility == 1, 'col-6': formInputVoucher.visibility == 2}">
+                                        ng-class="{'col-12': formInputVoucher.applyfor == 0, 'col-8': formInputVoucher.applyfor == 1, 'col-6': formInputVoucher.applyfor == 2}">
                                         <!-- Form nội dung -->
                                         <div class="row mb-1">
                                             <div class="col-6">
                                                 <div class="form-group">
-                                                    <label>Mã</label>
+                                                    <label class="d-flex justify-content-between">
+                                                        <div>Mã</div>
+                                                        <div style="font-size: 14px; margin-top: 5px;" class="text-danger">
+                                                            Tự động tạo mã nếu để trống</div>
+                                                    </label>
                                                     <input type="text" name="addCode" class="form-control"
                                                         ng-change="checkDuplicateCode()"
-                                                        ng-model="formInputVoucher.code" ng-required="true">
+                                                        ng-model="formInputVoucher.code">
 
-                                                    <span ng-show="formAddVoucher.$submitted">
+                                                    <!-- <span ng-show="formAddVoucher.$submitted">
                                                         <div ng-show="formAddVoucher.addCode.$invalid"
                                                             class="error-message text-danger form-text">
                                                             Mã không được để trống</div>
-                                                    </span>
-                                                    <span ng-show="formAddVoucher.$submitted || duplicateCodeError">
+                                                    </span> -->
+                                                    <span ng-show="formAddVoucher.$submitted || duplicateCodeError || codeLengthError">
                                                         <div ng-show="duplicateCodeError"
-                                                            class="error-message text-danger form-text">
-                                                            Mã voucher đã tồn tại
+                                                             class="error-message text-danger form-text">
+                                                             Mã voucher đã tồn tại
+                                                        </div>
+                                                        <div ng-show="codeLengthError"
+                                                             class="error-message text-danger form-text">
+                                                             Mã không được quá 15 ký tự
                                                         </div>
                                                     </span>
                                                 </div>
@@ -384,9 +465,9 @@
                                                 <div class="form-group">
                                                     <label>Hiển thị</label>
                                                     <select name="addVisibility" class="form-select"
-                                                        ng-model="formInputVoucher.visibility">
-                                                        <option ng-value="0">Công khai 1</option>
-                                                        <option ng-value="1">Công khai</option>
+                                                        ng-model="formInputVoucher.applyfor">
+                                                        <option ng-value="0">Tất cả 1</option>
+                                                        <option ng-value="1">Tất cả</option>
                                                         <option ng-value="2">Cá nhân</option>
                                                     </select>
                                                 </div>
@@ -395,20 +476,20 @@
                                             </div>
                                         </div>
                                         <div class="row mb-1">
-                                            <label>Hiển thị</label>
+                                            <label>Áp dụng</label>
                                             <div class="col-12">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="flexRadioDefault"
                                                         id="flexRadioDefault0" ng-value="0"
-                                                        ng-model="formInputVoucher.visibility">
+                                                        ng-model="formInputVoucher.applyfor">
                                                     <label class="form-check-label" for="flexRadioDefault0">
-                                                        Công khai
+                                                        Tất cả
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="flexRadioDefault"
                                                         id="flexRadioDefault1" ng-value="1"
-                                                        ng-model="formInputVoucher.visibility">
+                                                        ng-model="formInputVoucher.applyfor">
                                                     <label class="form-check-label" for="flexRadioDefault1">
                                                         Loại khách hàng
                                                     </label>
@@ -416,7 +497,7 @@
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="flexRadioDefault"
                                                         id="flexRadioDefault2" ng-value="2"
-                                                        ng-model="formInputVoucher.visibility">
+                                                        ng-model="formInputVoucher.applyfor">
                                                     <label class="form-check-label" for="flexRadioDefault2">
                                                         Cá nhân
                                                     </label>
@@ -493,7 +574,7 @@
                                     </div>
 
                                     <!-- Customer -->
-                                    <div class="col-6" ng-if="formInputVoucher.visibility == 2">
+                                    <div class="col-6" ng-if="formInputVoucher.applyfor == 2">
                                         <div class="container mt-4">
                                             <div class="row mb-0">
                                                 <div class="col-4">
@@ -574,7 +655,7 @@
                                     </div>
 
                                     <!-- CustomerType -->
-                                    <div class="col-4" ng-if="formInputVoucher.visibility == 1">
+                                    <div class="col-4" ng-if="formInputVoucher.applyfor == 1">
                                         <ul class="list-group">
                                             <!-- <li class="list-group-item">
                                                 <input type="checkbox" id="selectAll" class="form-check-input me-1"
@@ -609,8 +690,8 @@
             <!----edit-modal start--------->
             <div class="modal fade" tabindex="-1" id="updateVoucherModal" role="dialog">
                 <div class="modal-dialog modal-lg" ng-class="{
-                    'modal-xl': (formUpdateVoucher.visibility == 1 || formUpdateVoucher.visibility == 2) && formUpdateVoucher.status != 2,
-                    'modal-lg': formUpdateVoucher.visibility == 0
+                    'modal-xl': (formUpdateVoucher.applyfor == 1 || formUpdateVoucher.applyfor == 2) && formUpdateVoucher.status != 2,
+                    'modal-lg': formUpdateVoucher.applyfor == 0
                   }">
                     <div class="modal-content">
                         <form name="formEditVoucher"
@@ -623,7 +704,7 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div
-                                        ng-class="{'col-12': formUpdateVoucher.visibility == 0, 'col-8': formUpdateVoucher.visibility == 1 && formUpdateVoucher.status != 2, 'col-6': formUpdateVoucher.visibility == 2 && formUpdateVoucher.status != 2}">
+                                        ng-class="{'col-12': formUpdateVoucher.applyfor == 0, 'col-8': formUpdateVoucher.applyfor == 1 && formUpdateVoucher.status != 2, 'col-6': formUpdateVoucher.applyfor == 2 && formUpdateVoucher.status != 2}">
                                         <div class="row mb-1">
                                             <div class="col-6">
                                                 <div class="form-group">
@@ -765,28 +846,28 @@
                                                 <div class="form-group">
                                                     <label>Hiển thị</label>
                                                     <select id="updateVisibility" name="updateVisibility"
-                                                        class="form-select" ng-model="formUpdateVoucher.visibility">
-                                                        <option ng-value="1">Công khai</option>
+                                                        class="form-select" ng-model="formUpdateVoucher.applyfor">
+                                                        <option ng-value="1">Tất cả</option>
                                                         <option ng-value="2">Cá nhân</option>
                                                     </select>
                                                 </div>
                                             </div>
                                         </div> -->
                                         <div class="row mb-1">
-                                            <label>Hiển thị</label>
+                                            <label>Áp dụng</label>
                                             <div class="col-12">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="flexRadioUpdate"
                                                         id="flexRadioUpdate0" ng-value="0"
-                                                        ng-model="formUpdateVoucher.visibility">
+                                                        ng-model="formUpdateVoucher.applyfor">
                                                     <label class="form-check-label" for="flexRadioUpdate0">
-                                                        Công khai
+                                                        Tất cả
                                                     </label>
                                                 </div>
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="flexRadioUpdate"
                                                         id="flexRadioUpdate1" ng-value="1"
-                                                        ng-model="formUpdateVoucher.visibility">
+                                                        ng-model="formUpdateVoucher.applyfor">
                                                     <label class="form-check-label" for="flexRadioUpdate1">
                                                         Loại khách hàng
                                                     </label>
@@ -794,7 +875,7 @@
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="radio" name="flexRadioUpdate"
                                                         id="flexRadioUpdate2" ng-value="2"
-                                                        ng-model="formUpdateVoucher.visibility">
+                                                        ng-model="formUpdateVoucher.applyfor">
                                                     <label class="form-check-label" for="flexRadioUpdate2">
                                                         Cá nhân
                                                     </label>
@@ -868,7 +949,7 @@
 
                                     <!-- Customer -->
                                     <div class="col-6"
-                                        ng-if="formUpdateVoucher.visibility == 2 && formUpdateVoucher.status != 2">
+                                        ng-if="formUpdateVoucher.applyfor == 2 && formUpdateVoucher.status != 2">
                                         <div class="container mt-4">
                                             <div class="row mb-0">
                                                 <div class="col-4">
@@ -948,7 +1029,7 @@
 
                                     <!-- Customer Type -->
                                     <div class="col-4"
-                                        ng-if="formUpdateVoucher.visibility == 1 && formUpdateVoucher.status != 2">
+                                        ng-if="formUpdateVoucher.applyfor == 1 && formUpdateVoucher.status != 2">
                                         <ul class="list-group">
                                             <!-- <li class="list-group-item">
                                                 <input type="checkbox" id="selectAll1" class="form-check-input me-1"
@@ -1068,9 +1149,9 @@
                                                 <td class="fs-6">{{voucherInfo.numberOfUses}}</td>
                                             </tr>
                                             <tr>
-                                                <td>Hiển thị</td>
-                                                <td class="fs-6">{{voucherInfo.visibility == 0 ? 'Công khai' :
-                                                    voucherInfo.visibility == 1 ? 'Loại khách hàng' : 'Cá nhân'}}
+                                                <td>Áp dụng</td>
+                                                <td class="fs-6">{{voucherInfo.applyfor == 0 ? 'Tất cả' :
+                                                    voucherInfo.applyfor == 1 ? 'Loại khách hàng' : 'Cá nhân'}}
                                                 </td>
                                             </tr>
                                             <tr>

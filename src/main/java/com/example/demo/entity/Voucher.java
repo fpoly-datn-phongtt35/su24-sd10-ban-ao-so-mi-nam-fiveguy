@@ -47,8 +47,8 @@ public class Voucher {
     @Column(name = "NumberOfUses")
     private Integer numberOfUses;
 
-    @Column(name = "Visibility")
-    private Integer visibility;
+    @Column(name = "Applyfor")
+    private Integer applyfor;
 
     @Column(name = "Describe", columnDefinition = "nvarchar(max)")
     private String describe;

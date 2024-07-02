@@ -25,11 +25,11 @@ public class BillHistory {
     @Column(name = "Description", columnDefinition = "nvarchar(300)")
     private String description;
 
-    @Column(name = "CreatedBy")
-    private String createdBy;
-
     @Column(name = "CreatedAt")
     private Date createdAt;
+
+    @Column(name = "CreatedBy")
+    private String createdBy;
 
     @ManyToOne
     @JoinColumn(name = "BillId", referencedColumnName = "Id")
