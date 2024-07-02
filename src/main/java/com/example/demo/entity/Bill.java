@@ -45,6 +45,12 @@ public class Bill {
     @Column(name = "PhoneNumber")
     private String phoneNumber;
 
+    @Column(name = "TotalAmount")
+    private BigDecimal totalAmount;
+
+    @Column(name = "TotalAmountAfterDiscount")
+    private BigDecimal totalAmountAfterDiscount;
+
     @ManyToOne
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
     private Customer customer;

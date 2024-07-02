@@ -23,11 +23,8 @@ public class PaymentStatus {
     @Column(name = "Code")
     private String code;
 
-    @Column(name = "TotalAmount")
-    private BigDecimal totalAmount;
-
-    @Column(name = "TotalAmountAfterDiscount")
-    private BigDecimal totalAmountAfterDiscount;
+    @Column(name = "PaymentAmount ")
+    private BigDecimal paymentAmount;
 
     @Column(name = "Note", columnDefinition = "nvarchar(300)")
     private String note;
