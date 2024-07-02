@@ -25,11 +25,11 @@ public class Cart {
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
     private Customer customer;
 
-    @Column(name = "CreatedAt", nullable = false)
-    private Date createdAt;
-
-    @Column(name = "UpdatedAt", nullable = false)
-    private Date updatedAt;
+//    @Column(name = "CreatedAt", nullable = false)
+//    private Date createdAt;
+//
+//    @Column(name = "UpdatedAt", nullable = false)
+//    private Date updatedAt;
 
     @Column(name = "Status", nullable = false)
     private int status;

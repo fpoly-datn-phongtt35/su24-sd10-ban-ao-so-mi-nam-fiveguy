@@ -33,12 +33,6 @@ public class PaymentMethod {
     @Column(name = "Image")
     private String image;
 
-    @Column(name = "CreatedAt")
-    private Date createdAt;
-
-    @Column(name = "UpdatedAt")
-    private Date updatedAt;
-
     @Column(name = "paymentType")
     private Integer paymentType;
 
