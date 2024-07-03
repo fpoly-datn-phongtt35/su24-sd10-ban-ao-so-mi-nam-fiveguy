@@ -24,8 +24,17 @@ import java.util.*;
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/home")
-public class OLBillController {
+public class OLBillController2 {
+    boolean checkOutBill = false;
 
+
+    public boolean isCheckOutBill() {
+        return checkOutBill;
+    }
+
+    public void setCheckOutBill(boolean checkOutBill) {
+        this.checkOutBill = checkOutBill;
+    }
 
     @Autowired
     private OLBillDetailService2 billDetailService;
