@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -44,10 +45,10 @@ public class Supplier {
     private Integer status;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "supplier")
-    private List<Product> products;
+    @OneToMany(mappedBy = "supplier",cascade = CascadeType.ALL)
+    private Set<Product> products;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "supplier")
-    private List<BrandSuppiler> brandSuppilers;
+    @OneToMany(mappedBy = "supplier",cascade = CascadeType.ALL)
+    private Set<BrandSuppiler> brandSuppilers;
 }
