@@ -33,6 +33,14 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl : "pages/onlineShop/product-detail.html",
       controller : "productController"
     })
+    .when("/home/paymentSuccess", {
+      templateUrl: "pages/onlineShop/paymentSuccess.html",
+      controller: 'productController'
+    })
+    .when("/home/paymentFailed", {
+      templateUrl: "pages/onlineShop/paymentFailed.html",
+      controller: 'productController'
+    })
 
 
     .otherwise({

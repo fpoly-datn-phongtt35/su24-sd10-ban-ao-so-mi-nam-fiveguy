@@ -1,7 +1,9 @@
 package com.example.demo.model.response.onlineShop;
 
 
+import com.example.demo.entity.Employee;
 import com.example.demo.entity.PaymentMethod;
+import com.example.demo.entity.Voucher;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -41,13 +43,13 @@ public class OlBillDTO {
 
     private String reason;
 
-    private CustomerEntity customerEntity;
+//    private CustomerEntity customerEntity;
 
-    private Employees employee;
+    private Employee employee;
 
     private PaymentMethod paymentMethod;
 
-    private Vouchers voucher;
+    private Voucher voucher;
 
     private int typeBill;
 
@@ -55,5 +57,5 @@ public class OlBillDTO {
 
     private int status;
 
-    private List<OlBillDetailResponse> billDetail;
+//    private List<OlBillDetailResponse> billDetail;
 }

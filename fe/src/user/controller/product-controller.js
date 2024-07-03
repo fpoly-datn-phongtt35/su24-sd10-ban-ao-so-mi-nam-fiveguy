@@ -1,4 +1,4 @@
-app.controller("productController", function ($scope, $http, $window,$routeParams,$rootScope) {
+app.controller("productController", function ($scope, $http, $window,$routeParams,$rootScope,$location) {
 
     $rootScope.countProduct = 0;
 
@@ -347,6 +347,7 @@ $scope.loadPage = function() {
 
                     })
                         .then(function (response) {
+                            // loadCart();
                             if (response.data.employeeLoggedIn === true) {
                                 $scope.showErrorNotification("Nhân viên không thể mua hàng!");
                             } else if (response.data === 1) {
@@ -407,27 +408,27 @@ $scope.loadPage = function() {
                         });
             },
         
-            saveDataAndClearLocalStorage() {
-                var localStorageData = JSON.parse(localStorage.getItem("cart"));
-                if (localStorageData && Array.isArray(localStorageData) && localStorageData.length > 0 && localStorageData != []) {
-                    $http.post('http://localhost:8080/api/ol/cart/saveAll', { localStorageData, username: $scope.username })
-                        .then(function (response) {
-                            if (response.data) {
-                                console.log("Sản phẩm đã được lưu vào.");
-                                localStorage.removeItem("cart");
-                                localStorageData = [];
-                                $scope.cartItems = [];
-                                $scope.cart.items = [];
-                                loadCart();
-                            } else {
-                                console.log("Không thể lưu sản phẩm lên server.");
-                            }
-                        })
-                        .catch(function (error) {
-                            console.error("Lỗi khi thực hiện API:", error);
-                        });
-                }
-            }
+            // saveDataAndClearLocalStorage() {
+            //     var localStorageData = JSON.parse(localStorage.getItem("cart"));
+            //     if (localStorageData && Array.isArray(localStorageData) && localStorageData.length > 0 && localStorageData != []) {
+            //         $http.post('http://localhost:8080/api/ol/cart/saveAll', { localStorageData, username: $scope.username })
+            //             .then(function (response) {
+            //                 if (response.data) {
+            //                     console.log("Sản phẩm đã được lưu vào.");
+            //                     localStorage.removeItem("cart");
+            //                     localStorageData = [];
+            //                     $scope.cartItems = [];
+            //                     $scope.cart.items = [];
+            //                     loadCart();
+            //                 } else {
+            //                     console.log("Không thể lưu sản phẩm lên server.");
+            //                 }
+            //             })
+            //             .catch(function (error) {
+            //                 console.error("Lỗi khi thực hiện API:", error);
+            //             });
+            //     }
+            // }
         };
 
 
@@ -451,9 +452,13 @@ function loadCart() {
         
         
   function countTotalPrice(items) {
-    return items.reduce((total, item) => total + (item.promotionalPrice * item.quantity), 0);
-  }
+    return items.reduce((total, item) => {
+        const price = item.promotionalPrice && item.promotionalPrice !== 0 ? item.promotionalPrice : item.price;
+        return total + (price * item.quantity);
+    }, 0);
+}
 
+$scope.valueVoucher = 0;
 
   function count() {
  if (token != null) {
@@ -463,15 +468,22 @@ function loadCart() {
         $rootScope.countProduct = $scope.cartItems.reduce((total, item) => total + item.quantity, 0);
         $scope.totalAmount = countTotalPrice($scope.cartItems);
         $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
- }
+
+        if (  $scope.dataDistrict.DistrictID && $scope.dataWard.WardCode) {
+            $scope.calculateShippingFee($scope.dataDistrict.DistrictID, $scope.dataWard.WardCode);
+            return;
+        }
+        else{
+            $scope.calculateShippingFee($scope.dataDistrict,$scope.dataWard);
+        }
+
+    }
 
         //   if ($scope.cartItems != '') {
         //   $scope.applyVoucher();
             
         //   }
-        //   if ($scope.dataDistrict && $scope.dataDistrict.DistrictID && $scope.dataWard && $scope.dataWard.WardCode) {
-        //     $scope.calculateShippingFee($scope.dataDistrict.DistrictID, $scope.dataWard.WardCode);
-        // }
+
         
 
     }
@@ -631,9 +643,7 @@ $scope.province1 = function () {
   
   
   $scope.calculateShippingFee = function (toDistrictId, toWardCode) {
-    // console.log(toDistrictId)
-    // console.log(toWardCode)
-    if (toDistrictId && toWardCode && $rootScope.countProduct > 0) {
+    if (toDistrictId && toWardCode ) {
     let blows = (toWardCode || "").toString().replace(/\D/g, "");
     let numericDistrictId = Number(toDistrictId);
   
@@ -726,21 +736,20 @@ $scope.checkPhoneNumber= true;
       shippingFee: 0,
       address: "",
       phoneNumber: "",
-      note: "",
-      typeBill: 2,
-      status: 10,
+    //   note: "",
+      typeBill: 1,
+      status: 1,
       // paymentStatus: 0,
       paymentMethod: "",
       voucher: "",
-      customerEntity: "",
-    
+    //   customerEntity: "",
       get billDetail(){
      if ($scope.cartItems && $scope.cartItems.length > 0) {
-      const isCustomerLoggedIn = $scope.isCustomerLoggedIn;
       return $scope.cartItems.map(item => {
           return {
-              productDetail: { id: getProductDetailId(item, isCustomerLoggedIn) },
+              productDetail: item.productDetail,
               price: item.price,
+              promotionalPrice: item.promotionalPrice,
               quantity: item.quantity,
               status: 1
           };
@@ -803,14 +812,17 @@ $scope.dataCity.ProvinceName;
         bill.address = fullAddress;
         bill.paymentMethod = $scope.selectedPayment;
         bill.voucher = $scope.voucherData;
-        bill.customerEntity = $scope.userData;
+        // bill.customerEntity = $scope.userData;
         bill.shippingFee = $scope.shippingFee;
         // Tiến hành gửi dữ liệu lên server
-        $http.post("http://localhost:8080/api/ol/bill/create", bill)
+        $http.post("http://localhost:8080/api/home/bill/create", bill)
           .then(resp => {
            // Xử lý phản hồi từ server
               let body = resp.data;
               console.log(body);
+              if (body == 333) {
+                $location.path('/home/paymentSuccess');
+              }
               if (body != null && body.hasOwnProperty("redirect") ) {
                   window.location.href = body.redirect; 
               } else if (typeof body === 'object' && body.hasOwnProperty("resultCode") && body.hasOwnProperty("insufficientQuantityProducts")) {
@@ -851,7 +863,6 @@ $scope.dataCity.ProvinceName;
 
     // Chọn address
     $scope.fillDataToBill  = function(address) {
-        console.log(address)
         if (address != '') {
         
           $scope.defaultAddress = address;
@@ -875,6 +886,8 @@ $scope.dataCity.ProvinceName;
         $scope.getNameProvince($scope.dataCity)
         $scope.getNameDistrict($scope.dataCity,$scope.dataDistrict)
         $scope.getNameWard($scope.dataDistrict,$scope.dataWard)
+
+        // count();
         $scope.calculateShippingFee($scope.dataDistrict,$scope.dataWard)
         }
         
@@ -938,5 +951,12 @@ $scope.dataCity.ProvinceName;
 
 
 
+      function isValidPhoneNumber(phoneNumber) {
+        // Regular expression cho số điện thoại di động và cố định Việt Nam
+        const regexMobile = /(09|03|07|08|05)+([0-9]{8})\b/;
+        const regexLandline = /(02|024|028)+([0-9]{7})\b/;
+      
+        return regexMobile.test(phoneNumber) || regexLandline.test(phoneNumber);
+      }
 
 });

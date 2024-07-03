@@ -64,6 +64,7 @@ public class OLCartController2 {
                         olCartResponse.setName(product.getName() +  product.getCategory().getName() + product.getMaterial().getName());
                         olCartResponse.setNameColor(cartDetail.getProductDetail().getColor().getName());
                         olCartResponse.setNameSize(cartDetail.getProductDetail().getSize().getName());
+                        olCartResponse.setProductDetail(cartDetail.getProductDetail());
                         List<String> images = olImageService2.getImagesByProductIdAndColorId(product.getId(), cartDetail.getProductDetail().getColor().getId());
                         String imagePath = null;
 

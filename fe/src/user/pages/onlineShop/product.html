@@ -1,39 +1,6 @@
 
 <!-- sidebar + content -->
 <section style="margin-top: 82px;" class="container-fluid" ng-init="loadPage();refreshDataProduct()">
-    <div style="display: flex; justify-content: center;">
-      <div class="category-container">
-        <div class="heading-data__title" id="headingTitle">
-          DANH MỤC SẢN PHẨM
-        </div>
-        <div class="category-body">
-          <div class="col-md-4">
-            <div class="category-data" id="categoryDataContainer">
-              <ul>
-                <li ng-repeat="category in dataFill.categoryList">
-                  <a ng-href="#!product?categoryId={{category.id}}" class="text-dark">{{category.name}}</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <button class="btn btn-primary" ng-click="goToOfView()" ng-show="isAdmin">Chức năng Admin</button>
-        </div>
-  <!-- Search Bar -->
-<div class="d-flex justify-content-start" >
-  <div style="border-radius: 10px; width: 100%;" class="input-group">
-    <div class="form-outline">
-      <input style="border-bottom: 1px solid #cdcdcd;" type="search" ng-model="searchTerm" ng-change="filterProducts()" class="form-control" />
-      <label class="form-label">Tìm kiếm sản phẩm</label>
-    </div>
-    <button type="button" class="btn btn-primary shadow-0" ng-click="filterProducts()">
-      <i class="fas fa-search fa-lg"></i>
-    </button>
-  </div>
-</div>
-
-      </div>
-    </div>
-    
     <!-- Sidebar and Content -->
     <div class="row">
       <!-- sidebar -->
@@ -166,7 +133,8 @@
                         {{ product.product.category.name }}
                     </h3>
                 </a>
-
+                        <h3>{{product.promotionalPrice}}</h3>
+                        <h3>{{product.productPrice}}</h3>
                     <div ng-if="product.promotionalPrice">
                         <span>{{ formatCurrency(product.promotionalPrice )}}₫</span>
                     </div>
@@ -178,6 +146,8 @@
                     <div ng-if="!product.promotionalPrice && !product.saleValue">
                         <span>{{ formatCurrency(product.productPrice )}}₫</span>
                     </div>
+
+                    <h2>{{product.promotionalPrice}}</h2>
                 </div>
             </div>
         </div>

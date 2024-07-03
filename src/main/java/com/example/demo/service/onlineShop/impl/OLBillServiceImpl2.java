@@ -158,7 +158,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         }
 
 //        bill.setCreatedAt(new Date());
-//        Bill savedBill = olProductDetailRepository.save(bill);
+        Bill savedBill = olBillRepository.save(bill);
         olBillDetailService.saveAll(billDetails);
         return ResponseEntity.ok(savedBill);
     }

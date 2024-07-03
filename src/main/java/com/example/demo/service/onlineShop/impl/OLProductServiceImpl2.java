@@ -41,16 +41,15 @@ public class OLProductServiceImpl2 implements OLProductService2 {
     // Phương thức để lọc sản phẩm dựa trên các thuộc tính và phân trang, sắp xếp
 
 
-
     public List<ProductSaleDetails> getProduct() {
         List<Object[]> results = productRepository.findProductsWithImages();
 
         List<ProductSaleDetails> productSaleDetails = results.stream().map(result -> {
             Long productId = ((Number) result[0]).longValue();
             String productName = (String) result[1];
-            BigDecimal productPrice = (BigDecimal) result[2];
+//            BigDecimal productPrice = (BigDecimal) result[2];
             Integer discountPrice = (Integer) result[3];
-            Integer promotionalPrice = (Integer) result[4];
+//            Integer promotionalPrice = (Integer) result[4];
             Integer saleValue = (Integer) result[5];
             Integer discountType = (Integer) result[6];
             String imagePath = (String) result[7];
@@ -62,9 +61,9 @@ public class OLProductServiceImpl2 implements OLProductService2 {
             return new ProductSaleDetails(
                     productId,
                     productName,
-                    productPrice,
+                    getProductPriceById(productId),
                     discountPrice,
-                    promotionalPrice,
+                    findPromotionalPriceByProductId(productId),
                     saleValue,
                     discountType,
                     imagePath,
@@ -128,16 +127,13 @@ public class OLProductServiceImpl2 implements OLProductService2 {
                     boolean wristMatch = (wristIds == null || wristIds.isEmpty() || wristIds.contains(product.getWrist().getId()));
                     boolean materialMatch = (materialIds == null || materialIds.isEmpty() || materialIds.contains(product.getMaterial().getId()));
                     boolean statusMatch = product.getStatus().equals(1); // Assuming the status filter
-
                     boolean colorMatch = (colorIds == null || colorIds.isEmpty() ||
                             product.getProductDetails().stream().anyMatch(pd -> colorIds.contains(pd.getColor().getId())));
                     boolean sizeMatch = (sizeIds == null || sizeIds.isEmpty() ||
                             product.getProductDetails().stream().anyMatch(pd -> sizeIds.contains(pd.getSize().getId())));
-
                     boolean searchTermMatch = (searchTerm == null || searchTerm.isEmpty() ||
                             product.getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
                             product.getCode().toLowerCase().contains(searchTerm.toLowerCase()));
-
                     return categoryMatch && collarMatch && wristMatch && colorMatch && sizeMatch && materialMatch && searchTermMatch && statusMatch;
                 })
                 .collect(Collectors.toList());
@@ -174,12 +170,12 @@ public class OLProductServiceImpl2 implements OLProductService2 {
         if (productInfoArray != null && productInfoArray.length > 0) {
             Long productId = (productInfoArray[0] instanceof Long) ? (Long) productInfoArray[0] : null;
             String productName = (String) productInfoArray[1];
-            BigDecimal price = (BigDecimal) productInfoArray[2];
+            BigDecimal price = getProductPriceById(productId);
             String wristName = (String) productInfoArray[3];
             String materialName = (String) productInfoArray[4];
             String categoryName = (String) productInfoArray[5];
             String collarName = (String) productInfoArray[6];
-            Integer promotionalPrice = (Integer) productInfoArray[7];
+            Integer promotionalPrice = findPromotionalPriceByProductId(productId);
             Integer discountType = (Integer) productInfoArray[8];
             Integer value = (Integer) productInfoArray[9];
             String brandName = (String) productInfoArray[10];

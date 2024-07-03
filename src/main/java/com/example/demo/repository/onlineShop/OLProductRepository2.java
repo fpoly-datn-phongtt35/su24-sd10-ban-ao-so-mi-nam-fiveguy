@@ -54,7 +54,7 @@ public interface OLProductRepository2 extends JpaRepository<Product, Long>, JpaS
     List<Object[]> getProductInfo(@Param("productId") Long productId);
 
 
-//    get price và promotionalPrice  hiển thị cart
+//    get  promotionalPrice  hiển thị cart
 @Query("SELECT ps.promotionalPrice " +
         "FROM Product p " +
         "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +

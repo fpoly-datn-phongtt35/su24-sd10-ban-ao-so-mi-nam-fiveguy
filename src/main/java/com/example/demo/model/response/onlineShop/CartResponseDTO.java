@@ -1,6 +1,7 @@
 package com.example.demo.model.response.onlineShop;
 
 import com.example.demo.entity.Cart;
+import com.example.demo.entity.ProductDetail;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -26,7 +27,8 @@ public class CartResponseDTO {
 
     private String nameSize;
 
-
     private String path;
+
+    private ProductDetail productDetail;
 
 }
