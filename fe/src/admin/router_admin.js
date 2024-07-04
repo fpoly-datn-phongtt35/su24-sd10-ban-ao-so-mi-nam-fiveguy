@@ -13,6 +13,9 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/staff/staff.html",
     })
     // <!-- Thưởng -->
+    .when("/admin/category", {
+      templateUrl: "pages/product/category.html",
+    })
     .when("/admin/product", {
       templateUrl: "pages/product/product.html",
     })
@@ -24,6 +27,15 @@ app.config(function ($routeProvider, $locationProvider) {
     })
     .when("/admin/material", {
       templateUrl: "pages/product/material.html",
+    })
+    .when("/admin/size", {
+      templateUrl: "pages/product/size.html",
+    })
+    .when("/admin/color", {
+      templateUrl: "pages/product/color.html",
+    })
+    .when("/admin/supplier", {
+      templateUrl: "pages/product/supplier.html",
     })
     // <!-- Tịnh -->
     .when("/admin/customer", {
