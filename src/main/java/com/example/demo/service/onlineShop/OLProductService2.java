@@ -14,11 +14,6 @@ import java.util.Set;
     public interface OLProductService2 {
 
 
-        Page<ProductSaleDetails> filterProducts(
-                Long categoryId, String name, Long colorName, Long sizeName, Long materialName,
-                Long collarName, Long wristName, Pageable pageable) ;
-
-
         Page<ProductSaleDetails> filterProducts2(
                 Set<Long> categoryIds, Set<Long> collarIds, Set<Long> wristIds,
                 Set<Long> colorIds, Set<Long> sizeIds, Set<Long> materialIds,

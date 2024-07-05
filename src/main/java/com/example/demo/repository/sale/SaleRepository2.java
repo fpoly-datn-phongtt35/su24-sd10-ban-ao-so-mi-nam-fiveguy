@@ -93,7 +93,7 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    JOIN Customer c ON b.customer.id = c.id " +
             "    JOIN Account a ON c.account.id = a.id " +
             "WHERE " +
-            "    s.id = :saleId AND b.status = 1 AND c.id = :customerId " +
+            "    s.id = :saleId AND b.status = 4 AND c.id = :customerId " +
             "GROUP BY " +
             "    p.name, bd.price, bd.promotionalPrice " +
             "ORDER BY " +

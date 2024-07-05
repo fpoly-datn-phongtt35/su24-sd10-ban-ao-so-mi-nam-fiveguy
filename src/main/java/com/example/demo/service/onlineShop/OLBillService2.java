@@ -1,6 +1,7 @@
 package com.example.demo.service.onlineShop;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.entity.Customer;
 import com.example.demo.model.response.onlineShop.OlBillDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.Page;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public interface OLBillService2 {
 
-    ResponseEntity<?> creatBill(@RequestBody JsonNode orderData);
+    ResponseEntity<?> creatBill(@RequestBody JsonNode orderData, Customer customer);
 
 //    Page<Bill> findLatestBillsByCustomerId(Long customerId, int page, int size);
 

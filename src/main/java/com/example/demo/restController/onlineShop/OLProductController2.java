@@ -33,45 +33,45 @@ public class OLProductController2 {
     @Autowired
     private OLImageService2 olImageService2;
 
-    @GetMapping("/product/filter")
-    public Page<ProductSaleDetails> filterProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String colorIdParam,
-            @RequestParam(required = false) String sizeIdParam,
-            @RequestParam(required = false) String materialIdParam,
-            @RequestParam(required = false) String collarIdParam,
-            @RequestParam(required = false) String wristIdParam,
-            @RequestParam(required = false) String categoryIdParam,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "desc") String sortDir,
-            @RequestParam(defaultValue = "createdAt") String sort) {
-
-        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
-
-        Long colorId = parseId(colorIdParam);
-        Long sizeId = parseId(sizeIdParam);
-        Long materialId = parseId(materialIdParam);
-        Long collarId = parseId(collarIdParam);
-        Long wristId = parseId(wristIdParam);
-        Long categoryId = parseId(categoryIdParam);
-
-        return productService.filterProducts(
-                categoryId, name, colorId, sizeId, materialId, collarId, wristId, pageable);
-    }
-
-    private Long parseId(String idString) {
-        if (idString != null && !idString.isEmpty()) {
-            try {
-                return Long.parseLong(idString);
-            } catch (NumberFormatException e) {
-                // Handle parsing error if needed
-                return null;
-            }
-        }
-        return null;
-    }
+//    @GetMapping("/product/filter")
+//    public Page<ProductSaleDetails> filterProducts(
+//            @RequestParam(required = false) String name,
+//            @RequestParam(required = false) String colorIdParam,
+//            @RequestParam(required = false) String sizeIdParam,
+//            @RequestParam(required = false) String materialIdParam,
+//            @RequestParam(required = false) String collarIdParam,
+//            @RequestParam(required = false) String wristIdParam,
+//            @RequestParam(required = false) String categoryIdParam,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "desc") String sortDir,
+//            @RequestParam(defaultValue = "createdAt") String sort) {
+//
+//        Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+//
+//        Long colorId = parseId(colorIdParam);
+//        Long sizeId = parseId(sizeIdParam);
+//        Long materialId = parseId(materialIdParam);
+//        Long collarId = parseId(collarIdParam);
+//        Long wristId = parseId(wristIdParam);
+//        Long categoryId = parseId(categoryIdParam);
+//
+//        return productService.filterProducts(
+//                categoryId, name, colorId, sizeId, materialId, collarId, wristId, pageable);
+//    }
+//
+//    private Long parseId(String idString) {
+//        if (idString != null && !idString.isEmpty()) {
+//            try {
+//                return Long.parseLong(idString);
+//            } catch (NumberFormatException e) {
+//                // Handle parsing error if needed
+//                return null;
+//            }
+//        }
+//        return null;
+//    }
 
 
 

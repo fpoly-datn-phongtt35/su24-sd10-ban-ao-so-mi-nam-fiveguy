@@ -92,21 +92,22 @@ public class MoMoPaymentController {
             }
 //            bill.setPaymentDate(new Date());
             bill.setStatus(1);
+            olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2);
+
             bill.setTransId(transId);
             olBillService.save(bill);
-            System.out.println("Thành công");
-//            response.sendRedirect(Config.fe_liveServer_Success);
+            response.sendRedirect(Config.fe_liveServer_Success);
 
         }else {
-            bill.setStatus(4);
-//            olBillUntility.restoreProductQuantity(bill.getBillDetail());
-            if (bill.getVoucher() != null){
-//                olBillUntility.increaseVoucherQuantity(bill.getVoucher().getId());
-            }
-            olBillService.save(bill);
-            System.out.println("Thất bại");
+            bill.setStatus(6);
 
-//            response.sendRedirect(Config.fe_liveServer_Failed);
+//            olBillUntility.restoreProductQuantity(bill.getBillDetail());
+//            if (bill.getVoucher() != null){
+//                olBillUntility.increaseVoucherQuantity(bill.getVoucher().getId());
+//            }
+            olBillService.save(bill);
+
+            response.sendRedirect(Config.fe_liveServer_Failed);
         }
     }
 

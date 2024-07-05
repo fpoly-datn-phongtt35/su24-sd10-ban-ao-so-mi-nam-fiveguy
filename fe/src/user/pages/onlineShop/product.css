@@ -170,3 +170,34 @@
   margin-bottom: 10px;
   margin-top: 10px;
 }
+.product-name{
+  text-decoration: none;
+
+    background-color: transparent;
+    color: inherit;
+    transition: all .2s;
+
+}
+
+.product-grid__title {
+  font-size: 18px;
+  line-height: 1.2em;
+  font-weight: 400;
+  margin: 10px 0;
+}
+.product h3{
+  text-decoration: none;
+
+}
+.sale-value{
+  background: #273bcd;
+  border-radius: 6px;
+  /* font-size: .7rem; */
+  padding: 2px;
+  color: #fff;
+  margin: 0 12px;
+
+}
+.price-info{
+  display: flex;
+}

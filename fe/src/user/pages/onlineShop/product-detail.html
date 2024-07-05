@@ -1,33 +1,6 @@
 <!-- content -->
 <section style="    margin-top: 82px;" ng-init="getRates();loadProductDetails()">
 
-  
-    <div class="overlay" id="overlay" class="inactive" ng-click="closeOverlay($event)">
-      <div class="header-search">
-        <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
-          <i class="fa-solid fa-xmark fa-lg"></i>
-        </button>
-        <form class="from-search"  >
-          <div class="input-group">
-            <div class="form-outline w-100">
-            <input style="border-bottom: 1px solid #cdcdcd;" type="search" id="form1" class="form-control"
-      ng-model="searchText" ng-change="loadProductSearch()" />
-  
-  
-            </div>
-            <button type="button" class="btn btn-primary shadow-0">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </form>
-      </div>
-      <div class="product-display">
-        <div class="container-fluid">
-          <div  class="row" id="productDisplay">
-          </div>
-        </div>
-      </div>
-    </div>
     
     <div class="container">
       <div class="row " style="padding: 46px;">

@@ -47,12 +47,10 @@ public class OLProductServiceImpl2 implements OLProductService2 {
         List<ProductSaleDetails> productSaleDetails = results.stream().map(result -> {
             Long productId = ((Number) result[0]).longValue();
             String productName = (String) result[1];
-//            BigDecimal productPrice = (BigDecimal) result[2];
-            Integer discountPrice = (Integer) result[3];
-//            Integer promotionalPrice = (Integer) result[4];
-            Integer saleValue = (Integer) result[5];
-            Integer discountType = (Integer) result[6];
-            String imagePath = (String) result[7];
+            Integer discountPrice = (Integer) result[2];
+            Integer saleValue = (Integer) result[3];
+            Integer discountType = (Integer) result[4];
+            String imagePath = (String) result[5];
 
             // Retrieve product object using findById
             Product product = productRepository.findById(productId)
@@ -61,9 +59,9 @@ public class OLProductServiceImpl2 implements OLProductService2 {
             return new ProductSaleDetails(
                     productId,
                     productName,
-                    getProductPriceById(productId),
+                    getProductPriceById(productId), // Get product price
                     discountPrice,
-                    findPromotionalPriceByProductId(productId),
+                    findPromotionalPriceByProductId(productId), // Get promotional price
                     saleValue,
                     discountType,
                     imagePath,
@@ -74,38 +72,6 @@ public class OLProductServiceImpl2 implements OLProductService2 {
         return productSaleDetails;
     }
 
-
-
-
-
-    @Override
-    public Page<ProductSaleDetails> filterProducts(
-            Long categoryId, String name, Long colorName, Long sizeName, Long materialName,
-            Long collarName, Long wristName, Pageable pageable) {
-
-        List<ProductSaleDetails> productSaleDetailsList = getProduct();
-
-        List<ProductSaleDetails> filteredProductSaleDetails = productSaleDetailsList.stream()
-                .filter(productSaleDetails -> {
-                    Product product = productSaleDetails.getProduct();
-                    return (categoryId == null || product.getCategory().getId().equals(categoryId)) &&
-                            (name == null || name.isEmpty() || product.getName().toLowerCase().contains(name.toLowerCase()) ||
-                                    product.getCode().toLowerCase().contains(name.toLowerCase())) &&
-                            (collarName == null || product.getCollar().getId().equals(collarName)) &&
-                            (wristName == null || product.getWrist().getId().equals(wristName)) &&
-                            (colorName == null || product.getProductDetails().stream().anyMatch(pd -> pd.getColor().getId().equals(colorName))) &&
-                            (sizeName == null || product.getProductDetails().stream().anyMatch(pd -> pd.getSize().getId().equals(sizeName))) &&
-                            (materialName == null || product.getMaterial().getId().equals(materialName)) &&
-                            product.getStatus().equals(1); // Assuming the status filter
-                })
-                .collect(Collectors.toList());
-
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), filteredProductSaleDetails.size());
-        List<ProductSaleDetails> output = filteredProductSaleDetails.subList(start, end);
-
-        return new PageImpl<>(output, pageable, filteredProductSaleDetails.size());
-    }
 
 
 
@@ -166,6 +132,9 @@ public class OLProductServiceImpl2 implements OLProductService2 {
 
         return new PageImpl<>(output, pageable, filteredProductSaleDetails.size());
     }
+
+
+
     private ProductInfoDTO convertToProductInfoDTO(Object[] productInfoArray) {
         if (productInfoArray != null && productInfoArray.length > 0) {
             Long productId = (productInfoArray[0] instanceof Long) ? (Long) productInfoArray[0] : null;

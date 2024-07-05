@@ -1,9 +1,6 @@
 package com.example.demo.service.onlineShop.impl;
 
-import com.example.demo.entity.Bill;
-import com.example.demo.entity.BillDetail;
-import com.example.demo.entity.Product;
-import com.example.demo.entity.ProductDetail;
+import com.example.demo.entity.*;
 import com.example.demo.model.response.onlineShop.OlBillDTO;
 import com.example.demo.repository.onlineShop.OLBillRepository2;
 import com.example.demo.service.onlineShop.OLBillDetailService2;
@@ -111,7 +108,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
 
     @Override
-    public ResponseEntity<?> creatBill(JsonNode orderData) {
+    public ResponseEntity<?> creatBill(JsonNode orderData, Customer customer) {
         if (orderData == null) {
             return ResponseEntity.ok(0);
         }
@@ -158,6 +155,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         }
 
 //        bill.setCreatedAt(new Date());
+        bill.setCustomer(customer);
         Bill savedBill = olBillRepository.save(bill);
         olBillDetailService.saveAll(billDetails);
         return ResponseEntity.ok(savedBill);

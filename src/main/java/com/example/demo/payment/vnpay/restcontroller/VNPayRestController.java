@@ -159,8 +159,6 @@ public class VNPayRestController {
         String vnp_TransactionNo = queryParams.get("vnp_TransactionNo");
         System.out.println(vnp_TransactionNo);
             if ("00".equals(vnp_ResponseCode)) {
-
-
                 if (bill.getCustomer() != null){
                     Cart cart = olCartService.findByCustomerId(bill.getCustomer().getId());
 
@@ -172,22 +170,22 @@ public class VNPayRestController {
 
                 }
 //                bill.setPaymentDate(new Date());
-                bill.setTransId(vnp_TransactionNo);
                 bill.setStatus(1);
-                olBillService.save(bill);
-                System.out.println("Thành công");
+                olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2);
+                bill.setTransId(vnp_TransactionNo);
 
-//                response.sendRedirect(Config.fe_liveServer_Success);
+                olBillService.save(bill);
+
+                response.sendRedirect(Config.fe_liveServer_Success);
             } else {
-                bill.setStatus(4);
+                bill.setStatus(6);
 //                olBillUntility.restoreProductQuantity(bill.getBillDetail());
-                if (bill.getVoucher() != null){
+//                if (bill.getVoucher() != null){
 //                    olBillUntility.increaseVoucherQuantity(bill.getVoucher().getId());
-                }
+//                }
                 olBillService.save(bill);
-                System.out.println("Thất bại");
 
-//                response.sendRedirect(Config.fe_liveServer_Failed);
+                response.sendRedirect(Config.fe_liveServer_Failed);
 
             }
     }

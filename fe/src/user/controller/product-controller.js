@@ -144,8 +144,8 @@ $scope.filterProducts = function(page) {
             sort: $scope.selectedSortType == 0 ? 'createdAt' : 'price'
         }
     };
-    console.log(config);
 
+    console.log(config);
 
 
     return $http.get('http://localhost:8080/api/home/products/filter', config)
@@ -172,7 +172,8 @@ $scope.updateSelectedColors = function(color) {
     } else {
         $scope.selectedColors = $scope.selectedColors.filter(id => id !== color.id);
     }
-    $scope.filterProducts();
+    $scope.filterProducts(0);
+
 };
 
 $scope.updateSelectedSizes = function(size) {
@@ -181,35 +182,44 @@ $scope.updateSelectedSizes = function(size) {
     } else {
         $scope.selectedSizes = $scope.selectedSizes.filter(id => id !== size.id);
     }
-    $scope.filterProducts();
+    $scope.filterProducts(0);
+
 };
 
 $scope.updateSelectedMaterials = function(material) {
     if (material.isSelected) {
-        $scope.selectedMaterials.push(material.id);
+        if (!$scope.selectedMaterials.includes(material.id)) {
+            $scope.selectedMaterials.push(material.id);
+        }
     } else {
         $scope.selectedMaterials = $scope.selectedMaterials.filter(id => id !== material.id);
     }
-    $scope.filterProducts();
+    $scope.filterProducts(0);
 };
+
 
 $scope.updateSelectedCollars = function(collar) {
     if (collar.isSelected) {
-        $scope.selectedCollars.push(collar.id);
+        if (!$scope.selectedCollars.includes(collar.id)) {
+            $scope.selectedCollars.push(collar.id);
+        }
     } else {
         $scope.selectedCollars = $scope.selectedCollars.filter(id => id !== collar.id);
     }
-    $scope.filterProducts();
+    $scope.filterProducts(0);
 };
 
 $scope.updateSelectedWrists = function(wrist) {
     if (wrist.isSelected) {
-        $scope.selectedWrists.push(wrist.id);
+        if (!$scope.selectedWrists.includes(wrist.id)) {
+            $scope.selectedWrists.push(wrist.id);
+        }
     } else {
         $scope.selectedWrists = $scope.selectedWrists.filter(id => id !== wrist.id);
     }
-    $scope.filterProducts();
+    $scope.filterProducts(0);
 };
+
 
 $scope.setCurrentPage = function(page) {
     if (page >= 0 && page < $scope.totalPages) {
@@ -218,7 +228,7 @@ $scope.setCurrentPage = function(page) {
 };
 
 $scope.loadPage = function() {
-    $scope.filterProducts();
+    $scope.filterProducts(0);
 };
 
 
@@ -640,10 +650,10 @@ $scope.province1 = function () {
     });
   };
   
-  
+  $scope.shippingFee = 0;
   
   $scope.calculateShippingFee = function (toDistrictId, toWardCode) {
-    if (toDistrictId && toWardCode ) {
+    if (toDistrictId && toWardCode && token != null && token && $rootScope.countProduct > 0) {
     let blows = (toWardCode || "").toString().replace(/\D/g, "");
     let numericDistrictId = Number(toDistrictId);
   
@@ -737,8 +747,8 @@ $scope.checkPhoneNumber= true;
       address: "",
       phoneNumber: "",
     //   note: "",
-      typeBill: 1,
-      status: 1,
+      typeBill: 3,
+      status: 10,
       // paymentStatus: 0,
       paymentMethod: "",
       voucher: "",
@@ -746,13 +756,14 @@ $scope.checkPhoneNumber= true;
       get billDetail(){
      if ($scope.cartItems && $scope.cartItems.length > 0) {
       return $scope.cartItems.map(item => {
-          return {
-              productDetail: item.productDetail,
-              price: item.price,
-              promotionalPrice: item.promotionalPrice,
-              quantity: item.quantity,
-              status: 1
-          };
+        return {
+            productDetail: item.productDetail,
+            price: item.price,
+            promotionalPrice: (item.promotionalPrice !== null && item.promotionalPrice !== undefined) ? item.promotionalPrice : 0,
+            quantity: item.quantity,
+            status: 1
+        };
+        
       });
   } else {
       return []; 
@@ -807,8 +818,8 @@ $scope.dataCity.ProvinceName;
 
         // Nếu thông tin đã đầy đủ, tiến hành gửi dữ liệu lên server
         var bill = angular.copy(this);
-        bill.totalAmount = $scope.totalAmount;
-        bill.totalAmountAfterDiscount = $scope.totalAmountAfterDiscount;
+        bill.totalAmount = $scope.totalAmount + $scope.shippingFee;
+        bill.totalAmountAfterDiscount = $scope.totalAmountAfterDiscount + $scope.shippingFee;
         bill.address = fullAddress;
         bill.paymentMethod = $scope.selectedPayment;
         bill.voucher = $scope.voucherData;
@@ -932,7 +943,6 @@ $scope.dataCity.ProvinceName;
                         // Xử lý khi không có địa chỉ mặc định trả về
                         console.warn('No default address found');
                     }
-                    console.log(response.data);
                 })
                 .catch(function(error) {
                     console.error('Error:', error);
