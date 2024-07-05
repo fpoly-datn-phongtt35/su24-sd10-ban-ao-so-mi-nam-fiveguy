@@ -51,6 +51,9 @@ public class Bill {
     @Column(name = "TotalAmountAfterDiscount")
     private BigDecimal totalAmountAfterDiscount;
 
+    @Column(name = "CreatedAt")
+    private Date createdAt;
+
     @ManyToOne
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
     private Customer customer;
