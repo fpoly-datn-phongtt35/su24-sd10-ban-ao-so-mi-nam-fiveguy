@@ -54,9 +54,6 @@ public class Bill {
     @Column(name = "CreatedAt")
     private Date createdAt;
 
-    @Column(name = "CreatedBy")
-    private String createdBy;
-
     @ManyToOne
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
     private Customer customer;
