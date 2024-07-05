@@ -23,63 +23,63 @@ import java.util.List;
 
 public class BillRestControllerH {
 
-    @Autowired
-    BillService billService;
-
-    @GetMapping("")
-    public ResponseEntity<List<Bill>> getAllBill(){
-        List<Bill> bills = billService.getAllBill();
-        return ResponseEntity.ok(bills);
-    }
-    @PostMapping("")
-    public ResponseEntity<?> createBill(@RequestBody Bill bill) {
-        try {
-            Bill createBill = billService.createBill(bill);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createBill);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Bill> updateCustomer(@RequestBody Bill bill, @PathVariable Long id) {
-        Bill bill1 = billService.updateBill(bill, id);
-        if (bill1 != null) {
-            return ResponseEntity.ok(bill);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PutMapping("/status/{id}")
-    public ResponseEntity<Bill> updateCustomer(@RequestBody Integer status, @PathVariable Long id) {
-        Bill bill1 = billService.updateStatus(status, id);
-        if (bill1 != null) {
-            return ResponseEntity.ok(bill1);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
-        try {
-            billService.deleteBill(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-//    @GetMapping("/{id}/billDetail")
-//    public ResponseEntity<?> getProductDetail(@PathVariable("id") Long id){
-//        List<BillDetail> billDetails = billDetailService.getAllByBillId(id);
-//        return ResponseEntity.ok(billDetails);
+//    @Autowired
+//    BillService billService;
+//
+//    @GetMapping("")
+//    public ResponseEntity<List<Bill>> getAllBill(){
+//        List<Bill> bills = billService.getAllBill();
+//        return ResponseEntity.ok(bills);
 //    }
-
-    @GetMapping("/getAllExportExcel")
-    public ResponseEntity<?> getAllExportExcel(){
-        return ResponseEntity.ok(billService.getAllExportExcel());
-    }
+//    @PostMapping("")
+//    public ResponseEntity<?> createBill(@RequestBody Bill bill) {
+//        try {
+//            Bill createBill = billService.createBill(bill);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(createBill);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+//
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Bill> updateCustomer(@RequestBody Bill bill, @PathVariable Long id) {
+//        Bill bill1 = billService.updateBill(bill, id);
+//        if (bill1 != null) {
+//            return ResponseEntity.ok(bill);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+//    @PutMapping("/status/{id}")
+//    public ResponseEntity<Bill> updateCustomer(@RequestBody Integer status, @PathVariable Long id) {
+//        Bill bill1 = billService.updateStatus(status, id);
+//        if (bill1 != null) {
+//            return ResponseEntity.ok(bill1);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
+//        try {
+//            billService.deleteBill(id);
+//            return ResponseEntity.noContent().build();
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+////    @GetMapping("/{id}/billDetail")
+////    public ResponseEntity<?> getProductDetail(@PathVariable("id") Long id){
+////        List<BillDetail> billDetails = billDetailService.getAllByBillId(id);
+////        return ResponseEntity.ok(billDetails);
+////    }
+//
+//    @GetMapping("/getAllExportExcel")
+//    public ResponseEntity<?> getAllExportExcel(){
+//        return ResponseEntity.ok(billService.getAllExportExcel());
+//    }
 
 }
