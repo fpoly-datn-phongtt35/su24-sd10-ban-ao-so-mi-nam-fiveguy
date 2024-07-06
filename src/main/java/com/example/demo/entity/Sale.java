@@ -44,8 +44,10 @@ public class Sale {
     @Column(name = "MaximumDiscountAmount")
     private Integer maximumDiscountAmount;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "StartDate", nullable = false)
+    @Column(name = "Path", columnDefinition = "nvarchar(max)")
+    private String path;
+
+    @Column(name = "StartDate")
     private Date startDate;
 
     @Temporal(TemporalType.TIMESTAMP)
