@@ -319,13 +319,19 @@
                                         Số lần sử dụng là bắt buộc.
                                     </div>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': (saleForm.saleImage.$touched || saleForm.$submitted) && saleForm.saleImage.$invalid}">
-                                    <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
-                                    <input type="file" class="form-control" id="image-update" name="saleImage" ng-model="saleDetail.path" required onchange="angular.element(this).scope().handleImageChange()">
-                                    <div class="text-danger" ng-show="(saleForm.saleImage.$touched || saleForm.$submitted) && saleForm.saleImage.$invalid">
-                                        Hình ảnh/Banner giảm giá là bắt buộc.
-                                    </div>
-                                </div>
+                        <!-- Image Upload -->
+                <div class="form-group" ng-class="{'has-error': (saleForm.saleImage.$touched || saleForm.$submitted) && !isImageUploaded}">
+                    <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
+                    <input type="file" class="form-control" id="image-update" name="saleImage" ng-model="saleDetail.path" required onchange="angular.element(this).scope().handleImageChange(this)">
+                    <div class="text-danger" ng-show="(saleForm.saleImage.$touched || saleForm.$submitted) && !isImageUploaded">
+                        Hình ảnh/Banner giảm giá là bắt buộc.
+                    </div>
+                </div>
+                <!-- Display the uploaded image -->
+                <div class="form-group">
+                    <img ng-if="uploadedImagePath" ng-src="{{uploadedImagePath}}" alt="Uploaded Image" class="img-thumbnail">
+                </div>
+                                
                                 
                             </div>
                         </div>

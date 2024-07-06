@@ -240,9 +240,10 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     
     
     $scope.saveSale = function() {
-        if ($scope.saleForm.$valid) {
+        console.log($scope.saleDetail);
+        if ($scope.saleForm.$valid && $scope.isImageUploaded) {
             var saleData = $scope.saleDetail;
-    
+            console.log(saleData);
             if ($scope.checkSaleCode(saleData.code)) {
                 $scope.showErrorNotification("Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.");
                 return;
@@ -972,6 +973,8 @@ $scope.addAllProductSales = function() {
     $scope.showError = false;
     $scope.alertErrorImg = "Lỗi chưa xác định";
     $scope.fileInput = null;
+    $scope.uploadedImagePath = ""; // Variable to store the uploaded image path
+    $scope.isImageUploaded = false; // Variable to check if image is uploaded
     
     $scope.handleImageChange = function () {
         let fileInputc = document.getElementById("image-update");
@@ -980,27 +983,32 @@ $scope.addAllProductSales = function() {
     
         if (file2) {
             $scope.imagePreview = URL.createObjectURL(file2);
+            $scope.isImageUploaded = false; // Reset the flag
             // You can upload the image immediately by calling the uploadImage function
             $scope.uploadImage(file2);
         }
     };
     
-    $scope.uploadImage = function (file) {
+    $scope.uploadImage = function(file) {
         var data = new FormData();
         data.append("file", file);
     
         $http.post("http://localhost:8080/api/rest/upload", data, {
             transformRequest: angular.identity,
-            headers: { "Content-Type": undefined },
+            headers: { "Content-Type": undefined }
         })
-        .then(function (resp) {
-            $scope.nameAvatar = resp.data.name;
-            console.log($scope.nameAvatar);
+        .then(function(resp) {
+            $scope.uploadedImagePath = resp.data.name;
+            $scope.saleDetail.path = $scope.uploadedImagePath;
+            $scope.isImageUploaded = true; // Set the flag to true after successful upload
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.log("Error uploading image", error);
+            $scope.saleForm.saleImage.$setValidity('serverError', false); // Set validity for custom error display
         });
     };
+    
+    
     
 
 

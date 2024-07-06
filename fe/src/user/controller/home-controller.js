@@ -39,7 +39,6 @@ $scope.showSlide = function(index) {
 
 
 
-
     $scope.loadActiveCategories = function() {
         $http.get('http://localhost:8080/api/home/categories')
           .then(function(response) {
