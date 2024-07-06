@@ -319,13 +319,14 @@
                                         Số lần sử dụng là bắt buộc.
                                     </div>
                                 </div>
-                                <!-- <div class="form-group" ng-class="{'has-error': (saleForm.saleImage.$touched || saleForm.$submitted) && saleForm.saleImage.$invalid}">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.saleImage.$touched || saleForm.$submitted) && saleForm.saleImage.$invalid}">
                                     <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
-                                    <input type="file" class="form-control" id="saleImage" name="saleImage" ng-model="saleDetail.image" required>
+                                    <input type="file" class="form-control" id="image-update" name="saleImage" ng-model="saleDetail.path" required onchange="angular.element(this).scope().handleImageChange()">
                                     <div class="text-danger" ng-show="(saleForm.saleImage.$touched || saleForm.$submitted) && saleForm.saleImage.$invalid">
                                         Hình ảnh/Banner giảm giá là bắt buộc.
                                     </div>
-                                </div> -->
+                                </div>
+                                
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Lưu</button>

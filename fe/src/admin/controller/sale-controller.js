@@ -968,6 +968,43 @@ $scope.addAllProductSales = function() {
     
     
 
+    $scope.imagePreview = null;
+    $scope.showError = false;
+    $scope.alertErrorImg = "Lỗi chưa xác định";
+    $scope.fileInput = null;
+    
+    $scope.handleImageChange = function () {
+        let fileInputc = document.getElementById("image-update");
+        let file2 = fileInputc.files[0];
+        console.log(file2);
+    
+        if (file2) {
+            $scope.imagePreview = URL.createObjectURL(file2);
+            // You can upload the image immediately by calling the uploadImage function
+            $scope.uploadImage(file2);
+        }
+    };
+    
+    $scope.uploadImage = function (file) {
+        var data = new FormData();
+        data.append("file", file);
+    
+        $http.post("http://localhost:8080/api/rest/upload", data, {
+            transformRequest: angular.identity,
+            headers: { "Content-Type": undefined },
+        })
+        .then(function (resp) {
+            $scope.nameAvatar = resp.data.name;
+            console.log($scope.nameAvatar);
+        })
+        .catch(function (error) {
+            console.log("Error uploading image", error);
+        });
+    };
+    
+
+
+
 }]);
 
 
