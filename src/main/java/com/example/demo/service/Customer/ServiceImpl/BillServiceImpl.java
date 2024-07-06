@@ -59,7 +59,7 @@ public class BillServiceImpl implements BillService {
             Bill bill1 = existingBill.get();
             bill1.setCode(bill.getCode());
             bill1.setCreatedAt(bill.getCreatedAt());
-            bill1.setPaymentDate(bill.getPaymentDate());
+//            bill1.setPaymentDate(bill.getPaymentDate());
             bill1.setTotalAmount(bill.getTotalAmount());
             bill1.setTotalAmountAfterDiscount(bill.getTotalAmountAfterDiscount());
             bill1.setReciverName(bill.getReciverName());
@@ -67,7 +67,7 @@ public class BillServiceImpl implements BillService {
             bill1.setShippingFee(bill.getShippingFee());
             bill1.setAddress(bill.getAddress());
             bill1.setPhoneNumber(bill.getPhoneNumber());
-            bill1.setNote(bill.getNote());
+//            bill1.setNote(bill.getNote());
 //            bill1.setCustomerEntity(bill.getCustomerEntity());
             bill1.setEmployee(bill.getEmployee());
             bill1.setPaymentMethod(bill.getPaymentMethod());
@@ -95,7 +95,7 @@ public class BillServiceImpl implements BillService {
             Bill bill1 = existingBill.get();
             bill1.setStatus(status);
             if(bill1.getPaymentMethod().getName().equals("COD") && status == 3){
-                bill1.setPaymentDate(new Date());
+//                bill1.setPaymentDate(new Date());
             }
             if(status == 2){
                 bill1.setDeliveryDate(new Date());
