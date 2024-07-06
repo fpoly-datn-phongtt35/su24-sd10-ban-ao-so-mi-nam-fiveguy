@@ -37,8 +37,7 @@ List<Object[]> findProductsWithImages();
             "c.name AS categoryName, co.name AS collarName, " +
             "CASE WHEN ps.id IS NOT NULL THEN ps.promotionalPrice ELSE 0 END AS finalPrice, " +
             "COALESCE(sa.discountType, 0) AS discountType, " +
-            "COALESCE(sa.value, 0) AS value, " +
-            "b.name AS brandName, s.name AS supplierName " +
+            "COALESCE(sa.value, 0) AS value " +
             "FROM Product p " +
             "LEFT JOIN p.wrist w " +
             "LEFT JOIN p.material m " +
@@ -46,16 +45,14 @@ List<Object[]> findProductsWithImages();
             "LEFT JOIN p.collar co " +
             "LEFT JOIN p.productSales ps " +
             "LEFT JOIN ps.sale sa ON sa.status = 1 " +
-            "LEFT JOIN p.brand bs " +
-            "LEFT JOIN bs.brand b " +
-            "LEFT JOIN bs.supplier s " +
             "WHERE p.id = :productId " +
             "AND p.status = 1 " +
             "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (sa.status = 1 OR sa.status IS NULL)))")
     List<Object[]> getProductInfo(@Param("productId") Long productId);
 
 
-//    get  promotionalPrice  hiển thị cart
+
+    //    get  promotionalPrice  hiển thị cart
 @Query("SELECT ps.promotionalPrice " +
         "FROM Product p " +
         "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
@@ -64,6 +61,56 @@ List<Object[]> findProductsWithImages();
         "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")
 Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
 
-//    Integer findPriceBy(@Param("productId") Long productId);
+    @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
+            "MIN(i.path) AS imagePath " +  // Selecting the first image path per product
+            "FROM Product p " +
+            "JOIN p.productDetails pd " +
+            "LEFT JOIN pd.billDetails bd " +
+            "LEFT JOIN bd.bill b " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
+            "LEFT JOIN p.images i ON i.product.id = p.id " +
+            "WHERE p.status = 1 AND b.status = 5 " +
+            "GROUP BY p.id, p.name, p.price, ps.discountPrice, s.value, s.discountType " +  // Grouping by all selected columns
+            "ORDER BY COALESCE(SUM(bd.quantity), 0) DESC")
+    List<Object[]> findAllProductsOrderedByTotalQuantitySold();
+
+    @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
+            "MIN(i.path) AS imagePath, p.createdAt " +  // Including p.createdAt in the SELECT clause
+            "FROM Product p " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
+            "LEFT JOIN p.images i ON i.product.id = p.id " +
+            "WHERE p.status = 1 " +
+            "GROUP BY p.id, p.name, p.price, ps.discountPrice, s.value, s.discountType, p.createdAt " +  // Including p.createdAt in the GROUP BY clause
+            "ORDER BY p.createdAt DESC")
+    List<Object[]> findProductsOrderedByCreatedAt();
+
+
+    @Query("SELECT DISTINCT p, ps.discountPrice, s.value, s.discountType, " +
+            "MIN(i.path) AS imagePath, p.createdAt " +
+            "FROM Product p " +
+            "LEFT JOIN p.category c " +
+            "LEFT JOIN p.material m " +
+            "LEFT JOIN p.wrist w " +
+            "LEFT JOIN p.collar cl " +
+            "LEFT JOIN p.productDetails pd " +
+            "LEFT JOIN pd.color co " +
+            "LEFT JOIN pd.size sz " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
+            "LEFT JOIN p.images i " +
+            "WHERE p.status = 1 " +
+            "AND (p.name LIKE %:name% " +
+            "OR c.name LIKE %:name% " +
+            "OR m.name LIKE %:name% " +
+            "OR w.name LIKE %:name% " +
+            "OR cl.name LIKE %:name% " +
+            "OR co.name LIKE %:name% " +
+            "OR sz.name LIKE %:name%) " +
+            "GROUP BY p.id, p.name, p.price, ps.discountPrice, s.value, s.discountType, p.createdAt, p.category, m.id, w.id, cl.id, co.id, sz.id")
+    List<Object[]> search(@Param("name") String name);
+
+
 
 }

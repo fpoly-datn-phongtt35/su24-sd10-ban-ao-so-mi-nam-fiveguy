@@ -147,10 +147,11 @@ public class OLProductServiceImpl2 implements OLProductService2 {
             Integer promotionalPrice = findPromotionalPriceByProductId(productId);
             Integer discountType = (Integer) productInfoArray[8];
             Integer value = (Integer) productInfoArray[9];
-            String brandName = (String) productInfoArray[10];
-            String supplierName = (String) productInfoArray[11];
+//            String brandName = (String) productInfoArray[10];
+            String brandName = "Thương hiệu";
+//            String supplierName = (String) productInfoArray[11];
 
-            return new ProductInfoDTO(productId, productName, price, wristName, materialName, categoryName, collarName, promotionalPrice, discountType,value,getTotalQuantitySold(productId),brandName,supplierName);
+            return new ProductInfoDTO(productId, productName, price, wristName, materialName, categoryName, collarName, promotionalPrice, discountType,value,getTotalQuantitySold(productId),brandName);
         }
         return null;
     }
@@ -206,6 +207,90 @@ public class OLProductServiceImpl2 implements OLProductService2 {
         } else {
             throw new RuntimeException("Product not found with id: " + productId);
         }
+    }
+
+    @Override
+    public List<ProductSaleDetails> findAllProductsOrderedByTotalQuantitySold() {
+        List<Object[]> results = productRepository.findAllProductsOrderedByTotalQuantitySold();
+
+        return results.stream().map(result -> {
+            Long productId = ((Number) result[0]).longValue();
+            String productName = (String) result[1];
+            Integer discountPrice = (Integer) result[2];
+            Integer saleValue = (Integer) result[3];
+            Integer discountType = (Integer) result[4];
+            String imagePath = (String) result[5];
+
+            Product product = productRepository.findById(productId).orElse(null);
+
+            return new ProductSaleDetails(
+                    productId,
+                    productName,
+                    getProductPriceById(productId),
+                    discountPrice,
+                    findPromotionalPriceByProductId(productId),
+                    saleValue,
+                    discountType,
+                    imagePath,
+                    product // Pass the retrieved product object
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductSaleDetails> findProductsOrderedByCreatedAt() {
+        List<Object[]> results = productRepository.findProductsOrderedByCreatedAt();
+
+        return results.stream().map(result -> {
+            Long productId = ((Number) result[0]).longValue();
+            String productName = (String) result[1];
+            Integer discountPrice = (Integer) result[2];
+            Integer saleValue = (Integer) result[3];
+            Integer discountType = (Integer) result[4];
+            String imagePath = (String) result[5];
+
+            Product product = productRepository.findById(productId).orElse(null);
+
+            return new ProductSaleDetails(
+                    productId,
+                    productName,
+                    getProductPriceById(productId),
+                    discountPrice,
+                    findPromotionalPriceByProductId(productId),
+                    saleValue,
+                    discountType,
+                    imagePath,
+                    product // Pass the retrieved product object
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductSaleDetails> search(String name) {
+        List<Object[]> results = productRepository.search(name);
+
+        return results.stream().map(result -> {
+            Long productId = ((Number) result[0]).longValue();
+            String productName = (String) result[1];
+            Integer discountPrice = (Integer) result[2];
+            Integer saleValue = (Integer) result[3];
+            Integer discountType = (Integer) result[4];
+            String imagePath = (String) result[5];
+
+            Product product = productRepository.findById(productId).orElse(null);
+
+            return new ProductSaleDetails(
+                    productId,
+                    productName,
+                    getProductPriceById(productId),
+                    discountPrice,
+                    findPromotionalPriceByProductId(productId),
+                    saleValue,
+                    discountType,
+                    imagePath,
+                    product // Pass the retrieved product object
+            );
+        }).collect(Collectors.toList());
     }
 
 

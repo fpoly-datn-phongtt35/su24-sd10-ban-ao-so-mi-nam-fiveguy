@@ -1,9 +1,11 @@
 package com.example.demo.restController.onlineShop;
 
+import com.example.demo.entity.Category;
 import com.example.demo.entity.Image;
 import com.example.demo.entity.ProductDetail;
 import com.example.demo.model.response.onlineShop.ProductDetailsDTO;
 import com.example.demo.model.response.onlineShop.ProductSaleDetails;
+import com.example.demo.service.onlineShop.OLCategoryService2;
 import com.example.demo.service.onlineShop.OLImageService2;
 import com.example.demo.service.onlineShop.OLProductDetailService2;
 import com.example.demo.service.onlineShop.OLProductService2;
@@ -32,6 +34,9 @@ public class OLProductController2 {
 
     @Autowired
     private OLImageService2 olImageService2;
+
+    @Autowired
+    private OLCategoryService2 olCategoryService2;
 
 //    @GetMapping("/product/filter")
 //    public Page<ProductSaleDetails> filterProducts(
@@ -146,5 +151,27 @@ public class OLProductController2 {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/product/totalQuantitySold")
+    public List<ProductSaleDetails> getAllProductsOrderedByTotalQuantitySold() {
+        return productService.findAllProductsOrderedByTotalQuantitySold();
+    }
+
+    @GetMapping("/product/createdAt")
+    public List<ProductSaleDetails> getProductsOrderedByCreatedAt() {
+        return productService.findProductsOrderedByCreatedAt();
+    }
+
+    @GetMapping("/product/search")
+    public List<ProductSaleDetails> searchProducts(@RequestParam("name") String name) {
+        return productService.search(name);
+    }
+
+//    Category
+    @GetMapping("/categories")
+    public List<Category> getAllActiveCategories() {
+        return olCategoryService2.getAllActiveCategories();
+    }
+
 
 }

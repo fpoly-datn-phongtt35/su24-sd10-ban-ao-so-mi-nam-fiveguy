@@ -138,6 +138,7 @@ $scope.filterProducts = function(page) {
             wristIds: $scope.selectedWrists.length > 0 ? $scope.selectedWrists : null,
             minPrice: $scope.minPrice,
             maxPrice: $scope.maxPrice,
+            categoryIds: $location.search().categoryId ? [$location.search().categoryId] : null,
             page: page,
             size: $scope.pageSize,
             sortDir: $scope.selectedSortType == 1 ? 'asc' : ($scope.selectedSortType == 2 ? 'desc' : 'desc'),
@@ -158,7 +159,7 @@ $scope.filterProducts = function(page) {
 
             $scope.totalPages = response.data.totalPages;
             $scope.currentPage = page;
-
+            $scope.totalProducts = response.data.totalElements;
             return response.data;
         }).catch(function(error) {
             console.error('Error fetching products:', error);

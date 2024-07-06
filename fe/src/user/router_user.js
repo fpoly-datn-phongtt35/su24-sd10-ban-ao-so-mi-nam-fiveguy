@@ -5,7 +5,7 @@ app.config(function ($routeProvider, $locationProvider) {
   $routeProvider
   .when("/home", {
     templateUrl: "pages/home.html",
-    controller: 'thongKeController'
+    controller: 'homeController'
     
   })
     // <!-- Hiếu -->

@@ -19,12 +19,15 @@ import java.util.Set;
                 Set<Long> colorIds, Set<Long> sizeIds, Set<Long> materialIds,
                 String searchTerm, Pageable pageable);
 
-
-
         ProductDetailsDTO getProductDetails(Long idProduct);
 
         Integer findPromotionalPriceByProductId(Long productId);
 
         BigDecimal getProductPriceById(Long productId);
+
+        List<ProductSaleDetails> findAllProductsOrderedByTotalQuantitySold();
+        List<ProductSaleDetails> findProductsOrderedByCreatedAt();
+
+        List<ProductSaleDetails> search(String name);
     }
 

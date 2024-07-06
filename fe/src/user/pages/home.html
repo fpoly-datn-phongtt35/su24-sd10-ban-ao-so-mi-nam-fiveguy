@@ -1,4 +1,334 @@
-<h1>Trang chủ</h1>
 
-<h1>API Response</h1>
-<p>{{ message }}</p>
+
+
+<section style="margin-top: 82px;"  class="bg-light " ng-init="loadProductsByTotalQuantitySold();loadProductsByCreatedAt()">
+
+  
+  <div class="search-container">
+        <div class="search-box input-group">
+            <input style="border-bottom: 1px solid #cdcdcd;" type="search" ng-click="openOverlaySearch()" class="form-control" readonly placeholder="Tìm kiếm sản phẩm" />
+            <button type="button" class="btn btn-primary shadow-0" ng-click="openOverlaySearch()">
+                <i class="fas fa-search fa-lg"></i>
+            </button>
+        </div>
+    </div>
+
+<div class="overlay" id="overlay" ng-click="closeOverlay($event)">
+    <div class="header-search">
+        <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
+            <i class="fa-solid fa-xmark fa-lg"></i>
+        </button>
+        <form class="from-search">
+            <div class="input-group">
+                <div class="form-outline w-100">
+                    <input style="border-bottom: 1px solid #cdcdcd;" type="search" id="form1" class="form-control" ng-model="searchText" ng-change="searchProducts(searchText)" />
+                </div>
+                <button type="button" class="btn btn-primary shadow-0">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="product-display">
+        <div class="container-fluid">
+            <div class="row" id="productDisplay">
+              <div ng-repeat="product in searchedProducts" class="col-lg-2 col-md-6 col-sm-6 mb-4">
+                <div class="card w-100 my-2 shadow-2-strong product">
+                  <!-- <img ng-src="{{ product.path }}"class="card-img-top" /> -->
+                  <a ng-href="#home/product/product-detail/{{product.productId}}">
+                    <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy"
+                    ng-src="{{ product.imagePath }}" />
+                    <h3 class="product-grid__title">
+                        <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }}
+                            {{ product.product.category.name }}
+                        </a>
+                    </h3>
+              
+                </a>
+                      <!-- Displaying prices -->
+                      <div class="price-info">
+                        <div ng-if="product.promotionalPrice">
+                            <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
+                        </div>
+                        <div ng-if="product.saleValue">
+                            <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
+                            <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
+                            <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
+                        </div>
+                        <div ng-if="!product.promotionalPrice && !product.saleValue">
+                            <span>{{ formatCurrency(product.productPrice) }}₫</span>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div style="padding-bottom: 46px;" class="row">
+        <div id="myCarousel" class="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img
+                src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=100,format=auto/uploads/November2023/28BANNER_CARESHARE.png"
+                loading="lazy" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img
+                src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=90,format=auto/uploads/November2023/27FALL_WINTER_(1).png"
+                loading="lazy" class="d-block w-100" alt="...">
+            </div>
+            <div class="carousel-item">
+              <img
+                src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=90,format=auto/uploads/November2023/28BANNER_CARESHARE.png"
+                loading="lazy" class="d-block w-100" alt="...">
+            </div>
+      
+            <!-- Button previous -->
+            <button class="carousel-control-prev" ng-click="prevSlide()">
+              <i style="font-size: 34px;" class="fa-solid fa-circle-chevron-left fa-lg"></i>
+            </button>
+            <!-- Button next -->
+            <button class="carousel-control-next" ng-click="nextSlide()">
+              <i style="font-size: 34px;" class="fa-solid fa-circle-chevron-right fa-lg"></i>
+            </button>
+          </div>
+      
+          <!-- Category list positioned over the carousel -->
+          <div class="category-data" id="categoryDataContainer">
+            <ul>
+                <li ng-repeat="category in listActiveCategories">
+                    <a ng-href="#home/product?categoryId={{category.id}}" class="text-dark">{{category.name}}</a>
+                </li>
+            </ul>
+        </div>
+        
+        </div>
+      </div>
+      
+  
+  
+  
+      <div style="padding: 46px 0;" class="row">
+        <div class="policies-body">
+          <div class="col-md-3">
+            <div class="policies-item">
+              <div class="policies-image">
+                <img src="//theme.hstatic.net/1000360022/1001191831/14/policies_icon_4.png?v=436" alt="policies_icon_4.png" width="40" height="40" class="img-fluid">
+              </div>
+              <div class="policies-info">
+                <h3 class="policies-title">Hotline: 0919.305.865</h3>
+                <div class="policies-desc">Hỗ trợ bạn từ 8h30-22h00</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="policies-item">
+              <div class="policies-image">
+                <img style="  
+                height: auto;" src="//theme.hstatic.net/1000360022/1001191831/14/policy_product_image_4.png?v=455" width="40" height="40" alt="Cam kết chính hãng" loading="lazy" alt="">
+              </div>
+              <div class="policies-info">
+                <h3 class="policies-title">
+                  Cam kết chính hãng
+                </h3>
+                <div class="policies-desc">
+                  Chất lượng đảm bảo
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-md-3">
+            <div class="policies-item">
+              <div class="policies-image">
+                <img style="    max-width: 96%;
+                height: auto;" src="https://static.coolmate.me/images/icons/icon6.svg" loading="lazy " width="40" height="40" alt="">
+              </div>
+              <div class="policies-info">
+                <h3 class="policies-title">
+                  Giao hàng nhanh toàn quốc</h3>
+                <div class="policies-desc">
+                  Dịch vụ vận chuyển đáng tin cậy
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-md-3">
+            <div class="policies-item">
+              <div class="policies-image">
+      
+                <img src="//theme.hstatic.net/1000360022/1001191831/14/policies_icon_2.png?v=455" alt="policies_icon_2.png" width="40" height="40" class="img-fluid">
+              </div>
+              <div class="policies-info">
+                <h3 class="policies-title">
+                  Theo dõi đơn hàng</h3>
+                <div class="policies-desc">
+                  Thông tin chi tiết về đơn hàng
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+  
+  
+      <div style="padding: 46px 0;" class="row">
+        <div class="heading-bar__title">
+          DANH MỤC SẢN PHẨM
+        </div>
+        <div class="category-body">
+          <div class="col-md-2" ng-repeat="category in dataFill.categoryList">
+  
+            <div class="category-item">
+              <a ng-href="#!product?categoryId={{category.id}}" class="text-dark">
+                <div class="category-image">
+  
+                  <img src="https://theme.hstatic.net/1000360022/1001141780/14/season_coll_3_img_large.png?v=577" loading="lazy" alt="">
+                </div>
+                <div class="category-info">
+                  <h5>{{category.name}}</h5>
+                  <!-- <p>Số lượng</p> -->
+                </div>
+              </a>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  
+  
+  
+      <div style="padding: 46px;" class="row">
+  
+        <div class="col-md-3" ng-repeat="voucher in listVouchers" >
+          <div class="voucher-container">
+            <div class="voucher2-name">
+              <span >{{ voucher.name }}</span>
+            </div>
+          <div class="voucher-content">
+            <div class="col-4 ">
+              <div class="voucher2-code">
+                <h6>{{ voucher.code }}</h6>
+                <p>({{ voucher.quantity }})</p>
+              </div>
+            </div>
+  
+            <div class="col-8">
+              <div class="voucher2-info">
+                  <p>Giảm {{ voucher.value | number}} đ cho đơn hàng {{ voucher.minimumTotalAmount |
+                    number }} đ</p>
+                  <p>HSD: {{ voucher.endDate | date:'dd/MM/yyyy' }}</p>
+                </div>
+            </div>
+          </div>
+        </div>
+  
+        </div>
+      </div>
+  
+      <p class="mb-0">({{product.totalQuantity}})</p>
+  
+  
+      <div style="padding: 46px;" class="row">
+       
+          <div class="product-title">Bán chạy nhất</div>
+          <div ng-repeat="product in productsByTotalQuantitySold" class="col-lg-2 col-md-6 col-sm-6 mb-4">
+            <div class="card w-100 my-2 shadow-2-strong product">
+              <!-- <img ng-src="{{ product.path }}"class="card-img-top" /> -->
+              <a ng-href="#home/product/product-detail/{{product.productId}}">
+                <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy"
+                ng-src="{{ product.imagePath }}" />
+                <h3 class="product-grid__title">
+                    <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }}
+                        {{ product.product.category.name }}
+                    </a>
+                </h3>
+          
+            </a>
+                  <!-- Displaying prices -->
+                  <div class="price-info">
+                    <div ng-if="product.promotionalPrice">
+                        <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
+                    </div>
+                    <div ng-if="product.saleValue">
+                        <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
+                        <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
+                        <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
+                    </div>
+                    <div ng-if="!product.promotionalPrice && !product.saleValue">
+                        <span>{{ formatCurrency(product.productPrice) }}₫</span>
+                    </div>
+                </div>
+            </div>
+          </div>
+  
+   
+  
+   
+
+  
+      </div>
+  
+      <div style="padding: 46px;" class="row">
+        <div class="product-title">Sản phẩm mới</div>
+        <div ng-repeat="product in productsByCreatedAt" class="col-lg-2 col-md-6 col-sm-6 mb-4">
+          <div class="card w-100 my-2 shadow-2-strong product">
+            <!-- <img ng-src="{{ product.path }}"class="card-img-top" /> -->
+            <a ng-href="#home/product/product-detail/{{product.productId}}">
+              <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy"
+              ng-src="{{ product.imagePath }}" />
+              <h3 class="product-grid__title">
+                  <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }}
+                      {{ product.product.category.name }}
+                  </a>
+              </h3>
+        
+          </a>
+                <!-- Displaying prices -->
+                <div class="price-info">
+                  <div ng-if="product.promotionalPrice">
+                      <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
+                  </div>
+                  <div ng-if="product.saleValue">
+                      <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
+                      <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
+                      <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
+                  </div>
+                  <div ng-if="!product.promotionalPrice && !product.saleValue">
+                      <span>{{ formatCurrency(product.productPrice) }}₫</span>
+                  </div>
+              </div>
+          </div>
+        </div>
+ 
+    
+    </div>
+    
+  
+  
+    <div style="padding: 46px 0;" class="row">
+        
+    <img  src="https://mcdn.coolmate.me/image/March2023/mceclip0_137.jpg" loading="lazy"
+      class="d-block w-100" alt="...">
+    
+  </div>
+  
+  <div style="padding: 46px 0;" class="row">
+        
+  
+    <div class="col-6">
+      <img  src="https://res.cloudinary.com/dvtz5mjdb/image/upload/v1702112500/image/InfoHome/uconv2xsgydcnphaqngt.png" loading="lazy"
+      class="d-block w-100" alt="...">
+    </div>
+    <div class="col-6">
+      <img  src="https://res.cloudinary.com/dvtz5mjdb/image/upload/v1702112492/image/InfoHome/ohjfcap5129vmvljphle.jpg" loading="lazy"
+      class="d-block w-100" alt="...">
+    </div>
+    
+  </div>
+  
+  </section>

@@ -111,7 +111,8 @@
         <div style="padding: 46px;" class="col-lg-10">
 <!-- Sort Header -->
 <header class="d-sm-flex align-items-center border-bottom mb-4 pb-3">
-  <strong class="d-block py-2">{{ products.length }} Kết quả</strong>
+    <strong class="d-block py-2">{{ totalProducts }} Kết quả</strong>
+
   <div class="ms-auto">
     <select class="form-select d-inline-block w-auto border pt-1" ng-model="selectedSortType" ng-change="loadPage()">
       <option value="0">Mới nhất</option>
