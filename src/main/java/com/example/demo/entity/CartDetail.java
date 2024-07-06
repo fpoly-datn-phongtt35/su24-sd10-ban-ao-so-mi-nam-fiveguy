@@ -24,11 +24,11 @@ public class CartDetail {
     @Column(name = "Quantity")
     private int quantity;
 
-    @Column(name = "Price")
-    private BigDecimal price;
-
-    @Column(name = "PromotionalPrice", nullable = false)
-    private BigDecimal promotionalPrice;
+//    @Column(name = "Price")
+//    private BigDecimal price;
+//
+//    @Column(name = "PromotionalPrice", nullable = false)
+//    private BigDecimal promotionalPrice;
 
     @ManyToOne
     @JoinColumn(name = "IdCart", referencedColumnName = "Id")
