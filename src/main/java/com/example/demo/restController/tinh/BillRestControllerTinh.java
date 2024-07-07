@@ -27,7 +27,7 @@ public class BillRestControllerTinh {
     public ResponseEntity<?> create(@RequestBody Bill bill) {
         try {
             Bill createdBill = billServiceTinh.create(bill);
-            return ResponseEntity.status(HttpStatus.CREATED).body(billServiceTinh);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdBill);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

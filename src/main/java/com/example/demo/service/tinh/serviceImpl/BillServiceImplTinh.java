@@ -27,9 +27,10 @@ public class BillServiceImplTinh implements BillServiceTinh {
         String randomCode = generateRandomCode(6);
         bill1.setCode(randomCode);
         bill1.setEmployee(bill.getEmployee());
+        bill1.setCreatedAt(new Date());
         bill1.setCustomer(bill.getCustomer());
         bill1.setTypeBill(1);
-        bill.setStatus(1);
+        bill1.setStatus(1);
 
         return billRepositoryTinh.save(bill1);
 
