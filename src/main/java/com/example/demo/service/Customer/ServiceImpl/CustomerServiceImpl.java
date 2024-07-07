@@ -1,12 +1,17 @@
 package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.CustomerType;
+import com.example.demo.entity.Employee;
 import com.example.demo.repository.Customer.CustomerRepositoryH;
+import com.example.demo.repository.Customer.CustomerSpecificationH;
+import com.example.demo.repository.tinh.EmployeeSpecificationTinh;
 import com.example.demo.service.Customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -43,6 +48,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Customer getByAccount(String account){
+        return (Customer) customerRepositoryH.getByAccount(account);
+    }
+
+    @Override
     public List<Customer> getAllStatus(Integer status){
         return customerRepositoryH.getAllStatus(status);
     }
@@ -50,6 +60,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer create(Customer customers){
         Customer customers1 = new Customer();
+        CustomerType customerType = new CustomerType();
+        customerType.setId(1L);
+
         String randomCode = generateRandomCode(6);
         customers1.setCode(randomCode);
         customers1.setFullName(customers.getFullName());
@@ -61,7 +74,7 @@ public class CustomerServiceImpl implements CustomerService {
         customers1.setUpdatedAt(new Date());
         customers1.setCreatedBy("admin");
         customers1.setUpdatedBy("admin");
-        customers1.setCustomerType(customers.getCustomerType());
+        customers1.setCustomerType(customerType);
         customers1.setStatus(1);
 
         return customerRepositoryH.save(customers1);
@@ -146,5 +159,23 @@ public class CustomerServiceImpl implements CustomerService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Customer> customersList = customerRepositoryH.searchMa(ma, pageable);
         return customersList;
+    }
+
+    @Override
+    public Page<Customer> findCustomer(String fullName, String code, String avatar, Date birthDate, Boolean gender, String address, String account, String email, String phoneNumber, Long id, Integer status, Pageable pageable) {
+
+        Specification<Customer> spec = Specification.where(CustomerSpecificationH.hasCode(code))
+                .and(CustomerSpecificationH.hasfullName(fullName))
+                .and(CustomerSpecificationH.hasAvatar(avatar))
+                .and(CustomerSpecificationH.hasBrithDate(birthDate))
+                .and(CustomerSpecificationH.hasGenDer(gender))
+                .and(CustomerSpecificationH.hasAddRess(address))
+                .and(CustomerSpecificationH.hasAccountByAccount(account))
+                .and(CustomerSpecificationH.hasAccountByEmail(email))
+                .and(CustomerSpecificationH.hasAccountByPhoneNumber(phoneNumber))
+                .and(CustomerSpecificationH.hasCustomerType(id))
+                .and(CustomerSpecificationH.hasStatus(status));
+
+        return customerRepositoryH.findAll(spec, pageable);
     }
 }

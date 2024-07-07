@@ -281,7 +281,7 @@ public class AccountServiceImpl  implements AccountService {
         }
             Account account2 = new Account();
             Role role = new Role();
-            role.setId(1L);
+            role.setId(2L);
             account2.setAccount(accountEntity.getAccount());
             account2.setPassword("123456789");
             account2.setEmail(accountEntity.getEmail());
@@ -290,6 +290,25 @@ public class AccountServiceImpl  implements AccountService {
             account2.setStatus(1);
 
             return accountRepositoryH.save(account2);
+
+    }
+
+    @Override
+    public Account saveAccountCustomer(Account accountEntity) {
+        if (checkEmailExists(accountEntity.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+        Account account2 = new Account();
+        Role role = new Role();
+        role.setId(1L);
+        account2.setAccount(accountEntity.getAccount());
+        account2.setPassword("123456789");
+        account2.setEmail(accountEntity.getEmail());
+        account2.setPhoneNumber(accountEntity.getPhoneNumber());
+        account2.setRole(role);
+        account2.setStatus(1);
+
+        return accountRepositoryH.save(account2);
 
     }
 

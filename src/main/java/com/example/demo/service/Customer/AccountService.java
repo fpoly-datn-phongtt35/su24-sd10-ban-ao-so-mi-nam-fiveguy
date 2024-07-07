@@ -45,6 +45,8 @@ public interface AccountService {
 
 // //OL
     Optional<Account> findByAccountLogin(String username);
+
+    Account saveAccountCustomer(Account accountEntity);
 ////     List<UserRequestDTO> getAllAccount();
 ////    AccountEntity createAccount(AccountEntity accountEntity);
 //

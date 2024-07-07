@@ -1,10 +1,15 @@
 package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.Employee;
 import com.example.demo.repository.Customer.CustomerRepositoryH;
 import com.example.demo.service.Customer.CustomerService;
+import com.example.demo.untility.tinh.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -42,6 +48,11 @@ public class CustomerRestControllerH {
         List<Customer> customers = customerService.getAll();
         return ResponseEntity.ok(customers);
 
+    }
+    @GetMapping("/account/{account}")
+    public ResponseEntity<Customer> getByAccount(@PathVariable String account) {
+        Customer account1 = customerService.getByAccount(account);
+        return ResponseEntity.ok(account1);
     }
 
     //get employee status =1
@@ -77,7 +88,7 @@ public class CustomerRestControllerH {
 
     //Thêm Employee
 
-    @PostMapping("")
+    @PostMapping("/save")
     public ResponseEntity<?> create(@RequestBody Customer customers) {
         try {
             Customer createdCustomer = customerService.create(customers);
@@ -113,5 +124,27 @@ public class CustomerRestControllerH {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/page")
+    public PaginationResponse<Customer> getEmployees(
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String avatar,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date birthDate,
+            @RequestParam(required = false) Boolean gender,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String account,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) Long idCustomerType,
+            @RequestParam(required = false) Integer status,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "5") int size,
+//            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 5);
+        Page<Customer> page = customerService.findCustomer(fullName, code, avatar, birthDate, gender, address, account, email, phoneNumber, idCustomerType, status, pageable);
+        return new PaginationResponse<>(page);
     }
 }

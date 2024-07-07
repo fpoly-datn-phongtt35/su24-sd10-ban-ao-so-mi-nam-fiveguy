@@ -300,7 +300,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   // Form submit thêm
   $scope.submitForm = async function () {
-    if ($scope.formCreateEmployee.$valid && $scope.checkEmailValid()) {
+    if ($scope.formCreateEmployee.$valid) {
       const addAccountData = await $scope.themAccount();
       if (addAccountData) {
         const dataObject = {
@@ -317,8 +317,8 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         console.log("addEmployeesData = ", addEmployeesData);
         $scope.showSuccessNotification("Thêm thông tin thành công");
         $scope.getEmployee(0);
-        $scope.resetFormUpdate();
-        $("#modalUpdate").modal("hide");
+        $scope.resetFormInput();
+        $("#modalAdd").modal("hide");
       }
     } else {
       // Hiển thị lỗi

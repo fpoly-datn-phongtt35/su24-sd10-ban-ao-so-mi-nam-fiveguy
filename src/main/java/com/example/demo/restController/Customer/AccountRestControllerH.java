@@ -102,6 +102,15 @@ public class AccountRestControllerH {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PostMapping("/saveAccountCustomer")
+    public ResponseEntity<?> saveAccountCustomer(@RequestBody Account accountEntity) {
+        try {
+            Account save = accountService.saveAccountCustomer(accountEntity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(save);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PutMapping("/email/{email}")
     public ResponseEntity<Account> updateEmailAccount(@RequestBody Account accountEntity, @PathVariable String email) {
