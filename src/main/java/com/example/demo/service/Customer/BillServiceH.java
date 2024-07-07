@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public interface BillService {
+public interface BillServiceH {
     List<Bill> getAllBill();
 
     Bill getBillById(Long id);

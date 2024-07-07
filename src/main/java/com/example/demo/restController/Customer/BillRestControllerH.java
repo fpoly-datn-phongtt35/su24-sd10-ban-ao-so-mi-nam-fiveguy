@@ -1,7 +1,7 @@
 package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Bill;
-import com.example.demo.service.Customer.BillService;
+import com.example.demo.service.Customer.BillServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,17 +24,17 @@ import java.util.List;
 public class BillRestControllerH {
 
     @Autowired
-    BillService billService;
+    BillServiceH billServiceH;
 
     @GetMapping("")
     public ResponseEntity<List<Bill>> getAllBill(){
-        List<Bill> bills = billService.getAllBill();
+        List<Bill> bills = billServiceH.getAllBill();
         return ResponseEntity.ok(bills);
     }
     @PostMapping("")
     public ResponseEntity<?> createBill(@RequestBody Bill bill) {
         try {
-            Bill createBill = billService.createBill(bill);
+            Bill createBill = billServiceH.createBill(bill);
             return ResponseEntity.status(HttpStatus.CREATED).body(createBill);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -43,7 +43,7 @@ public class BillRestControllerH {
 
     @PutMapping("/{id}")
     public ResponseEntity<Bill> updateCustomer(@RequestBody Bill bill, @PathVariable Long id) {
-        Bill bill1 = billService.updateBill(bill, id);
+        Bill bill1 = billServiceH.updateBill(bill, id);
         if (bill1 != null) {
             return ResponseEntity.ok(bill);
         } else {
@@ -53,7 +53,7 @@ public class BillRestControllerH {
 
     @PutMapping("/status/{id}")
     public ResponseEntity<Bill> updateCustomer(@RequestBody Integer status, @PathVariable Long id) {
-        Bill bill1 = billService.updateStatus(status, id);
+        Bill bill1 = billServiceH.updateStatus(status, id);
         if (bill1 != null) {
             return ResponseEntity.ok(bill1);
         } else {
@@ -64,7 +64,7 @@ public class BillRestControllerH {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
         try {
-            billService.deleteBill(id);
+            billServiceH.deleteBill(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
@@ -79,7 +79,7 @@ public class BillRestControllerH {
 
     @GetMapping("/getAllExportExcel")
     public ResponseEntity<?> getAllExportExcel(){
-        return ResponseEntity.ok(billService.getAllExportExcel());
+        return ResponseEntity.ok(billServiceH.getAllExportExcel());
     }
 
 }

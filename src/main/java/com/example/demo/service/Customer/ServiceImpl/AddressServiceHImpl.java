@@ -2,9 +2,9 @@ package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Address;
 import com.example.demo.repository.Customer.AddressRepositoryH;
-import com.example.demo.service.Customer.AccountService;
-import com.example.demo.service.Customer.AddressService;
-import com.example.demo.service.Customer.CustomerService;
+import com.example.demo.service.Customer.AccountServiceH;
+import com.example.demo.service.Customer.AddressServiceH;
+import com.example.demo.service.Customer.CustomerServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AddressServiceImpl implements AddressService {
+public class AddressServiceHImpl implements AddressServiceH {
 
     private final AddressRepositoryH addressRepositoryH;
 
     @Autowired
-    public AddressServiceImpl(AddressRepositoryH addressRepositoryH) {
+    public AddressServiceHImpl(AddressRepositoryH addressRepositoryH) {
         this.addressRepositoryH = addressRepositoryH;
     }
 
@@ -104,21 +104,21 @@ public class AddressServiceImpl implements AddressService {
     private AddressRepositoryH repository;
 
     @Autowired
-    private AccountService olAccountService;
+    private AccountServiceH olAccountServiceH;
 
     @Autowired
-    private CustomerService olCustomerService;
+    private CustomerServiceH olCustomerServiceH;
 
 //    @Autowired
 //    private EmployeeService olEmployeeService;
 
 //    @Override
 //    public List<Address> getAddressListByUsername(String username) {
-//        Optional<Account> account = olAccountService.findByAccount(username);
+//        Optional<Account> account = olAccountServiceH.findByAccount(username);
 //
 //        if (account.isPresent()) {
 //            // Lấy thông tin khách hàng từ tài khoản
-//            Optional<Customer> customerEntity = Optional.ofNullable(olCustomerService.findByAccount_Id(account.get().getId()));
+//            Optional<Customer> customerEntity = Optional.ofNullable(olCustomerServiceH.findByAccount_Id(account.get().getId()));
 //            if (customerEntity.isPresent()) {
 //                return repository.findAllByCustomer_IdAndStatus(customerEntity.get().getId(),1);
 //            }
@@ -176,9 +176,9 @@ public class AddressServiceImpl implements AddressService {
 
 //    @Override
 //    public Address findByDefaultAddressTrue(String username) {
-//        Optional<Account> account = olAccountService.findByAccount(username);
+//        Optional<Account> account = olAccountServiceH.findByAccount(username);
 //        if (account.isPresent()) {
-//            Optional<Customer> customerEntity = Optional.ofNullable(olCustomerService.findByAccount_Id(account.get().getId()));
+//            Optional<Customer> customerEntity = Optional.ofNullable(olCustomerServiceH.findByAccount_Id(account.get().getId()));
 ////            Optional<Employees> employeeEntity = Optional.ofNullable(olEmployeeService.findByAccount_Id(account.get().getId()));
 //
 //            if (customerEntity.isPresent()) {

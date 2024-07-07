@@ -1,7 +1,7 @@
 package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Account;
-import com.example.demo.service.Customer.AccountService;
+import com.example.demo.service.Customer.AccountServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +23,26 @@ import java.util.List;
 
 public class AccountRestControllerH {
     @Autowired
-    AccountService accountService;
+    AccountServiceH accountServiceH;
 
     @GetMapping("")
     public ResponseEntity<List<Account>> getAllAccount() {
-        List<Account> account = accountService.getAllAccount();
+        List<Account> account = accountServiceH.getAllAccount();
         return ResponseEntity.ok(account);
     }
     @GetMapping("/timkiem-status/{st}")
     public ResponseEntity<?> getSStatus(@PathVariable Integer st){
-        return ResponseEntity.ok(accountService.getSStatus(st));
+        return ResponseEntity.ok(accountServiceH.getSStatus(st));
     }
     @GetMapping("/not-in-customer-employee")
     public List<Account> loadAccount() {
-        return accountService.loadAccount();
+        return accountServiceH.loadAccount();
     }
 
     @PostMapping("/save")
     public ResponseEntity<?> save(@RequestBody Account accountEntity) {
         try {
-            Account save = accountService.save(accountEntity);
+            Account save = accountServiceH.save(accountEntity);
             return ResponseEntity.status(HttpStatus.CREATED).body(save);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -69,7 +69,7 @@ public class AccountRestControllerH {
 
     @PostMapping("")
     public ResponseEntity<Account> createAccount(@RequestBody Account accountEntity) {
-        Account createdAccount = accountService.createAccount(accountEntity);
+        Account createdAccount = accountServiceH.createAccount(accountEntity);
 
         if (createdAccount != null) {
             return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
@@ -80,7 +80,7 @@ public class AccountRestControllerH {
 
     @PutMapping("/{id}")
     public ResponseEntity<Account> updateAccount(@RequestBody Account accountEntity, @PathVariable Long id) {
-        Account account = accountService.updateAccount(accountEntity, id);
+        Account account = accountServiceH.updateAccount(accountEntity, id);
         if (account != null) {
             return ResponseEntity.ok(account);
         } else {
@@ -91,7 +91,7 @@ public class AccountRestControllerH {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         try {
-            accountService.deleteAccount(id);
+            accountServiceH.deleteAccount(id);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

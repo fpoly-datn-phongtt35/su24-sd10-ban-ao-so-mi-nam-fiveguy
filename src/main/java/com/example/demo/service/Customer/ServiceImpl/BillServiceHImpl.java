@@ -3,8 +3,8 @@ package com.example.demo.service.Customer.ServiceImpl;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.ProductDetail;
 import com.example.demo.repository.Customer.BillRepositoryH;
-import com.example.demo.service.Customer.BillService;
-import com.example.demo.service.Customer.RatingService;
+import com.example.demo.service.Customer.BillServiceH;
+import com.example.demo.service.Customer.RatingServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BillServiceImpl implements BillService {
+public class BillServiceHImpl implements BillServiceH {
 
     @Autowired
     private BillRepositoryH billRepositoryH;
@@ -146,7 +146,7 @@ public class BillServiceImpl implements BillService {
     private BillRepositoryH olBillRepositoryH;
 
     @Autowired
-    private RatingService olRatingService;
+    private RatingServiceH olRatingServiceH;
 
 //    @Autowired
 //    private ProductService olProductService;
@@ -160,7 +160,7 @@ public class BillServiceImpl implements BillService {
 //        response.setBill(billDetail.getBill());
 //        response.setProductDetail(billDetail.getProductDetail());
 //        response.setStatus(billDetail.getStatus());
-//        List<RatingEntity> list = olRatingService.findByBillDetail_Id(billDetail.getId());
+//        List<RatingEntity> list = olRatingServiceH.findByBillDetail_Id(billDetail.getId());
 //
 //        if (list.isEmpty() || (!list.get(0).isRated())) {
 //            response.setRated(false); // Thiết lập thuộc tính 'rated' dựa trên điều kiện
@@ -319,7 +319,7 @@ public class BillServiceImpl implements BillService {
 //
 //        for (BillDetail billDetail : billDetails) {
 //            BillDetailResponse response = convertToOlBillDetailResponse(billDetail);
-//            List<Rating> list = olRatingService.findByBillDetail_Id(billDetail.getId());
+//            List<Rating> list = olRatingServiceH.findByBillDetail_Id(billDetail.getId());
 //
 //            if (list.isEmpty() || (!list.get(0).isRated())) {
 //                response.setRated(false); // Thiết lập thuộc tính 'rated' dựa trên điều kiện

@@ -4,9 +4,9 @@ import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.Rating;
 import com.example.demo.repository.Customer.RatingRepositoryH;
-import com.example.demo.service.Customer.AccountService;
-import com.example.demo.service.Customer.CustomerService;
-import com.example.demo.service.Customer.RatingService;
+import com.example.demo.service.Customer.AccountServiceH;
+import com.example.demo.service.Customer.CustomerServiceH;
+import com.example.demo.service.Customer.RatingServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class RatingServiceImpl implements RatingService {
+public class RatingServiceHImpl implements RatingServiceH {
 
     private final RatingRepositoryH ratingRepositoryH;
 
@@ -31,7 +31,7 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Autowired
-    public RatingServiceImpl(RatingRepositoryH ratingRepositoryH) {
+    public RatingServiceHImpl(RatingRepositoryH ratingRepositoryH) {
         this.ratingRepositoryH = ratingRepositoryH;
     }
 
@@ -94,10 +94,10 @@ public class RatingServiceImpl implements RatingService {
 private RatingRepositoryH olRatingRepositoryH;
 
     @Autowired
-    private CustomerService olCustomerService;
+    private CustomerServiceH olCustomerServiceH;
 
     @Autowired
-    private AccountService olAccountService;
+    private AccountServiceH olAccountServiceH;
 
 //    @Autowired
 //    private BillDetailService olBillDetailService;
@@ -125,10 +125,10 @@ private RatingRepositoryH olRatingRepositoryH;
 
 //    @Override
 //    public List<Rating> getRatingListByUsername( String username) {
-//        Optional<Account> account = olAccountService.findByAccount(username);
+//        Optional<Account> account = olAccountServiceH.findByAccount(username);
 //
 //        if (account.isPresent()) {
-//            Optional<Customer> customerEntity = Optional.ofNullable(olCustomerService.findByAccount_Id(account.get().getId()));
+//            Optional<Customer> customerEntity = Optional.ofNullable(olCustomerServiceH.findByAccount_Id(account.get().getId()));
 //            if (customerEntity.isPresent()) {
 //                List<Rating> ratingEntities = olRatingRepository.findAllByCustomer_Id(customerEntity.get().getId());
 //                return ratingEntities;
@@ -147,7 +147,7 @@ private RatingRepositoryH olRatingRepositoryH;
 //    @Override
 //    public boolean addRating(OlRatingResponse ratingEntity) {
 //        Optional<BillDetail> billDetail = olBillDetailService.findById(ratingEntity.getIdBillDetail());
-//        Optional<CustomerEntity> customerEntity = olCustomerService.findById(ratingEntity.getIdCustomer());
+//        Optional<CustomerEntity> customerEntity = olCustomerServiceH.findById(ratingEntity.getIdCustomer());
 //
 //        if (billDetail.isPresent() && customerEntity.isPresent()) {
 //            boolean hasRated = olRatingRepository.existsByCustomerAndBillDetail(customerEntity.get(), billDetail.get());

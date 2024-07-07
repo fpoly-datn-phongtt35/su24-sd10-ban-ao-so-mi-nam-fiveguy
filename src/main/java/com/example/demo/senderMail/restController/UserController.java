@@ -4,7 +4,7 @@ package com.example.demo.senderMail.restController;//package com.example.demo.se
 //import com.example.demo.entity.AccountEntity;
 //import com.example.demo.senderMail.Respone.ResponseObject;
 //import com.example.demo.security.service.UserServiceImpl;
-//import com.example.demo.service.serviceiplm.AccountServiceImpl;
+//import com.example.demo.service.serviceiplm.AccountServiceHImpl;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.http.ResponseEntity;
 //import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ package com.example.demo.senderMail.restController;//package com.example.demo.se
 //    private UserServiceImpl userService;
 //
 //    @Autowired
-//    private AccountServiceImpl accountService;
+//    private AccountServiceHImpl accountService;
 //
 //    public UserController(UserServiceImpl userService) {
 //        this.userService = userService;

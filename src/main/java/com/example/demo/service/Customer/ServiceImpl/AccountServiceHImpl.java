@@ -2,7 +2,7 @@ package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Account;
 import com.example.demo.repository.Customer.AccountRepositoryH;
-import com.example.demo.service.Customer.AccountService;
+import com.example.demo.service.Customer.AccountServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 
-public class AccountServiceImpl  implements AccountService {
+public class AccountServiceHImpl implements AccountServiceH {
 //    @Autowired
 //    private AccountEmailSender accountEmailSender;
 
@@ -179,7 +179,7 @@ public class AccountServiceImpl  implements AccountService {
 //    private AccountRepository accountRepository;
 
 //    @Autowired
-//    private CustomerService olCustomerService;
+//    private CustomerServiceH olCustomerService;
 
 //    @Autowired
 //    private EmployeeService olEmployeeService;
