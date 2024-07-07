@@ -300,7 +300,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   // Form submit thêm
   $scope.submitForm = async function () {
-    if ($scope.formCreateEmployee.$valid && $scope.checkEmailValid()) {
+    if ($scope.formCreateEmployee.$valid) {
       const addAccountData = await $scope.themAccount();
       if (addAccountData) {
         const dataObject = {
