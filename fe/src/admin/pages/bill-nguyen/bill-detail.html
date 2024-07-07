@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/src/admin/pages/bill-nguyen/bill-detail.css">
 <div class="container mt-5">
     <h1 class="mb-4">Chi tiết hóa đơn</h1>
 
@@ -6,8 +7,11 @@
         <div class="row" ng-init="getBillHistoryByBillId(billId)">
             <div class="d-flex justify-content-between mb-3">
                 <h5 class="ms-3">Trạng thái đơn hàng</h5>
-                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#billHistoryModal">Lịch
-                    sử</button>
+                <div>
+                    <button class="btn btn-info me-3" ng-if="[2, 3].includes(status)" ng-click="exportBill()">In hóa đơn</button>
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#billHistoryModal">Lịch
+                        sử</button>
+                </div>
             </div>
             <hr class="mx-4" style="width: 98%;">
             <div class="progress-container">

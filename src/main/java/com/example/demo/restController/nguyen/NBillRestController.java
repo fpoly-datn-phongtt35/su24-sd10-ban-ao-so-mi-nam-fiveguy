@@ -64,8 +64,9 @@ public class NBillRestController {
     @PutMapping("/billStatusUpdate/{id}")
     public Bill updateBillStatusAndSaveBillHistory(@RequestBody BillRequest billRequest,
                                                    @PathVariable Long id) {
-        System.out.println(billRequest.getBill());
-        System.out.println(billRequest.getBillHistory());
+//        System.out.println(billRequest.getBill().getStatus());
+//        System.out.println(billRequest.getBillHistory());
+//        return null;
         return billService
                 .updateStatusAndBillStatus(billRequest.getBill(), id, billRequest.getBillHistory());
     }

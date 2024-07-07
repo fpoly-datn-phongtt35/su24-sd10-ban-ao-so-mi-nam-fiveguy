@@ -76,6 +76,21 @@ public class NBillServiceImpl implements NBillService {
         return billRepository.findAll(spec, pageable);
     }
 
+    public Bill updateStatusAndBillStatus1(Bill bill, Long id, BillHistory billHistory) {
+        Optional<Bill> optionalBill = billRepository.findById(id);
+        if (!optionalBill.isPresent()) {
+            throw new EntityNotFoundException("Bill not found with id " + id);
+        }
+
+        Bill existingBill = optionalBill.get();
+        existingBill.setStatus(bill.getStatus());
+
+        addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
+                billHistory.getDescription(), "Admin");
+
+        return billRepository.save(existingBill);
+    }
+
     @Override
     public Bill updateStatusAndBillStatus(Bill bill, Long id, BillHistory billHistory) {
         Optional<Bill> optionalBill = billRepository.findById(id);
@@ -89,7 +104,7 @@ public class NBillServiceImpl implements NBillService {
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
                 billHistory.getDescription(), "Admin");
 
-        return null;
+        return billRepository.save(existingBill);
     }
 
     @Override
@@ -116,36 +131,14 @@ public class NBillServiceImpl implements NBillService {
         return billRepository.save(existingBill);
     }
 
-    private void addBillHistoryStatus(Long billId, int status, String description, String createdBy) {
+    private void addBillHistoryStatus(Long billId, int status, String description,
+                                      String createdBy) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
 
-        List<BillHistory> histories = billHistoryRepository.findByBillIdOrderByCreatedAtAsc(billId);
-
-        int nextStatus = 1; // Trạng thái mặc định là 1 - Chờ xác nhận nếu chưa có lịch sử nào
-
-        if (!histories.isEmpty()) {
-            BillHistory lastHistory = histories.get(histories.size() - 1);
-            int lastStatus = lastHistory.getStatus();
-
-            if (status == 6 && lastStatus >= 1 && lastStatus <= 4) {
-                nextStatus = 6; // Trạng thái "Đã hủy" có thể thêm từ trạng thái 1 đến 4
-            } else if (lastStatus == 1 && status == 2) {
-                nextStatus = 2; // Đã xác nhận
-            } else if (lastStatus == 2 && status == 3) {
-                nextStatus = 3; // Chờ giao hàng
-            } else if (lastStatus == 3 && status == 4) {
-                nextStatus = 4; // Đang giao hàng
-            } else if (lastStatus == 4 && status == 5) {
-                nextStatus = 5; // Thành công
-            } else {
-                throw new IllegalStateException("Invalid status transition");
-            }
-        }
-
         BillHistory newHistory = new BillHistory();
         newHistory.setBill(bill);
-        newHistory.setStatus(nextStatus);
+        newHistory.setStatus(status);
         newHistory.setDescription(description);
         newHistory.setCreatedBy(createdBy);
         newHistory.setCreatedAt(new Date());

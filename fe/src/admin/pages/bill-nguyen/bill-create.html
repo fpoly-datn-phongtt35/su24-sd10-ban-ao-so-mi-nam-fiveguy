@@ -1,1 +1,301 @@
-aaa
+
+//collase
+<div ng-if="step.time != null" 
+     class="step" 
+     ng-class="{'active': step.status == status}"
+     ng-attr-data-bs-toggle="{{ [4, 5, 7, 8, 9].includes(step.status) ? 'collapse' : undefined }}"
+     ng-attr-href="{{ [4, 5, 7, 8, 9].includes(step.status) ? '#collapseExample' : undefined }}">
+    <!-- Nội dung của step -->
+</div>
+
+<div class="progress-container">
+    <!-- Chờ xác nhận -->
+    <div class="step" ng-class="{'active': status >= 1, 'inactive': status < 1}">
+        <div class="step-circle">
+            <span class="material-icons">schedule</span>
+        </div>
+        <div class="step-title">Chờ xác nhận</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[0].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[0].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Đã xác nhận -->
+    <div class="arrow" ng-if="steps[1].time != null" ng-class="{'active': status >= 2, 'inactive': status < 2}">
+        &gt;
+    </div>
+    <div class="step" ng-if="steps[1].time != null" ng-class="{'active': status >= 2, 'inactive': status < 2}">
+        <div class="step-circle">
+            <span class="material-icons">check_circle</span>
+        </div>
+        <div class="step-title">Đã xác nhận</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[1].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[1].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Chờ vận chuyển -->
+    <div class="arrow" ng-if="steps[2].time != null" ng-class="{'active': status >= 3, 'inactive': status < 3}">
+        &gt;
+    </div>
+    <div class="step" ng-if="steps[2].time != null" ng-class="{'active': status >= 3, 'inactive': status < 3}">
+        <div class="step-circle">
+            <span class="material-icons">local_shipping</span>
+        </div>
+        <div class="step-title">Chờ vận chuyển</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[2].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[2].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Đang giao -->
+    <div class="arrow" ng-if="steps[3].time != null" ng-class="{'active': status >= 4, 'inactive': status < 4}">
+        &gt;
+    </div>
+    <div class="step" ng-if="steps[3].time != null" ng-class="{'active': status >= 4, 'inactive': status < 4}">
+        <div class="step-circle">
+            <span class="material-icons">directions_car</span>
+        </div>
+        <div class="step-title">Đang giao</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[3].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[3].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Thành công -->
+    <div class="arrow" ng-if="steps[4].time != null" ng-class="{'active': status >= 5, 'inactive': status < 5}">
+        &gt;
+    </div>
+    <div class="step" ng-if="steps[4].time != null" ng-class="{'active': status >= 5, 'inactive': status < 5}">
+        <div class="step-circle">
+            <span class="material-icons">home</span>
+        </div>
+        <div class="step-title">Thành công</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[4].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[4].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Đã hủy -->
+    <div class="arrow" ng-if="status == 6" ng-class="{'active': status >= 6, 'inactive': status < 6}">&gt;</div>
+    <div class="step" ng-if="status == 6" ng-class="{'cancelled': status == 6, 'inactive': status < 6}">
+        <div class="step-circle">
+            <span class="material-icons" style="color: red;">cancel</span>
+        </div>
+        <div class="step-title">Đã hủy</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[5].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[5].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Thất bại -->
+    <div class="arrow" ng-class="{'active': status >= 7, 'inactive': status < 7}">&gt;</div>
+    <div class="step" ng-if="status == 7" ng-class="{'failed': status == 7, 'inactive': status < 7}">
+        <div class="step-circle">
+            <span class="material-icons" style="color: darkred;">error</span>
+        </div>
+        <div class="step-title">Thất bại</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[6].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[6].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Giao lại -->
+    <div class="arrow" ng-if="steps[7].time != null" ng-class="{'active': status >= 8, 'inactive': status < 8}">
+        &gt;
+    </div>
+    <div class="step" ng-if="steps[7].time != null" ng-class="{'active': status >= 8, 'inactive': status < 8}">
+        <div class="step-circle">
+            <span class="material-icons">repeat</span>
+        </div>
+        <div class="step-title">Giao lại</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[7].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[7].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Đang giao lại -->
+    <div class="arrow" ng-if="steps[8].time != null" ng-class="{'active': status >= 9, 'inactive': status < 9}">
+        &gt;
+    </div>
+    <div class="step" ng-if="steps[8].time != null" ng-class="{'active': status >= 9, 'inactive': status < 9}">
+        <div class="step-circle">
+            <span class="material-icons">local_shipping</span>
+        </div>
+        <div class="step-title">Đang giao lại</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[8].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[8].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Đang chuyển hàng về kho -->
+    <div class="arrow" ng-if="steps[9].time != null" ng-class="{'active': status >= 10, 'inactive': status < 10}">&gt;
+    </div>
+    <div class="step" ng-if="steps[9].time != null" ng-class="{'active': status >= 10, 'inactive': status < 10}">
+        <div class="step-circle">
+            <span class="material-icons">warehouse</span>
+        </div>
+        <div class="step-title">Đang chuyển hàng về kho</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[9].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[9].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+
+    <!-- Đã chuyển hàng về kho -->
+    <div class="arrow" ng-if="steps[10].time != null" ng-class="{'active': status >= 11, 'inactive': status < 11}">
+        &gt;</div>
+    <div class="step" ng-if="steps[10].time != null" ng-class="{'active': status >= 11, 'inactive': status < 11}">
+        <div class="step-circle">
+            <span class="material-icons">done</span>
+        </div>
+        <div class="step-title">Đã chuyển hàng về kho</div>
+        <div class="step-desc" style="margin-bottom: -7px;">{{ steps[10].time | date:'HH : mm : ss' }}</div>
+        <div class="step-desc">{{ steps[10].time | date:'dd-MM-yyyy' }}</div>
+    </div>
+</div>
+
+<script>const possibleSteps = {
+        1: { title: "Chờ xác nhận", icon: "schedule", status: 1 },
+        2: { title: "Đã xác nhận", icon: "check_circle", status: 2 },
+        3: { title: "Chờ vận chuyển", icon: "local_shipping", status: 3 },
+        4: { title: "Đang giao", icon: "directions_car", status: 4 },
+        5: { title: "Thành công", icon: "home", status: 5 },
+        6: { title: "Đã hủy", icon: "cancel", status: 6 },
+        7: { title: "Thất bại", icon: "cancel", status: 7 },
+        8: { title: "Giao lại", icon: "local_shipping", status: 8 },
+        9: { title: "Đang giao lại", icon: "directions_car", status: 9 },
+        10: { title: "Đang chuyển hàng về kho", icon: "warehouse", status: 10 },
+        11: { title: "Đã chuyển hàng về kho", icon: "inventory", status: 11 }
+    };
+
+    const deliveryFlow = {
+        1: [2], // Chờ xác nhận -> Đã xác nhận
+        2: [3], // Đã xác nhận -> Chờ vận chuyển
+        3: [4, 7], // Chờ vận chuyển -> Đang giao hoặc Thất bại
+        4: [5, 7], // Đang giao -> Thành công hoặc Thất bại
+        5: [], // Thành công (kết thúc)
+        6: [], // Đã hủy (kết thúc)
+        7: [6, 8], // Thất bại -> Đã hủy hoặc Giao lại
+        8: [9], // Giao lại -> Đang giao lại
+        9: [5, 7], // Đang giao lại -> Thành công hoặc Thất bại
+        10: [11], // Đang chuyển hàng về kho -> Đã chuyển hàng về kho
+        11: [] // Đã chuyển hàng về kho (kết thúc)
+    };
+
+    // Function to get next possible steps for a given status
+    function getNextSteps(currentStatus) {
+        return deliveryFlow[currentStatus] || [];
+    }
+
+    // Example usage
+    const currentStatus = 3; // Chờ vận chuyển
+    const nextSteps = getNextSteps(currentStatus);
+
+
+
+
+
+
+    $scope.updateStatusSteps = function () {
+        const possibleSteps = {
+            1: { title: "Chờ xác nhận", icon: "schedule", status: 1 },
+            2: { title: "Chờ vận chuyển", icon: "local_shipping", status: 2 },
+            3: { title: "Đang giao", icon: "directions_car", status: 3 },
+            4: { title: "Thành công", icon: "home", status: 4 },
+            5: { title: "Đã hủy", icon: "cancel", status: 5 },
+            6: { title: "Khách hủy", icon: "cancel", status: 6 },
+            7: { title: "Thất bại", icon: "cancel", status: 7 },
+            8: { title: "Chờ giao lại", icon: "local_shipping", status: 8 },
+            9: { title: "Đang giao lại", icon: "directions_car", status: 9 },
+            10: { title: "Đang chuyển hàng về kho", icon: "warehouse", status: 10 },
+            11: { title: "Đã chuyển hàng về kho", icon: "inventory", status: 11 }
+        };
+
+        const deliveryFlow = {
+            1: [2, 5, 6],
+            2: [4, 5, 6, 7],
+            3: [4, 5, 6, 7, 8],
+            4: [],
+            5: [],
+            6: [],
+            7: [8],
+            8: [9],
+            9: [10],
+            10: [11],
+            11: []
+        };
+
+        $scope.steps = [];
+        let currentStep = possibleSteps[1];
+        $scope.steps.push({ ...currentStep, time: $scope.findStatusTime(currentStep.status) });
+
+        for (let step of deliveryFlow[$scope.status]) {
+            let stepData = { ...possibleSteps[step], time: $scope.findStatusTime(step) };
+            $scope.steps.push(stepData);
+        }
+    };
+
+    $scope.findStatusTime = function (status) {
+        let history = $scope.listBillHistory.find(item => item.status == status);
+        return history ? history.createdAt : null;
+    };
+
+    $scope.updateReasonSuggestions = function () {
+        const reasonMap = {
+            7: ["Khách không nhận hàng", "Không liên hệ được khách", "Khách yêu cầu giao lại"],
+            6: ["Khách hủy đơn hàng", "Đơn hàng bị lỗi"],
+            8: ["Yêu cầu của khách hàng", "Lỗi vận chuyển"]
+        };
+        $scope.reasonSuggestions = reasonMap[$scope.currentStatus] || [];
+    };
+
+    $scope.appendReason = function (reason) {
+        if (reason) {
+            $scope.billHistoryUpdate.description = $scope.billHistoryUpdate.description 
+                ? `${$scope.billHistoryUpdate.description}, ${reason}` 
+                : reason;
+        }
+    };
+
+
+
+
+    
+    $scope.addOrUpdateStep = function (status, time) {
+        const existingStepIndex = $scope.steps.findIndex(step => step.status === status);
+
+        const newStep = {
+            title: $scope.getStatusTitle(status),
+            icon: $scope.getStatusIcon(status),
+            status: status,
+            time: time
+        };
+        console.log("Adding step:", newStep);
+        $scope.steps.push(newStep);
+
+    };
+
+
+    $scope.getStatusTitle = function (status) {
+        const statusTitles = {
+            1: "Chờ xác nhận",
+            2: "Chờ vận chuyển",
+            3: "Đang giao",
+            4: "Thành công",
+            5: "Khách hủy",
+            6: "Đã hủy",
+            7: "Thất bại",
+            8: "Chờ giao lại",
+            9: "Đang giao lại",
+            10: "Hoàn hàng"
+        };
+        return statusTitles[status] || "Unknown";
+    };
+
+    $scope.getStatusIcon = function (status) {
+        const statusIcons = {
+            1: "schedule",
+            2: "local_shipping",
+            3: "directions_car",
+            4: "home",
+            5: "cancel",
+            6: "cancel",
+            7: "cancel",
+            8: "local_shipping",
+            9: "directions_car",
+            10: "warehouse"
+        };
+        return statusIcons[status] || "help";
+    };
+</script>
+

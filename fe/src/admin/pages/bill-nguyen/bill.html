@@ -117,9 +117,13 @@
                             </span>
                         </td>
                         <td>
-                            <a type="button" class="edit" data-bs-toggle="modal" data-bs-target="#updateVoucherModal"
-                                ng-click="getVoucherById(v)">
-                                <i class="material-icons" title="Edit">&#xE254;</i>
+                            <a type="button" class="edit" href="#/admin/bill/{{bill.id}}">
+                                <i class="material-icons" title="Edit">&#xe8f4;</i>
+                            </a>
+                            <a type="button" class="edit"
+                                ng-if="currentTab !== null && currentTab !== 4 && currentTab !== 5 && currentTab !== 6"
+                                data-bs-toggle="modal" data-bs-target="#changeStatusModal">
+                                <i class="material-icons" title="Edit">&#xe2e7;</i>
                             </a>
                         </td>
                     </tr>
@@ -168,6 +172,26 @@
                             ng-click="loadPage(currentPage + 1)">Next</button>
                     </div>
                 </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chuyển trạng thai -->
+    <div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Xác nhận chuyển trạng thái</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="description" class="form-label">Ghi chú</label>
+                    <input type="text" class="form-control" id="description" ng-model="billHistoryUpdate.description">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" ng-click="confirmChangeStatus()">Thay đổi</button>
+                </div>
             </div>
         </div>
     </div>

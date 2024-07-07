@@ -2,6 +2,18 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http) {
 
     const apiBill = "http://localhost:8080/api/admin/bill";
 
+    // Hàm hiển thị thông báo thành công
+    $scope.showSuccess = function (message) {
+        toastr["success"](message);
+    };
+    // Hàm hiển thị thông báo lỗi
+    $scope.showError = function (message) {
+        toastr["error"](message);
+    };
+    $scope.showWarning = function (message) {
+        toastr["warning"](message);
+    };
+
     $scope.tabs = [
         { label: 'Tất cả', status: null, count: 0 },
         { label: 'Chờ xác nhận', status: 1, count: 0 },
@@ -88,6 +100,33 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http) {
         } else {
             $scope.desiredPage = $scope.currentPage + 1;
         }
+    };
+
+    //change bill status
+    $scope.confirmChangeStatus = function () {
+        $('#changeStatusModal').modal('hide');
+
+        let bill = angular.copy($scope.billResponse)
+        bill.status = $scope.currentStatus
+
+        let billHistory = {
+            billId: $scope.idBill,
+            status: $scope.currentStatus,
+            description: $scope.billHistoryUpdate.description,
+        };
+
+        let data = { bill: bill, billHistory: billHistory };
+
+        // $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
+        //     $scope.showSuccess("Chuyển trạng thái thành công");
+
+        //     $scope.applyFilters();
+        // }).catch(function (error) {
+        //     $scope.showError("Chuyển trạng thái thất bại");
+        // });
+
+        // Xóa nội dung ghi chú sau khi xác nhận
+        $scope.billHistoryUpdate.description = null;
     };
 
     // Initialize
