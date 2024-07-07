@@ -2,9 +2,9 @@ package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Favorite;
 import com.example.demo.repository.Customer.FavoriteReposirotyH;
-import com.example.demo.service.Customer.AccountService;
-import com.example.demo.service.Customer.CustomerService;
-import com.example.demo.service.Customer.FavoriteService;
+import com.example.demo.service.Customer.AccountServiceH;
+import com.example.demo.service.Customer.CustomerServiceH;
+import com.example.demo.service.Customer.FavoriteServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class FavoriteServiceImpl  implements FavoriteService {
+public class FavoriteServiceHImpl implements FavoriteServiceH {
 
     private final FavoriteReposirotyH favoriteRepository;
 
     @Autowired
-    public FavoriteServiceImpl(FavoriteReposirotyH favoriteRepository) {
+    public FavoriteServiceHImpl(FavoriteReposirotyH favoriteRepository) {
         this.favoriteRepository = favoriteRepository;
     }
 
@@ -84,10 +84,10 @@ public class FavoriteServiceImpl  implements FavoriteService {
     private FavoriteReposirotyH olFavoritesRepository;
 
     @Autowired
-    private AccountService olAccountService;
+    private AccountServiceH olAccountServiceH;
 
     @Autowired
-    private CustomerService olCustomerService;
+    private CustomerServiceH olCustomerServiceH;
 
 ////    @Autowired
 ////    private ImageService olImageService;
@@ -100,11 +100,11 @@ public class FavoriteServiceImpl  implements FavoriteService {
 ////
 ////    @Override
 ////    public List<AddressEntity> getAddressListByUsername(String username) {
-////        Optional<AccountEntity> account = olAccountService.findByAccount(username);
+////        Optional<AccountEntity> account = olAccountServiceH.findByAccount(username);
 ////
 ////        if (account.isPresent()) {
 ////            // Lấy thông tin khách hàng từ tài khoản
-////            Optional<CustomerEntity> customerEntity = Optional.ofNullable(olCustomerService.findByAccount_Id(account.get().getId()));
+////            Optional<CustomerEntity> customerEntity = Optional.ofNullable(olCustomerServiceH.findByAccount_Id(account.get().getId()));
 ////            if (customerEntity.isPresent()) {
 ////                return repository.findAllByCustomer_IdAndStatus(customerEntity.get().getId(),1);
 ////            }
@@ -158,11 +158,11 @@ public class FavoriteServiceImpl  implements FavoriteService {
 ////
 ////    @Override
 ////    public List<OlFavoritesResponse> getFavoriteListByUsername(String username) {
-////        Optional<AccountEntity> account = olAccountService.findByAccount(username);
+////        Optional<AccountEntity> account = olAccountServiceH.findByAccount(username);
 ////        List<OlFavoritesResponse> favoritesResponses = new ArrayList<>();
 ////
 ////        if (account.isPresent()) {
-////            Optional<CustomerEntity> customerEntity = Optional.ofNullable(olCustomerService.findByAccount_Id(account.get().getId()));
+////            Optional<CustomerEntity> customerEntity = Optional.ofNullable(olCustomerServiceH.findByAccount_Id(account.get().getId()));
 ////            if (customerEntity.isPresent()) {
 ////                List<FavoriteEntity> favoriteEntities = olFavoritesRepository.findAllByCustomer_IdAndStatus(customerEntity.get().getId(), 1);
 ////

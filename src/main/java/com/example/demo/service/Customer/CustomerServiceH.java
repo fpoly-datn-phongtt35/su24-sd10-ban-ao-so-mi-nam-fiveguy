@@ -8,7 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerService {
+public interface CustomerServiceH {
+    // get all
     // get all
     List<Customer> getAll();
 
@@ -33,4 +34,5 @@ public interface CustomerService {
     List<Customer> getAllStatus(Integer status);
 
     Page<Customer> findCustomer(String fullName, String code, String avatar, Date birthDate, Boolean gender, String address, String account, String email, String phoneNumber, Long id, Integer status, Pageable pageable);
+
 }

@@ -1,12 +1,11 @@
 package com.example.demo.service.Customer.ServiceImpl;
 
+
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerType;
-import com.example.demo.entity.Employee;
 import com.example.demo.repository.Customer.CustomerRepositoryH;
 import com.example.demo.repository.Customer.CustomerSpecificationH;
-import com.example.demo.repository.tinh.EmployeeSpecificationTinh;
-import com.example.demo.service.Customer.CustomerService;
+import com.example.demo.service.Customer.CustomerServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,9 +17,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerServiceHImpl implements CustomerServiceH {
     @Autowired
     CustomerRepositoryH customerRepositoryH;
 

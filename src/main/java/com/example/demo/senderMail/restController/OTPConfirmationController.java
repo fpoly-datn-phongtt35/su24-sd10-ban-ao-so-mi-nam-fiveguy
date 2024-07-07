@@ -4,7 +4,7 @@ package com.example.demo.senderMail.restController;//package com.example.demo.se
 //import com.example.demo.senderMail.Respone.ConfirmationRequest;
 //import com.example.demo.senderMail.Respone.ResponseObject;
 //import com.example.demo.senderMail.UserService;
-//import com.example.demo.service.serviceiplm.AccountServiceImpl;
+//import com.example.demo.service.serviceiplm.AccountServiceHImpl;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.http.HttpStatus;
 //import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ package com.example.demo.senderMail.restController;//package com.example.demo.se
 //    private UserService userService;
 //
 //    @Autowired
-//    private AccountServiceImpl accountService;
+//    private AccountServiceHImpl accountService;
 //
 //    @PostMapping("/confirm-otp")
 //    public ResponseEntity<ResponseObject> confirmOTP(@RequestBody ConfirmationRequest request) {

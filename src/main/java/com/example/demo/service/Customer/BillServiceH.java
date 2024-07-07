@@ -1,11 +1,12 @@
 package com.example.demo.service.Customer;
 
 import com.example.demo.entity.Bill;
+//import com.example.demo.service.Customer.BillService;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public interface BillService {
+public interface BillServiceH {
 //    List<Bill> getAllBill();
 //
 //    Bill getBillById(Long id);
@@ -26,7 +27,7 @@ public interface BillService {
 //
 ////    ResponseEntity<?> TaoHoaDonNguoiDungChuaDangNhap(@RequestBody JsonNode orderData);
 //
-////    Page<Bill> findLatestBillsByCustomerId(Long customerId, int page, int size);
+//    Page<Bill> findLatestBillsByCustomerId(Long customerId, int page, int size);
 //
 //    boolean updatePaymentStatus(Long billId, int paymentStatus);
 //
@@ -37,6 +38,7 @@ public interface BillService {
 //    Bill findById(Long id);
 //
 //    List<Bill> findByPhoneNumber(String pn);
-
-// // END OL
+//>>>>>>>5b29be08974a2dd475d98b7b2e204919a591aa0e:src/main/java/com/example/demo/service/Customer/BillServiceH.java
+//
+//// // END OL
 }

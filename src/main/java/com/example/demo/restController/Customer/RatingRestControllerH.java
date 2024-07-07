@@ -1,7 +1,7 @@
 package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Rating;
-import com.example.demo.service.Customer.RatingService;
+import com.example.demo.service.Customer.RatingServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,30 +23,30 @@ import java.util.List;
 
 public class RatingRestControllerH {
    @Autowired
-   RatingService ratingService;
+   RatingServiceH ratingServiceH;
 
     @GetMapping("")
     public ResponseEntity<List<Rating>> getAllRating() {
-        List<Rating> rating = ratingService.getAllRating();
+        List<Rating> rating = ratingServiceH.getAllRating();
         return ResponseEntity.ok(rating);
     }
     @PutMapping("/update-status-rating-xac-nhan/{id}")
     public void updateStatusRatingXacNhan(@PathVariable Long id){
-        ratingService.updateStatusRatingXacNhan(id);
+        ratingServiceH.updateStatusRatingXacNhan(id);
     }
     @PutMapping("/update-status-rating-huy/{id}")
     public void updateStatusRatingHuy(@PathVariable Long id){
-        ratingService.updateStatusRatingHuy(id);
+        ratingServiceH.updateStatusRatingHuy(id);
     }
 
 //    @GetMapping("/pageall")
 //    public ResponseEntity<Page<Rating>> getAllRatingPage(@RequestParam(defaultValue = "0", name = "page") Integer page) {
-//        return ResponseEntity.ok(ratingService.getAllRatingPage(page));
+//        return ResponseEntity.ok(ratingServiceH.getAllRatingPage(page));
 //    }
 //
 //    @GetMapping("/findby/{ratingId}")
 //    public ResponseEntity<Rating> getRatingById(@PathVariable Long ratingId) {
-//        Rating rating = ratingService.getRatingById(ratingId);
+//        Rating rating = ratingServiceH.getRatingById(ratingId);
 //        if (rating != null) {
 //            return ResponseEntity.ok(rating);
 //        } else {
@@ -57,7 +57,7 @@ public class RatingRestControllerH {
     @PostMapping("")
     public ResponseEntity<?> createRating(@RequestBody Rating ratingEntity) {
         try {
-            Rating createdRating = ratingService.createRating(ratingEntity);
+            Rating createdRating = ratingServiceH.createRating(ratingEntity);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdRating);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -66,7 +66,7 @@ public class RatingRestControllerH {
 
     @PutMapping("/{ratingId}")
     public ResponseEntity<Rating> updateRating(@RequestBody Rating ratingEntity, @PathVariable Long ratingId) {
-        Rating rating = ratingService.updateRating(ratingEntity, ratingId);
+        Rating rating = ratingServiceH.updateRating(ratingEntity, ratingId);
         if (rating != null) {
             return ResponseEntity.ok(rating);
         } else {
@@ -77,7 +77,7 @@ public class RatingRestControllerH {
     @DeleteMapping("/{ratingId}")
     public ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
         try {
-            ratingService.deleteRating(ratingId);
+            ratingServiceH.deleteRating(ratingId);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

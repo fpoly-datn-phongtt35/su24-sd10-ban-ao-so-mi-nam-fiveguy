@@ -3,7 +3,7 @@ package com.example.demo.service.Customer.ServiceImpl;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Role;
 import com.example.demo.repository.Customer.AccountRepositoryH;
-import com.example.demo.service.Customer.AccountService;
+import com.example.demo.service.Customer.AccountServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 
-public class AccountServiceImpl  implements AccountService {
+public class AccountServiceHImpl implements AccountServiceH {
 //    @Autowired
 //    private AccountEmailSender accountEmailSender;
 
@@ -242,7 +242,7 @@ public class AccountServiceImpl  implements AccountService {
 //        return false;
 //    }
 
-//
+    //
 //    @Override
 //    public List<UserRequestDTO> getAllAccount() {
 //        List<AccountEntity> accounts = accountRepository.findAll();
@@ -279,17 +279,17 @@ public class AccountServiceImpl  implements AccountService {
         if (checkEmailExists(accountEntity.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
-            Account account2 = new Account();
-            Role role = new Role();
-            role.setId(2L);
-            account2.setAccount(accountEntity.getAccount());
-            account2.setPassword("123456789");
-            account2.setEmail(accountEntity.getEmail());
-            account2.setPhoneNumber(accountEntity.getPhoneNumber());
-            account2.setRole(role);
-            account2.setStatus(1);
+        Account account2 = new Account();
+        Role role = new Role();
+        role.setId(2L);
+        account2.setAccount(accountEntity.getAccount());
+        account2.setPassword("123456789");
+        account2.setEmail(accountEntity.getEmail());
+        account2.setPhoneNumber(accountEntity.getPhoneNumber());
+        account2.setRole(role);
+        account2.setStatus(1);
 
-            return accountRepositoryH.save(account2);
+        return accountRepositoryH.save(account2);
 
     }
 
@@ -331,6 +331,7 @@ public class AccountServiceImpl  implements AccountService {
 //            return null;
         }
     }
+
 
 
 }

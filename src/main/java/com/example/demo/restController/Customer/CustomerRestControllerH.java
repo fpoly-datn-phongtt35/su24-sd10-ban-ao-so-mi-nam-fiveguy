@@ -1,10 +1,9 @@
 package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Customer;
-import com.example.demo.entity.Employee;
 import com.example.demo.repository.Customer.CustomerRepositoryH;
-import com.example.demo.service.Customer.CustomerService;
 import com.example.demo.untility.tinh.PaginationResponse;
+import com.example.demo.service.Customer.CustomerServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,8 +32,9 @@ import java.util.List;
 
 public class CustomerRestControllerH {
 
+
     @Autowired
-    CustomerService customerService;
+    CustomerServiceH customerService;
 
 //    @Autowired
 //    AccountService accountService;

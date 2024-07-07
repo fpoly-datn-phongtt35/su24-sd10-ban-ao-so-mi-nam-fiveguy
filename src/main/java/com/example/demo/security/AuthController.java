@@ -3,8 +3,8 @@
 //import com.example.demo.entity.Account;
 //import com.example.demo.entity.Employee;
 //import com.example.demo.security.repository.EmployeeRepository;
-//import com.example.demo.security.service.AccountService;
-//import com.example.demo.security.service.CustomerService;
+//import com.example.demo.security.service.AccountServiceH;
+//import com.example.demo.security.service.CustomerServiceH;
 //import com.example.demo.security.service.EmployeeService;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@
 //public class AuthController {
 //
 //    @Autowired
-//    private AccountService accountService;
+//    private AccountServiceH accountService;
 //
 //    @Autowired
 //    private EmployeeRepository employeeRepository;
