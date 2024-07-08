@@ -1,4 +1,4 @@
-app.controller("productController", function ($scope, $http, $window,$routeParams,$rootScope,$location) {
+app.controller("productController", function ($scope, $http, $window,$routeParams,$rootScope,$location,$timeout) {
 
     $rootScope.countProduct = 0;
 
@@ -124,47 +124,52 @@ $scope.selectedWrists = [];
 $scope.searchTerm;
 
 $scope.filterProducts = function(page) {
-    if (page === undefined) {
-        page = $scope.currentPage;
-    }
+  if (page === undefined) {
+      page = $scope.currentPage;
+  }
 
-    var config = {
-        params: {
-            searchTerm: $scope.searchTerm,
-            colorIds: $scope.selectedColors.length > 0 ? $scope.selectedColors : null,
-            sizeIds: $scope.selectedSizes.length > 0 ? $scope.selectedSizes : null,
-            materialIds: $scope.selectedMaterials.length > 0 ? $scope.selectedMaterials : null,
-            collarIds: $scope.selectedCollars.length > 0 ? $scope.selectedCollars : null,
-            wristIds: $scope.selectedWrists.length > 0 ? $scope.selectedWrists : null,
-            minPrice: $scope.minPrice,
-            maxPrice: $scope.maxPrice,
-            categoryIds: $location.search().categoryId ? [$location.search().categoryId] : null,
-            page: page,
-            size: $scope.pageSize,
-            sortDir: $scope.selectedSortType == 1 ? 'asc' : ($scope.selectedSortType == 2 ? 'desc' : 'desc'),
-            sort: $scope.selectedSortType == 0 ? 'createdAt' : 'price'
-        }
-    };
+  var config = {
+      params: {
+          searchTerm: $scope.searchTerm, // Set searchTerm vào params
+          colorIds: $scope.selectedColors.length > 0 ? $scope.selectedColors : null,
+          sizeIds: $scope.selectedSizes.length > 0 ? $scope.selectedSizes : null,
+          materialIds: $scope.selectedMaterials.length > 0 ? $scope.selectedMaterials : null,
+          collarIds: $scope.selectedCollars.length > 0 ? $scope.selectedCollars : null,
+          wristIds: $scope.selectedWrists.length > 0 ? $scope.selectedWrists : null,
+          minPrice: $scope.minPrice,
+          maxPrice: $scope.maxPrice,
+          categoryIds: $location.search().categoryId ? [$location.search().categoryId] : null,
+          page: page,
+          size: $scope.pageSize,
+          sortDir: $scope.selectedSortType == 1 ? 'asc' : ($scope.selectedSortType == 2 ? 'desc' : 'desc'),
+          sort: $scope.selectedSortType == 0 ? 'createdAt' : 'price'
+      }
+  };
 
-    console.log(config);
+  console.log('Config params:', config.params);
+
+  return $http.get('http://localhost:8080/api/home/products/filter', config)
+      .then(function(response) {
+          // console.log(response);
+
+          $scope.products = response.data.content.map(product => {
+              return product;
+          });
+
+          $scope.totalPages = response.data.totalPages;
+          $scope.currentPage = page;
+          $scope.totalProducts = response.data.totalElements;
+          return response.data;
+      }).catch(function(error) {
+          console.error('Error fetching products:', error);
+          throw error;
+      });
+};
 
 
-    return $http.get('http://localhost:8080/api/home/products/filter', config)
-        .then(function(response) {
-            console.log(response);
-
-            $scope.products = response.data.content.map(product => {
-                return product;
-            });
-
-            $scope.totalPages = response.data.totalPages;
-            $scope.currentPage = page;
-            $scope.totalProducts = response.data.totalElements;
-            return response.data;
-        }).catch(function(error) {
-            console.error('Error fetching products:', error);
-            throw error;
-        });
+$scope.setAndFilterProducts = function(searchTerm) {
+  $scope.searchTerm = searchTerm;
+  $scope.filterProducts(0); // Gọi hàm filterProducts với trang đầu tiên
 };
 
 $scope.updateSelectedColors = function(color) {
@@ -229,8 +234,18 @@ $scope.setCurrentPage = function(page) {
 };
 
 $scope.loadPage = function() {
-    $scope.filterProducts(0);
+  var searchTermFromUrl = $scope.getSearch();
+  if (searchTermFromUrl) {
+      $timeout(function() {
+          $scope.searchTerm = searchTermFromUrl;
+          $scope.filterProducts(0); // Gọi filterProducts sau khi searchTerm được cập nhật
+      });
+  } else {
+      $scope.filterProducts(0); // Gọi filterProducts ngay lập tức nếu không có searchTerm từ URL
+  }
 };
+
+
 
 
       // Function to refresh data (reset filters and reload products)
@@ -969,5 +984,181 @@ $scope.dataCity.ProvinceName;
       
         return regexMobile.test(phoneNumber) || regexLandline.test(phoneNumber);
       }
+
+
+
+
+
+
+
+
+
+
+    //   home ------------------------
+
+    $scope.slideIndex = 0;
+    let slideInterval;
+    
+    $scope.showSlide = function(index) {
+        const slides = document.querySelectorAll('.carousel-item');
+        if (slides.length > 0) {
+            if (index >= slides.length) { $scope.slideIndex = 0; }
+            if (index < 0) { $scope.slideIndex = slides.length - 1; }
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove('active');
+            }
+            slides[$scope.slideIndex].classList.add('active');
+        }
+    }
+    
+    $scope.prevSlide = function() {
+        $scope.slideIndex--;
+        $scope.showSlide($scope.slideIndex);
+    }
+    
+    $scope.nextSlide = function() {
+        $scope.slideIndex++;
+        $scope.showSlide($scope.slideIndex);
+    }
+    
+    function startSlideShow() {
+        slideInterval = setInterval(() => {
+            $scope.nextSlide();
+        }, 20000); // Chuyển slide sau mỗi 20 giây (20000 milliseconds)
+    }
+    
+    // Bắt đầu chuyển slide tự động khi tải trang
+    startSlideShow();
+    
+  
+  
+  
+  
+  
+  
+      $scope.loadActiveCategories = function() {
+          $http.get('http://localhost:8080/api/home/categories')
+            .then(function(response) {
+              if (response.data) {
+                $scope.listActiveCategories = response.data;
+              }
+            })
+            .catch(function(error) {
+              alert("Có lỗi xảy ra khi gọi API!");
+              console.error(error);
+            });
+      };
+  
+  
+      $scope.loadActiveCategories();
+  
+  
+      $scope.getAllSalePaths = function() {
+        $http.get('http://localhost:8080/api/home/salePaths')
+          .then(function(response) {
+            if (response.data) {
+              $scope.salePaths = response.data;
+            }
+          })
+          .catch(function(error) {
+            alert("Có lỗi xảy ra khi gọi API!");
+            console.error(error);
+          });
+    };
+  
+    $scope.getAllSalePaths();
+      // Function to load products ordered by total quantity sold
+  $scope.loadProductsByTotalQuantitySold = function() {
+      $http.get('http://localhost:8080/api/home/product/totalQuantitySold')
+        .then(function(response) {
+          if (response.data) {
+            $scope.productsByTotalQuantitySold = response.data.slice(0, 12); // Lấy chỉ 12 đối tượng đầu tiên
+  
+            console.log($scope.productsByTotalQuantitySold)
+          }
+        })
+        .catch(function(error) {
+          alert("Có lỗi xảy ra khi gọi API lấy sản phẩm theo tổng số lượng bán!");
+          console.error(error);
+        });
+  };
+  
+  // Function to load products ordered by created date
+  $scope.loadProductsByCreatedAt = function() {
+      $http.get('http://localhost:8080/api/home/product/createdAt')
+        .then(function(response) {
+          if (response.data) {
+            $scope.productsByCreatedAt = response.data.slice(0, 12); // Lấy chỉ 12 đối tượng đầu tiên
+          }
+        })
+        .catch(function(error) {
+          alert("Có lỗi xảy ra khi gọi API lấy sản phẩm theo ngày tạo!");
+          console.error(error);
+        });
+  };
+  
+  
+        // formatCurrency
+        $scope.formatCurrency = function(value) {
+          if (!value) return '';
+          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      };
+  
+      $scope.openOverlaySearch = function() {
+        document.getElementById('overlay').style.display = 'block';
+    };
+  
+    $scope.toggleOverlaySearch = function() {
+        document.getElementById('overlay').style.display = 'none';
+    };
+  
+    $scope.closeOverlay = function(event) {
+        if (event.target.id === 'overlay') {
+            document.getElementById('overlay').style.display = 'none';
+        }
+    };
+  
+    // $scope.loadProductSearch = function() {
+    //     // Logic to load products based on $scope.searchText
+    // };
+  
+  
+    $scope.searchProducts = function(search) {
+      if (!search || search.trim() === "") {
+          $scope.searchedProducts = null;
+          return;
+      }
+      $scope.searchTerm= search;
+ 
+
+      $http.get('http://localhost:8080/api/home/product/search', {
+          params: { name: search }
+      })
+      .then(function(response) {
+          if (response.data) {
+              $scope.searchedProducts = response.data;
+          }
+      })
+      .catch(function(error) {
+          alert("Có lỗi xảy ra khi tìm kiếm sản phẩm!");
+          console.error(error);
+      });
+  };
+  
+  $scope.viewMore = function() {
+    // Thiết lập searchTerm vào URL
+    $location.search('searchTerm', $scope.searchTerm);
+    // Điều hướng đến trang sản phẩm
+    $location.path('/home/product');
+};
+
+$scope.getSearch = function() {
+  var searchTerm = $location.search().searchTerm;
+
+  return searchTerm;
+};
+
+
+  
 
 });

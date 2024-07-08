@@ -237,13 +237,24 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     
     
     
+    $scope.checkStartDate = function () {
+        var currentDate = new Date();
+        var startDate = new Date($scope.saleDetail.startDate);
+        return startDate > currentDate;
+    };
     
+    $scope.checkEndDate = function () {
+        var currentDate = new Date();
+        var startDate = new Date($scope.saleDetail.startDate);
+        var endDate = new Date($scope.saleDetail.endDate);
+    
+        return endDate > currentDate && endDate > startDate;
+    };
     
     $scope.saveSale = function() {
-        console.log($scope.saleDetail);
         if ($scope.saleForm.$valid && $scope.isImageUploaded) {
             var saleData = $scope.saleDetail;
-            console.log(saleData);
+    
             if ($scope.checkSaleCode(saleData.code)) {
                 $scope.showErrorNotification("Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.");
                 return;
@@ -254,7 +265,8 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
                     $('#saleModal').modal('hide');
                     $scope.showSuccessNotification("Thêm đợt giảm giá thành công");
                     $scope.fetchAllSales();
-                }, function(error) {
+                })
+                .catch(function(error) {
                     $scope.showErrorNotification("Thêm đợt giảm giá thất bại");
                     console.error('Error saving sale:', error);
                 });
@@ -263,6 +275,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
             $scope.showErrorNotification("Vui lòng điền đầy đủ thông tin.");
         }
     };
+    
     
 
  // Hàm cập nhật sale

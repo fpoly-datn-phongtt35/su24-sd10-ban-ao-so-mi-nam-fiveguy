@@ -3,6 +3,21 @@
 <section style="margin-top: 82px;" class="container-fluid" ng-init="loadPage();refreshDataProduct()">
     <!-- Sidebar and Content -->
     <div class="row">
+
+
+        <div class="search-container">
+            <div class="search-box input-group">
+                <input style="border-bottom: 1px solid #cdcdcd;" 
+                       type="search" 
+                       ng-model="searchTerm"  
+                       ng-change="setAndFilterProducts(searchTerm)" 
+                       class="form-control" 
+                       placeholder="Tìm kiếm sản phẩm"/>
+            </div>
+        </div>
+        
+
+        
       <!-- sidebar -->
       <div style="padding: 46px;" class="col-lg-2">
         <div class="collapse d-lg-block mb-5" id="navbarSupportedContent">

@@ -110,13 +110,21 @@
                             </div>
                         </div>
                     </div>
-                        <!-- <div class="form-group" ng-class="{'has-error': (saleFormUpdate.saleImage.$touched || saleFormUpdate.$submitted) && saleFormUpdate.saleImage.$invalid}">
-                            <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
-                            <input type="file" class="form-control" id="saleImage" name="saleImage" ng-model="saleDetail.image" required>
-                            <div class="text-danger" ng-show="(saleFormUpdate.saleImage.$touched || saleFormUpdate.$submitted) && saleFormUpdate.saleImage.$invalid">
-                                Hình ảnh/Banner giảm giá là bắt buộc.
-                            </div>
-                        </div> -->
+
+                    <div class="form-group">
+                        <label for="currentSaleImage" class="form-label">Ảnh/Banner giảm giá hiện tại</label>
+                        <img ng-src="{{ saleDetail.path }}" alt="Current Sale Image" class="img-thumbnail" >
+                    </div>
+                    
+                    <div class="form-group" ng-class="{'has-error': (saleForm.saleImage.$touched || saleForm.$submitted) && !isImageUploaded}">
+                        <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
+                        <input type="file" class="form-control" id="image-update" name="saleImage" required onchange="angular.element(this).scope().handleImageChange(this)">
+                        <div class="text-danger" ng-show="(saleForm.saleImage.$touched || saleForm.$submitted) && !isImageUploaded">
+                            Hình ảnh/Banner giảm giá là bắt buộc.
+                        </div>
+                    </div>
+
+                  
                         
                         <div class="col-md-6">
                             <div class="form-group">

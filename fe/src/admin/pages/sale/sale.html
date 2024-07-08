@@ -273,17 +273,24 @@
                                 <div class="form-group" ng-class="{'has-error': (saleForm.startTime.$touched || saleForm.$submitted) && saleForm.startTime.$invalid}">
                                     <label for="startTime" class="form-label">Thời gian bắt đầu</label>
                                     <input type="datetime-local" class="form-control" id="startTime" name="startTime" ng-model="saleDetail.startDate" required>
-                                    <div class="text-danger" ng-show="(saleForm.startTime.$touched || saleForm.$submitted) && saleForm.startTime.$invalid">
+                                    <div class="text-danger" ng-show="(saleForm.startTime.$touched || saleForm.$submitted) && saleForm.startTime.$error.required">
                                         Thời gian bắt đầu là bắt buộc.
+                                    </div>
+                                    <div class="text-danger" ng-show="(saleForm.startTime.$touched || saleForm.$submitted) && !checkStartDate()">
+                                        Thời gian bắt đầu phải lớn hơn thời gian hiện tại.
                                     </div>
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': (saleForm.endTime.$touched || saleForm.$submitted) && saleForm.endTime.$invalid}">
                                     <label for="endTime" class="form-label">Thời gian kết thúc</label>
                                     <input type="datetime-local" class="form-control" id="endTime" name="endTime" ng-model="saleDetail.endDate" required>
-                                    <div class="text-danger" ng-show="(saleForm.endTime.$touched || saleForm.$submitted) && saleForm.endTime.$invalid">
+                                    <div class="text-danger" ng-show="(saleForm.endTime.$touched || saleForm.$submitted) && saleForm.endTime.$error.required">
                                         Thời gian kết thúc là bắt buộc.
                                     </div>
+                                    <div class="text-danger" ng-show="(saleForm.endTime.$touched || saleForm.$submitted) && !checkEndDate()">
+                                        Thời gian kết thúc phải lớn hơn thời gian hiện tại và thời gian bắt đầu.
+                                    </div>
                                 </div>
+                                
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group" ng-class="{'has-error': (saleForm.discountType.$touched || saleForm.$submitted) && saleForm.discountType.$invalid}">
@@ -319,18 +326,18 @@
                                         Số lần sử dụng là bắt buộc.
                                     </div>
                                 </div>
-                        <!-- Image Upload -->
-                <div class="form-group" ng-class="{'has-error': (saleForm.saleImage.$touched || saleForm.$submitted) && !isImageUploaded}">
-                    <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
-                    <input type="file" class="form-control" id="image-update" name="saleImage" ng-model="saleDetail.path" required onchange="angular.element(this).scope().handleImageChange(this)">
-                    <div class="text-danger" ng-show="(saleForm.saleImage.$touched || saleForm.$submitted) && !isImageUploaded">
-                        Hình ảnh/Banner giảm giá là bắt buộc.
-                    </div>
-                </div>
-                <!-- Display the uploaded image -->
-                <div class="form-group">
-                    <img ng-if="uploadedImagePath" ng-src="{{uploadedImagePath}}" alt="Uploaded Image" class="img-thumbnail">
-                </div>
+                       <!-- Image Upload -->
+                                <div class="form-group" ng-class="{'has-error': (saleForm.saleImage.$touched || saleForm.$submitted) && !isImageUploaded}">
+                                    <label for="saleImage" class="form-label">Hình ảnh/Banner giảm giá</label>
+                                    <input type="file" class="form-control" id="image-update" name="saleImage" required onchange="angular.element(this).scope().handleImageChange(this)">
+                                    <div class="text-danger" ng-show="(saleForm.saleImage.$touched || saleForm.$submitted) && !isImageUploaded">
+                                        Hình ảnh/Banner giảm giá là bắt buộc.
+                                    </div>
+                                </div>
+                                <!-- Display the uploaded image -->
+                                <div class="form-group">
+                                    <img ng-if="uploadedImagePath" ng-src="{{uploadedImagePath}}" alt="Uploaded Image" class="img-thumbnail">
+                                </div>
                                 
                                 
                             </div>

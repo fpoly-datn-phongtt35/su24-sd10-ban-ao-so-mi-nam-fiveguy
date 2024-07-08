@@ -35,8 +35,7 @@ public class OLProductController2 {
     @Autowired
     private OLImageService2 olImageService2;
 
-    @Autowired
-    private OLCategoryService2 olCategoryService2;
+
 
 //    @GetMapping("/product/filter")
 //    public Page<ProductSaleDetails> filterProducts(
@@ -167,11 +166,6 @@ public class OLProductController2 {
         return productService.search(name);
     }
 
-//    Category
-    @GetMapping("/categories")
-    public List<Category> getAllActiveCategories() {
-        return olCategoryService2.getAllActiveCategories();
-    }
 
 
 }

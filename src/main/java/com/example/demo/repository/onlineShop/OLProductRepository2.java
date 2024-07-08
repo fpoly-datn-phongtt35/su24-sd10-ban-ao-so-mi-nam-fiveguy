@@ -87,29 +87,31 @@ Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
     List<Object[]> findProductsOrderedByCreatedAt();
 
 
-    @Query("SELECT DISTINCT p, ps.discountPrice, s.value, s.discountType, " +
-            "MIN(i.path) AS imagePath, p.createdAt " +
+    @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
+            "MIN(i.path) AS imagePath " +
             "FROM Product p " +
-            "LEFT JOIN p.category c " +
-            "LEFT JOIN p.material m " +
-            "LEFT JOIN p.wrist w " +
-            "LEFT JOIN p.collar cl " +
-            "LEFT JOIN p.productDetails pd " +
-            "LEFT JOIN pd.color co " +
-            "LEFT JOIN pd.size sz " +
             "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
             "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
-            "LEFT JOIN p.images i " +
+            "LEFT JOIN p.images i ON i.product.id = p.id " +
+            "LEFT JOIN p.productDetails pd " +
+            "LEFT JOIN pd.color c " +
+            "LEFT JOIN pd.size sz " +
+            "LEFT JOIN p.material m " +
+            "LEFT JOIN p.collar co " +
+            "LEFT JOIN p.wrist w " +
+            "LEFT JOIN p.category ca " +
             "WHERE p.status = 1 " +
-            "AND (p.name LIKE %:name% " +
-            "OR c.name LIKE %:name% " +
-            "OR m.name LIKE %:name% " +
-            "OR w.name LIKE %:name% " +
-            "OR cl.name LIKE %:name% " +
-            "OR co.name LIKE %:name% " +
-            "OR sz.name LIKE %:name%) " +
-            "GROUP BY p.id, p.name, p.price, ps.discountPrice, s.value, s.discountType, p.createdAt, p.category, m.id, w.id, cl.id, co.id, sz.id")
-    List<Object[]> search(@Param("name") String name);
+            "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (s.status = 1 OR s.status IS NULL))) " +
+            "AND (p.name LIKE %:search% " +
+            "OR c.name LIKE %:search% " +
+            "OR sz.name LIKE %:search% " +
+            "OR m.name LIKE %:search% " +
+            "OR co.name LIKE %:search% " +
+            "OR w.name LIKE %:search% " +
+            "OR ca.name LIKE %:search%) " +
+            "GROUP BY p.id, p.name, ps.discountPrice, s.value, s.discountType " +
+            "ORDER BY p.id")
+    List<Object[]> search(@Param("search") String search);
 
 
 
