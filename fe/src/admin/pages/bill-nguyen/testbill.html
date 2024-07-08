@@ -96,12 +96,13 @@
             <div class="modal-body">
                 <form ng-submit="confirmChangeStatus()">
                     <div class="mb-3">
-                        <label for="description" class="form-label">Lý do</label>
+                        <label for="description" ng-if="[5, 6, 7, 8].includes(currentStatus)" class="form-label">Lý do</label>
+                        <label for="description" ng-if="[1, 2, 3, 4, 9, 10, 11].includes(currentStatus)" class="form-label">Ghi chú</label>
                         <textarea class="form-control" id="description" ng-model="billHistoryUpdate.description"
                             rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="suggestions" class="form-label">Gợi ý lý do</label>
+                        <label for="suggestions" ng-if="[5, 6, 7, 8].includes(currentStatus)" class="form-label">Gợi ý lý do</label>
                         <div>
                             <button type="button" class="btn btn-outline-secondary me-2 mb-2" 
                                     ng-repeat="reason in reasonSuggestions" ng-click="appendReason(reason)">

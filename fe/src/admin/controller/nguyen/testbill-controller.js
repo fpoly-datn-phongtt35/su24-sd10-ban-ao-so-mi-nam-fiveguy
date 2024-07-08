@@ -130,7 +130,7 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
         var container = document.querySelector('.progress-container');
         container.scrollBy({
             top: 0,
-            left: -200,
+            left: -400,
             behavior: 'smooth'
         });
     };
@@ -139,7 +139,7 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
         var container = document.querySelector('.progress-container');
         container.scrollBy({
             top: 0,
-            left: 200,
+            left: 400,
             behavior: 'smooth'
         });
     };
