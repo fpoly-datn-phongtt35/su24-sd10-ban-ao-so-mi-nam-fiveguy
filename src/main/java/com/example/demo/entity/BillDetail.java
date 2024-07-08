@@ -24,6 +24,9 @@ public class BillDetail {
     @Column(name = "Quantity", nullable = false)
     private int quantity;
 
+    @Column(name = "DefectiveProduct")
+    private int defectiveProduct;
+
     @Column(name = "Price", nullable = false)
     private BigDecimal price;
 
@@ -38,6 +41,6 @@ public class BillDetail {
     @JoinColumn(name = "IdProductDetail", referencedColumnName = "Id")
     private ProductDetail productDetail;
 
-    @Column(name = "Status", nullable = false)
+    @Column(name = "Status")
     private int status;
 }

@@ -25,6 +25,9 @@ public class BillHistory {
     @Column(name = "Description", columnDefinition = "nvarchar(300)")
     private String description;
 
+    @Column(name = "Type")
+    private int type;
+
     @Column(name = "CreatedAt")
     private Date createdAt;
 

@@ -27,8 +27,8 @@ public class Bill {
     @Column(name = "Code")
     private String code;
 
-        @Column(name = "CreatedAt")
-    private Date createdAt;
+//        @Column(name = "CreatedAt")
+//    private Date createdAt;
 
 //    @Column(name = "PaymentDate")
 //    private Date paymentDate;
@@ -56,6 +56,9 @@ public class Bill {
 
     @Column(name = "TotalAmountAfterDiscount")
     private BigDecimal totalAmountAfterDiscount;
+
+    @Column(name = "CreatedAt")
+    private Date createdAt;
 
     @ManyToOne
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")

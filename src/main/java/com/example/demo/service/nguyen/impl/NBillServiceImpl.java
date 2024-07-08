@@ -86,7 +86,7 @@ public class NBillServiceImpl implements NBillService {
         existingBill.setStatus(bill.getStatus());
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
-                billHistory.getDescription(), "Admin");
+                billHistory.getDescription(), 1, "Admin");
 
         return billRepository.save(existingBill);
     }
@@ -102,7 +102,7 @@ public class NBillServiceImpl implements NBillService {
         existingBill.setStatus(bill.getStatus());
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
-                billHistory.getDescription(), "Admin");
+                billHistory.getDescription(), 1, "Admin");
 
         return billRepository.save(existingBill);
     }
@@ -124,6 +124,7 @@ public class NBillServiceImpl implements NBillService {
         newHistory.setStatus(existingBill.getStatus());
         newHistory.setDescription("Cập nhật thông tin giao hàng");
         newHistory.setCreatedBy("Admin");
+        newHistory.setType(2);
         newHistory.setCreatedAt(new Date());
 
         billHistoryRepository.save(newHistory);
@@ -131,7 +132,7 @@ public class NBillServiceImpl implements NBillService {
         return billRepository.save(existingBill);
     }
 
-    private void addBillHistoryStatus(Long billId, int status, String description,
+    private void addBillHistoryStatus(Long billId, int status, String description, int type,
                                       String createdBy) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
@@ -141,6 +142,7 @@ public class NBillServiceImpl implements NBillService {
         newHistory.setStatus(status);
         newHistory.setDescription(description);
         newHistory.setCreatedBy(createdBy);
+        newHistory.setType(type);
         newHistory.setCreatedAt(new Date());
 
         billHistoryRepository.save(newHistory);

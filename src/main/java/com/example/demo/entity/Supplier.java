@@ -1,9 +1,12 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,4 +43,12 @@ public class Supplier {
 
     @Column(name = "Status")
     private Integer status;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier",cascade = CascadeType.ALL)
+    private Set<Product> products;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "supplier",cascade = CascadeType.ALL)
+    private Set<BrandSuppiler> brandSuppilers;
 }

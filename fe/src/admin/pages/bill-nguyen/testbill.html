@@ -43,9 +43,9 @@
                 <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(4)"
                     ng-click="showModalStatus(4)">Thành công</button>
                 <button class="btn btn-outline-danger me-3" ng-if="deliveryFlow[status].includes(5)"
-                    ng-click="showModalStatus(5)">Hủy</button>
+                    ng-click="showModalStatus(6)">Hủy</button>
                 <!-- <button class="btn btn-outline-danger me-3" ng-if="deliveryFlow[status].includes(6)"
-                    ng-click="showModalStatus(6)">Khách hủy</button> -->
+                    ng-click="showModalStatus(5)">Khách hủy</button> -->
                 <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(7)"
                     ng-click="showModalStatus(7)">Thất bại</button>
                 <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(8)"
@@ -66,9 +66,9 @@
             <button class="btn btn-outline-primary me-3"
                 ng-click="showModalStatus(4)">Thành công</button>
             <button class="btn btn-outline-danger me-3"
-                ng-click="showModalStatus(5)">Hủy</button>
+                ng-click="showModalStatus(6)">Hủy</button>
             <!-- <button class="btn btn-outline-danger me-3" ng-if="deliveryFlow[status].includes(6)"
-                ng-click="showModalStatus(6)">Khách hủy</button> -->
+                ng-click="showModalStatus(5)">Khách hủy</button> -->
             <button class="btn btn-outline-primary me-3"
                 ng-click="showModalStatus(7)">Thất bại</button>
             <button class="btn btn-outline-primary me-3"
@@ -85,7 +85,7 @@
 </div>
 
 <!-- Modal để nhập lý do chuyển trạng thái -->
-<div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="changeStatusModalLabel"
+<!-- <div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="changeStatusModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -96,13 +96,13 @@
             <div class="modal-body">
                 <form ng-submit="confirmChangeStatus()">
                     <div class="mb-3">
-                        <label for="description" ng-if="[5, 6, 7, 8].includes(currentStatus)" class="form-label">Lý do</label>
-                        <label for="description" ng-if="[1, 2, 3, 4, 9, 10, 11].includes(currentStatus)" class="form-label">Ghi chú</label>
+                        <label for="description" ng-if="[5, 6, 7, 8].includes(updateStatus)" class="form-label">Lý do</label>
+                        <label for="description" ng-if="[1, 2, 3, 4, 9, 10, 11].includes(updateStatus)" class="form-label">Ghi chú</label>
                         <textarea class="form-control" id="description" ng-model="billHistoryUpdate.description"
                             rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="suggestions" ng-if="[5, 6, 7, 8].includes(currentStatus)" class="form-label">Gợi ý lý do</label>
+                        <label for="suggestions" ng-if="[5, 6, 7, 8].includes(updateStatus)" class="form-label">Gợi ý lý do</label>
                         <div>
                             <button type="button" class="btn btn-outline-secondary me-2 mb-2" 
                                     ng-repeat="reason in reasonSuggestions" ng-click="appendReason(reason)">
@@ -118,7 +118,101 @@
             </div>
         </div>
     </div>
+</div> -->
+
+<!-- Modal để nhập lý do chuyển trạng thái -->
+<!-- <div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="changeStatusModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeStatusModalLabel">Chuyển trạng thái</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="confirmChangeStatus()">
+                    <div class="mb-3" ng-if="[1, 2, 3, 4, 10, 11].includes(nextStatus)">
+                        <label for="description" class="form-label">Ghi chú</label>
+                        <textarea class="form-control" id="description" ng-model="billHistoryUpdate.description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3" ng-if="reasonSuggestions.length > 0">
+                        <label for="suggestions" class="form-label">Lý do</label>
+                        <div>
+                            <div class="form-check" ng-repeat="reason in reasonSuggestions">
+                                <input class="form-check-input" type="checkbox" id="reason-{{reason.value}}" 
+                                       ng-model="reason.checked" ng-change="toggleReason(reason)">
+                                <label class="form-check-label" for="reason-{{reason.value}}">
+                                    {{ reason.text }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="reason-other" ng-model="otherReasonChecked">
+                            <label class="form-check-label" for="reason-other">
+                                Khác
+                            </label>
+                        </div>
+                        <div class="mt-2" ng-if="otherReasonChecked">
+                            <textarea class="form-control" placeholder="Nhập lý do khác" ng-model="otherReasonText" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- Modal để nhập lý do chuyển trạng thái -->
+<div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="changeStatusModalLabel"
+    aria-hidden="true" ng-init="resetCheckBoxes()">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeStatusModalLabel">Chuyển trạng thái</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ng-click="resetCheckBoxes()"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="confirmChangeStatus()">
+                    <div class="mb-3" ng-if="[1, 2, 3, 4, 10, 11].includes(nextStatus)">
+                        <!-- <label for="description" ng-if="[5, 6, 7, 8].includes(nextStatus)" class="form-label">Lý do</label> -->
+                        <label for="description" class="form-label">Ghi chú</label>
+                        <textarea class="form-control" id="description" ng-model="billHistoryUpdate.description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3" ng-if="reasonSuggestions.length > 0">
+                        <label for="suggestions" class="form-label">Gợi ý lý do</label>
+                        <div>
+                            <div class="form-check" ng-repeat="reason in reasonSuggestions">
+                                <input class="form-check-input" type="checkbox" id="reason-{{reason.value}}" 
+                                       ng-model="reason.checked">
+                                <label class="form-check-label" for="reason-{{reason.value}}">
+                                    {{ reason.text }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="reason-other" ng-model="otherReasonChecked">
+                            <label class="form-check-label" for="reason-other">
+                                Khác
+                            </label>
+                        </div>
+                        <div class="mt-2" ng-if="otherReasonChecked">
+                            <textarea class="form-control" placeholder="Nhập lý do khác" ng-model="otherReasonText" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-click="resetCheckBoxes()">Đóng</button>
+                        <button type="submit" class="btn btn-primary" ng-click="printSelectedValues()">Xác nhận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <!-- Modal BillHistory-->
 <div class="modal fade" id="billHistoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
