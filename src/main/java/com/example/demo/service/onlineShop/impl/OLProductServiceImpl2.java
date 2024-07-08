@@ -75,7 +75,6 @@ public class OLProductServiceImpl2 implements OLProductService2 {
 
 
 
-
     @Override
     public Page<ProductSaleDetails> filterProducts2(
             Set<Long> categoryIds, Set<Long> collarIds, Set<Long> wristIds,
@@ -99,25 +98,34 @@ public class OLProductServiceImpl2 implements OLProductService2 {
                             product.getProductDetails().stream().anyMatch(pd -> sizeIds.contains(pd.getSize().getId())));
                     boolean searchTermMatch = (searchTerm == null || searchTerm.isEmpty() ||
                             product.getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
-                            product.getCode().toLowerCase().contains(searchTerm.toLowerCase()));
+                            product.getCode().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                            product.getProductDetails().stream().anyMatch(pd ->
+                                    pd.getColor().getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                                            pd.getSize().getName().toLowerCase().contains(searchTerm.toLowerCase())
+                            ) ||
+                            product.getMaterial().getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                            product.getCollar().getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                            product.getWrist().getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                            product.getCategory().getName().toLowerCase().contains(searchTerm.toLowerCase()));
+
                     return categoryMatch && collarMatch && wristMatch && colorMatch && sizeMatch && materialMatch && searchTermMatch && statusMatch;
                 })
                 .collect(Collectors.toList());
 
-        // Sắp xếp danh sách dựa trên promotionalPrice nếu được yêu cầu
+        // Sort list based on promotionalPrice if requested
         Sort.Order sortOrder = pageable.getSort().getOrderFor("promotionalPrice");
         if (sortOrder != null) {
             Comparator<ProductSaleDetails> priceComparator = Comparator.comparing(psd -> {
                 Integer promoPrice = psd.getPromotionalPrice();
                 BigDecimal price = psd.getProductPrice();
                 return promoPrice == null || promoPrice == 0 ? price : BigDecimal.valueOf(promoPrice);
-            }, Comparator.nullsLast(Comparator.naturalOrder())); // xử lý null
+            }, Comparator.nullsLast(Comparator.naturalOrder())); // Handle null
             if (sortOrder.getDirection() == Sort.Direction.DESC) {
                 priceComparator = priceComparator.reversed();
             }
             filteredProductSaleDetails.sort(priceComparator);
         } else {
-            // Sắp xếp danh sách theo createdAt nếu không có sortDir hoặc sort khác price
+            // Sort list by createdAt if no sortDir or sort other than price
             Comparator<ProductSaleDetails> createdAtComparator = Comparator.comparing(psd -> psd.getProduct().getCreatedAt(), Comparator.nullsLast(Comparator.naturalOrder()));
             Sort.Order createdAtOrder = pageable.getSort().getOrderFor("createdAt");
             if (createdAtOrder != null && createdAtOrder.getDirection() == Sort.Direction.DESC) {
@@ -132,6 +140,7 @@ public class OLProductServiceImpl2 implements OLProductService2 {
 
         return new PageImpl<>(output, pageable, filteredProductSaleDetails.size());
     }
+
 
 
 

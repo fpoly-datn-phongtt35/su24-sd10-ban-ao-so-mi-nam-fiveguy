@@ -1,22 +1,15 @@
 
 <!-- sidebar + content -->
-<section style="margin-top: 82px;" class="container-fluid" ng-init="loadPage();refreshDataProduct()">
+<section style="margin-top: 82px;" class="container-fluid" ng-init="refreshDataProduct()">
     <!-- Sidebar and Content -->
     <div class="row">
 
-
+        
         <div class="search-container">
             <div class="search-box input-group">
-                <input style="border-bottom: 1px solid #cdcdcd;" 
-                       type="search" 
-                       ng-model="searchTerm"  
-                       ng-change="setAndFilterProducts(searchTerm)" 
-                       class="form-control" 
-                       placeholder="Tìm kiếm sản phẩm"/>
+                <input style="border-bottom: 1px solid #cdcdcd;" type="search" ng-model="searchTerm"  ng-change="filterProducts(0)" class="form-control" placeholder="Tìm kiếm sản phẩm"/>
             </div>
         </div>
-        
-
         
       <!-- sidebar -->
       <div style="padding: 46px;" class="col-lg-2">
@@ -129,7 +122,7 @@
     <strong class="d-block py-2">{{ totalProducts }} Kết quả</strong>
 
   <div class="ms-auto">
-    <select class="form-select d-inline-block w-auto border pt-1" ng-model="selectedSortType" ng-change="loadPage()">
+    <select class="form-select d-inline-block w-auto border pt-1" ng-model="selectedSortType" ng-change="filterProducts(0)">
       <option value="0">Mới nhất</option>
       <option value="1">Giá thấp đến cao</option>
       <option value="2">Giá cao đến thấp</option>
@@ -172,37 +165,40 @@
 
 
   
-        <h1>{{totalPages}}</h1>
-        <h1>{{currentPage}}</h1>
         <div class="row text-center">
-          <div class="col-md-12" ng-if="totalPages > 1">
-              <ul class="pagination">
-                  <li ng-class="{disabled: currentPage === 0}">
-                      <a href="" ng-click="setCurrentPage(0)">
-                          First
-                      </a>
-                  </li>
-                  <li ng-class="{disabled: currentPage === 0}">
-                      <a href="" ng-click="setCurrentPage(currentPage - 1)">
-                          Previous
-                      </a>
-                  </li>
-      
-                  {{ currentPage + 1 }}
-      
-                  <li ng-class="{disabled: currentPage === totalPages - 1}">
-                      <a href="" ng-click="setCurrentPage(currentPage + 1)">
-                          Next
-                      </a>
-                  </li>
-                  <li ng-class="{disabled: currentPage === totalPages - 1}">
-                      <a href="" ng-click="setCurrentPage(totalPages - 1)">
-                          Last
-                      </a>
-                  </li>
-              </ul>
-          </div>
-      </div>
+            <div class="col-md-12" ng-if="totalPages > 1">
+                <ul class="pagination">
+                    <li ng-class="{disabled: currentPage === 0}">
+                        <a href="" ng-click="setCurrentPage(0)">
+                            &laquo;&laquo;
+                        </a>
+                    </li>
+                    <li ng-class="{disabled: currentPage === 0}">
+                        <a href="" ng-click="setCurrentPage(currentPage - 1)">
+                            &laquo;
+                        </a>
+                    </li>
+        
+                    <li ng-repeat="page in getPageRange()" ng-class="{active: currentPage === page}">
+                        <a href="" ng-click="setCurrentPage(page)">
+                            {{ page + 1 }}
+                        </a>
+                    </li>
+        
+                    <li ng-class="{disabled: currentPage === totalPages - 1}">
+                        <a href="" ng-click="setCurrentPage(currentPage + 1)">
+                            &raquo;
+                        </a>
+                    </li>
+                    <li ng-class="{disabled: currentPage === totalPages - 1}">
+                        <a href="" ng-click="setCurrentPage(totalPages - 1)">
+                            &raquo;&raquo;
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
         
         
     

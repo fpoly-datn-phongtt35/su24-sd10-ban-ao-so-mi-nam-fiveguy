@@ -13,7 +13,7 @@
         </div>
     </div>
 
-<div class="overlay" id="overlay" ng-click="closeOverlay($event)">
+    <div class="overlay" id="overlay" ng-show="overlaySearchActive">
     <div class="header-search">
         <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
             <i class="fa-solid fa-xmark fa-lg"></i>
@@ -341,7 +341,7 @@
   
   <div style="padding: 46px 0;" class="row">
         
-    <div id="salePromotionCarousel" class="carousel slide" data-bs-ride="carousel">
+    <!-- <div id="salePromotionCarousel" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-indicators">
           <button type="button" data-bs-target="#salePromotionCarousel" data-bs-slide-to="{{$index}}" ng-class="{ 'active': $index === 0 }" ng-repeat="path in salePaths track by $index" aria-label="Slide {{$index + 1}}"></button>
       </div>
@@ -359,7 +359,7 @@
           <span class="visually-hidden">Next</span>
       </button>
   </div>
-  
+   -->
   
   
     

@@ -1,4 +1,4 @@
-app.controller("productController", function ($scope, $http, $window,$routeParams,$rootScope,$location,$timeout) {
+app.controller("productController", function ($scope, $http, $window,$routeParams,$rootScope,$location) {
 
     $rootScope.countProduct = 0;
 
@@ -123,7 +123,20 @@ $scope.selectedCollars = [];
 $scope.selectedWrists = [];
 $scope.searchTerm;
 
+$scope.getSearch = function() {
+
+  var searchTerm = localStorage.getItem('searchTerm');
+  if (searchTerm !== null) {
+  $scope.searchTerm = searchTerm;
+      localStorage.removeItem('searchTerm');
+  }
+
+};
+
+
 $scope.filterProducts = function(page) {
+  $scope.getSearch();
+
   if (page === undefined) {
       page = $scope.currentPage;
   }
@@ -146,7 +159,7 @@ $scope.filterProducts = function(page) {
       }
   };
 
-  console.log('Config params:', config.params);
+  console.log(config);
 
   return $http.get('http://localhost:8080/api/home/products/filter', config)
       .then(function(response) {
@@ -155,6 +168,7 @@ $scope.filterProducts = function(page) {
           $scope.products = response.data.content.map(product => {
               return product;
           });
+          console.log($scope.products);
 
           $scope.totalPages = response.data.totalPages;
           $scope.currentPage = page;
@@ -164,12 +178,6 @@ $scope.filterProducts = function(page) {
           console.error('Error fetching products:', error);
           throw error;
       });
-};
-
-
-$scope.setAndFilterProducts = function(searchTerm) {
-  $scope.searchTerm = searchTerm;
-  $scope.filterProducts(0); // Gọi hàm filterProducts với trang đầu tiên
 };
 
 $scope.updateSelectedColors = function(color) {
@@ -233,19 +241,17 @@ $scope.setCurrentPage = function(page) {
     }
 };
 
-$scope.loadPage = function() {
-  var searchTermFromUrl = $scope.getSearch();
-  if (searchTermFromUrl) {
-      $timeout(function() {
-          $scope.searchTerm = searchTermFromUrl;
-          $scope.filterProducts(0); // Gọi filterProducts sau khi searchTerm được cập nhật
-      });
-  } else {
-      $scope.filterProducts(0); // Gọi filterProducts ngay lập tức nếu không có searchTerm từ URL
+$scope.getPageRange = function() {
+  var range = [];
+  for (var i = 0; i < $scope.totalPages; i++) {
+      range.push(i);
   }
+  return range;
 };
 
-
+// $scope.loadPage = function() {
+//     $scope.filterProducts(0);
+// };
 
 
       // Function to refresh data (reset filters and reload products)
@@ -495,13 +501,13 @@ $scope.valueVoucher = 0;
         $scope.totalAmount = countTotalPrice($scope.cartItems);
         $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
 
-        if (  $scope.dataDistrict.DistrictID && $scope.dataWard.WardCode) {
-            $scope.calculateShippingFee($scope.dataDistrict.DistrictID, $scope.dataWard.WardCode);
-            return;
-        }
-        else{
-            $scope.calculateShippingFee($scope.dataDistrict,$scope.dataWard);
-        }
+        if (typeof $scope.dataDistrict !== 'undefined' && typeof $scope.dataDistrict.DistrictID !== 'undefined' && 
+          typeof $scope.dataWard !== 'undefined' && typeof $scope.dataWard.WardCode !== 'undefined') {
+          $scope.calculateShippingFee($scope.dataDistrict.DistrictID, $scope.dataWard.WardCode);
+      } else {
+          $scope.calculateShippingFee($scope.dataDistrict, $scope.dataWard);
+      }
+      
 
     }
 
@@ -1104,19 +1110,22 @@ $scope.dataCity.ProvinceName;
           return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       };
   
+      $scope.overlaySearchActive = false;
+
       $scope.openOverlaySearch = function() {
-        document.getElementById('overlay').style.display = 'block';
-    };
-  
-    $scope.toggleOverlaySearch = function() {
-        document.getElementById('overlay').style.display = 'none';
-    };
-  
-    $scope.closeOverlay = function(event) {
-        if (event.target.id === 'overlay') {
-            document.getElementById('overlay').style.display = 'none';
-        }
-    };
+          $scope.overlaySearchActive = true;
+      };
+      
+      $scope.closeOverlay = function(event) {
+          if (event.target.id === 'overlay') {
+              $scope.overlaySearchActive = false;
+          }
+      };
+      
+      $scope.toggleOverlaySearch = function() {
+          $scope.overlaySearchActive = !$scope.overlaySearchActive;
+      };
+      
   
     // $scope.loadProductSearch = function() {
     //     // Logic to load products based on $scope.searchText
@@ -1137,6 +1146,8 @@ $scope.dataCity.ProvinceName;
       .then(function(response) {
           if (response.data) {
               $scope.searchedProducts = response.data;
+          console.log($scope.searchedProducts);
+
           }
       })
       .catch(function(error) {
@@ -1146,16 +1157,8 @@ $scope.dataCity.ProvinceName;
   };
   
   $scope.viewMore = function() {
-    // Thiết lập searchTerm vào URL
-    $location.search('searchTerm', $scope.searchTerm);
-    // Điều hướng đến trang sản phẩm
+    localStorage.setItem('searchTerm', $scope.searchTerm);
     $location.path('/home/product');
-};
-
-$scope.getSearch = function() {
-  var searchTerm = $location.search().searchTerm;
-
-  return searchTerm;
 };
 
 
