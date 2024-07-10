@@ -26,6 +26,11 @@ public class ColorControllerTH {
         return ResponseEntity.ok(colorServiceTH.getColor(page, size, keyword, sortField, sortDirection));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllSuppliers() {
+        return ResponseEntity.ok(colorServiceTH.findAllByStatus(1));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getColorById(@PathVariable Long id) {
         return ResponseEntity.ok(colorServiceTH.findById(id));

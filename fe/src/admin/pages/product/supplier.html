@@ -132,7 +132,7 @@
                                         <div class="tab-pane fade show active" id="supplier" role="tabpanel" aria-labelledby="supplier-tab">
                                             <p class="text-danger text-center" ng-if="errors.brands">{{ errors.brands}}</p>
                                             <div class="form-group">
-                                                <label>Tên nhà cung cấp</label>
+                                                <label>Tên nhà cung cấp <span ng-if="!supplier.name" class="text-danger">*</span></label>
                                                 <input type="text" ng-model="supplier.name" class="form-control" required>
                                                 <p class="text-danger" ng-if="errors.name">{{ errors.name}}</p>
                                             </div>
@@ -142,12 +142,12 @@
                                                 <p class="text-danger" ng-if="errors.email">{{ errors.email}}</p>
                                             </div>
                                             <div class="form-group mt-3">
-                                                <label>Số điện thoại</label>
+                                                <label>Số điện thoại <span ng-if="!supplier.phoneNumber" class="text-danger">*</span></label>
                                                 <input type="text" ng-model="supplier.phoneNumber" class="form-control" required>
                                                 <p class="text-danger" ng-if="errors.phoneNumber">{{ errors.phoneNumber}}</p>
                                             </div>
                                             <div id="box-province" class="form-group mt-3">
-                                                <label for="id-label-province">Tỉnh thành</label>
+                                                <label for="id-label-province">Tỉnh thành <span ng-if="!provinceValue" class="text-danger">*</span></label>
                                                 <div class="mt-2">
                                                     <select class="province" id="id-label-province" data-placeholder="Chọn tỉnh thành">
                                                         <option></option>
@@ -156,7 +156,7 @@
                                                 </div>
                                             </div>
                                             <div id="box-district" class="form-group mt-3">
-                                                <label for="id-label-district">Quận/huyện</label>
+                                                <label for="id-label-district">Quận/huyện <span ng-if="!districtValue" class="text-danger">*</span></label>
                                                 <div class="mt-2">
                                                     <select class="district" id="id-label-district" data-placeholder="Chọn quận/huyện">
                                                         <option></option>
@@ -165,7 +165,7 @@
                                                 </div>
                                             </div>
                                             <div id="box-ward" class="form-group mt-3">
-                                                <label for="id-label-ward">Phường/xã</label>
+                                                <label for="id-label-ward">Phường/xã <span ng-if="!wardValue" class="text-danger">*</span></label>
                                                 <div class="mt-2">
                                                     <select class="ward" id="id-label-ward" data-placeholder="Chọn phường/xã">
                                                         <option></option>
@@ -307,7 +307,7 @@
                                         <div class="tab-pane fade show active" id="supplierUpdate" role="tabpanel" aria-labelledby="supplier-update-tab">
                                             <p class="text-danger text-center" ng-if="errorsUpdate.brands">{{ errorsUpdate.brands}}</p>
                                             <div class="form-group">
-                                                <label>Tên nhà cung cấp</label>
+                                                <label>Tên nhà cung cấp <span ng-if="!supplierUpdate.name" class="text-danger">*</span></label>
                                                 <input type="text" ng-model="supplierUpdate.name" class="form-control" required>
                                                 <p class="text-danger" ng-if="errorsUpdate.name">{{ errorsUpdate.name}}</p>
                                             </div>
@@ -317,12 +317,12 @@
                                                 <p class="text-danger" ng-if="errorsUpdate.email">{{ errorsUpdate.email}}</p>
                                             </div>
                                             <div class="form-group mt-3">
-                                                <label>Số điện thoại</label>
+                                                <label>Số điện thoại <span ng-if="!supplierUpdate.phoneNumber" class="text-danger">*</span></label>
                                                 <input type="text" ng-model="supplierUpdate.phoneNumber" class="form-control" required>
                                                 <p class="text-danger" ng-if="errorsUpdate.phoneNumber">{{ errorsUpdate.phoneNumber}}</p>
                                             </div>
                                             <div id="box-update-province" class="form-group mt-3">
-                                                <label for="id-update-province">Tỉnh thành</label>
+                                                <label for="id-update-province">Tỉnh thành <span ng-if="!provinceName" class="text-danger">*</span></label>
                                                 <div class="mt-2">
                                                     <select class="provinceUpdate" id="id-update-province" data-placeholder="Chọn tỉnh thành" ng-model="selectedProvince">
                                                         <option></option>
@@ -331,7 +331,7 @@
                                                 </div>
                                             </div>
                                             <div id="box-update-district" class="form-group mt-3">
-                                                <label for="id-update-district">Quận/huyện</label>
+                                                <label for="id-update-district">Quận/huyện <span ng-if="!districtName" class="text-danger">*</span></label>
                                                 <div class="mt-2">
                                                     <select class="districtUpdate" id="id-update-district" data-placeholder="Chọn quận/huyện" ng-model="selectedDistrict">
                                                         <option></option>
@@ -340,7 +340,7 @@
                                                 </div>
                                             </div>
                                             <div id="box-update-ward" class="form-group mt-3">
-                                                <label for="id-update-ward">Phường/xã</label>
+                                                <label for="id-update-ward">Phường/xã <span ng-if="!wardName" class="text-danger">*</span></label>
                                                 <div class="mt-2">
                                                     <select class="wardUpdate" id="id-update-ward" data-placeholder="Chọn phường/xã" ng-model="selectedWard">
                                                         <option></option>

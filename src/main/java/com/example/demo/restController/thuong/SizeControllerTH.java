@@ -27,6 +27,11 @@ public class SizeControllerTH {
         return ResponseEntity.ok(sizeServiceTH.getSizes(page, size, name, sortField, sortDirection));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllSizes() {
+        return ResponseEntity.ok(sizeServiceTH.findAllByStatus(1));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getSizeById(@PathVariable Long id) {
         return ResponseEntity.ok(sizeServiceTH.findById(id));

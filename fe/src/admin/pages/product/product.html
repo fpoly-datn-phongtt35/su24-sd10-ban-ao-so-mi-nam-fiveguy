@@ -8,7 +8,6 @@
                         <div class="col-sm-3 p-0 d-flex justify-content-lg-start justify-content-center">
                             <h2 class="ml-lg-2">Sản phẩm</h2>
                         </div>
-                       
                         <div class="col-sm-9 p-0 d-flex justify-content-lg-end justify-content-center">
                             <a data-bs-target="#addProductModel" class="btn btn-success" data-bs-toggle="modal">
                                 <i class="material-icons">&#xE147;</i>
@@ -111,83 +110,161 @@
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Thêm mới</h5>
+                                <ul class="nav nav-tabs w-50" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="product-tab" data-bs-toggle="tab" data-bs-target="#product-tb" type="button" role="tab" aria-controls="product-tb" aria-selected="true">Sản phẩm</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="product-detail-tab" data-bs-toggle="tab" data-bs-target="#product-detail" type="button" role="tab" aria-controls="product-detail" aria-selected="false">Chi tiết sản phẩm</button>
+                                      </li>
+                                </ul>
                                 <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <form name="productForm" ng-submit="createProduct()" novalidate>
-                                <div class="modal-body row">
-                                    <div class="form-group">
-                                        <label>Mã sản phẩm</label>
-                                        <input type="text" ng-model="product.code" class="form-control" required>
-                                        <p class="text-danger" ng-if="errors.code">{{errors.code}}</p>
-                                    </div>
-                                    <div class="form-group mt-3">
-                                        <label>Tên sản phẩm</label>
-                                        <input type="text" ng-model="product.name" class="form-control" required>
-                                        <p class="text-danger" ng-if="errors.name">{{errors.name}}</p>
-                                    </div>
-                                    <div class="form-group mt-3">
-                                        <label>Đơn giá</label>
-                                        <div class="input-group">
-                                            <input type="number" ng-model="product.price" class="form-control" required>
-                                            <span class="input-group-text" id="basic-addon2">VNĐ</span>
-                                        </div>
-                                        <p class="text-danger" ng-if="errors.price">{{errors.price}}</p>
-                                    </div>
-                                    <div class="form-group mt-3">
-                                        <label for="description" class="form-label">Mô tả</label>
-                                        <textarea class="form-control" id="description" rows="2"></textarea>
-                                    </div>
-                                    <div class="row m-0 mt-3">
-                                        <div id="box-collar" class="col-sm-6">
-                                            <label for="id-label-collar">Cổ áo</label>
-                                                <div class="mt-2 d-flex">
-                                                    <select style="width: 100%" id="id-label-collar" data-placeholder="Chọn cổ áo">
-                                                        <option></option>
-                                                        <option ng-repeat="collar in collars" value="{{collar.id}}">{{collar.name}}</option>
-                                                    </select>
+                                <div class="modal-body">
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="product-tb" role="tabpanel" aria-labelledby="product-tab">
+                                            <div class="form-group">
+                                                <label>Mã sản phẩm</label>
+                                                <input type="text" ng-model="product.code" class="form-control" placeholder="Mã tự động">
+                                                <p class="text-danger" ng-if="errors.code">{{errors.code}}</p>
+                                            </div>
+                                            <div class="row mt-3 p-0">
+                                                <div class="col-sm-6">
+                                                    <label>Tên sản phẩm <span ng-if="!product.name" class="text-danger">*</span></label>
+                                                    <input type="text" ng-model="product.name" class="form-control" required>
+                                                    <p class="text-danger" ng-if="errors.name">{{errors.name}}</p>
                                                 </div>
-                                        </div>
-                                        <div id="box-wrist" class="col-sm-6">
-                                            <label for="id-label-wrist">Cổ tay</label>
-                                                <div class="mt-2 d-flex">
-                                                    <select style="width: 100%" id="id-label-wrist" data-placeholder="Chọn cổ tay">
-                                                        <option></option>
-                                                        <option ng-repeat="wrist in wrists" value="{{wrist.id}}">{{wrist.name}}</option>
-                                                    </select>
+                                                <div class="col-sm-6">
+                                                    <label>Đơn giá <span ng-if="!product.price" class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input type="number" ng-model="product.price" class="form-control" required>
+                                                        <span class="input-group-text" id="basic-addon2">VNĐ</span>
+                                                    </div>
+                                                    <p class="text-danger" ng-if="errors.price">{{errors.price}}</p>
                                                 </div>
+                                            </div>
+                                            <div class="form-group mt-3">
+                                                <label for="description" class="form-label">Mô tả</label>
+                                                <textarea class="form-control" id="description" rows="2"></textarea>
+                                            </div>
+                                            <div class="row p-0 mt-3">
+                                                <div id="box-collar" class="col-sm-6">
+                                                    <label for="id-label-collar">Cổ áo <span ng-if="!product.collar.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-label-collar" data-placeholder="Chọn cổ áo" >
+                                                                <option></option>
+                                                                <option ng-repeat="collar in collars" value="{{collar.id}}">{{collar.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-wrist" class="col-sm-6">
+                                                    <label for="id-label-wrist">Cổ tay <span ng-if="!product.wrist.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-label-wrist" data-placeholder="Chọn cổ tay">
+                                                                <option></option>
+                                                                <option ng-repeat="wrist in wrists" value="{{wrist.id}}">{{wrist.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div class="row p-0 mt-3">
+                                                <div id="box-material" class="col-sm-6">
+                                                    <label for="id-label-material">Chất liệu <span ng-if="!product.material.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-label-material" data-placeholder="Chọn chất liệu">
+                                                                <option></option>
+                                                                <option ng-repeat="material in materials" value="{{material.id}}">{{material.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-category" class="col-sm-6">
+                                                    <label for="id-label-category">Nhóm sản phẩm <span ng-if="!product.category.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-label-category" data-placeholder="Chọn nhóm sản phẩm">
+                                                                <option></option>
+                                                                <option ng-repeat="category in categories" value="{{category.id}}">{{category.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div id="box-supplier" class="row p-0 mt-3">
+                                                <label for="id-label-supplier">Nhà cung cấp <span ng-if="!product.supplier.id" class="text-danger">*</span></label>
+                                                <div class="mt-2 d-flex">
+                                                    <select style="width: 100%" id="id-label-supplier" data-placeholder="Chọn nhà cung cấp">
+                                                        <option></option>
+                                                        <option ng-repeat="supplier in suppliers" value="{{supplier.id}}">{{supplier.name}}</option>
+                                                    </select> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="product-detail" role="tabpanel" aria-labelledby="product-detail-tab">
+                                            <div class="row m-0">
+                                                <div id="box-size" class="col-sm-6">
+                                                    <label for="id-label-size">Size <span ng-if="sizeSelected.length == 0" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%;" id="id-label-size" multiple="multiple" data-placeholder="Chọn size">
+                                                                <option></option>
+                                                                <option ng-repeat="size in sizes" value="{{size.id}}">{{size.name}}</option>
+                                                              </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-color" class="col-sm-6">
+                                                    <label for="id-label-color">Màu sắc <span ng-if="colorSelected.length == 0" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%;" id="id-label-color" multiple="multiple" data-placeholder="Chọn màu sắc">
+                                                                <option></option>
+                                                                <option ng-repeat="color in colors" value="{{color.colorCode}}">{{color.name}}</option>
+                                                              </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div ng-repeat="color in colorSelected" class="row mt-2 p-0">
+                                                <div class="table-title position-relative d-flex align-items-center">
+                                                    <input type="color" class="form-control form-control-color" ng-value="color.colorCode" disabled />
+                                                    <h6 class="m-0 ms-3">Danh sách sản phẩm {{color.name}}
+                                                    </h6>
+                                                </div>
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                      <tr>
+                                                        <th scope="col">Size</th>
+                                                        <th scope="col">Số lượng</th>
+                                                        <th scope="col">Trạng thái</th>
+                                                        <th scope="col"></th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      <tr ng-repeat="item in color.productDetails">
+                                                        <td>{{item.size.name}}</td>
+                                                        <td class="w-25"> <input type="number" ng-model="item.quantity" ng-change="updateQuantity(item)" class="form-control w-50" ng-value="item.quantity" /> </td>
+                                                        <td class="w-50">
+                                                            <select class="form-select w-75" ng-model="item.status">
+                                                                <option ng-value="1">Hoạt động</option>
+                                                                <option ng-value="0">Ngừng hoạt động</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="w-25">
+                                                            <a style="cursor: pointer; color: #F44336;" ng-click="deleteSize(item, color)">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                                            </a>
+                                                        </td>
+                                                      </tr>
+                                                    </tbody>
+                                                  </table>
+                                                  <div>
+                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple custom-on-change="uploadFile">
+                                                  </div>
+                                                    <div ng-repeat="item in color.images" class="image_container position-relative">
+                                                        <img ng-src="{{item.path}}" alt="Image"> 
+                                                            <span class="position-absolute" ng-click="deleteImg(color, item)">&times;</span>
+                                                     </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="row m-0 mt-3">
-                                        <div id="box-material" class="col-sm-6">
-                                            <label for="id-label-material">Chất liệu</label>
-                                                <div class="mt-2 d-flex">
-                                                    <select style="width: 100%" id="id-label-material" data-placeholder="Chọn chất liệu">
-                                                        <option></option>
-                                                        <option ng-repeat="material in materials" value="{{material.id}}">{{material.name}}</option>
-                                                    </select>
-                                                </div>
-                                        </div>
-                                        <div id="box-category" class="col-sm-6">
-                                            <label for="id-label-category">Nhóm sản phẩm</label>
-                                                <div class="mt-2 d-flex">
-                                                    <select style="width: 100%" id="id-label-category" data-placeholder="Chọn nhóm sản phẩm">
-                                                        <option></option>
-                                                        <option ng-repeat="category in categories" value="{{category.id}}">{{category.name}}</option>
-                                                    </select>
-                                                </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-3">
-                                        <label for="id-label-supplier">Nhà cung cấp</label>
-                                        <div class="mt-2 d-flex">
-                                            <select style="width: 100%" id="id-label-supplier" data-placeholder="Chọn nhà cung cấp">
-                                                <option></option>
-                                                <option ng-repeat="supplier in suppliers" value="{{supplier.id}}">{{supplier.name}}</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                   
                                 </div>
+                               
                                 <div class="modal-footer">
                                     <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                                     <button type="submit" ng-disabled="productForm.$invalid" class="btn btn-success">Thêm</button>
@@ -197,7 +274,8 @@
                     </div>
                 </div>
                 <!----add-modal end--------->
-
+                
+              
                 <!----edit-modal start--------->
                 <div class="modal fade" tabindex="-1" id="editProductModal" role="dialog">
                     <div class="modal-dialog" role="document">
@@ -248,25 +326,25 @@
                     </div>
                 </div>
                 <!----delete-modal end--------->
- <!----update-status-modal start--------->
- <div class="modal fade" tabindex="-1" id="updateStatusModel" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Khôi phục trạng thái</h5>
-                <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Bạn có chắc muốn khôi phục trạng thái {{product.name}} không?</p>
-            </div>
-            <div class="modal-footer">
-                <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button ng-click="updateStatus()" type="button" class="btn btn-success">Khôi phục</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!----update-status-modal end--------->
+                <!----update-status-modal start--------->
+                <div class="modal fade" tabindex="-1" id="updateStatusModel" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Khôi phục trạng thái</h5>
+                                <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có chắc muốn khôi phục trạng thái {{product.name}} không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button ng-click="updateStatus()" type="button" class="btn btn-success">Khôi phục</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!----update-status-modal end--------->
             </div>
         </div>
     </div>

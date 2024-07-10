@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,11 @@ public class SizeServiceTHImpl implements SizeServiceTH {
         if (name == null || name.isEmpty())
             return repository.findAll(pageable);
         else return repository.findByNameContainingIgnoreCase(name,pageable);
+    }
+
+    @Override
+    public List<Size> findAllByStatus(Integer status) {
+        return repository.findAllByStatus(status);
     }
 
     @Override

@@ -1,4 +1,4 @@
-var app = angular.module("appAdmin", ["ngRoute"]);
+var app = angular.module("appAdmin", ["ngRoute", "angular.filter"]);
 app.config(function ($routeProvider, $locationProvider) {
   $locationProvider.hashPrefix("");
 
