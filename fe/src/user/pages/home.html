@@ -1,7 +1,7 @@
 
 
 
-<section style="margin-top: 82px;"  class="bg-light " ng-init="loadProductsByTotalQuantitySold();loadProductsByCreatedAt()">
+<section style="margin-top: 82px;"  class="bg-light " ng-init="loadProductsByTotalQuantitySold();loadProductsByCreatedAt();getAllVouchers();">
 
   
   <div class="search-container">
@@ -223,34 +223,51 @@
       </div>
   
   
-  
       <div style="padding: 46px;" class="row">
-  
-        <div class="col-md-3" ng-repeat="voucher in listVouchers" >
-          <div class="voucher-container">
+        <div style="margin-top: 24px;" class="col-md-3" ng-repeat="voucher in displayedVouchers">
+          <div class="voucher-container" ng-class="{'ongoing': voucher.status === 1, 'upcoming': voucher.status === 3}">
             <div class="voucher2-name">
-              <span >{{ voucher.name }}</span>
+              <span>{{ voucher.name }}</span>
             </div>
-          <div class="voucher-content">
-            <div class="col-4 ">
-              <div class="voucher2-code">
-                <h6>{{ voucher.code }}</h6>
-                <p>({{ voucher.quantity }})</p>
+            <div class="voucher-content">
+              <div class="col-4">
+                <div class="voucher2-code">
+                  <h6>{{ voucher.code }}</h6>
+                  <p>({{ voucher.quantity }})</p>
+                </div>
+              </div>
+              <div class="col-8">
+                <div class="voucher2-info">
+                  <p>
+                    Giảm 
+                    <span ng-if="voucher.discountType === 1">{{ voucher.value }}%</span>
+                    <span ng-if="voucher.discountType === 2">{{ voucher.value | number }} đ</span>
+                    cho đơn hàng {{ voucher.minimumTotalAmount | number }} đ
+                  </p>
+                  <p>Giảm tối đa {{ voucher.maximumReductionValue | number }} đ</p>
+                  <div class="date-info">
+                    <p>NBD: {{ voucher.startDate | date:'dd/MM/yyyy' }}</p>
+                    <p>HSD: {{ voucher.endDate | date:'dd/MM/yyyy' }}</p>
+                  </div>
+                </div>
               </div>
             </div>
-  
-            <div class="col-8">
-              <div class="voucher2-info">
-                  <p>Giảm {{ voucher.value | number}} đ cho đơn hàng {{ voucher.minimumTotalAmount |
-                    number }} đ</p>
-                  <p>HSD: {{ voucher.endDate | date:'dd/MM/yyyy' }}</p>
-                </div>
+            <div class="voucher-status" ng-if="voucher.status === 1">
+              Đang diễn ra
+            </div>
+            <div class="voucher-status" ng-if="voucher.status === 3">
+              Sắp diễn ra
             </div>
           </div>
         </div>
-  
+        <div class="col-md-12 text-center" ng-if="!showAllVouchers">
+          <button class="btn btn-primary" ng-click="viewMoreVouchers()">Xem thêm</button>
         </div>
       </div>
+      
+      
+      
+      
   
       <p class="mb-0">({{product.totalQuantity}})</p>
   

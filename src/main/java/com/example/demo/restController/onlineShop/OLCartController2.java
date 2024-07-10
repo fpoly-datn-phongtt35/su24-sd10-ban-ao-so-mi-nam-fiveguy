@@ -104,8 +104,6 @@ public class OLCartController2 {
             if (cart == null) {
                 cart = new Cart();
                 cart.setCustomer(customer.get());
-//                cart.setCreatedAt(new Date());
-//                cart.setUpdatedAt(new Date());
                 cart.setStatus(1);
                 cart = olCartService.save(cart);
             }

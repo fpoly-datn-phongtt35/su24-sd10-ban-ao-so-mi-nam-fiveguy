@@ -254,11 +254,11 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     $scope.saveSale = function() {
         if ($scope.saleForm.$valid && $scope.isImageUploaded) {
             var saleData = $scope.saleDetail;
-    
-            if ($scope.checkSaleCode(saleData.code)) {
-                $scope.showErrorNotification("Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.");
-                return;
-            }
+            saleData.code = 'SALE' + Number(String(Date.now()).slice(-6));
+            // if ($scope.checkSaleCode(saleData.code)) {
+            //     $scope.showErrorNotification("Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.");
+            //     return;
+            // }
     
             $http.post(baseUrl, saleData)
                 .then(function(response) {

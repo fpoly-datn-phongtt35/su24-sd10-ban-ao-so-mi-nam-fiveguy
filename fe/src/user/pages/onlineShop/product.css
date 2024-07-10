@@ -471,3 +471,168 @@ font-weight: 400;
   pointer-events: none;
 }
 
+.voucher-content {
+  display: flex;
+}
+
+.voucher2-code {
+  background-color: #001f5d; /* Màu nền xanh */
+  padding: 5px 5px;
+  color: white;
+  margin: 4px;
+}
+
+.voucher-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 15px;
+  position: relative;
+  background: #fff;
+  filter: drop-shadow(0px 0 3px rgba(0,0,0,.15));
+}
+
+.voucher2-info {
+  padding-left: 15px;
+}
+
+.voucher2-name {
+  display: flex;
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  height: 100%; /* Để chiều cao của nó được căn giữa */
+}
+
+.voucher2-name span {
+  color: #001f5d;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.date-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.date-info p {
+  margin: 0;
+}
+
+/* CSS cho trạng thái */
+.ongoing {
+  /* border: 2px solid green; */
+  position: relative;
+}
+
+.upcoming {
+  /* border: 2px solid orange; */
+  position: relative;
+}
+
+.voucher-status {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.ongoing .voucher-status {
+  color: green;
+  border: 1px solid green;
+}
+
+.upcoming .voucher-status {
+  color: orange;
+  border: 1px solid orange;
+}
+
+.modal-dialogVoucher {
+  max-width: 600px;
+  margin: 30px auto;
+}
+
+.modal-content {
+  padding: 15px;
+}
+
+.voucher-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.voucher-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background-color: #fff;
+  position: relative;
+}
+
+.voucher-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.voucher-left {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.voucher-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #dcdcdc;
+  color: #4caf50;
+  font-size: 20px;
+  text-align: center;
+}
+
+.voucher-left p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.voucher-left h5 {
+  font-size: 16px;
+  color: #001f5d;
+  margin: 10px 0 5px;
+}
+
+.selected-voucher .voucher-right {
+  border-color: #4caf50;
+  background-color: #e8f5e9;
+}
+
+.addmark {
+  color: #dcdcdc;
+}
+
+.modal-header h5 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.modal-footer {
+  text-align: center;
+}
+
+.modal-footer .btn {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+}
+

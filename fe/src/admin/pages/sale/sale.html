@@ -253,7 +253,7 @@
                                         Tên đợt giảm giá là bắt buộc.
                                     </div>
                                 </div>
-                                <div class="form-group" ng-class="{'has-error': (saleForm.saleCode.$touched || saleForm.$submitted) && (saleForm.saleCode.$error.required || checkSaleCode(saleDetail.code))}">
+                                <!-- <div class="form-group" ng-class="{'has-error': (saleForm.saleCode.$touched || saleForm.$submitted) && (saleForm.saleCode.$error.required || checkSaleCode(saleDetail.code))}">
                                     <label for="saleCode" class="form-label">Mã giảm giá</label>
                                     <input type="text" class="form-control" id="saleCode" name="saleCode" ng-model="saleDetail.code" required>
                                     <div class="text-danger" ng-show="(saleForm.saleCode.$touched || saleForm.$submitted) && saleForm.saleCode.$error.required">
@@ -262,7 +262,7 @@
                                     <div class="text-danger" ng-show="(saleForm.saleCode.$touched || saleForm.$submitted) && checkSaleCode(saleDetail.code)">
                                         Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="form-group" ng-class="{'has-error': (saleForm.saleDescription.$touched || saleForm.$submitted) && saleForm.saleDescription.$invalid}">
                                     <label for="saleDescription" class="form-label">Mô tả</label>
                                     <textarea class="form-control" id="saleDescription" name="saleDescription" rows="3" ng-model="saleDetail.describe" required></textarea>

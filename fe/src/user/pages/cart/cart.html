@@ -1,7 +1,7 @@
 
 
 <!-- cart + summary -->
-<section style="    margin-top: 82px;"  class="bg-light "  ng-init="loadCart();loadPaymentMethod()" >
+<section style="    margin-top: 82px;"  class="bg-light "  ng-init="loadCart();loadPaymentMethod();">
  
     <div class="container-fluid">
       <div style="padding: 46px;;" class="row">
@@ -215,64 +215,46 @@
               <div class="discount">
                 <h5>Mã giảm giá / Quà tặng</h5>
                 <!-- Modal -->
-                <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel"
-                  aria-hidden="true">
+                <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialogVoucher" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="voucherModalLabel">Chọn giảm giá</h5>
-                        <button type="button" class="btn btn-light shadow-0" ng-click="back()">
-                          <i class="fa-solid fa-xmark"></i>
-                      </button>
+                        <h5 class="modal-title" id="voucherModalLabel">Mã ưu đãi</h5>
                       </div>
                       <div class="modal-body">
-                        <!-- Nội dung của form -->
-                        <!-- <div class="input-group mt-3 mb-4">
-                          <input type="text" class="form-control border" ng-model="searchCode" placeholder="Mã" />
-                          <button type="button" class="btn btn-primary shadow-0" ng-click="searchByCode()">
-                              <i class="fas fa-search"></i>
-                          </button>
-                      </div> -->
-                        <!-- Danh sách voucher -->
                         <div class="voucher-list mt-3 mb-4">
-                          <div  class="voucher-item row" ng-repeat="voucher in listVouchers"
-                            ng-click="selectVoucher(voucher)" ng-class="{ 'selected-voucher': voucher.selected }">
-                            <div class="col-4 ">
-                              <div class="voucher-name">
+                          <div class="voucher-item" ng-repeat="voucher in customerVouchers" ng-click="selectVoucher(voucher)" ng-class="{ 'selected-voucher': voucher.selected }">
+                            <div class="voucher-content">
+                              <div class="voucher-left">
                                 <h5>{{ voucher.code }}</h5>
-                                <p>
-                                  <span ng-if="voucher.quantity > 0">({{ voucher.quantity }})</span>
-                                  <span ng-if="voucher.quantity === 0" class="red-text">(Hết)</span>
+                                <p>Giảm {{ voucher.value | number}}{{ voucher.discountType === 2 ? ' đ' : ' %' }} cho đơn từ {{ voucher.minimumTotalAmount | number }} đ
+                                  <br/>Tối đa {{ voucher.maximumReductionValue | number }} đ
                                 </p>
-                                
+                                <p>HSD: {{ voucher.endDate | date:'dd-MM-yyyy HH:mm' }}</p>
                               </div>
-                              <div class="voucher-details">
-                                <p>HSD: {{ voucher.endDate | date:'dd/MM/yyyy' }}</p>
-                              </div>
-                            </div>
-                            <div class="col-8">
-                              <div class="voucher-info">
-                                <div class="voucher-value">
-                                  <p>Giảm {{ voucher.value | number}}{{ voucher.valueType === 1 ? ' đ' : ' %' }} cho đơn hàng {{ voucher.minimumTotalAmount | number }} đ</p>
-  
-                                </div>
-  
+                              <div class="voucher-right">
+                                <span ng-if="voucher.selected" class="checkmark">&#10003;</span>
+                                <span ng-if="!voucher.selected" class="addmark">+</span>
                               </div>
                             </div>
                           </div>
                         </div>
-  
                       </div>
-              
-  
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Tiếp tục</button>
+                      </div>
                     </div>
                   </div>
                 </div>
+                
+                
+                
+                
   
                 <hr />
                 <i class="fa-solid fa-tags"></i>
   
-                <a href="#!cart" ng-click="openVoucherModal()">Chọn hoặc nhập mã</a>
+                <a  ng-click="openVoucherModal()">Chọn mã giảm giá</a>
                 <p style="margin-top: 8px;" ng-style="voucherMessage === 'Mã giảm giá đã được áp dụng' ? {'color': 'green'} : {'color': 'red'}">{{ voucherMessage }}</p>
   
               </div>

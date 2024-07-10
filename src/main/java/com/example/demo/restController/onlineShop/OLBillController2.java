@@ -183,6 +183,7 @@ public class OLBillController2 {
              else if (codePayment.equals(10)) {
                 billData.setStatus(1);
                  billData.setCustomer(customer.get());
+//                billData.setCreatedAt(new Date());
                Bill bill = olBillService.save(billData);
                olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1);
 //                BillHistory billHistory = new BillHistory();

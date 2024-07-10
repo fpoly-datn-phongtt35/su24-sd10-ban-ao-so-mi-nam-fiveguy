@@ -32,7 +32,7 @@
                             </div>
                         </div>
                         
-                        <div class="mb-3" ng-class="{'has-error': (saleFormUpdate.saleCode.$touched || saleFormUpdate.$submitted) && (saleFormUpdate.saleCode.$error.required || checkSaleCodeUpdate(saleDetail.code))}">
+                        <!-- <div class="mb-3" ng-class="{'has-error': (saleFormUpdate.saleCode.$touched || saleFormUpdate.$submitted) && (saleFormUpdate.saleCode.$error.required || checkSaleCodeUpdate(saleDetail.code))}">
                             <label for="saleCode" class="form-label">Mã giảm giá</label>
                             <input type="text" class="form-control" id="saleCode" name="saleCode" ng-model="saleDetail.code" required>
                             <div class="text-danger" ng-show="(saleFormUpdate.saleCode.$touched || saleFormUpdate.$submitted) && saleFormUpdate.saleCode.$error.required">
@@ -41,7 +41,7 @@
                             <div class="text-danger" ng-show="(saleFormUpdate.saleCode.$touched || saleFormUpdate.$submitted) && checkSaleCodeUpdate(saleDetail.code)">
                                 Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.
                             </div>
-                        </div>
+                        </div> -->
                         
                         <div class="mb-3" ng-class="{'has-error': (saleFormUpdate.saleDescription.$touched || saleFormUpdate.$submitted) && saleFormUpdate.saleDescription.$invalid}">
                             <label for="saleDescription" class="form-label">Mô tả</label>

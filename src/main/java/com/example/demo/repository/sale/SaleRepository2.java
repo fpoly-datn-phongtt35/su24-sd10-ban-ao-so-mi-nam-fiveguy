@@ -44,7 +44,7 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    JOIN Product p ON pd.product.id = p.id " +
             "    JOIN Bill b ON bd.bill.id = b.id " +
             "WHERE " +
-            "    s.id = :saleId AND b.status = 1 " +
+            "    s.id = :saleId AND b.status = 5 " +
             "GROUP BY " +
             "    s.id")
     SaleSummaryResponse findSaleSummaryById(@Param("saleId") Long saleId);
@@ -69,7 +69,7 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    JOIN Customer c ON b.customer.id = c.id " +
             "    JOIN Account a ON c.account.id = a.id " +
             "WHERE " +
-            "    s.id = :saleId AND b.status = 1 AND bd.promotionalPrice > 0 " +
+            "    s.id = :saleId AND b.status = 5 AND bd.promotionalPrice > 0 " +
             "GROUP BY " +
             "    s.id, c.id, c.fullName, a.phoneNumber, a.email")
     List<SaleDetailResponse> findSaleDetailsById(@Param("saleId") Long saleId);
@@ -93,7 +93,7 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    JOIN Customer c ON b.customer.id = c.id " +
             "    JOIN Account a ON c.account.id = a.id " +
             "WHERE " +
-            "    s.id = :saleId AND b.status = 4 AND c.id = :customerId " +
+            "    s.id = :saleId AND b.status = 5 AND c.id = :customerId " +
             "GROUP BY " +
             "    p.name, bd.price, bd.promotionalPrice " +
             "ORDER BY " +
