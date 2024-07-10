@@ -1,4 +1,6 @@
 
+
+
 <!-- Dashboard -->
 <div class="mx-5 mb-4 mt-4"> 
     <div class="row">
@@ -142,26 +144,27 @@
                                     <div class="card-body">
                                         <p class="card-text">Số lần sử dụng giảm giá: <strong>{{ summary.totalProductsSold }}</strong></p>
                                         <p class="card-text">Doanh số tương ứng: <strong>{{ formatCurrency(summary.totalRevenue) }} VNĐ</strong></p>
-                                        <p class="card-text">Lợi nhuận sau giảm giá: <strong>{{ formatCurrency(summary.totalProfit) }} VNĐ</strong></p>
-                                        <p class="card-text">Tỷ lệ lợi nhuận: <strong>{{ summary.profitMargin.toFixed(2) }}%</strong></p>
+                                        <!-- <p class="card-text">Lợi nhuận sau giảm giá: <strong>{{ formatCurrency(summary.totalProfit) }} VNĐ</strong></p>
+                                        <p class="card-text">Tỷ lệ lợi nhuận: <strong>{{ summary.profitMargin.toFixed(2) }}%</strong></p> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
+                            
                             <div class="col-12">
                                 <h4 class="text-center mb-4">Chi Tiết Số Lượng Sản Phẩm Đã Mua Theo Khách Hàng</h4>
                                 <div class="table-responsive">
-                                    <table class="table table-bordered">
+                                    <table class="table table-bordered table-customer-sale">
                                         <thead>
-                                            <tr>
+                                            <tr style="white-space: nowrap;">
                                                 <th>Khách hàng</th>
                                                 <th>Số điện thoại & Email</th>
-                                                <th>Số lượng sản phẩm đã mua</th>
-                                                <th>Tổng tiền trước khi giảm giá</th>
-                                                <th>Tổng tiền sau khi giảm giá</th>
-                                                <th>Tổng giá trị giảm giá</th>
-                                                <th>Chi tiết sản phẩm</th> <!-- Cột mới để thêm nút "Xem chi tiết" -->
+                                                <th>Số lượng</th>
+                                                <!-- <th>Tổng tiền trước khi giảm giá</th> -->
+                                                <th>Tổng giá trị giảm</th>
+                                                <th>Tổng tiền sau khi giảm</th>
+                                               
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -169,53 +172,57 @@
                                                 <td>{{ staticCustomer.customerName }}</td>
                                                 <td>{{ staticCustomer.customerPhone }} <br> {{ staticCustomer.customerEmail }}</td>
                                                 <td>{{ staticCustomer.numberOfPurchases }}</td>
-                                                <td>{{ formatCurrency(staticCustomer.totalAmountBeforeDiscount) }} VNĐ</td>
-                                                <td>{{ formatCurrency(staticCustomer.totalAmountAfterDiscount) }} VNĐ</td>
+                                                <!-- <td>{{ formatCurrency(staticCustomer.totalAmountBeforeDiscount) }} VNĐ</td> -->
+                                        
                                                 <td>{{ formatCurrency(staticCustomer.totalDiscountAmount) }} VNĐ</td>
+                                                <td>{{ formatCurrency(staticCustomer.totalAmountAfterDiscount) }} VNĐ</td>
                                                 <td>
                                                     <button class="btn btn-primary" ng-click="showCustomerDetails(staticCustomer, $index)">
-                                                        Xem chi tiết
+                                                        Xem
                                                     </button>
                                                 </td>
                                             </tr>
+                                            <tbody style="margin-top: 10px;" ng-if="selectedCustomerProducts.length > 0">
+                                                <tr style="white-space: nowrap;">
+                                                    <th>Sản phẩm</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Giá gốc</th>
+                                                    <th>Giá giảm</th>
+                                                    <th>Tổng tiền sau khi giảm</th>
+                                                </tr>
+                                            </tbody>
                                        <tr ng-repeat-start="productDetail in selectedCustomerProducts" ng-if="selectedCustomerProducts.length > 0">
                                         <td colspan="7">
                                             <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Sản phẩm</th>
-                                                        <th>Số lượng</th>
-                                                        <th>Giá gốc</th>
-                                                        <th>Giá giảm</th>
-                                                        <th>Tổng tiền trước khi giảm giá</th>
-                                                        <th>Tổng tiền sau khi giảm giá</th>
-                                                    </tr>
-                                                </thead>
+                                            
                                                 <tbody>
                                                     <tr>
                                                         <td>{{ productDetail.productName }}</td>
                                                         <td>{{ productDetail.totalQuantityBought }}</td>
                                                         <td>{{formatCurrency (productDetail.originalPrice) }} VNĐ</td>
                                                         <td>{{ formatCurrency(productDetail.promotionalPrice) }} VNĐ</td>
-                                                        <td>{{ formatCurrency(productDetail.totalAmountBeforeDiscount) }} VNĐ</td>
-                                                        <td>{{ formatCurrency(productDetail.totalAmountAfterDiscount) }} VNĐ</td>
+                                                        <!-- <td>{{ formatCurrency(productDetail.totalAmountBeforeDiscount) }} VNĐ</td> -->
+                                                        <td style="font-size: 14px; font-weight: bold;">
+                                                            {{ formatCurrency(productDetail.totalAmountAfterDiscount) }} VNĐ
+                                                        </td>
+                                                        
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </td>
-                    </tr>
+                                        </tr>
                                             <tr ng-repeat-end ng-if="$index == selectedCustomerIndex">
-                                                <td colspan="7"></td>
+                                                <!-- <td colspan="7"></td> -->
                                             </tr>
-                                            <tr>
+                                            <!-- <tr>
                                                 <td><strong>Tổng cộng</strong></td>
                                                 <td></td>
                                                 <td><strong>{{ getTotalNumberOfPurchases() }}</strong></td>
                                                 <td><strong>{{ formatCurrency(getTotalAmountBeforeDiscount()) }} VNĐ</strong></td>
                                                 <td><strong>{{ formatCurrency(getTotalAmountAfterDiscount()) }} VNĐ</strong></td>
                                                 <td><strong>{{ formatCurrency(getTotalDiscountAmount()) }} VNĐ</strong></td>
-                                                <td></td> <!-- Cột trống để căn chỉnh -->
-                                            </tr>
+                                                <td></td> 
+                                            </tr> -->
                                         </tbody>
                                     </table>
                                 </div>

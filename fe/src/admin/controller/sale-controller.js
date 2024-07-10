@@ -944,41 +944,41 @@ $scope.addAllProductSales = function() {
         $('#staticSale').modal('show');
     };
 
-    $scope.getTotalNumberOfPurchases = function() {
-        if (!Array.isArray($scope.staticCustomers)) {
-            return 0;
-        }
-        return $scope.staticCustomers.reduce(function(total, customer) {
-            return total + customer.numberOfPurchases;
-        }, 0);
-    };
+    // $scope.getTotalNumberOfPurchases = function() {
+    //     if (!Array.isArray($scope.staticCustomers)) {
+    //         return 0;
+    //     }
+    //     return $scope.staticCustomers.reduce(function(total, customer) {
+    //         return total + customer.numberOfPurchases;
+    //     }, 0);
+    // };
     
-    $scope.getTotalAmountBeforeDiscount = function() {
-        if (!Array.isArray($scope.staticCustomers)) {
-            return 0;
-        }
-        return $scope.staticCustomers.reduce(function(total, customer) {
-            return total + customer.totalAmountBeforeDiscount;
-        }, 0);
-    };
+    // $scope.getTotalAmountBeforeDiscount = function() {
+    //     if (!Array.isArray($scope.staticCustomers)) {
+    //         return 0;
+    //     }
+    //     return $scope.staticCustomers.reduce(function(total, customer) {
+    //         return total + customer.totalAmountBeforeDiscount;
+    //     }, 0);
+    // };
     
-    $scope.getTotalAmountAfterDiscount = function() {
-        if (!Array.isArray($scope.staticCustomers)) {
-            return 0;
-        }
-        return $scope.staticCustomers.reduce(function(total, customer) {
-            return total + customer.totalAmountAfterDiscount;
-        }, 0);
-    };
+    // $scope.getTotalAmountAfterDiscount = function() {
+    //     if (!Array.isArray($scope.staticCustomers)) {
+    //         return 0;
+    //     }
+    //     return $scope.staticCustomers.reduce(function(total, customer) {
+    //         return total + customer.totalAmountAfterDiscount;
+    //     }, 0);
+    // };
     
-    $scope.getTotalDiscountAmount = function() {
-        if (!Array.isArray($scope.staticCustomers)) {
-            return 0;
-        }
-        return $scope.staticCustomers.reduce(function(total, customer) {
-            return total + customer.totalDiscountAmount;
-        }, 0);
-    };
+    // $scope.getTotalDiscountAmount = function() {
+    //     if (!Array.isArray($scope.staticCustomers)) {
+    //         return 0;
+    //     }
+    //     return $scope.staticCustomers.reduce(function(total, customer) {
+    //         return total + customer.totalDiscountAmount;
+    //     }, 0);
+    // };
     
     
 
