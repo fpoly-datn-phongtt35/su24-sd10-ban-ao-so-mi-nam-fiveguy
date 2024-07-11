@@ -27,6 +27,9 @@ public class BillHistory {
     @Column(name = "Type")
     private int type;
 
+    @Column(name = "Reason")
+    private int reason;
+
     @Column(name = "CreatedAt")
     private Date createdAt;
 
