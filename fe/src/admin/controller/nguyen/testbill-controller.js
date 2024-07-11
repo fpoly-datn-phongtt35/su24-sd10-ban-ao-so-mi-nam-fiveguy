@@ -75,12 +75,14 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
 
         let description = $scope.billHistoryUpdate.description || "";
 
-        let reasonUpdate = 0;
+        let reasonUpdate = {
+            value: 0
+        };
         // Add selected reasons to the description
         $scope.reasonSuggestions.forEach(function (reason) {
             if (reason.checked) {
                 description += reason.text + ", ";
-                reasonUpdate = reason.value;
+                reasonUpdate = reason;
             }
         });
 
@@ -109,20 +111,26 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
         // }
 
         let statusUpdate = $scope.nextStatus
-        if ([3, 10].includes($scope.currentStatus) && [7, 8].includes($scope.nextStatus) && [11].includes(reasonUpdate)) {
-            statusUpdate = 81;
-        }
-        if ([3, 10].includes($scope.currentStatus) && [7, 8].includes($scope.nextStatus) && [12, 4].includes(reasonUpdate)) {
-            statusUpdate = 8;
+        if ([3, 10].includes($scope.currentStatus) && [7, 8].includes($scope.nextStatus)) {
+            if([9, 10].includes(reasonUpdate.value)){
+                statusUpdate = 7
+            }
+            if([11].includes(reasonUpdate.value)){
+                statusUpdate = 81
+            }
+            if([8, 12, 4].includes(reasonUpdate.value)){
+                statusUpdate= 8
+            }
         }
 
         let bill = angular.copy($scope.billResponse);
-        bill.reason = reasonUpdate
+        bill.reason = reasonUpdate.value
         bill.status = statusUpdate;
 
 
         let billHistory = {
             billId: $scope.idBill,
+            reason: reasonUpdate.value,
             status: statusUpdate,
             description: $scope.billHistoryUpdate.description,
         };
@@ -178,35 +186,19 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
     };
 
     $scope.reasonsList = {
-        1: { text: "Khách yêu cầu hủy", value: 1 },
-        2: { text: "Khách không phản hồi", value: 2 },
-        3: { text: "Sản phẩm hết hàng", value: 3 },
-        4: { text: "Sản phẩm bị lỗi", value: 4 },
-        5: { text: "Lỗi hệ thống", value: 5 },
-        6: { text: "Không liên hệ được nhân viên giao hàng", value: 6 },
-        7: { text: "Đơn vị giao hàng báo hủy", value: 7 },
-        8: { text: "Khách không nhận hàng", value: 8 },
-        9: { text: "Không liên hệ được khách", value: 9 },
-        10: { text: "Khách hẹn giao lại", value: 10 },
-        11: { text: "Mất hàng", value: 11 },
-        12: { text: "Thiếu hàng", value: 12 },
-        13: { text: "Sai địa chỉ giao hàng", value: 13 }
-    };
-    $scope.transitionReasons1 = {
-        1: { // Chờ xác nhận
-            5: [1],
-            6: [1, 2, 3, 4, 5]
-        },
-        2: { // Chờ vận chuyển
-            5: [1],
-            6: [2, 6, 7, 4, 5]
-        },
-        3: { // Đang giao
-            101: [8, 9, 10, 11, 12, 4]
-        },
-        10: { // Đang giao lại
-            108: [8, 9, 11, 12, 4]
-        },
+        1:  { text: "Khách yêu cầu hủy",                value: 1,  status: 0,       shortenText: "" },
+        2:  { text: "Khách không phản hồi",             value: 2,  status: 0,       shortenText: "" },
+        3:  { text: "Sản phẩm hết hàng",                value: 3,  status: 0,       shortenText: "" },
+        4:  { text: "Sản phẩm bị lỗi",                  value: 4,  status: 6,       shortenText: "Lỗi hàng" },
+        5:  { text: "Lỗi hệ thống",                     value: 5,  status: 0,       shortenText: "" },
+        6:  { text: "Không liên hệ được nhân viên giao hàng", value: 6, status: 0 },
+        7:  { text: "Đơn vị giao hàng báo hủy",         value: 7,  status: 0,       shortenText: "" },
+        8:  { text: "Khách không nhận hàng",            value: 8,  status: 1,       shortenText: "Không nhận" },
+        9:  { text: "Không liên hệ được khách",         value: 9,  status: 2,       shortenText: "Không liên hệ" },
+        10: { text: "Khách hẹn giao lại",               value: 10, status: 3,       shortenText: "Hẹn giao lại" },
+        11: { text: "Mất hàng",                         value: 11, status: 4,       shortenText: "Mất hàng" },
+        12: { text: "Thiếu hàng",                       value: 12, status: 5,       shortenText: "Thiếu hàng" },
+        13: { text: "Sai địa chỉ giao hàng",            value: 13, status: 0,       shortenText: "" }
     };
 
     $scope.transitionReasons = {
@@ -232,9 +224,25 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
             6: [11]
         }
     };
+    $scope.transitionReasons = {
+        1: { // Chờ xác nhận
+            5: [1],
+            6: [1, 2, 3, 4, 5]
+        },
+        2: { // Chờ vận chuyển
+            5: [1],
+            6: [2, 6, 7, 4, 5]
+        },
+        3: { // Đang giao
+            7: [8, 9, 10, 11, 12, 4]
+        },
+        10: { // Đang giao lại
+            8: [8, 9, 11, 12, 4]
+        },
+    };
 
     $scope.updateStatusSteps = function () {
-        $scope.possibleSteps = {
+        $scope.possibleSteps1 = {
             1: { title: "Chờ xác nhận", icon: "schedule", status: 1 },
             2: { title: "Chờ vận chuyển", icon: "local_shipping", status: 2 },
             3: { title: "Đang giao", icon: "directions_car", status: 3 },
@@ -242,11 +250,41 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
             5: { title: "Khách hủy", icon: "cancel", status: 5 },
             6: { title: "Đã hủy", icon: "cancel", status: 6 },
             7: { title: "Thất bại", icon: "cancel", status: 7 },
-            8: { title: "Thất bại(Lại, lỗi)", icon: "cancel", status: 8 },
-            81: { title: "Thất bại(Mất)", icon: "cancel", status: 81 },
+            8: { title: "Thất bại", icon: "cancel", status: 8 },
+            81: { title: "Thất bại", icon: "cancel", status: 81 },
             9: { title: "Chờ giao lại", icon: "local_shipping", status: 9 },
             10: { title: "Đang giao lại", icon: "directions_car", status: 10 },
             11: { title: "Hoàn hàng", icon: "warehouse", status: 11 }
+        };
+
+        $scope.possibleSteps = {
+            1:  { title: "Chờ xác nhận",     icon: "schedule",             status: 1  },
+            2:  { title: "Chờ vận chuyển",   icon: "local_shipping",       status: 2  },
+            3:  { title: "Đang giao",        icon: "directions_car",       status: 3  },
+            4:  { title: "Thành công",       icon: "check_circle",         status: 4  },
+            5:  { title: "Khách hủy",        icon: "person_cancel", status: 5  },
+            6:  { title: "Đã hủy",           icon: "block",                status: 6  },
+            7:  { title: "Thất bại",         icon: "cancel",                status: 7  },
+            8:  { title: "Thất bại", icon: "cancel",   status: 8  },
+            81: { title: "Thất bại",   icon: "cancel",              status: 81 },
+            9:  { title: "Chờ giao lại",     icon: "autorenew",            status: 9  },
+            10: { title: "Đang giao lại",    icon: "directions_car",               status: 10 },
+            11: { title: "Hoàn hàng",        icon: "warehouse",            status: 11 }
+        };
+
+        $scope.possibleSteps2 = {
+            1:  { title: "Chờ xác nhận",      icon: "schedule",          status: 1  },
+            2:  { title: "Chờ vận chuyển",    icon: "local_shipping",    status: 2  },
+            3:  { title: "Đang giao",         icon: "directions_car",    status: 3  },
+            4:  { title: "Thành công",        icon: "home",              status: 4  },
+            5:  { title: "Khách hủy",         icon: "cancel",            status: 5  },
+            6:  { title: "Đã hủy",            icon: "cancel",            status: 6  },
+            7:  { title: "Thất bại",          icon: "cancel",            status: 7  },
+            8:  { title: "Thất bại",          icon: "cancel",            status: 8  },
+            81: { title: "Thất bại",          icon: "cancel",            status: 81 },
+            9:  { title: "Chờ giao lại",      icon: "local_shipping",    status: 9  },
+            10: { title: "Đang giao lại",     icon: "directions_car",    status: 10 },
+            11: { title: "Hoàn hàng",         icon: "warehouse",         status: 11 }
         };
 
         $scope.possibleSteps1 = {
@@ -287,20 +325,15 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
         $scope.deliveryFlow1 = {
             1: [2, 5, 6], // Chờ xác nhận -> Chờ vận chuyển hoặc khách hủy hoặc đã hủy
             2: [3, 5, 6], // Chờ vận chuyển -> Đang giao hoặc khách hủy hoặc đã hủy
-            3: [4, 101, 102, 103, 104, 105, 106, 107], // Đang giao -> Thành công hoặc Thất bại 101 - 107
+            3: [4, 7, 8], // Đang giao -> Thành công hoặc Thất bại 
             4: [], // Thành công (kết thúc)
             5: [], // Khách hủy (kết thúc)
             6: [], // Đã hủy (kết thúc)
-            101: [9, 11], // giao lại, hoàn
-            102: [9, 11], // hoàn
-            103: [6], // hủy
-            104: [11], // hoàn
-            105: [11], // hoàn
-            106: [11], // hoàn
-            107: [9, 11], // giao lại, hoàn
-            108: [11], // hoàn
+            7: [9, 11], // Chờ giao, hoàn
+            8: [11], // hoàn
+            81: [6], // Hủy
             9: [10], // Chờ giao lại -> Đang giao lại
-            10: [4, 103, 104, 105, 106, 107, 108], // Đang giao lại -> Thành công hoặc Thất bại (103, 104, 105, 106, 107, 108)
+            10: [4, 8], // Đang giao lại -> Thành công hoặc Thất bại (103, 104, 105, 106, 107, 108)
             11: [6], // Hoàn hàng -> Đã hủy
         };
 
@@ -310,6 +343,7 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
             let step = angular.copy($scope.possibleSteps[history.status]);
             if (step && history.type == 1) {
                 step.time = history.createdAt;
+                step.reason = history.reason;
                 $scope.steps.push(step);
             }
         });

@@ -21,7 +21,9 @@
                                 <span class="material-icons statuss-{{step.status}}">{{ step.icon }}</span>
                             </div>
                             <div class="step-title">{{ step.title }}</div>
-                            <div class="step-title fs-6" style="margin-top: -8px;">{{ step.status }}</div>
+                            <!-- <div class="step-title fs-6" style="margin-top: -8px;">{{ step.status }}</div> -->
+                            <div class="step-title" style="margin-top: -5px; font-size: 15px;">{{ step.reason == 0 ? "-"
+                                : reasonsList[step.reason].shortenText }}</div>
                             <div class="step-desc" style="margin-bottom: -7px;">{{ step.time | date:'HH : mm : ss' }}
                             </div>
                             <div class="step-desc">{{ step.time | date:'dd-MM-yyyy' }}</div>
@@ -99,11 +101,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3" ng-if="[1, 2, 3, 4, 10, 11].includes(nextStatus)">
-                            <!-- <label for="description" ng-if="[5, 6, 7, 8].includes(nextStatus)" class="form-label">Lý do</label> -->
+                        <!-- <div class="mb-3" ng-if="[1, 2, 3, 4, 10, 11].includes(nextStatus)">
                             <label for="description" class="form-label">Ghi chú</label>
                             <textarea class="form-control" id="description" ng-model="billHistoryUpdate.description"
                                 rows="3"></textarea>
+                        </div> -->
+                        <div class="mb-3" ng-if="reasonSuggestions.length <= 0">
+                            <label for="description" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="description" ng-model="billHistoryUpdate.description"
+                                ng-required="reasonSuggestions.length <= 0" rows="3"></textarea>
                         </div>
                         <div ng-if="reasonSuggestions.length > 0">
                             <label for="suggestions" class="form-label">Lý do</label>
@@ -163,7 +169,8 @@
                     <tbody>
                         <tr ng-repeat="bh in listBillHistory">
                             <th scope="row">{{$index + 1}}</th>
-                            <td>{{getStatusTitle(bh.status)}}</td>
+                            <td><i class="material-icons">{{ possibleSteps[bh.status].icon }}</i> 
+                                {{getStatusTitle(bh.status)}}</td>
                             <td class="col-1 text-center">{{bh.createdAt | date : "dd/MM/yyyy HH:mm:ss"}}</td>
                             <td>{{bh.createdBy}}</td>
                             <td class="col-4" style="font-size: 14px;">{{bh.description}}</td>
