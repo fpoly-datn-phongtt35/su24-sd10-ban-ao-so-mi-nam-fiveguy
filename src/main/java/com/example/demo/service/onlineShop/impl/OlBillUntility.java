@@ -78,7 +78,7 @@ public class OlBillUntility {
     public boolean authenticationCheckVnPay(String orderId,HttpServletRequest req)throws Exception {
         try {
 
-            System.out.println(req);
+//            System.out.println(req);
 
             String vnp_RequestId = ConfigVNPay.getRandomNumber(8);
             String vnp_Version = "2.1.0";
@@ -213,7 +213,7 @@ public static String encodeId(long id) {
                 Bill bill = olBillService.findById(Id);
                 int initialStatus = bill.getStatus(); // Lưu trạng thái ban đầu
 
-                if (initialStatus == 10) {
+                if (initialStatus == 100) {
                     // Nếu trạng thái không bị thay đổi
                     if (initialStatus == bill.getStatus()) {
                         if (bill.getPaymentMethod().getName().equals("MoMo")) {

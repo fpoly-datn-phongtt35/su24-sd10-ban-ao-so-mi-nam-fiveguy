@@ -2,6 +2,7 @@ package com.example.demo.service.onlineShop.impl;
 
 import com.example.demo.entity.*;
 import com.example.demo.model.response.onlineShop.OlBillDTO;
+import com.example.demo.repository.common.OLVoucherRepository2;
 import com.example.demo.repository.onlineShop.OLBillRepository2;
 import com.example.demo.service.onlineShop.OLBillDetailService2;
 import com.example.demo.service.onlineShop.OLBillService2;
@@ -29,8 +30,8 @@ public class OLBillServiceImpl2 implements OLBillService2 {
     @Autowired
     private OLProductDetailService2 olProductDetailService;
 
-//    @Autowired
-//    private OLVouchersRepository olVouchersRepository;
+    @Autowired
+    private OLVoucherRepository2 olVouchersRepository;
 
     @Autowired
     private OLBillRepository2 olBillRepository;
@@ -61,20 +62,25 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 //        return response;
 //    }
 
+    private boolean isQuantityAvailable(ProductDetail productDetail, int quantityToRemove) {
+        int currentQuantity = productDetail.getQuantity() - 1;
+        return currentQuantity >= quantityToRemove;
+    }
+
     private void updateProductQuantity(BillDetail billDetail) {
         Optional<ProductDetail> productDetail = olProductDetailService.findById(billDetail.getProductDetail().getId());
         if (productDetail.isPresent()){
             int quantityToRemove = billDetail.getQuantity();
             if (isQuantityAvailable(productDetail.get(), quantityToRemove)) {
-                int currentQuantity = productDetail.get().getQuantity();
-                productDetail.get().setQuantity(currentQuantity - quantityToRemove);
-
-                // Kiểm tra xem số lượng của chi tiết sản phẩm đã hết hay chưa
-                if (currentQuantity - quantityToRemove == 0) {
-                    productDetail.get().setStatus(2);  // Đặt status = 2 nếu số lượng hết
-                }
-
-                olProductDetailService.save(productDetail.get());
+//                int currentQuantity = productDetail.get().getQuantity();
+//                productDetail.get().setQuantity(currentQuantity - quantityToRemove);
+//
+//                // Kiểm tra xem số lượng của chi tiết sản phẩm đã hết hay chưa
+//                if (currentQuantity - quantityToRemove == 0) {
+//                    productDetail.get().setStatus(2);  // Đặt status = 2 nếu số lượng hết
+//                }
+//
+//                olProductDetailService.save(productDetail.get());
 
                 // Kiểm tra tất cả ProductDetail của Product có status = 2 không
 //                checkAndUpdateProductStatus(productDetail.get().getProduct());
@@ -101,10 +107,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
 
 
-    private boolean isQuantityAvailable(ProductDetail productDetail, int quantityToRemove) {
-        int currentQuantity = productDetail.getQuantity();
-        return currentQuantity >= quantityToRemove;
-    }
+
 
 
     @Override
@@ -117,11 +120,11 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         Bill bill = mapper.convertValue(orderData, Bill.class);
 
 // Kiểm tra số lượng tồn của voucher trước khi sử dụng
-//        if (bill.getVoucher() != null){
-//            Vouchers existingVoucher = olVouchersRepository.findById(bill.getVoucher().getId())
-//                    .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
-//
-//            if (existingVoucher != null && existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 0) {
+        if (bill.getVoucher() != null){
+            Voucher existingVoucher = olVouchersRepository.findById(bill.getVoucher().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+
+            if (existingVoucher != null && existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 0) {
 //                existingVoucher.setQuantity(existingVoucher.getQuantity() - 1);
 //
 //                // Kiểm tra xem số lượng của voucher đã hết hay chưa
@@ -130,10 +133,10 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 //                }
 //
 //                olVouchersRepository.save(existingVoucher);
-//            } else {
-//                return ResponseEntity.ok(3);
-//            }
-//        }
+            } else {
+                return ResponseEntity.ok(3);
+            }
+        }
 
 
         // Kiểm tra và xử lý số lượng sản phẩm trước khi thanh toán

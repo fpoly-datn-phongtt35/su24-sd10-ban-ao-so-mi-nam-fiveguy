@@ -469,28 +469,26 @@ $scope.getPageRange = function() {
 
         // Giỏ hàng người dùng
 function loadCart() {
-  
+  if (token != null) {
       $http.get('http://localhost:8080/api/home/cart/cartDetail')
         .then(function (response) {
           if (response.data) {
             $scope.cartItems = response.data;
                 count();
                 // $scope.applyVoucher();
-
               //   console.log($scope.selectedVoucher)
               // if ($scope.selectedVoucher == null) {
                 $scope.selectBestVoucher();
               // }
-
           }
         })
         .catch(function (error) {
           console.error("Error loading cart:", error);
         });
-        
-
-        
   }
+}
+
+
   loadCart();
         
         
@@ -766,24 +764,19 @@ $scope.checkPhoneNumber= true;
     // paymentMethod voucher
     $scope.bill = {
       code: 'HD' + Number(String(new Date().getTime()).slice(-6)),
-      // createdAt: '',
-      // paymentDate: '',
       totalAmount: 0,
       totalAmountAfterDiscount: 0,
       reciverName: "",
-      // deliveryDate: '',
       shippingFee: 0,
       address: "",
       phoneNumber: "",
-    //   note: "",
       typeBill: 3,
-      status: 10,
+      status: 100,
       reason: 0,
       note: "",
       paymentMethod: "",
-      voucher: "",
+      voucher: null,
       createdAt: new Date(),
-    //   customerEntity: "",
       get billDetail(){
      if ($scope.cartItems && $scope.cartItems.length > 0) {
       return $scope.cartItems.map(item => {
@@ -812,7 +805,6 @@ let isBillAddressCityInvalid = !$scope.dataCity || !$scope.dataCity.ProvinceName
 let isBillAddressWardInvalid = !$scope.dataWard || !$scope.dataWard.WardName || $scope.dataWard.WardName.trim().length === 0;
 
 let isBillAddressDistrictInvalid = !$scope.dataDistrict || !$scope.dataDistrict.DistrictName || $scope.dataDistrict.DistrictName.trim().length === 0;
-
 
 let isBillPhoneNumberInvalid = !isValidPhoneNumber($scope.bill.phoneNumber);
 
@@ -846,18 +838,24 @@ $scope.dataWard.WardName +
 $scope.dataDistrict.DistrictName +
 ', ' +
 $scope.dataCity.ProvinceName;
-
+// $scope.selectedVoucher
         // Nếu thông tin đã đầy đủ, tiến hành gửi dữ liệu lên server
         var bill = angular.copy(this);
         bill.totalAmount = $scope.totalAmount + $scope.shippingFee;
         bill.totalAmountAfterDiscount = $scope.totalAmountAfterDiscount + $scope.shippingFee;
         bill.address = fullAddress;
         bill.paymentMethod = $scope.selectedPayment;
-        bill.voucher = $scope.voucherData;
+
+        console.log($scope.selectedVoucher)
+        if ($scope.selectedVoucher != null) {
+          delete $scope.selectedVoucher.selected;
+          bill.voucher = $scope.selectedVoucher; 
+        }
+        
         // bill.customerEntity = $scope.userData;
         bill.shippingFee = $scope.shippingFee;
         // Tiến hành gửi dữ liệu lên server
-      console.log(bill)
+      // console.log(bill)
 
 
         $http.post("http://localhost:8080/api/home/bill/create", bill)
@@ -865,12 +863,10 @@ $scope.dataCity.ProvinceName;
            // Xử lý phản hồi từ server
               let body = resp.data;
               console.log(body);
-              if (body == 333) {
-                $location.path('/home/paymentSuccess');
-              }
               if (body != null && body.hasOwnProperty("redirect") ) {
                   window.location.href = body.redirect; 
-              } else if (typeof body === 'object' && body.hasOwnProperty("resultCode") && body.hasOwnProperty("insufficientQuantityProducts")) {
+              }
+               else if (typeof body === 'object' && body.hasOwnProperty("resultCode") && body.hasOwnProperty("insufficientQuantityProducts")) {
                 // Kiểm tra xem có danh sách sản phẩm không đủ số lượng hay không
                 let resultCode = body.resultCode;
                 if (resultCode === 2) {
@@ -881,16 +877,25 @@ $scope.dataCity.ProvinceName;
                     });
                 }
                 // Xử lý logic tương ứng với resultCode khác
-            } else if (typeof body === 'number') {
+            } 
+            else if (typeof body === 'number') {
                  if (body === 3) {
                     $scope.showErrorNotification("Mã giảm giá không có đủ số lượng trong kho vui lòng chọn mã giảm giá kho")
                       // Xử lý logic tương ứng
-                  } else {
+                  } else if(body == 333){
+                    $location.path('/home/paymentSuccess');
+
+                  }
+                  
+                  
+                  else {
                     $scope.showWarningNotification("Có lỗi xảy ra!");
+                    console.log(3);
 
                   }
               } else {
                 $scope.showWarningNotification("Có lỗi xảy ra!");
+                console.log(3);
 
               }
           })
@@ -1220,6 +1225,9 @@ $scope.dataCity.ProvinceName;
 
   // };
 $scope.selectBestVoucher = function() {
+
+
+
   if (!$scope.customerVouchers || $scope.customerVouchers.length === 0) {
     console.log("Không có vouchers để chọn.");
     return;
@@ -1231,7 +1239,6 @@ $scope.selectBestVoucher = function() {
     if (currentVoucher.quantity > 0 && $scope.totalAmount >= currentVoucher.minimumTotalAmount) {
       // Tính độ chênh lệch giữa totalAmount và minimumTotalAmount của voucher
       var difference = $scope.totalAmount - currentVoucher.minimumTotalAmount;
-      console.log(difference);
       // So sánh để chọn voucher có độ chênh lệch nhỏ nhất
       return difference < minVoucher.difference ? { voucher: currentVoucher, difference: difference } : minVoucher;
     }
@@ -1244,10 +1251,18 @@ $scope.selectBestVoucher = function() {
       $scope.selectedVoucher.selected = false; // Bỏ chọn voucher trước đó
     }
     $scope.selectedVoucher = bestVoucher;
-    bestVoucher.selected = true;
+    $scope.selectedVoucher.selected = true;
     $scope.applyVoucher();
   } else {
     // Không tìm được voucher phù hợp
+    if ($scope.selectedVoucher) {
+      $scope.selectedVoucher.selected = false; // Bỏ chọn voucher trước đó
+    }
+
+    $scope.voucherData = null;
+    $scope.voucherMessage = '';
+    $scope.valueVoucher = 0;
+    $scope.totalAmountAfterDiscount = $scope.totalAmount;
     console.log("Không tìm được voucher phù hợp.");
   }
 };
@@ -1281,7 +1296,7 @@ $scope.selectBestVoucher = function() {
   
 
   
-  $scope.getVouchersForCustomer();
+  // $scope.getVouchersForCustomer();
   
   $scope.openVoucherModal = function() {
     $('#voucherModal').modal('show');
@@ -1316,7 +1331,7 @@ $scope.selectBestVoucher = function() {
         if ($scope.totalAmount >= $scope.selectedVoucher.minimumTotalAmount) {
           var voucherCopy = angular.copy($scope.selectedVoucher);
           delete voucherCopy.selected;
-          $scope.voucherData = voucherCopy;
+          // $scope.voucherData = voucherCopy;
   
           if ($scope.selectedVoucher.discountType === 1) {
             // Percentage discount
@@ -1339,7 +1354,7 @@ $scope.selectBestVoucher = function() {
           $scope.voucherMessage = 'Mã giảm giá đã được áp dụng';
           $scope.showSuccessNotification($scope.voucherMessage);
         } else {
-          $scope.voucherData = null;
+          // $scope.voucherData = null;
           $scope.valueVoucher = 0;
           $scope.voucherMessage =
             'Mã giảm giá ' +
@@ -1360,7 +1375,7 @@ $scope.selectBestVoucher = function() {
       // No voucher selected, reset to original total amount
                   // $scope.selectBestVoucher();
 
-      $scope.voucherData = null;
+      // $scope.voucherData = null;
       $scope.voucherMessage = '';
       $scope.valueVoucher = 0;
       $scope.totalAmountAfterDiscount = $scope.totalAmount;

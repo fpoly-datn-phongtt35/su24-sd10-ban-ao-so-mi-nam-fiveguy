@@ -1,7 +1,7 @@
 
 
 <!-- cart + summary -->
-<section style="    margin-top: 82px;"  class="bg-light "  ng-init="loadCart();loadPaymentMethod();">
+<section style="    margin-top: 82px;"  class="bg-light "  ng-init="loadPaymentMethod();getVouchersForCustomer();">
  
     <div class="container-fluid">
       <div style="padding: 46px;;" class="row">
@@ -17,7 +17,7 @@
                   <div class="col-lg-5">
                       <div class="me-lg-5">
                           <div class="d-flex" style="align-items: center;">
-                              <a href="#!product-detail/{{item.productDetail.product.id}}">
+                              <a href="#home/product/product-detail/{{item.productDetail.product.id}}">
                                   <img ng-src="{{ item.path }}" class="border rounded me-3" style="width: 96px; height: 100px" />
                               </a>
                               <div class="title-name">
@@ -232,17 +232,21 @@
                                 </p>
                                 <p>HSD: {{ voucher.endDate | date:'dd-MM-yyyy HH:mm' }}</p>
                               </div>
+                              <div class="voucher-right-contain">
+
                               <div class="voucher-right">
-                                <span ng-if="voucher.selected" class="checkmark">&#10003;</span>
-                                <span ng-if="!voucher.selected" class="addmark">+</span>
+                                    <span ng-if="voucher.selected" class="checkmark">&#10003;</span>
+                               
+                                    <span ng-if="!voucher.selected" class="addmark">+</span>
+                    
                               </div>
+                            </div>
+
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-primary">Tiếp tục</button>
-                      </div>
+                  
                     </div>
                   </div>
                 </div>

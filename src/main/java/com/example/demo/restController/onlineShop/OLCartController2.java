@@ -117,7 +117,7 @@ public class OLCartController2 {
             Optional<ProductDetail> productDetail = olProductDetailService.findById(productDetailId);
 
             if (productDetail.isPresent()) {
-                int availableQuantity = productDetail.get().getQuantity();
+                int availableQuantity = productDetail.get().getQuantity() - 1;
                 int totalQuantityInCart = olCartDetailService.getTotalQuantityInCart(cart.getId(), productDetailId);
                 int remainingQuantity = availableQuantity - totalQuantityInCart;
 
@@ -158,7 +158,7 @@ public class OLCartController2 {
             Optional<CartDetail> cartDetail = olCartDetailService.findById(Long.valueOf(cartDetailId));
             if (cartDetail.isPresent()) {
                 Optional<ProductDetail> productDetail = olProductDetailService.findById(cartDetail.get().getProductDetail().getId());
-                int availableQuantity = productDetail.get().getQuantity();
+                int availableQuantity = productDetail.get().getQuantity() - 1;
 
                 int totalQuantityInCart = olCartDetailService.getTotalQuantityInCart(cartDetail.get().getCart().getId(), cartDetail.get().getProductDetail().getId());
                 int remainingQuantity = availableQuantity - (totalQuantityInCart - cartDetail.get().getQuantity());
@@ -175,13 +175,11 @@ public class OLCartController2 {
                         olCartDetailService.save(cartDetail.get());
                     }
 
-                    int updatedQuantity = productDetail.get().getQuantity() + (cartDetail.get().getQuantity() - newQuantity);
-                    productDetail.get().setQuantity(updatedQuantity);
-                    olProductDetailService.save(productDetail.get());
-
                     return ResponseEntity.ok(1);
-                } else {
-                    // Số lượng không đủ
+                }  else {
+                    // Số lượng không đủ, cập nhật số lượng hiện có
+                    cartDetail.get().setQuantity(remainingQuantity);
+                    olCartDetailService.save(cartDetail.get());
                     return ResponseEntity.ok(2);
                 }
             }

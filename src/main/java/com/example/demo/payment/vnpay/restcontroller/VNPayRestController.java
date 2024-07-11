@@ -165,10 +165,11 @@ public class VNPayRestController {
                     if (cart != null) {
                         olCartDetailService.deleteAllByCart_Id(cart.getId());
                     }
-                }else {
-                    billRestController.setCheckOutBill(true);
-
                 }
+//                else {
+//                    billRestController.setCheckOutBill(true);
+//
+//                }
 //                bill.setPaymentDate(new Date());
                 bill.setStatus(1);
                 olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2);

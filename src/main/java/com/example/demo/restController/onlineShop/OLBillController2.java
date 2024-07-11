@@ -30,19 +30,12 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/home")
 public class OLBillController2 {
-    boolean checkOutBill = false;
 
-
-    public boolean isCheckOutBill() {
-        return checkOutBill;
-    }
-
-    public void setCheckOutBill(boolean checkOutBill) {
-        this.checkOutBill = checkOutBill;
-    }
-
-    @Autowired
-    private OLBillDetailService2 billDetailService;
+//    boolean checkOutBill = false;
+//
+//    public void setCheckOutBill(boolean checkOutBill) {
+//        this.checkOutBill = checkOutBill;
+//    }
 
     @Autowired
     private OLCartService2 olCartService;
@@ -59,40 +52,29 @@ public class OLBillController2 {
     @Autowired
     private SCCustomerService SCCustomerService;
 
-//    @Autowired
-//    private OLBillHistoryService2 olBillHistoryService2;
-//
-//    @Autowired
-//    private OLPaymentStatusService2 olPaymentStatusService2;
 
     @Transactional
     @PostMapping("/bill/create")
-    public ResponseEntity<?> TaoHoaDonNguoiDungChuaDangNhap(@RequestBody JsonNode orderData, HttpServletResponse response, HttpServletRequest req, HttpSession session,@RequestHeader("Authorization") String token) throws IOException {
+    public ResponseEntity<?> TaoHoaDonNguoiDungChuaDangNhap(@RequestBody JsonNode orderData, HttpServletRequest req, @RequestHeader("Authorization") String token) throws IOException {
         Optional<Customer> customer = SCCustomerService.getCustomerByToken(token);
         if (customer.isPresent()) {
 
-            System.out.println(orderData);
+//            System.out.println(orderData);
 
         ResponseEntity<?> newBill = olBillService.creatBill(orderData,customer.get());
         Object body = newBill.getBody();
+
         if (body != null && body instanceof Bill) {
             Bill billData = (Bill) body;
-
-//            BigDecimal totalAmountAfterDiscount = new BigDecimal(String.valueOf(billData.getTotalAmountAfterDiscount()));
-//            BigDecimal shippingfee = new BigDecimal(String.valueOf(billData.getShippingFee()));
             BigDecimal totalPayment = new BigDecimal(String.valueOf(billData.getTotalAmountAfterDiscount()));
-
-//            String describe = String.valueOf(billData.getNote());
             Integer codePayment = billData.getPaymentMethod().getCode();
             String codeBill = (olBillUntility.encodeId(billData.getId()));
-
-
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
             String timestamp = dateFormat.format(new Date());
-
             // Kết hợp idString với timestamp
             String orderId = codeBill + timestamp;
 
+//            VNPAY
             if (codePayment.equals(11)) {
                 olBillUntility.scheduleBillDeletion(billData.getId(), req);
 
@@ -146,23 +128,19 @@ public class OLBillController2 {
                 }
                 String queryUrl = query.toString();
                 String vnp_SecureHash = ConfigVNPay.hmacSHA512(ConfigVNPay.secretKey, hashData.toString());
-
                 queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
                 String paymentUrlVNPAY = ConfigVNPay.vnp_PayUrl + "?" + queryUrl;
-
                 Map<String, String> jsonResponse = new HashMap<>();
                 jsonResponse.put("redirect", paymentUrlVNPAY);
                 Gson gson = new Gson();
                 String json = gson.toJson(jsonResponse);
                 return ResponseEntity.ok(json);
-
-
             }
+//            MOMO
+
             else if (codePayment.equals(12))
             {
                 olBillUntility.scheduleBillDeletion(billData.getId(), req);
-
-
                 String orderInfo = "Thanh toán cho đơn hàng ";
                 String redirectUrl = "http://localhost:8080/api/ol/payment-momo/success";
                 String ipnUrl = "http://localhost:8080/api/ol/payment-momo/success";
@@ -180,36 +158,16 @@ public class OLBillController2 {
 
                 }
             }
+//            COD
              else if (codePayment.equals(10)) {
                 billData.setStatus(1);
                  billData.setCustomer(customer.get());
-//                billData.setCreatedAt(new Date());
                Bill bill = olBillService.save(billData);
                olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1);
-//                BillHistory billHistory = new BillHistory();
-//                billHistory.setStatus(1);
-//                billHistory.setCreatedBy(customer.get().getFullName());
-//                billHistory.setBill(bill);
-//                olBillHistoryService2.save(billHistory);
-//
-//                PaymentStatus paymentStatus = new PaymentStatus();
-//                paymentStatus.setBill(bill);
-//                paymentStatus.setCustomerPaymentStatus(1);
-//                 olPaymentStatusService2.save(paymentStatus);
-
-
                     Cart cart = olCartService.findByCustomerId(customer.get().getId());
-
                     if (cart != null) {
                         olCartDetailService.deleteAllByCart_Id(cart.getId());
                     }
-//                } else {
-//                    checkOutBill = true;
-//                }
-//                Map<String, String> jsonResponse = new HashMap<>();
-//                jsonResponse.put("redirect", com.example.demo.config.Config.fe_liveServer_Success);
-//                Gson gson = new Gson();
-//                String json = gson.toJson(jsonResponse);
                 return ResponseEntity.ok(333);
             }
 

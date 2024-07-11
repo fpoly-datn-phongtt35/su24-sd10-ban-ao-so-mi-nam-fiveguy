@@ -193,7 +193,7 @@ public class OLProductServiceImpl2 implements OLProductService2 {
             for (ProductDetail detail : productDetails) {
                 List<BillDetail> billDetails = olBillDetailServiceImpl2.findByProductDetail(detail);
                 for (BillDetail billDetail : billDetails) {
-                    if (billDetail.getBill().getStatus() == 3){
+                    if (billDetail.getBill().getStatus() == 5){
                         totalQuantity += billDetail.getQuantity();
                     }
                 }

@@ -599,7 +599,11 @@ font-weight: 400;
   font-size: 20px;
   text-align: center;
 }
+.voucher-right-contain {
+  display: flex;
+  align-items: center;
 
+}
 .voucher-left p {
   margin: 0;
   font-size: 14px;

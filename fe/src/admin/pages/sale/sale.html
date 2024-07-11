@@ -182,20 +182,22 @@
                                                     </button>
                                                 </td>
                                             </tr>
-                                            <tbody style="margin-top: 10px;" ng-if="selectedCustomerProducts.length > 0">
-                                                <tr style="white-space: nowrap;">
+                                            <!-- <tbody style="margin-top: 10px;" ng-if="selectedCustomerProducts.length > 0"> -->
+
+                                                <tr ng-if="selectedCustomerProducts.length > 0" style="white-space: nowrap;">
+                                                    
+                                                    
                                                     <th>Sản phẩm</th>
                                                     <th>Số lượng</th>
                                                     <th>Giá gốc</th>
                                                     <th>Giá giảm</th>
                                                     <th>Tổng tiền sau khi giảm</th>
                                                 </tr>
-                                            </tbody>
+                                            <!-- </tbody> -->
                                        <tr ng-repeat-start="productDetail in selectedCustomerProducts" ng-if="selectedCustomerProducts.length > 0">
-                                        <td colspan="7">
-                                            <table class="table">
-                                            
-                                                <tbody>
+                                        <!-- <td colspan="7"> -->
+                                            <!-- <table class="table"> -->
+                                                <!-- <tbody> -->
                                                     <tr>
                                                         <td>{{ productDetail.productName }}</td>
                                                         <td>{{ productDetail.totalQuantityBought }}</td>
@@ -207,9 +209,9 @@
                                                         </td>
                                                         
                                                     </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
+                                                <!-- </tbody> -->
+                                            <!-- </table> -->
+                                        <!-- </td> -->
                                         </tr>
                                             <tr ng-repeat-end ng-if="$index == selectedCustomerIndex">
                                                 <!-- <td colspan="7"></td> -->
