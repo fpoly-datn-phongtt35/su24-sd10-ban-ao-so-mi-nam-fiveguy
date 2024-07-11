@@ -106,6 +106,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             billDetail.setQuantity(quantity);
             billDetail.setPrice(price);
             billDetail.setPromotionalPrice(promotionalPrice);
+            billDetail.setDefectiveProduct(0);
             billDetail.setStatus(1);
 
             // Save the BillDetail instance

@@ -99,6 +99,7 @@ public class NBillServiceImpl implements NBillService {
         }
 
         Bill existingBill = optionalBill.get();
+        existingBill.setReason(bill.getReason());
         existingBill.setStatus(bill.getStatus());
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
