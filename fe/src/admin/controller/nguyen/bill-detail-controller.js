@@ -1,4 +1,4 @@
-app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $routeParams) {
+app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $routeParams, $timeout) {
 
     const apiBill = "http://localhost:8080/api/admin/bill";
     const apiBillDetail = "http://localhost:8080/api/admin/billDetail";
@@ -71,64 +71,267 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     //XỬ LÝ STATUS BILL, HISTORY BILL, THÔNG TIN GIAO HÀNG, LOGIC CỦA HIỂN THỊ TRẠNG THÁI ĐƠN HÀNG, paymentStatus
     // #region bill status & bill history
+
+    $scope.otherReasonText = null
+
     $scope.showModalStatus = function (status) {
         $('#changeStatusModal').modal('show');
         $scope.currentStatus = status;
-    };
-
-    $scope.confirmChangeStatus = function () {
-        $('#changeStatusModal').modal('hide');
-
-        let bill = angular.copy($scope.billResponse)
-        bill.status = $scope.currentStatus
-
-        let billHistory = {
-            billId: $scope.idBill,
-            status: $scope.currentStatus,
-            description: $scope.billHistoryUpdate.description,
-        };
-
-        let data = { bill: bill, billHistory: billHistory };
-
-        $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
-            $scope.showSuccess("Chuyển trạng thái thành công");
-            // Cập nhật lại danh sách lịch sử
-            $scope.getBillHistoryByBillId();
-        }).catch(function (error) {
-            $scope.showError("Chuyển trạng thái thất bại");
-        });
-
-        // Xóa nội dung ghi chú sau khi xác nhận
-        $scope.billHistoryUpdate.description = null;
     };
 
     $scope.getBillHistoryByBillId = function () {
         $http.get(apiBillHistory + "/bill/" + $scope.idBill).then(function (res) {
             $scope.listBillHistory = res.data;
             $scope.updateStatusSteps();
+            $timeout(function () {
+                $scope.scrollToEnd()
+                $scope.checkScrollbarVisibility();
+            }, 0);
         });
     };
+    $scope.getBillHistoryByBillId()
 
-    $scope.updateStatusSteps = function () {
-        $scope.steps = [
-            { status: 1, title: "Chờ xác nhận", icon: "schedule", time: null },
-            { status: 2, title: "Đã xác nhận", icon: "check_circle", time: null },
-            { status: 3, title: "Chờ vận chuyển", icon: "local_shipping", time: null },
-            { status: 4, title: "Đang giao", icon: "directions_car", time: null },
-            { status: 5, title: "Thành công", icon: "home", time: null },
-            { status: 6, title: "Đã hủy", icon: "cancel", time: null }
-        ];
+    $scope.showModalStatus = function (nextStatus) {
+        $scope.resetCheckBoxes();
 
-        $scope.listBillHistory.forEach(function (history) {
-            let step = $scope.steps.find(s => s.status === history.status);
-            if (step) {
-                step.time = history.createdAt;
+        $('#changeStatusModal').modal('show');
+
+        $scope.currentStatus = $scope.status;
+        $scope.nextStatus = nextStatus;
+        $scope.selectedReasons = [];
+
+        if ($scope.transitionReasons[$scope.currentStatus] && $scope.transitionReasons[$scope.currentStatus][nextStatus]) {
+            const reasonKeys = $scope.transitionReasons[$scope.currentStatus][nextStatus];
+            $scope.reasonSuggestions = reasonKeys.map(key => ({
+                value: key,
+                text: $scope.reasonsList[key].text,
+                checked: false
+            }));
+        } else {
+            $scope.reasonSuggestions = [];
+        }
+    };
+
+    $scope.confirmChangeStatus = function () {
+        if (!$scope.isReasonSelected() && $scope.reasonSuggestions.length > 0) {
+            $scope.showError("Vui lòng chọn một lý do hoặc nhập lý do khác.");
+            return;
+        }
+        let description = $scope.billHistoryUpdate.description || "";
+        let reasonUpdate = {
+            value: 0
+        };
+        // Add selected reasons to the description
+        $scope.reasonSuggestions.forEach(function (reason) {
+            if (reason.checked) {
+                description += reason.text + ", ";
+                reasonUpdate = reason;
             }
         });
 
-        // Cập nhật lại trạng thái hiện tại
-        $scope.status = Math.max.apply(Math, $scope.listBillHistory.map(function (o) { return o.status; }));
+        // Add "Other" reason
+        if ($scope.otherReasonChecked && $scope.otherReasonText !== null) {
+            description += "Khác: " + $scope.otherReasonText;
+        }
+        // Remove trailing comma and space
+        description = description.trim().replace(/,\s*$/, "");
+
+        $scope.billHistoryUpdate.description = description.trim();
+
+        let statusUpdate = $scope.nextStatus
+        if ([3, 10].includes($scope.currentStatus) && [7, 8].includes($scope.nextStatus)) {
+            if ([9, 10].includes(reasonUpdate.value)) {
+                statusUpdate = 7
+            }
+            if ([11].includes(reasonUpdate.value)) {
+                statusUpdate = 81
+            }
+            if ([8, 12, 4].includes(reasonUpdate.value)) {
+                statusUpdate = 8
+            }
+        }
+
+        let bill = angular.copy($scope.billResponse);
+        bill.reason = reasonUpdate.value
+        bill.status = statusUpdate;
+
+
+        let billHistory = {
+            billId: $scope.idBill,
+            reason: reasonUpdate.value,
+            status: statusUpdate,
+            description: $scope.billHistoryUpdate.description,
+        };
+
+        let data = { bill: bill, billHistory: billHistory };
+
+        console.log(data);
+        $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
+            $('#changeStatusModal').modal('hide');
+            $scope.getBillById($scope.idBill);
+            $scope.getBillHistoryByBillId();
+        }).catch(function (error) {
+            console.log("lỗi update status")
+        });
+
+        // Xóa nội dung ghi chú sau khi xác nhận
+        $scope.billHistoryUpdate.description = null;
+        $scope.otherReasonText = null;
     };
+
+    $scope.isReasonSelected = function () {
+        return $scope.reasonSuggestions.some(reason => reason.checked) || $scope.otherReasonChecked;
+    };
+
+    $scope.toggleReason = function (selectedReason) {
+        // Uncheck all other reasons
+        $scope.reasonSuggestions.forEach(function (reason) {
+            if (reason !== selectedReason) {
+                reason.checked = false;
+            }
+        });
+    
+        // Toggle the selected reason
+        selectedReason.checked = !selectedReason.checked;
+    
+        // if (selectedReason.checked) {
+        //     $scope.otherReasonChecked = false;
+        //     $scope.otherReasonText = ""; // Clear other reason text
+        // }
+    };
+
+    $scope.reasonsList = {
+        1: { text: "Khách yêu cầu hủy", value: 1, status: 0, shortenText: "" },
+        2: { text: "Khách không phản hồi", value: 2, status: 0, shortenText: "" },
+        3: { text: "Sản phẩm hết hàng", value: 3, status: 0, shortenText: "" },
+        4: { text: "Sản phẩm bị lỗi", value: 4, status: 6, shortenText: "Lỗi hàng" },
+        5: { text: "Lỗi hệ thống", value: 5, status: 0, shortenText: "" },
+        6: { text: "Không liên hệ được nhân viên giao hàng", value: 6, status: 0 },
+        7: { text: "Đơn vị giao hàng báo hủy", value: 7, status: 0, shortenText: "" },
+        8: { text: "Khách không nhận hàng", value: 8, status: 1, shortenText: "Khách không nhận" },
+        9: { text: "Không liên hệ được khách", value: 9, status: 2, shortenText: "Không liên hệ" },
+        10: { text: "Khách hẹn giao lại", value: 10, status: 3, shortenText: "Hẹn giao lại" },
+        11: { text: "Mất hàng", value: 11, status: 4, shortenText: "Mất hàng" },
+        12: { text: "Thiếu hàng", value: 12, status: 5, shortenText: "Thiếu hàng" },
+        13: { text: "Sai địa chỉ giao hàng", value: 13, status: 0, shortenText: "" }
+    };
+
+    $scope.transitionReasons = {
+        1: { // Chờ xác nhận
+            5: [1],
+            6: [1, 2, 3, 4, 5]
+        },
+        2: { // Chờ vận chuyển
+            5: [1],
+            6: [2, 6, 7, 4, 5]
+        },
+        3: { // Đang giao
+            7: [8, 9, 10, 11, 12, 4]
+        },
+        10: { // Đang giao lại
+            8: [8, 9, 11, 12, 4]
+        },
+    };
+
+    $scope.updateStatusSteps = function () {
+        $scope.possibleSteps = {
+            1: { title: "Chờ xác nhận", icon: "schedule", status: 1 },
+            2: { title: "Chờ vận chuyển", icon: "local_shipping", status: 2 },
+            3: { title: "Đang giao", icon: "directions_car", status: 3 },
+            4: { title: "Thành công", icon: "check_circle", status: 4 },
+            5: { title: "Đã hủy", icon: "person_cancel", status: 5 },
+            6: { title: "Đã hủy", icon: "block", status: 6 },
+            7: { title: "Thất bại", icon: "cancel", status: 7 },
+            8: { title: "Thất bại", icon: "cancel", status: 8 },
+            81: { title: "Thất bại", icon: "cancel", status: 81 },
+            9: { title: "Chờ giao lại", icon: "autorenew", status: 9 },
+            10: { title: "Đang giao lại", icon: "directions_car", status: 10 },
+            11: { title: "Hoàn hàng", icon: "warehouse", status: 11 }
+        };
+
+        $scope.deliveryFlow = {
+            1: [2, 5, 6], // Chờ xác nhận -> Chờ vận chuyển hoặc khách hủy hoặc đã hủy
+            2: [3, 5, 6], // Chờ vận chuyển -> Đang giao hoặc khách hủy hoặc đã hủy
+            3: [4, 7, 81], // Đang giao -> Thành công hoặc Thất bại hoặc Thất bại (mất)
+            4: [], // Thành công (kết thúc)
+            5: [], // Khách hủy (kết thúc)
+            6: [], // Đã hủy (kết thúc)
+            7: [9, 11], // Thất bại -> Chờ giao lại hoặc Hoàn hàng hoặc Hủy(Mất hàng)
+            8: [11], // Thất bại (lại) -> Hoàn hàng
+            9: [10], // Chờ giao lại -> Đang giao lại
+            10: [4, 8, 81], // Đang giao lại -> Thành công hoặc Thất bại (lai) hoặc Thất bại (mất)
+            11: [6], // Hoàn hàng -> Đã hủy
+            81: [6], //Thất bại mất -> Đã hủy
+        };
+
+        $scope.steps = [];
+
+        $scope.listBillHistory.forEach(function (history) {
+            let step = angular.copy($scope.possibleSteps[history.status]);
+            if (step && history.type == 1) {
+                step.time = history.createdAt;
+                step.reason = history.reason;
+                $scope.steps.push(step);
+            }
+        });
+
+        console.log($scope.steps);
+
+        // $scope.status = Math.max.apply(Math, $scope.listBillHistory.map(function (o) { return o.status; }));
+        if ($scope.listBillHistory.length > 0) {
+            $scope.status = $scope.listBillHistory[$scope.listBillHistory.length - 1].status;
+        } else {
+            $scope.status = null; // Hoặc một giá trị mặc định nếu không có lịch sử trạng thái
+        }
+    };
+
+    $scope.getStatusTitle = function (status) {
+        return $scope.possibleSteps[status] ? $scope.possibleSteps[status].title : 'Unknown';
+    };
+
+    //reset check box
+    $scope.resetCheckBoxes = function () {
+        $scope.selectedReasons = [];
+        $scope.otherReasonChecked = false;
+        $scope.otherReasonText = null;
+
+        if ($scope.reasonSuggestions) {
+            $scope.reasonSuggestions.forEach(function (reason) {
+                reason.checked = false;
+            });
+        }
+    };
+
+    // #region Srcoll bill status
+    $scope.scrollToEnd = function () {
+        var container = document.querySelector('.progress-container');
+        container.scrollLeft = container.scrollWidth;
+    };
+
+    $scope.scrollLeft = function () {
+        var container = document.querySelector('.progress-container');
+        container.scrollBy({
+            top: 0,
+            left: -400,
+            behavior: 'smooth'
+        });
+    };
+
+    $scope.scrollRight = function () {
+        var container = document.querySelector('.progress-container');
+        container.scrollBy({
+            top: 0,
+            left: 400,
+            behavior: 'smooth'
+        });
+    };
+
+    // Check if scrollbar is visible
+    $scope.checkScrollbarVisibility = function () {
+        var container = document.querySelector('.progress-container');
+        $scope.scrollbarVisible = container.scrollWidth > container.clientWidth;
+    };
+    // #endregion
 
     // Update thông tin giao hàng
     $scope.updateShipmentDetail = function () {

@@ -193,7 +193,7 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
         5:  { text: "Lỗi hệ thống",                     value: 5,  status: 0,       shortenText: "" },
         6:  { text: "Không liên hệ được nhân viên giao hàng", value: 6, status: 0 },
         7:  { text: "Đơn vị giao hàng báo hủy",         value: 7,  status: 0,       shortenText: "" },
-        8:  { text: "Khách không nhận hàng",            value: 8,  status: 1,       shortenText: "Không nhận" },
+        8:  { text: "Khách không nhận hàng",            value: 8,  status: 1,       shortenText: "Khách không nhận" },
         9:  { text: "Không liên hệ được khách",         value: 9,  status: 2,       shortenText: "Không liên hệ" },
         10: { text: "Khách hẹn giao lại",               value: 10, status: 3,       shortenText: "Hẹn giao lại" },
         11: { text: "Mất hàng",                         value: 11, status: 4,       shortenText: "Mất hàng" },
@@ -242,69 +242,19 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
     };
 
     $scope.updateStatusSteps = function () {
-        $scope.possibleSteps1 = {
-            1: { title: "Chờ xác nhận", icon: "schedule", status: 1 },
-            2: { title: "Chờ vận chuyển", icon: "local_shipping", status: 2 },
-            3: { title: "Đang giao", icon: "directions_car", status: 3 },
-            4: { title: "Thành công", icon: "home", status: 4 },
-            5: { title: "Khách hủy", icon: "cancel", status: 5 },
-            6: { title: "Đã hủy", icon: "cancel", status: 6 },
-            7: { title: "Thất bại", icon: "cancel", status: 7 },
-            8: { title: "Thất bại", icon: "cancel", status: 8 },
-            81: { title: "Thất bại", icon: "cancel", status: 81 },
-            9: { title: "Chờ giao lại", icon: "local_shipping", status: 9 },
-            10: { title: "Đang giao lại", icon: "directions_car", status: 10 },
-            11: { title: "Hoàn hàng", icon: "warehouse", status: 11 }
-        };
-
         $scope.possibleSteps = {
             1:  { title: "Chờ xác nhận",     icon: "schedule",             status: 1  },
             2:  { title: "Chờ vận chuyển",   icon: "local_shipping",       status: 2  },
             3:  { title: "Đang giao",        icon: "directions_car",       status: 3  },
             4:  { title: "Thành công",       icon: "check_circle",         status: 4  },
-            5:  { title: "Khách hủy",        icon: "person_cancel", status: 5  },
+            5:  { title: "Đã hủy",           icon: "person_cancel",        status: 5  },
             6:  { title: "Đã hủy",           icon: "block",                status: 6  },
-            7:  { title: "Thất bại",         icon: "cancel",                status: 7  },
-            8:  { title: "Thất bại", icon: "cancel",   status: 8  },
-            81: { title: "Thất bại",   icon: "cancel",              status: 81 },
+            7:  { title: "Thất bại",         icon: "cancel",               status: 7  },
+            8:  { title: "Thất bại",         icon: "cancel",               status: 8  },
+            81: { title: "Thất bại",         icon: "cancel",               status: 81 },
             9:  { title: "Chờ giao lại",     icon: "autorenew",            status: 9  },
-            10: { title: "Đang giao lại",    icon: "directions_car",               status: 10 },
+            10: { title: "Đang giao lại",    icon: "directions_car",       status: 10 },
             11: { title: "Hoàn hàng",        icon: "warehouse",            status: 11 }
-        };
-
-        $scope.possibleSteps2 = {
-            1:  { title: "Chờ xác nhận",      icon: "schedule",          status: 1  },
-            2:  { title: "Chờ vận chuyển",    icon: "local_shipping",    status: 2  },
-            3:  { title: "Đang giao",         icon: "directions_car",    status: 3  },
-            4:  { title: "Thành công",        icon: "home",              status: 4  },
-            5:  { title: "Khách hủy",         icon: "cancel",            status: 5  },
-            6:  { title: "Đã hủy",            icon: "cancel",            status: 6  },
-            7:  { title: "Thất bại",          icon: "cancel",            status: 7  },
-            8:  { title: "Thất bại",          icon: "cancel",            status: 8  },
-            81: { title: "Thất bại",          icon: "cancel",            status: 81 },
-            9:  { title: "Chờ giao lại",      icon: "local_shipping",    status: 9  },
-            10: { title: "Đang giao lại",     icon: "directions_car",    status: 10 },
-            11: { title: "Hoàn hàng",         icon: "warehouse",         status: 11 }
-        };
-
-        $scope.possibleSteps1 = {
-            1: { title: "Chờ xác nhận", icon: "schedule", status: 1 },
-            2: { title: "Chờ vận chuyển", icon: "local_shipping", status: 2 },
-            3: { title: "Đang giao", icon: "directions_car", status: 3 },
-            4: { title: "Thành công", icon: "home", status: 4 },
-            5: { title: "Khách hủy", icon: "cancel", status: 5 },
-            6: { title: "Đã hủy", icon: "cancel", status: 6 },
-            101: { title: "Thất bại", icon: "cancel", status: 101 },
-            102: { title: "Thất bại(Hẹn)", icon: "cancel", status: 102, reason: "Hẹn giao lại" },
-            103: { title: "Thất bại(Mất)", icon: "cancel", status: 103, reason: "Mất hàng" },
-            104: { title: "Thất bại(Lỗi)", icon: "cancel", status: 104, reason: "Lỗi hàng" },
-            105: { title: "Thất bại(Thiếu)", icon: "cancel", status: 105, reason: "Thiếu hàng" },
-            106: { title: "Thất bại(Không nhận)", icon: "cancel", status: 106, reason: "Không nhận" },
-            107: { title: "Thất bại(Không liên hệ)", icon: "cancel", status: 107, reason: "Không liên hệ" },
-            108: { title: "Thất bại(Lại)", icon: "cancel", status: 108 },
-            9: { title: "Chờ giao lại", icon: "local_shipping", status: 9 },
-            10: { title: "Đang giao lại", icon: "directions_car", status: 10 },
-            11: { title: "Hoàn hàng", icon: "warehouse", status: 11 }
         };
 
         $scope.deliveryFlow = {
@@ -320,21 +270,6 @@ app.controller('test-bill-detail-ctrl', function ($scope, $http, $timeout, $root
             10: [4, 8, 81], // Đang giao lại -> Thành công hoặc Thất bại (lai) hoặc Thất bại (mất)
             11: [6], // Hoàn hàng -> Đã hủy
             81: [6], //Thất bại mất -> Đã hủy
-        };
-
-        $scope.deliveryFlow1 = {
-            1: [2, 5, 6], // Chờ xác nhận -> Chờ vận chuyển hoặc khách hủy hoặc đã hủy
-            2: [3, 5, 6], // Chờ vận chuyển -> Đang giao hoặc khách hủy hoặc đã hủy
-            3: [4, 7, 8], // Đang giao -> Thành công hoặc Thất bại 
-            4: [], // Thành công (kết thúc)
-            5: [], // Khách hủy (kết thúc)
-            6: [], // Đã hủy (kết thúc)
-            7: [9, 11], // Chờ giao, hoàn
-            8: [11], // hoàn
-            81: [6], // Hủy
-            9: [10], // Chờ giao lại -> Đang giao lại
-            10: [4, 8], // Đang giao lại -> Thành công hoặc Thất bại (103, 104, 105, 106, 107, 108)
-            11: [6], // Hoàn hàng -> Đã hủy
         };
 
         $scope.steps = [];

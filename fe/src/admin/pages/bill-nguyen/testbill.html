@@ -16,8 +16,8 @@
             <div class="progress-container overflow-auto col-10" style="margin-left: 50px;" id="ccc">
                 <div class="d-flex">
                     <div ng-repeat="step in steps" class="d-flex align-items-center">
-                        <div ng-if="step.time != null" class="step" ng-class="{'active': step.status == status}">
-                            <div class="step-circle">
+                        <div ng-if="step.time != null" class="step shadow" ng-class="{'active': step.status == status}">
+                            <div class="step-circle shadow">
                                 <span class="material-icons statuss-{{step.status}}">{{ step.icon }}</span>
                             </div>
                             <div class="step-title">{{ step.title }}</div>
@@ -91,12 +91,12 @@
                         <div class="text-center mb-3">
                             <div class="d-flex align-items-center justify-content-evenly">
                                 <div class="text-center" style="width: 50%;">
-                                    <i class="material-icons">{{ possibleSteps[currentStatus].icon }}</i>
+                                    <i class="material-icons statuss-{{currentStatus}}">{{ possibleSteps[currentStatus].icon }}</i>
                                     <div>{{ possibleSteps[currentStatus].title }}</div>
                                 </div>
                                 <i class="material-icons mx-3">arrow_forward</i>
                                 <div class="text-center" style="width: 50%;">
-                                    <i class="material-icons">{{ possibleSteps[nextStatus].icon }}</i>
+                                    <i class="material-icons statuss-{{nextStatus}}">{{ possibleSteps[nextStatus].icon }}</i>
                                     <div>{{ possibleSteps[nextStatus].title }}</div>
                                 </div>
                             </div>
@@ -169,7 +169,7 @@
                     <tbody>
                         <tr ng-repeat="bh in listBillHistory">
                             <th scope="row">{{$index + 1}}</th>
-                            <td><i class="material-icons">{{ possibleSteps[bh.status].icon }}</i> 
+                            <td><i class="material-icons statuss-{{bh.status}}">{{ possibleSteps[bh.status].icon }}</i> 
                                 {{getStatusTitle(bh.status)}}</td>
                             <td class="col-1 text-center">{{bh.createdAt | date : "dd/MM/yyyy HH:mm:ss"}}</td>
                             <td>{{bh.createdBy}}</td>
