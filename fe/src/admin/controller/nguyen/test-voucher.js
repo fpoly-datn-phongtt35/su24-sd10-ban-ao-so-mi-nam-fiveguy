@@ -1,4 +1,4 @@
-app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
+app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
 
     $scope.voucher = {
         // id: null,
@@ -64,12 +64,15 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     $scope.getAllCustomerType();
 
     //#region CUSTOMER logic
+
     // Load selected customers from local storage
     localStorage.setItem('selectedCustomers', []);
     $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
+    // $scope.selectedCustomers = [];
 
     let allCustomers = [];
 
+    $scope.selectedCount = 0
     // Fetch all customers from the API and store them in allCustomers
     $http.get('http://localhost:8080/api/admin/customerN/all').then(function (res) {
         allCustomers = res.data || []; // Ensure allCustomers is an empty array if res.data is null or undefined
@@ -89,17 +92,6 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     // Load selected customers from local storage
     $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
 
-    // $scope.selectAll = false;
-
-    // $scope.toggleAll = function () {
-    //     $scope.selectAll = !$scope.selectAll;
-    //     angular.forEach(allCustomers, function (customer) {
-    //         customer.selected = $scope.selectAll;
-    //         $scope.updateSelectedCustomers(customer);
-    //     });
-    //     $scope.saveSelections(); // Save selections
-    // };
-
     $scope.submitSelected = function () {
         var selectedCustomers = Object.keys($scope.selectedCustomers).map(function (id) {
             return $scope.selectedCustomers[id];
@@ -113,6 +105,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         } else {
             delete $scope.selectedCustomers[customer.id];
         }
+        $scope.selectedCount = Object.keys($scope.selectedCustomers).length;
         $scope.saveSelections();
     };
 
@@ -201,6 +194,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         let max = $scope.formInputVoucher.maximumReductionValue
         let min = $scope.formInputVoucher.minimumTotalAmount
 
+        console.log("-");
         console.log(value);
         console.log(max);
         console.log(min);
@@ -215,11 +209,11 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         console.log($scope.validateAddMaxReVa);
     }
 
-    $scope.validateAddValue = function () {
-        if ($scope.formInputVoucher.value > 100 && $scope.formInputVoucher.discountType == 1) {
+    $scope.validateAddValue = function (discountType) {
+        if ($scope.formInputVoucher.value > 100 && discountType == 1) {
             $scope.formInputVoucher.value = 100
         }
-        if ($scope.formInputVoucher.value < 1 && $scope.formInputVoucher.discountType == 1) {
+        if ($scope.formInputVoucher.value < 1 && discountType == 1) {
             $scope.formInputVoucher.value = 1
         }
         // if( value < 1000  && $scope.formInputVoucher.discountType == 1){
@@ -228,14 +222,13 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     };
 
     //chuyen doi gia tri cua MaximumValueReduce tranh loi luc validation *ADD*
-    $scope.discountTypeChangeAdd = function () {
-        if ($scope.formInputVoucher.discountType == 1) {
-            $scope.formInputVoucher.maximumReductionValue = null
-        }
-        if ($scope.formInputVoucher.discountType == 2) {
-            $scope.formInputVoucher.maximumReductionValue = 0
-        }
-        $scope.validateAddValue()
+    $scope.discountTypeChangeAdd = function (discountType) {
+        $scope.formInputVoucher.maximumReductionValue = 0
+        $scope.validateAddValue(discountType)
+    }
+
+    $scope.applyforChangeAdd = function (value) {
+        $scope.formInputVoucher.quantity = 0
     }
 
     //#endregion
@@ -247,7 +240,7 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
         $scope.checkValidateAllValue()
 
-        if ($scope.duplicateNameError || $scope.duplicateCodeError || validateValueError) {
+        if ($scope.duplicateNameError || $scope.duplicateCodeError || $scope.validateValueError) {
             return;
         }
 
@@ -287,11 +280,17 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         $scope.resetFormAdd()
     }
 
+    //###########################################################################################################################
+    //###########################################################################################################################
+    //###########################################################################################################################
+    //###########################################################################################################################
+    //###########################################################################################################################
+
     //DISABLE FORM UPDATE
     $scope.setDisableUpdateForm = function (bool) {
         document.getElementById("updateCode").disabled = true;
         document.getElementById("updateName").disabled = bool;
-        document.getElementById("updateDiscountType").disabled = bool;
+        // document.getElementById("updateDiscountType").disabled = bool;
         document.getElementById("updateValue").disabled = bool;
         document.getElementById("updateMinBill").disabled = bool;
         document.getElementById("updateMaxReVa").disabled = bool;
@@ -303,6 +302,8 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         document.getElementById("flexRadioUpdate0").disabled = bool;
         document.getElementById("flexRadioUpdate1").disabled = bool;
         document.getElementById("flexRadioUpdate2").disabled = bool;
+        document.getElementById("radioTypeUpdate1").disabled = bool;
+        document.getElementById("radioTypeUpdate2").disabled = bool;
 
         //check status TAM NGUNG
         if (bool) {
@@ -311,33 +312,6 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
             document.getElementById("checkPause").style.display = "block";
         }
     }
-
-
-    // $scope.loadAndSelectCustomersFromAPI = function () {
-    //     let allCustomers = []
-    //     $http.get('http://localhost:8080/api/admin/customerN/all').then(function (res) {
-    //         allCustomers = res.data
-    //         console.log(allCustomers);
-    //     })
-    //     $http.get(apiCustomerVoucher + "/voucher/" + $scope.currentVoucher.id + "/customers")
-    //         .then(function (res) {
-    //             var apiCustomers = res.data.map(function (object) {
-    //                 return object.id;
-    //             });
-
-    //             angular.forEach(allCustomers, function (customer) {
-    //                 if (apiCustomers.includes(customer.id)) {
-    //                     customer.selected = true;
-    //                     $scope.updateSelectedCustomers(customer);
-    //                 }
-    //             });
-
-    //             $scope.saveSelections();
-    //         })
-    //         .catch(function (error) {
-    //             console.error('Error fetching customers from API:', error);
-    //         });
-    // };
 
     //tao list lựa chọn customerType trong Update form
     $scope.listCustomerTypeVoucher = [];
@@ -393,6 +367,12 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
             document.getElementById("updateButton").style.display = "block"
         }
 
+
+        document.getElementById("flexRadioUpdate0").disabled = true;
+        document.getElementById("flexRadioUpdate1").disabled = true;
+        document.getElementById("flexRadioUpdate2").disabled = true; updateStartDate
+        document.getElementById("updateStartDate").disabled = true;
+
         localStorage.setItem('selectedCustomers', []);
         $scope.loadAndSelectCustomersFromAPI($scope.currentVoucher.id);
         $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
@@ -404,14 +384,53 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
     // Call getAllCustomerType on load
     $scope.getAllCustomerType();
 
-    //chuyen doi gia tri cua MaximumValueReduce tranh loi luc validation *UPDATE*
-    $scope.discountTypeChangeUpdate = function () {
-        if ($scope.formUpdateVoucher.discountType == 1) {
-            $scope.formUpdateVoucher.maximumReductionValue = null
+    //#region validate form update
+
+    $scope.validateValueErrorUpdate = false;
+    $scope.validateAddMaxReVaUpdate = null;
+
+    $scope.checkValidateAllValueUpdate = function () {
+        let value = $scope.formUpdateVoucher.value
+        let max = $scope.formUpdateVoucher.maximumReductionValue
+        let min = $scope.formUpdateVoucher.minimumTotalAmount
+
+        console.log("-");
+        console.log(value);
+        console.log(max);
+        console.log(min);
+        console.log(min * value / 100);
+        if (min * value / 100 > max) {
+            $scope.validateValueErrorUpdate = true
+            $scope.validateAddMaxReVaUpdate = min * value / 100;
+        } else {
+            $scope.validateValueErrorUpdate = false
+            $scope.validateAddMaxReVaUpdate = 0;
         }
-        if ($scope.formUpdateVoucher.discountType == 2) {
-            $scope.formUpdateVoucher.maximumReductionValue = 0
+        console.log($scope.validateAddMaxReVaUpdate);
+    }
+
+
+    $scope.validateUpdateValue = function (discountType) {
+        if ($scope.formUpdateVoucher.value > 100 && discountType == 1) {
+            $scope.formUpdateVoucher.value = 100
         }
+        if ($scope.formUpdateVoucher.value < 1 && discountType == 1) {
+            $scope.formUpdateVoucher.value = 1
+        }
+        // if( value < 1000  && $scope.formInputVoucher.discountType == 1){
+        //     $scope.formInputVoucher.value == 1000
+        // }
+    };
+
+    //chuyen doi gia tri cua MaximumValueReduce tranh loi luc validation *ADD*
+    $scope.discountTypeChangeUpdate = function (discountType) {
+        console.log($scope.formInputVoucher.discountType);
+        $scope.formUpdateVoucher.maximumReductionValue = 0
+        $scope.validateUpdateValue(discountType)
+    }
+
+    $scope.applyforChangeUpdate = function (value) {
+        $scope.formUpdateVoucher.quantity = 0
     }
 
     //check trung ten va ma update
@@ -427,13 +446,16 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         const currentId = $scope.formUpdateVoucher.id;
         $scope.duplicateUpdateCodeError = $scope.vouchers.some(voucher => voucher.code === $scope.formUpdateVoucher.code && voucher.id !== currentId);
     };
+    //#endregion
 
     $scope.listCustomerUpdate = []
 
     //UPDATE VOUCHER ************
     $scope.updateVoucher = function (id) {
 
-        if ($scope.duplicateUpdateNameError || $scope.duplicateUpdateCodeError) {
+        $scope.checkValidateAllValueUpdate()
+
+        if ($scope.duplicateUpdateNameError || $scope.duplicateUpdateCodeError || $scope.validateValueErrorUpdate) {
             return;
         }
 
@@ -505,7 +527,11 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
 
         localStorage.setItem('selectedCustomers', []);
         $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
+        $scope.selectedCount = 0
         $scope.applySavedSelections();
+
+        $scope.validateValueError = false;
+        $scope.validateAddMaxReVa = null;
 
         $scope.duplicateNameError = false;
         $scope.duplicateCodeError = false;
@@ -525,6 +551,9 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         localStorage.setItem('selectedCustomers', []);
         $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
         $scope.applySavedSelections();
+
+        $scope.validateValueErrorUpdate = false;
+        $scope.validateAddMaxReVaUpdate = null;
 
         $scope.duplicateUpdateNameError = false;
         $scope.duplicateUpdateCodeError = false;
@@ -552,103 +581,6 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
         str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
         return str;
     }
-
-    // pagination and filter voucher *************
-    //#region 
-    // $scope.filterVoucher = function () {
-    //     $http.get(apiVoucher + "/all").then(function (res) {
-    //         $scope.vouchers = res.data;
-    //     })
-    // }
-
-    // $scope.filtervouchers = [];
-    // $scope.totalPages = 0;
-    // $scope.currentPage = 0;
-    // $scope.desiredPage = 1;
-    // $scope.filters = {
-    //     name: null,
-    //     code: null,
-    //     discountType: null,
-    //     startDate: null,
-    //     endDate: null,
-    //     status: null
-    // };
-
-    // $scope.getVouchers = function (pageNumber) {
-    //     // let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
-    //     // $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function(response) {
-    //     //     $scope.filtervouchers = response.data.content;
-    //     //     $scope.totalPages = response.data.totalPages;
-    //     //     $scope.currentPage = pageNumber;
-    //     // });
-
-    //     if ($scope.filters.name != null) {
-    //         $scope.filters.name = toLowerCaseNonAccentVietnamese($scope.filters.name.toLowerCase())
-    //     }
-
-    //     let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
-    //     $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function (response) {
-    //         $scope.filtervouchers = response.data.content;
-    //         $scope.totalPages = response.data.totalPages;
-    //         $scope.currentPage = pageNumber;
-    //         $scope.desiredPage = pageNumber + 1;
-    //     });
-    // };
-
-    // $scope.applyFilters = function () {
-    //     $scope.getVouchers(0);
-    // };
-
-    // $scope.goToPage = function () {
-    //     let pageNumber = $scope.desiredPage - 1;
-    //     if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
-    //         $scope.getVouchers(pageNumber);
-    //     } else {
-    //         // Reset desiredPage to currentPage if the input is invalid
-    //         $scope.desiredPage = $scope.currentPage + 1;
-    //     }
-    // };
-    // // Initial load
-    // $scope.getVouchers(0);
-
-    // $scope.search = function (code1) {
-    //     $scope.filters.code = code1
-
-    //     let pageNumber = 0
-
-    //     let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
-    //     $http.get('http://localhost:8080/api/admin/voucher/page', { params: params }).then(function (response) {
-    //         $scope.filtervouchers = response.data.content;
-    //         $scope.totalPages = response.data.totalPages;
-    //         $scope.currentPage = pageNumber;
-    //         $scope.desiredPage = pageNumber + 1;
-    //     });
-    // };
-
-    // $scope.clearSearch = function () {
-    //     $scope.filters = {
-    //         name: null,
-    //         code: null,
-    //         discountType: null,
-    //         startDate: null,
-    //         endDate: null,
-    //         status: null
-    //     };
-    //     $scope.search();
-    //     $scope.getVouchers(0);
-    // };
-
-    // $scope.resetFilters = function () {
-    //     $scope.filters = {
-    //         name: null,
-    //         code: null,
-    //         discountType: null,
-    //         startDate: null,
-    //         endDate: null,
-    //         status: null
-    //     };
-    //     $scope.getVouchers(0);
-    // }
 
     var now = new Date();
     var year = now.getFullYear();
@@ -711,19 +643,6 @@ app.controller("nguyen-voucher-ctrl", function ($scope, $http, $timeout) {
             $scope.desiredPage = $scope.currentPage + 1;
         }
     };
-
-    // $scope.searchByKeyword = function() {
-    //     let keyword = $scope.searchKeyword || null;
-    //     $scope.filters.code = keyword;
-    //     $scope.filters.name = keyword;
-    //     $scope.filters.applyfor = null;
-    //     $scope.filters.discountType = null;
-    //     $scope.filters.startDate = null;
-    //     $scope.filters.endDate = null;
-    //     $scope.filters.status = null;
-
-    //     $scope.getVouchers(0, 1);
-    // };
 
     $scope.clearKeyword = function () {
         $scope.searchKeyword = null;
