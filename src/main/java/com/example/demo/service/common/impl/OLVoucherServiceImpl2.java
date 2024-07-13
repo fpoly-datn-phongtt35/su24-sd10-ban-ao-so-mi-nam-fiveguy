@@ -2,6 +2,7 @@ package com.example.demo.service.common.impl;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.Voucher;
+import com.example.demo.repository.common.CustomerRepositoryCommon;
 import com.example.demo.repository.common.OLCustomerTypeVouchersRepository2;
 import com.example.demo.repository.common.OLCustomerVoucherRepository2;
 import com.example.demo.repository.common.OLVoucherRepository2;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +26,9 @@ public class OLVoucherServiceImpl2 implements OLVoucherService2 {
 
     @Autowired
     private OLCustomerTypeVouchersRepository2 customerTypeVouchersRepository;
+
+    @Autowired
+    private CustomerRepositoryCommon customerRepositoryCommon;
 
 
     @Override
@@ -58,6 +63,38 @@ public class OLVoucherServiceImpl2 implements OLVoucherService2 {
         combinedVouchers = combinedVouchers.stream().distinct().collect(Collectors.toList());
 
         return combinedVouchers;
+    }
+
+    @Override
+    public List<Voucher> getVouchersForCustomer(Long id) {
+        // Fetch the customer
+        Optional<Customer> customer = customerRepositoryCommon.findById(id);
+
+        if (customer.isPresent()){
+            // Criterion 1: get vouchers by CustomerTypeVouchers
+            List<Long> voucherIdsFromCustomerType = customerTypeVouchersRepository.findVoucherIdsByCustomerTypeId(customer.get().getCustomerType().getId());
+            List<Voucher> vouchersFromCustomerType = olVoucherRepository2.findAllByIdAndStatus(voucherIdsFromCustomerType);
+
+            // Criterion 2: get vouchers by CustomerVoucher
+            List<Long> voucherIdsFromCustomer = customerVoucherRepository.findVoucherIdsByCustomerId(customer.get().getId());
+            List<Voucher> vouchersFromCustomer = olVoucherRepository2.findAllByIdAndStatus(voucherIdsFromCustomer);
+
+            // Criterion 2: get vouchers by applyfor all
+            List<Voucher> voucherStatus0 = olVoucherRepository2.findAllByStatus1AndApplyFor();
+
+
+            // Combine both lists
+            List<Voucher> combinedVouchers = vouchersFromCustomerType;
+            combinedVouchers.addAll(vouchersFromCustomer);
+            combinedVouchers.addAll(voucherStatus0);
+
+            // Remove duplicates
+            combinedVouchers = combinedVouchers.stream().distinct().collect(Collectors.toList());
+
+            return combinedVouchers;
+        }
+        return null;
+
     }
 
     @Override

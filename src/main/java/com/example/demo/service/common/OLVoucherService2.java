@@ -11,5 +11,8 @@ public interface OLVoucherService2 {
 
     List<Voucher> getVouchersForCustomer(Customer customer);
 
+    List<Voucher> getVouchersForCustomer(Long id);
+
+
     Voucher selectBestVoucher(double totalAmount,Customer customer);
 }
