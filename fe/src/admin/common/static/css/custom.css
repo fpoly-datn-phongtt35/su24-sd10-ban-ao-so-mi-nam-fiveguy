@@ -555,11 +555,11 @@ background-color:rgba(0,0,0,0.09);
 		   cursor:pointer;
 	   }
 	   
-	   table.table td:last-child{
+	   /* table.table td:last-child{
 		   opacity:0.9;
 		   font-size:22px;
 		   margin:0px 5px;
-	   }
+	   } */
 	   
 	   table.table td a{
 		   font-weight:bold;
