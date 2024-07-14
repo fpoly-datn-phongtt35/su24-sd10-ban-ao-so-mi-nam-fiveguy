@@ -41,6 +41,9 @@ public class Sale {
     @Column(name = "Describe", columnDefinition = "nvarchar(500)")
     private String describe;
 
+    @Column(name = "Path", columnDefinition = "nvarchar(max)")
+    private String path;
+
     @Column(name = "StartDate")
     private Date startDate;
 
