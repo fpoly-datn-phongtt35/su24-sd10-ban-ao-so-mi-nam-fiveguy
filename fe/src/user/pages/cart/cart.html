@@ -1,73 +1,8 @@
 
 
 <!-- cart + summary -->
-<section style="    margin-top: 82px;"  class="bg-light " >
-        <div class="row justify-content-center">
-            <div class="col-md-8 category-container">
-                <!-- Title Section -->
-                <div class="text-center mb-4">
-                    <h2 class="heading-data__title" id="headingTitle">DANH MỤC SẢN PHẨM</h2>
-                </div>
-                
-                <!-- Categories List -->
-                <div class="category-body">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="category-data" id="categoryDataContainer">
-                                <ul class="list-group">
-                                    <li class="list-group-item" ng-repeat="category in dataFill.categoryList">
-                                        <a ng-href="#!product?categoryId={{category.id}}" class="text-dark">{{category.name}}</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Admin Button -->
-                    <div class="text-end">
-                        <button class="btn btn-primary mt-3" ng-click="goToOfView()" ng-show="isAdmin">Chức năng Admin</button>
-                    </div>
-                </div>
-                
-                <!-- Search Bar -->
-                <div class="d-flex justify-content-start mt-4">
-                    <div class="input-group" style="border-radius: 10px; width: 100%;">
-                        <input type="search" class="form-control" placeholder="Tìm kiếm sản phẩm" ng-click="openOverlaySearch()" readonly />
-                        <button type="button" class="btn btn-primary" onclick="openOverlay()">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-  
-    <!-- <div class="overlay" id="overlay" class="inactive" ng-click="closeOverlay($event)">
-      <div class="header-search">
-        <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
-          <i class="fa-solid fa-xmark fa-lg"></i>
-        </button>
-        <form class="from-search"  >
-          <div class="input-group">
-            <div class="form-outline w-100">
-            <input style="border-bottom: 1px solid #cdcdcd;" type="search" id="form1" class="form-control"
-      ng-model="searchText" ng-change="loadProductSearch()" />
-  
-  
-            </div>
-            <button type="button" class="btn btn-primary shadow-0">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </form>
-      </div>
-      <div class="product-display">
-        <div class="container-fluid">
-          <div  class="row" id="productDisplay">
-          </div>
-        </div>
-      </div>
-    </div> -->
-    
+<section style="    margin-top: 82px;"  class="bg-light "  ng-init="loadPaymentMethod();getVouchersForCustomer();">
+ 
     <div class="container-fluid">
       <div style="padding: 46px;;" class="row">
         <!-- cart -->
@@ -80,68 +15,54 @@
                 <hr />  
                 <div ng-repeat="item in cartItems" class="row gy-3 mb-4">
                   <div class="col-lg-5">
-                    <div class="me-lg-5">
-                      <div class="d-flex" style="align-items: center;">
-                        <a href="#!product-detail/{{item.productDetail.product.id}}">
-                          <img ng-src="{{ item.path }}" class="border rounded me-3"
-                          style="width: 96px; height: 100px" />
-                          </a>
-                        <div class="title-name">
-                          <p href="#" class="nav-link">
-                            <!-- Hiển thị thông tin khi đã đăng nhập -->
-                            {{ item.productDetail.product.name }} {{
-                            item.productDetail.product.category.name }} {{
-                            item.productDetail.product.material.name }} {{
-                            item.productDetail.product.code }}
-  
-                            <!-- Hiển thị thông tin khi chưa đăng nhập -->
-                            {{ item.product.name }} {{ item.product.category.name
-                            }} {{ item.product.material.name }} {{
-                            item.product.code }}
-                          </p>
-                          <div class="title-detail" style="display: flex">
-                            <p style="margin-right: 8px">
-                              Màu sắc: {{item.color.name}}
-                              {{item.productDetail.color.name}}
-                            </p>
-                            <p>
-                              Kích cỡ: {{item.size.name}}
-                              {{item.productDetail.size.name}}
-                            </p>
+                      <div class="me-lg-5">
+                          <div class="d-flex" style="align-items: center;">
+                              <a href="#home/product/product-detail/{{item.productDetail.product.id}}">
+                                  <img ng-src="{{ item.path }}" class="border rounded me-3" style="width: 96px; height: 100px" />
+                              </a>
+                              <div class="title-name">
+                                  <p href="#" class="nav-link">
+                                      {{ item.productDetail.product.name }} {{ item.productDetail.product.category.name }} {{ item.productDetail.product.material.name }} {{ item.productDetail.product.code }}
+                                  </p>
+                                  <div class="title-detail" style="display: flex">
+                                      <p style="margin-right: 8px">
+                                        Màu sắc: {{item.nameColor}}
+                                      </p>
+                                      <p>
+                                        Kích cỡ: {{item.nameSize}}
+                                      </p>
+                                  </div>
+                              </div>
                           </div>
-                        </div>
                       </div>
-                    </div>
                   </div>
                   <div class="col-lg-5 col-sm-6 col-6 d-flex align-items-center">
-                    <div class="text-price me-3">
-                      <text class="h6">{{ item.price | number }} đ</text>
-                    </div>
-                    <div class="input-number flex-grow-1">
-                      <input ng-model="item.quantity" type="number"min="1" max="100"ng-change="checkQuantityChange(item)"
-                        ng-blur="cart.update(item.id, item.quantity)" class="form-control   updateQuantityProduct"  
-                        style="max-width: 70px; overflow: hidden" />
-                    </div>
-  
-                    <div class="text-total_price ms-3" style="max-width: 100px; white-space: nowrap">
-                      <text class="h6">{{ item.price * item.quantity | number }} đ</text>
-                    </div>
+                      <div class="text-price me-3">
+                          <span class="h6" ng-if="!item.promotionalPrice || item.promotionalPrice == 0">
+                              {{ item.price | number }} đ
+                          </span>
+                          <span class="h6" ng-if="item.promotionalPrice && item.promotionalPrice != 0">
+                              <del>{{ item.price | number }} đ</del>
+                              <span>{{ item.promotionalPrice | number }} đ</span>
+                          </span>
+                      </div>
+                      <div class="input-number flex-grow-1">
+                          <input ng-model="item.quantity" type="number" min="1" max="100" ng-change="checkQuantityChange(item)" ng-blur="cart.update(item.id, item.quantity)" class="form-control updateQuantityProduct" style="max-width: 70px; overflow: hidden" />
+                      </div>
+                      <div class="text-total_price ms-3" style="max-width: 100px; white-space: nowrap">
+                          <span class="h6">{{ (item.promotionalPrice && item.promotionalPrice != 0 ? item.promotionalPrice : item.price) * item.quantity | number }} đ</span>
+                      </div>
                   </div>
                   <div class="col-lg col-sm-6 d-flex align-items-center">
-                    <div class="w-100">
-                      <button ng-click="cart.remove(item.id)" class="btn btn-light border text-danger icon-hover-danger"
-                        style="
-                          margin-left: auto;
-                          margin-right: auto;
-                          display: block;
-                        ">
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
-  
-                    </div>
+                      <div class="w-100">
+                          <button ng-click="cart.remove(item.id)" class="btn btn-light border text-danger icon-hover-danger" style="margin-left: auto; margin-right: auto; display: block;">
+                              <i class="fa-solid fa-trash"></i>
+                          </button>
+                      </div>
                   </div>
-                </div>
-                <div class="row" ng-show="bill.billDetail.length > 0">
+              </div>
+              
+                <div class="row" >
                   <div class="col-md-12">
                       <button class="btn btn-primary text-start float-end" ng-click="cart.clear()">
                           Xóa tất cả
@@ -294,64 +215,50 @@
               <div class="discount">
                 <h5>Mã giảm giá / Quà tặng</h5>
                 <!-- Modal -->
-                <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel"
-                  aria-hidden="true">
+                <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialogVoucher" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="voucherModalLabel">Chọn giảm giá</h5>
-                        <button type="button" class="btn btn-light shadow-0" ng-click="back()">
-                          <i class="fa-solid fa-xmark"></i>
-                      </button>
+                        <h5 class="modal-title" id="voucherModalLabel">Mã ưu đãi</h5>
                       </div>
                       <div class="modal-body">
-                        <!-- Nội dung của form -->
-                        <!-- <div class="input-group mt-3 mb-4">
-                          <input type="text" class="form-control border" ng-model="searchCode" placeholder="Mã" />
-                          <button type="button" class="btn btn-primary shadow-0" ng-click="searchByCode()">
-                              <i class="fas fa-search"></i>
-                          </button>
-                      </div> -->
-                        <!-- Danh sách voucher -->
                         <div class="voucher-list mt-3 mb-4">
-                          <div  class="voucher-item row" ng-repeat="voucher in listVouchers"
-                            ng-click="selectVoucher(voucher)" ng-class="{ 'selected-voucher': voucher.selected }">
-                            <div class="col-4 ">
-                              <div class="voucher-name">
+                          <div class="voucher-item" ng-repeat="voucher in customerVouchers" ng-click="selectVoucher(voucher)" ng-class="{ 'selected-voucher': voucher.selected }">
+                            <div class="voucher-content">
+                              <div class="voucher-left">
                                 <h5>{{ voucher.code }}</h5>
-                                <p>
-                                  <span ng-if="voucher.quantity > 0">({{ voucher.quantity }})</span>
-                                  <span ng-if="voucher.quantity === 0" class="red-text">(Hết)</span>
+                                <p>Giảm {{ voucher.value | number}}{{ voucher.discountType === 2 ? ' đ' : ' %' }} cho đơn từ {{ voucher.minimumTotalAmount | number }} đ
+                                  <br/>Tối đa {{ voucher.maximumReductionValue | number }} đ
                                 </p>
-                                
+                                <p>HSD: {{ voucher.endDate | date:'dd-MM-yyyy HH:mm' }}</p>
                               </div>
-                              <div class="voucher-details">
-                                <p>HSD: {{ voucher.endDate | date:'dd/MM/yyyy' }}</p>
+                              <div class="voucher-right-contain">
+
+                              <div class="voucher-right">
+                                    <span ng-if="voucher.selected" class="checkmark">&#10003;</span>
+                               
+                                    <span ng-if="!voucher.selected" class="addmark">+</span>
+                    
                               </div>
                             </div>
-                            <div class="col-8">
-                              <div class="voucher-info">
-                                <div class="voucher-value">
-                                  <p>Giảm {{ voucher.value | number}}{{ voucher.valueType === 1 ? ' đ' : ' %' }} cho đơn hàng {{ voucher.minimumTotalAmount | number }} đ</p>
-  
-                                </div>
-  
-                              </div>
+
                             </div>
                           </div>
                         </div>
-  
                       </div>
-              
-  
+                  
                     </div>
                   </div>
                 </div>
+                
+                
+                
+                
   
                 <hr />
                 <i class="fa-solid fa-tags"></i>
   
-                <a href="#!cart" ng-click="openVoucherModal()">Chọn hoặc nhập mã</a>
+                <a  ng-click="openVoucherModal()">Chọn mã giảm giá</a>
                 <p style="margin-top: 8px;" ng-style="voucherMessage === 'Mã giảm giá đã được áp dụng' ? {'color': 'green'} : {'color': 'red'}">{{ voucherMessage }}</p>
   
               </div>
@@ -392,7 +299,7 @@
                     <div ng-class="{ 'selected-payment': selectedPayment === paymentMethod }" class="form-check select-payment" >
                         <input  type="radio" name="paymentMethod" value="payOnDelivery" id="{{ 'paymentMethod_' + $index }}" ng-checked="selectedPayment === paymentMethod" style="border-radius: 3px;">
                         <img style="position: relative;" class="card-img-top" class="rounded-2" loading="lazy"
-                        ng-src="{{ paymentMethod.path }}" />
+                        ng-src="{{ paymentMethod.image }}" />
                       
                         <label class="form-check-label">
                             <span>Thanh toán {{paymentMethod.name}}</span>
@@ -408,7 +315,9 @@
               
               
             <div class="mt-3">
-              <button ng-click="bill.purchase()" class="btn btn-success w-100 shadow-0 mb-2" ng-disabled=" !hasProductsInBill()">
+              <button ng-click="bill.purchase()" class="btn btn-success w-100 shadow-0 mb-2" 
+         
+              >
                   Thanh toán
               </button>
             

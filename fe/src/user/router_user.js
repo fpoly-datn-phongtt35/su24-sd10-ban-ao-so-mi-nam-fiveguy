@@ -5,7 +5,7 @@ app.config(function ($routeProvider, $locationProvider) {
   $routeProvider
   .when("/home", {
     templateUrl: "pages/home.html",
-    controller: 'thongKeController'
+    controller: 'productController'
     
   })
     // <!-- Hiếu -->
@@ -23,7 +23,23 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Hải -->
     .when("/home/cart", {
       templateUrl: "pages/cart/cart.html",
-      controller: 'cartController'
+      controller: 'productController'
+    })
+    .when("/home/product", {
+      templateUrl: "pages/onlineShop/product.html",
+      controller: 'productController'
+    })
+    .when("/home/product/product-detail/:idProduct", {
+      templateUrl : "pages/onlineShop/product-detail.html",
+      controller : "productController"
+    })
+    .when("/home/paymentSuccess", {
+      templateUrl: "pages/onlineShop/paymentSuccess.html",
+      controller: 'productController'
+    })
+    .when("/home/paymentFailed", {
+      templateUrl: "pages/onlineShop/paymentFailed.html",
+      controller: 'productController'
     })
 
 

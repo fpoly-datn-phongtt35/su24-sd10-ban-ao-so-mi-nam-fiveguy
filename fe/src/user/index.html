@@ -9,19 +9,20 @@
 	<!-- angularJs -->
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.js"></script>
+    	  <!-- toastr -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 </head>
 <body ng-app="appUser">
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Shop của Tôi</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Trang chủ</a>
+                        <a class="nav-link active" aria-current="page" href="#home">Trang chủ</a>
                     </li>
                     <!-- <li class="nav-item">
                         <a class="nav-link" href="#">Sản phẩm</a>
@@ -33,16 +34,19 @@
                         <a class="nav-link" href="http://127.0.0.1:5555/src/admin/index.html">Quản lí</a>
                       </li>
                 </ul>
-                <form class="d-flex me-3">
+                <!-- <form class="d-flex me-3">
                     <input class="form-control me-2" type="search" placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
-                </form>
+                </form> -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="#/home/customer"><i class="fas fa-user"></i> Quản lí tài khoản</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#/home/cart"><i class="fas fa-shopping-cart"></i> Giỏ hàng</a>
+                        <a class="nav-link" href="#/home/cart">
+                            <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                            <span ng-bind="countProduct" class="badge bg-danger position-absolute  translate-middle badge-circle">{{countProduct}}</span>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="http://127.0.0.1:5555/src/login/login.html">
@@ -101,7 +105,8 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
+	  <!-- toastr -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
 
 
@@ -123,7 +128,9 @@
 
 	<!-- Hải -->
 	<script src="/src/user/controller/cart-controller.js"></script>
-
+	<script src="/src/user/controller/product-controller.js"></script>
+	<script src="/src/user/controller/home-controller.js"></script>
+<link rel="stylesheet" href="/src/user/pages/onlineShop/product.css">
 
 
 

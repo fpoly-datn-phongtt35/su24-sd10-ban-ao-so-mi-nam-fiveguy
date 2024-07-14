@@ -1,0 +1,212 @@
+
+<!-- sidebar + content -->
+<section style="margin-top: 82px;" class="container-fluid" ng-init="refreshDataProduct()">
+    <!-- Sidebar and Content -->
+    <div class="row">
+
+        
+        <div class="search-container">
+            <div class="search-box input-group">
+                <input style="border-bottom: 1px solid #cdcdcd;" type="search" ng-model="searchTerm"  ng-change="filterProducts(0)" class="form-control" placeholder="Tìm kiếm sản phẩm"/>
+            </div>
+        </div>
+        
+      <!-- sidebar -->
+      <div style="padding: 46px;" class="col-lg-2">
+        <div class="collapse d-lg-block mb-5" id="navbarSupportedContent">
+            <!-- Colors -->
+            <div class="accordion-item">
+                <h5 ng-click="toggleSection('colors')">Màu sắc</h5>
+                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo">
+                    <div class="accordion-body" ng-show="sections.colors">
+                        <div class="row">
+                            <div class="col-md-3" ng-repeat="color in colors">
+                                <div class="color-circle"
+                                     ng-style="{ 'background-color': color.colorCode }"
+                                     ng-class="{ 'btn-selected2': color.isSelected }"
+                                     ng-click="color.isSelected = !color.isSelected; updateSelectedColors(color)">
+                                    <!-- Nội dung của vòng tròn màu -->
+                                </div>
+                                <p class="center-text">{{ color.name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+          
+          <hr>
+
+          <!-- Sizes -->
+          <div class="accordion-item">
+              <h5 ng-click="toggleSection('sizes')">Kích cỡ</h5>
+              <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree">
+                  <div class="accordion-body" ng-show="sections.sizes">
+                      <div class="row">
+                          <div style="margin-bottom: 4px;" class="col-md-3" ng-repeat="size in sizes">
+                              <label class="btn btn-white mb-1 px-1" style="width: 60px; border: 1px solid #ccc;" ng-class="{ 'btn-selected': size.isSelected }"
+                                  ng-click="size.isSelected = !size.isSelected; updateSelectedSizes(size)">
+                                  {{ size.name }}
+                              </label>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <hr>
+
+        <!-- Materials -->
+        <div class="accordion-item">
+            <h5 ng-click="toggleSection('materials')">Chất liệu</h5>
+            <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show" aria-labelledby="headingFour">
+                <div class="accordion-body" ng-show="sections.materials">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div ng-repeat="material in materials" class="form-check">
+                                <input type="checkbox" class="form-check-input" id="{{ material.id }}" ng-model="material.isSelected" ng-true-value="true" ng-false-value="false" ng-change="updateSelectedMaterials(material)" />
+                                <label class="form-check-label" for="{{ material.id }}">{{ material.name }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+          <hr>
+
+          <!-- Wrists -->
+          <div class="accordion-item">
+              <h5 ng-click="toggleSection('wrists')">Vòng tay</h5>
+              <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show" aria-labelledby="headingFive">
+                  <div class="accordion-body" ng-show="sections.wrists">
+                      <div class="row">
+                          <div class="col-md-12">
+                              <div ng-repeat="wrist in wrists" class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="{{ wrist.id }}" ng-model="wrist.isSelected" ng-true-value="true" ng-false-value="false"
+                                      ng-change="updateSelectedWrists(wrist)" />
+                                  <label class="form-check-label" for="{{ wrist.id }}">{{ wrist.name }}</label>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <hr>
+
+          <!-- Collars -->
+          <div class="accordion-item">
+              <h5 ng-click="toggleSection('collars')">Cổ áo</h5>
+              <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse show" aria-labelledby="headingSix">
+                  <div class="accordion-body" ng-show="sections.collars">
+                      <div class="row">
+                          <div class="col-md-12">
+                              <div ng-repeat="collar in collars" class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="{{ collar.id }}" ng-model="collar.isSelected" ng-true-value="true" ng-false-value="false"
+                                      ng-change="updateSelectedCollars(collar)" />
+                                  <label class="form-check-label" for="{{ collar.id }}">{{ collar.name }}</label>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  
+        </div>
+        <div style="padding: 46px;" class="col-lg-10">
+<!-- Sort Header -->
+<header class="d-sm-flex align-items-center border-bottom mb-4 pb-3">
+    <strong class="d-block py-2">{{ totalProducts }} Kết quả</strong>
+
+  <div class="ms-auto">
+    <select class="form-select d-inline-block w-auto border pt-1" ng-model="selectedSortType" ng-change="filterProducts(0)">
+      <option value="0">Mới nhất</option>
+      <option value="1">Giá thấp đến cao</option>
+      <option value="2">Giá cao đến thấp</option>
+    </select>
+  </div>
+</header>
+
+    
+<div class="row">
+    <div class="col-md-3 mb-4" ng-repeat="product in products">
+        <div class="product">
+            <a ng-href="#home/product/product-detail/{{product.productId}}">
+                <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy"
+                ng-src="{{ product.imagePath }}" />
+                <h3 class="product-grid__title">
+                    <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }}
+                        {{ product.product.category.name }}
+                    </a>
+                </h3>
+          
+            </a>
+            
+            <!-- Displaying prices -->
+            <div class="price-info">
+                <div ng-if="product.promotionalPrice">
+                    <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
+                </div>
+                <div ng-if="product.saleValue">
+                    <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
+                    <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
+                    <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
+                </div>
+                <div ng-if="!product.promotionalPrice && !product.saleValue">
+                    <span>{{ formatCurrency(product.productPrice) }}₫</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  
+        <div class="row text-center">
+            <div class="col-md-12" ng-if="totalPages > 1">
+                <ul class="pagination">
+                    <li ng-class="{disabled: currentPage === 0}">
+                        <a href="" ng-click="setCurrentPage(0)">
+                            &laquo;&laquo;
+                        </a>
+                    </li>
+                    <li ng-class="{disabled: currentPage === 0}">
+                        <a href="" ng-click="setCurrentPage(currentPage - 1)">
+                            &laquo;
+                        </a>
+                    </li>
+        
+                    <li ng-repeat="page in getPageRange()" ng-class="{active: currentPage === page}">
+                        <a href="" ng-click="setCurrentPage(page)">
+                            {{ page + 1 }}
+                        </a>
+                    </li>
+        
+                    <li ng-class="{disabled: currentPage === totalPages - 1}">
+                        <a href="" ng-click="setCurrentPage(currentPage + 1)">
+                            &raquo;
+                        </a>
+                    </li>
+                    <li ng-class="{disabled: currentPage === totalPages - 1}">
+                        <a href="" ng-click="setCurrentPage(totalPages - 1)">
+                            &raquo;&raquo;
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        
+        
+    
+        </div>
+      </div>
+      
+      <!-- content -->
+    
+    </div>
+  </section>
+  
