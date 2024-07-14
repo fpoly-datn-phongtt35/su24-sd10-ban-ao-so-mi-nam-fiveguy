@@ -1,56 +1,84 @@
 app.controller("tinh-bill-controller", function ($scope, $http) {
     $scope.product = [];
     $scope.bill = [];
-    $scope.selectedProductDetail = $scope.selectedProductDetails = JSON.parse(localStorage.getItem('selectedProductDetails')) || [];
-
-
+    $scope.totalPrice = 0;
+    $scope.idBill = null;
+    $scope.selectedProductDetails = JSON.parse(localStorage.getItem('selectedProductDetails')) || [2];
+    $scope.productSelected = $scope.selectedProductDetails.length > 0;
 
     //Product =================================================================
-    const apiProduct = "http://localhost:8080/api/admin/product-tinh"
-
 
     $scope.detailProductBill = function (productDetail) {
-        // Kiểm tra xem sản phẩm đã tồn tại trong danh sách đã chọn hay chưa
-        let existingProductDetail = $scope.selectedProductDetails.find(item => item.product.id === productDetail.product.id);
-
-        if (existingProductDetail) {
-            // Nếu tồn tại, cộng dồn số lượng
-            existingProductDetail.quantity += productDetail.inputQuantity;
-        } else {
-            // Nếu không tồn tại, thêm sản phẩm mới vào danh sách đã chọn
-            const selectedProduct = {
-                product: productDetail.product,
-                quantity: productDetail.inputQuantity,
-                remainingQuantity: productDetail.quantity - productDetail.inputQuantity
-            };
-            $scope.selectedProductDetails.push(selectedProduct);
+        if (!$scope.idBill) {
+            alert('Vui lòng chọn hóa đơn trước khi thêm sản phẩm.');
+            return;
         }
 
-        // Giảm số lượng tồn kho tương ứng với số lượng đã chọn
+        let billId = $scope.idBill.id;
+
+        if (!$scope.selectedProductDetails[billId]) {
+            $scope.selectedProductDetails[billId] = [];
+        }
+
+        // Tìm kiếm xem sản phẩm đã tồn tại trong danh sách chưa
+        let existingProductDetail = $scope.selectedProductDetails[billId].find(item => item.id === productDetail.id);
+        if (existingProductDetail) {
+            // Nếu đã tồn tại, cập nhật quantity
+            existingProductDetail.quantity += productDetail.inputQuantity;
+        } else {
+            // Nếu chưa tồn tại, thêm mới sản phẩm vào danh sách
+            const selectedProduct = {
+                id: productDetail.id,  // Đảm bảo lưu id từ cơ sở dữ liệu
+                product: productDetail.product,
+                color: productDetail.color,
+                size: productDetail.size,
+                quantity: productDetail.inputQuantity,
+                remainingQuantity: productDetail.quantity - productDetail.inputQuantity,
+                price: productDetail.product.price,
+                image: productDetail.product.image
+            };
+            $scope.selectedProductDetails[billId].push(selectedProduct);
+        }
+
         productDetail.quantity -= productDetail.inputQuantity;
         productDetail.remainingQuantity = productDetail.quantity;
 
-        // Lưu lại danh sách sản phẩm đã chọn vào localStorage
         localStorage.setItem('selectedProductDetails', JSON.stringify($scope.selectedProductDetails));
+        $scope.calculateTotalPrice();
+        $scope.productSelected = true;
+        console.log($scope.selectedProductDetails[$scope.idBill.id]);
     };
 
 
-    // Hàm xóa sản phẩm chi tiết khỏi selectedProductDetails
-    $scope.removeProductDetail = function (index) {
-        // Khôi phục lại số lượng sản phẩm trong danh sách gốc
-        let removedProduct = $scope.selectedProductDetails[index];
-        let originalProduct = $scope.filterProductDetall.find(item => item.product.id === removedProduct.product.id);
-        if (originalProduct) {
-            originalProduct.quantity += removedProduct.quantity;
-            originalProduct.remainingQuantity = originalProduct.quantity;
+
+    $scope.hasSelectedProducts = false;
+
+    $scope.calculateTotalPrice = function () {
+        if ($scope.selectedProductDetails && $scope.selectedProductDetails[$scope.idBill.id]) {
+            $scope.totalPrice = $scope.selectedProductDetails[$scope.idBill.id].reduce((sum, productDetail) => {
+                return sum + (productDetail.price * productDetail.quantity);
+            }, 0);
+            $scope.hasSelectedProducts = true;
+        } else {
+            $scope.totalPrice = 0;
+            $scope.hasSelectedProducts = false;
         }
-
-        // Xóa sản phẩm khỏi danh sách đã chọn
-        $scope.selectedProductDetails.splice(index, 1);
-        localStorage.setItem('selectedProductDetails', JSON.stringify($scope.selectedProductDetails));
     };
 
-    // Hàm kiểm tra và điều chỉnh số lượng sản phẩm nhập vào
+    $scope.removeProductDetail = function (index) {
+        // Xóa phần tử được chọn khỏi mảng selectedProductDetails[idBill.id]
+        $scope.selectedProductDetails[$scope.idBill.id].splice(index, 1);
+
+        // Cập nhật lại dữ liệu trong localStorage
+        localStorage.setItem('selectedProductDetails', JSON.stringify($scope.selectedProductDetails));
+
+        // Tính toán lại totalPrice
+        $scope.calculateTotalPrice();
+
+        // Kiểm tra xem còn sản phẩm được chọn hay không để cập nhật biến productSelected
+        $scope.productSelected = $scope.selectedProductDetails.length > 0;
+    };
+
     $scope.validateQuantity = function (pdIn) {
         $scope.filterProductDetall.forEach(function (pd) {
             if (pd === pdIn) {
@@ -63,9 +91,6 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
         });
     };
 
-
-
-    //Phân trang lọc
     $scope.filterProductDetall = function () {
         $http.get(apiProduct).then(function (response) {
             $scope.product = response.data;
@@ -78,17 +103,12 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
     $scope.desiredPage = 1;
     $scope.filters = {
         name: null,
-        code: null,
         price: null,
-
     };
 
     $scope.getProductDetall = function (pageNumber) {
         let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
-        $http
-            .get("http://localhost:8080/api/admin/product-tinh/page", {
-                params: params,
-            })
+        $http.get("http://localhost:8080/api/admin/product-tinh/page", { params: params })
             .then(function (response) {
                 $scope.filterProductDetall = response.data.content;
                 $scope.filterProductDetall.forEach(function (productDetail) {
@@ -103,7 +123,6 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
 
     $scope.applyFilters = function () {
         $scope.getProductDetall(0);
-
     };
 
     $scope.goToPage = function () {
@@ -111,45 +130,89 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
         if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
             $scope.getProductDetall(pageNumber);
         } else {
-            // Reset desiredPage to currentPage if the input is invalid
             $scope.desiredPage = $scope.currentPage + 1;
         }
     };
-    // Initial load
+
     $scope.getProductDetall(0);
 
-    $scope.resetFilters = function () {
-        $scope.filters = {
-            name: null,
-            code: null,
-            price: null,
-        };
-        $scope.getProductDetall(0);
-    };
-    //End Product ===================================================================================================
+    //============================End ProductDetail================================================
+    //============================Bill============================================================
 
-    //Bill============================================================
-    const apiBill = "http://localhost:8080/api/admin/bill-tinh"
+    const apiBill = "http://localhost:8080/api/admin/bill-tinh";
 
     $scope.getAllBill = function () {
         $http.get(apiBill).then(function (response) {
             $scope.bill = response.data;
-            // console.log(response.data);
-        }
-        )
-    }
-    $scope.getAllBill()
+        });
+    };
+    $scope.getAllBill();
 
     $scope.createBill = function () {
         let databill = {
             createAt: new Date,
             status: 1,
-        }
+        };
         $http.post(apiBill + "/save", databill).then(function (response) {
-            $scope.bills.unshift(response.data);
-            // $scope.getAllBill();
-            // console.log(response.data);
+            // $scope.bills.unshift(response.data);
+            $scope.getAllBill();
         });
-    }
-    // EndBill============================================================
-})
+    };
+    // $scope.createBill();
+    $scope.editBill = function (employee) {
+        $scope.selectedBill = angular.copy(employee);
+        $scope.selectedBill.createdAt = $scope.formatDateTime(employee.createdAt);
+        $scope.idBill = angular.copy(employee);
+        console.log('Edited bill id:', $scope.idBill);
+    };
+
+    $scope.formatDateTime = function (dateString) {
+        var date = new Date(dateString);
+        var day = String(date.getDate()).padStart(2, '0');
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var year = date.getFullYear();
+        var hours = String(date.getHours()).padStart(2, '0');
+        var minutes = String(date.getMinutes()).padStart(2, '0');
+        var seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    };
+    //====================End Bill============================================
+    //====================BillDetail============================================
+
+    const apiBillDetail = "http://localhost:8080/api/admin/billdetail-tinh";
+
+    $scope.createBillDetail = function () {
+        if (!$scope.idBill) {
+            alert('Vui lòng chọn hóa đơn trước khi tạo chi tiết hóa đơn.');
+            return;
+        }
+
+        if (!$scope.selectedProductDetails[$scope.idBill.id] || $scope.selectedProductDetails[$scope.idBill.id].length === 0) {
+            alert('Không có sản phẩm nào được chọn.');
+            return;
+        }
+
+        $scope.selectedProductDetails[$scope.idBill.id].forEach(productDetail => {
+            console.log("ID productDetail: " + productDetail.id); // Sử dụng id của productDetail từ cơ sở dữ liệu
+            console.log("ID bill: " + $scope.idBill.id);
+
+            let payload = {
+                bill: { id: $scope.idBill.id },
+                productDetail: { id: productDetail.id }, // Sử dụng id của productDetail
+                quantity: productDetail.quantity,
+                price: productDetail.price * productDetail.quantity,
+                promotionalPrice: productDetail.promotionalPrice || 0, // Giá khuyến mãi nếu có
+                status: 1 // Trạng thái
+            };
+
+            $http.post(apiBillDetail + "/save", payload).then(function (response) {
+                console.log('Bill detail saved successfully', response.data);
+            }).catch(function (error) {
+                console.error('Error saving bill detail', error);
+            });
+        });
+    };
+
+    //====================End BillDetail============================================
+
+});
