@@ -51,11 +51,11 @@ public class BillRestControllerTinh {
 //        Employee employee1 = new Employee();
         String randomCode = generateRandomCode(6);
         bill1.setCode(randomCode);
-        bill1.setEmployee(employee.get().getFullName());;
+        bill1.setEmployee(employee.get());;
         bill1.setCreatedAt(new Date());
         bill1.setCustomer(bill.getCustomer());
         bill1.setTypeBill(1);
-        bill1.setStatus(1);cv
+        bill1.setStatus(1);
 
         return billRepositoryTinh.save(bill1);
 
