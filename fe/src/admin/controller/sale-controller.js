@@ -235,6 +235,19 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         });
     };
     
+    $scope.checkDiscountValue = function () {
+        if ($scope.saleDetail.discountType === '2' || $scope.saleDetail.discountType === 2) { // Giảm giá phần trăm
+            return $scope.saleDetail.value <= 100;
+        }
+        return true;
+    };
+
+    $scope.updateDiscountType = function () {
+        if ($scope.saleDetail.discountType === '1' || $scope.saleDetail.discountType === 1) {
+            $scope.saleDetail.maximumDiscountAmount = null;
+            console.log($scope.saleDetail.maximumDiscountAmount)
+        }
+    };
     
     
     $scope.checkStartDate = function () {
