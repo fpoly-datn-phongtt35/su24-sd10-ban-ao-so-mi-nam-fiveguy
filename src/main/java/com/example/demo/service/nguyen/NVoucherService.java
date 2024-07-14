@@ -2,7 +2,6 @@ package com.example.demo.service.nguyen;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerType;
-import com.example.demo.entity.CustomerVoucher;
 import com.example.demo.entity.Voucher;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
