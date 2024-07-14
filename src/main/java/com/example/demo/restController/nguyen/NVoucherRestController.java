@@ -79,11 +79,8 @@ public class NVoucherRestController {
         System.out.println(voucherRequest.getVoucher());
         System.out.println(voucherRequest.getCustomerTypeList().size());
         System.out.println(voucherRequest.getCustomerTypeList());
-        System.out.println(voucherRequest.getCustomerList().size());
-        System.out.println(voucherRequest.getCustomerList());
         return ResponseEntity.ok(NVoucherService
-                .createVoucher(voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList(),
-                        voucherRequest.getCustomerList()));
+                .createVoucher(voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList()));
 //        return null;
     }
 
@@ -93,13 +90,10 @@ public class NVoucherRestController {
         System.out.println(voucherRequest.getVoucher());
         System.out.println(voucherRequest.getCustomerTypeList().size());
         System.out.println(voucherRequest.getCustomerTypeList());
-        System.out.println(voucherRequest.getCustomerList().size());
-        System.out.println(voucherRequest.getCustomerList());
 //        return null;
         return ResponseEntity.ok(NVoucherService
                 .updateVoucher(id, voucherRequest.getVoucher(),
-                        voucherRequest.getCustomerTypeList(),
-                        voucherRequest.getCustomerList()));
+                        voucherRequest.getCustomerTypeList()));
     }
 
     @GetMapping("/{voucherId}/statistics")

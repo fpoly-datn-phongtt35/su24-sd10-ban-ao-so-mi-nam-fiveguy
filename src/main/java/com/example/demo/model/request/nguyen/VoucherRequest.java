@@ -16,6 +16,4 @@ public class VoucherRequest {
     private Voucher voucher;
 
     private List<CustomerType> customerTypeList;
-
-    private List<Customer> customerList;
 }

@@ -25,11 +25,9 @@ public interface NVoucherService {
     Page<Voucher> findVouchers(String code, String name, Integer applyfor, Integer discountType,
                                Date startDate, Date endDate, Integer status, Pageable pageable);
 
-    Voucher createVoucher(Voucher voucher, List<CustomerType> customerTypeList,
-                          List<Customer> customerList);
+    Voucher createVoucher(Voucher voucher, List<CustomerType> customerTypeList);
 
-    Voucher updateVoucher(Long id, Voucher voucher, List<CustomerType> customerTypeList,
-                          List<Customer> customerList);
+    Voucher updateVoucher(Long id, Voucher voucher, List<CustomerType> customerTypeList);
 
     VoucherStatistics calculateVoucherStatistics(Long voucherId);
 

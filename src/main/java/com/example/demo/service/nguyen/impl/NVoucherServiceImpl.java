@@ -38,9 +38,6 @@ public class NVoucherServiceImpl implements NVoucherService {
     NCustomerTypeVoucherRepository customerTypeVoucherRepository;
 
     @Autowired
-    NCustomerVoucherRepository customerVoucherRepository;
-
-    @Autowired
     private com.example.demo.repository.nguyen.bill.NBillRepository billRepository;
 
     @Override
@@ -149,8 +146,7 @@ public class NVoucherServiceImpl implements NVoucherService {
     }
 
     @Override
-    public Voucher createVoucher(Voucher voucher, List<CustomerType> customerTypeList,
-                                 List<Customer> customerList) {
+    public Voucher createVoucher(Voucher voucher, List<CustomerType> customerTypeList) {
         if (voucher.getCode() == null) {
             String uniqueCode = generateVoucherCode(voucher.getValue(), voucher.getDiscountType(),
                     voucher.getApplyfor());
@@ -181,25 +177,12 @@ public class NVoucherServiceImpl implements NVoucherService {
             customerTypeVoucherRepository.save(customerTypeVoucher);
         }
 
-        for (Customer customer : customerList) {
-
-            CustomerVoucher customerVoucher = new CustomerVoucher();
-            customerVoucher.setCustomer(customer);
-            customerVoucher.setVoucher(returnVoucher);
-            customerVoucher.setCreatedAt(new Date());
-            customerVoucher.setUpdatedAt(new Date());
-            customerVoucher.setStatus(1);
-
-            customerVoucherRepository.save(customerVoucher);
-        }
-
         return returnVoucher;
     }
 
     @Override
     public Voucher updateVoucher(Long voucherId, Voucher updatedVoucher,
-                                 List<CustomerType> updatedCustomerTypeList,
-                                 List<Customer> customerList) {
+                                 List<CustomerType> updatedCustomerTypeList) {
         // Retrieve the existing voucher by ID
         Optional<Voucher> optionalVoucher = voucherRepository.findById(voucherId);
         if (!optionalVoucher.isPresent()) {
@@ -251,40 +234,6 @@ public class NVoucherServiceImpl implements NVoucherService {
             customerTypeVoucher.setStatus(1);
 
             customerTypeVoucherRepository.save(customerTypeVoucher);
-        }
-
-        // Update CustomerVouchers associated with the Voucher
-//        List<CustomerVoucher> existingCustomerVouchers = returnVoucher.getCustomerVouchers();
-//        List<Long> existingCustomerVoucherIds = existingCustomerVouchers.stream()
-//                .map(CustomerVoucher::getId)
-//                .collect(Collectors.toList());
-
-        List<CustomerVoucher> existingCustomerVouchers = customerVoucherRepository
-                .findAllByVoucherId(voucherId);
-        for (CustomerVoucher existingCustomerVoucher : existingCustomerVouchers) {
-            customerVoucherRepository.delete(existingCustomerVoucher);
-        }
-
-        // Delete CustomerVouchers not in updated list
-//        for (CustomerVoucher existingCustomerVoucher : existingCustomerVouchers) {
-//            if (!customerList.contains(existingCustomerVoucher.getCustomer())) {
-//                returnVoucher.getCustomerVouchers().remove(existingCustomerVoucher);
-//                existingCustomerVoucher.setVoucher(null);
-//                customerVoucherRepository.delete(existingCustomerVoucher);
-//            }
-//        }
-
-        // Add new CustomerVouchers if any in updated list
-        for (Customer customer : customerList) {
-//            if (!existingCustomerVoucherIds.contains(customer.getId())) {
-            CustomerVoucher newCustomerVoucher = new CustomerVoucher();
-            newCustomerVoucher.setVoucher(returnVoucher);
-            newCustomerVoucher.setCustomer(customer);
-            newCustomerVoucher.setCreatedAt(new Date());
-            newCustomerVoucher.setUpdatedAt(new Date());
-            newCustomerVoucher.setStatus(1); // Set initial status as needed
-            customerVoucherRepository.save(newCustomerVoucher);
-//            }
         }
 
         return returnVoucher;
@@ -345,9 +294,6 @@ public class NVoucherServiceImpl implements NVoucherService {
                 break;
             case 1:
                 codeBuilder.append(APPLY_FOR_LKH);
-                break;
-            case 2:
-                codeBuilder.append(APPLY_FOR_CN);
                 break;
         }
 
