@@ -159,7 +159,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
                 if (saleData.status) {
                     localStorage.setItem('saleStatus', saleData.status);
                 }
-    $scope.updateStatus();
+                    $scope.updateStatus();
 
             }, function(error) {
                 console.error('Error fetching sale details:', error);
@@ -602,20 +602,25 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/infoProduct';
     $scope.getAllCollars();
     $scope.getAllBrands();
 
-    
-// Function to calculate discount
-function calculateDiscount(sale, product) {
+
+
+    function calculateDiscount(sale, product) {
         var discount = 0;
+    
+        // Giảm giá cố định
         if (sale.discountType === 1) {
             discount = sale.value;
-        } else if (sale.discountType === 2) {
+        } 
+        // Giảm giá phần trăm
+        else if (sale.discountType === 2) {
             discount = product.price * (sale.value / 100);
-        }
-        if (sale.maximumDiscountAmount && discount > sale.maximumDiscountAmount) {
-            discount = sale.maximumDiscountAmount;
+            if (sale.maximumDiscountAmount && discount > sale.maximumDiscountAmount) {
+                discount = sale.maximumDiscountAmount;
+            }
         }
         return discount;
     }
+    
 
     // Thêm sản phẩm  đợt giảm giá \
 

@@ -50,16 +50,11 @@
                                 Mô tả là bắt buộc.
                             </div>
                         </div>
-                        <div class="mb-3" ng-class="{'has-error': (saleFormUpdate.startTime.$touched || saleFormUpdate.$submitted) && (saleFormUpdate.startTime.$invalid || !checkStartDate())}">
+                        <div class="mb-3">
                             <label for="startTime" class="form-label">Thời gian bắt đầu</label>
-                            <input type="datetime-local" class="form-control" id="startTime" name="startTime" ng-model="saleDetail.startDate" required>
-                            <div class="text-danger" ng-show="(saleFormUpdate.startTime.$touched || saleFormUpdate.$submitted) && saleFormUpdate.startTime.$invalid">
-                                Thời gian bắt đầu là bắt buộc.
-                            </div>
-                            <div class="text-danger" ng-show="(saleFormUpdate.startTime.$touched || saleFormUpdate.$submitted) && !checkStartDate()">
-                                Thời gian bắt đầu phải lớn hơn thời gian hiện tại.
-                            </div>
+                            <input type="datetime-local" class="form-control" id="startTime" name="startTime" ng-model="saleDetail.startDate" readonly>
                         </div>
+                        
                         
                         <div class="mb-3" ng-class="{'has-error': (saleFormUpdate.endTime.$touched || saleFormUpdate.$submitted) && (saleFormUpdate.endTime.$invalid || !checkEndDate())}">
                             <label for="endTime" class="form-label">Thời gian kết thúc</label>
