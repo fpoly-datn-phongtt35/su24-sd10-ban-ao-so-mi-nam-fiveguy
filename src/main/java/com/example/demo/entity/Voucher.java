@@ -78,7 +78,4 @@ public class Voucher {
     @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
     private List<Bill> bills;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "voucher", cascade = CascadeType.ALL)
-    private List<CustomerVoucher> customerVouchers;
 }
