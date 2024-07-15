@@ -83,7 +83,7 @@ public class Product {
     private List<ProductSale> productSales;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 
 

@@ -51,6 +51,9 @@ public class Bill {
     @Column(name = "TotalAmountAfterDiscount")
     private BigDecimal totalAmountAfterDiscount;
 
+    @Column(name = "CreatedAt")
+    private Date createdAt;
+
     @ManyToOne
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
     private Customer customer;
@@ -69,6 +72,12 @@ public class Bill {
 
     @Column(name = "TypeBill")
     private int typeBill;
+
+    @Column(name = "Reason")
+    private int reason;
+
+    @Column(name = "Note", columnDefinition = "nvarchar(300)")
+    private String note;
 
     @Column(name = "Status")
     private int status;
