@@ -11,6 +11,17 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Hiếu -->
     .when("/admin/staff", {
       templateUrl: "pages/staff/staff.html",
+      controller: "dashboardController",
+    })
+
+    // <!-- Tịnh -->
+    .when("/admin/employee", {
+      templateUrl: "pages/employee/employee.html",
+      controller: "tinh-employee-controller",
+    })
+    .when("/admin/bil-tinh/create", {
+      templateUrl: "pages/bill-tinh/bill-tinh-create.html",
+      controller: "tinh-bill-controller",
     })
     // <!-- Thưởng -->
     .when("/admin/product", {
@@ -25,10 +36,12 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/material", {
       templateUrl: "pages/product/material.html",
     })
-    // <!-- Tịnh -->
-    .when("/admin/customer", {
-      templateUrl: "pages/customer/customer.html",
-    })
+    // <!-- Hiếu -->
+    // .when("/admin/customer", {
+    //   templateUrl: "pages/customer/customer.html",
+    //   controller: 'customerCtrl'
+
+    // })
     // <!-- Nguyên -->
     .when("/admin/voucher", {
       templateUrl: "pages/voucher/voucher.html",
@@ -94,13 +107,13 @@ app.config(function ($routeProvider, $locationProvider) {
 
 //Request thêm token vào các yêu cầu HTTP
 // Tạo một interceptor trong AngularJS
-app.factory('TokenInterceptor', function($q, $injector) {
+app.factory('TokenInterceptor', function ($q, $injector) {
   var isRefreshing = false;
   var requestsToRetry = [];
 
   function retryRequests(newToken) {
     var $http = $injector.get('$http');
-    requestsToRetry.forEach(function(pendingRequest) {
+    requestsToRetry.forEach(function (pendingRequest) {
       pendingRequest.config.headers['Authorization'] = 'Bearer ' + newToken;
       $http(pendingRequest.config).then(pendingRequest.deferred.resolve, pendingRequest.deferred.reject);
     });
@@ -108,14 +121,14 @@ app.factory('TokenInterceptor', function($q, $injector) {
   }
 
   return {
-    request: function(config) {
+    request: function (config) {
       var token = localStorage.getItem('token');
       if (token) {
         config.headers['Authorization'] = 'Bearer ' + token;
       }
       return config;
     },
-    responseError: function(response) {
+    responseError: function (response) {
       var $http = $injector.get('$http');
       var authService = $injector.get('AuthService');
       var status = response.status;
@@ -140,16 +153,16 @@ app.factory('TokenInterceptor', function($q, $injector) {
         requestsToRetry.push({ config: response.config, deferred: deferred });
 
         authService.refreshToken(refreshToken)
-          .then(function(data) {
+          .then(function (data) {
             localStorage.setItem('token', data.accessToken);
             localStorage.setItem('refreshToken', data.refreshToken);
             isRefreshing = false;
             retryRequests(data.accessToken);
           })
-          .catch(function() {
+          .catch(function () {
             isRefreshing = false;
             window.location.href = "http://127.0.0.1:5555/src/login/login.html";
-            requestsToRetry.forEach(function(pendingRequest) {
+            requestsToRetry.forEach(function (pendingRequest) {
               pendingRequest.deferred.reject(response);
             });
             requestsToRetry = [];
@@ -163,30 +176,30 @@ app.factory('TokenInterceptor', function($q, $injector) {
   };
 });
 
-app.config(function($httpProvider) {
+app.config(function ($httpProvider) {
   $httpProvider.interceptors.push('TokenInterceptor');
   $httpProvider.useApplyAsync(true);
 });
 
-app.factory('AuthService', function($http) {
+app.factory('AuthService', function ($http) {
   var authService = {};
 
-  authService.isAuthenticated = function() {
+  authService.isAuthenticated = function () {
     var token = localStorage.getItem('token');
     return !!token;
   };
 
-  authService.refreshToken = function(refreshToken) {
+  authService.refreshToken = function (refreshToken) {
     return $http.post('http://localhost:8080/RFToken/' + refreshToken)
-      .then(function(response) {
+      .then(function (response) {
         return response.data;
       })
-      .catch(function(error) {
+      .catch(function (error) {
         throw error;
       });
   };
 
-  authService.removeToken = function() {
+  authService.removeToken = function () {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
   };

@@ -1,0 +1,12 @@
+.css-text-overfolow {
+        white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    overflow: hidden;
+}
+.css-text-overfolow-email{
+        white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    overflow: hidden;
+}

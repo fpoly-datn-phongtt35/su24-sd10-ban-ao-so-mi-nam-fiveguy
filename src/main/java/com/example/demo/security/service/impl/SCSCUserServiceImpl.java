@@ -9,6 +9,7 @@ import com.example.demo.security.jwt_model.JwtRequest;
 import com.example.demo.security.service.*;
 import com.example.demo.security.util.Helper;
 import com.example.demo.senderMail.Respone.ResponseObject;
+import com.example.demo.service.tinh.AuditLogServiceTinh;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,11 @@ public class SCSCUserServiceImpl implements SCUserService {
 
     @Autowired
     private SCRoleService SCRoleService;
+
+    //tinh------------------
+    @Autowired
+    AuditLogServiceTinh auditLogServiceTinh;
+    //tinh ------------------
 
     private final ModelMapper mapper;
     private final PasswordEncoder bcryptEncoder;
@@ -166,12 +172,19 @@ public class SCSCUserServiceImpl implements SCUserService {
 
                 tokenResponse.setAccessToken(token);
                 tokenResponse.setRefreshToken(refreshToken.getToken());
+                //Tinh -------------
+                auditLogServiceTinh.createAuditLoginCustomer(customerEntity.get().getFullName(),"đăng nhâp", "Khách hàng "+ customerEntity.get().getFullName() + " đã đăng nhập vào hệ thống");
+                //Tinh --------------
                 return tokenResponse;
 
             } else if (employeeEntity.isPresent()) {
                 RefreshToken refreshToken = SCRefreshTokenService.createRefreshToken(userDetails,account.get());
                 tokenResponse.setAccessToken(token);
                 tokenResponse.setRefreshToken(refreshToken.getToken());
+
+                //Tinh -------------
+                auditLogServiceTinh.createAuditLoginEmployee(employeeEntity.get().getFullName(),"đăng nhâp", "Nhân viên "+ employeeEntity.get().getFullName() + " đã đăng nhập vào hệ thống");
+                //Tinh --------------
                 return tokenResponse;
             }
         }
