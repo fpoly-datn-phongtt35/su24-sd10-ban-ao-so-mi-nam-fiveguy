@@ -28,9 +28,8 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
 
 
     const apiVoucher = "http://localhost:8080/api/admin/voucher"
-    const apiCustomerType = "http://localhost:8080/api/admin/customerType"
+    const apiCustomerType = "http://localhost:8080/api/admin/customerTypeN"
     const apiCustomerTypeVoucher = "http://localhost:8080/api/admin/customerTypeVoucher"
-    const apiCustomerVoucher = "http://localhost:8080/api/admin/customerVoucher"
 
     // Hàm hiển thị thông báo thành công
     $scope.showSuccess = function (message) {
