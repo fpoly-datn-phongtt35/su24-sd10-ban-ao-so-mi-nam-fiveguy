@@ -73,6 +73,12 @@ public class Bill {
     @Column(name = "TypeBill")
     private int typeBill;
 
+    @Column(name = "Reason")
+    private int reason;
+
+    @Column(name = "Note", columnDefinition = "nvarchar(300)")
+    private String note;
+
     @Column(name = "Status")
     private int status;
 
