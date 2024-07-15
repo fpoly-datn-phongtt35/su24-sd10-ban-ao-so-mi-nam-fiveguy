@@ -97,8 +97,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             product.setName(productRequestTH.getName());
             product.setPrice(productRequestTH.getPrice());
             product.setDescribe(productRequestTH.getDescribe());
-            product.setCreatedAt(new Date());
-            product.setCreatedBy(productRequestTH.getCreatedBy());
+            product.setUpdatedAt(new Date());
             product.setCategory(productRequestTH.getCategory());
             product.setSupplier(productRequestTH.getSupplier());
             product.setMaterial(productRequestTH.getMaterial());
@@ -116,9 +115,33 @@ public class ProductServiceTHImpl implements ProductServiceTH {
                 product.getImages().clear();
                 productRequestTH.getImages().forEach(img -> {
                     img.setProduct(product);
+                    img.setUpdatedAt(new Date());
                     product.getImages().add(img);
                 });
             }
+            return productRepository.save(product);
+        }
+        return null;
+    }
+
+    @Override
+    public Product updateStatus(Long id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            product.setUpdatedAt(new Date());
+            product.setStatus(1);
+            return productRepository.save(product);
+        }
+        return null;
+    }
+
+    @Override
+    public Product delete(Long id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            product.setStatus(0);
             return productRepository.save(product);
         }
         return null;

@@ -33,13 +33,23 @@ public class ProductControllerTH {
         return ResponseEntity.ok(productService.findById(id));
     }
 
+    @PostMapping
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductRequestTH productRequestTH) {
+        return new ResponseEntity<>(productService.create(productRequestTH), HttpStatus.CREATED);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateColor(@PathVariable Long id, @Valid @RequestBody ProductRequestTH productRequest) {
         return new ResponseEntity<>(productService.update(productRequest, id), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductRequestTH productRequestTH) {
-        return new ResponseEntity<>(productService.create(productRequestTH), HttpStatus.CREATED);
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> updateStatus(@PathVariable Long id) {
+        return new ResponseEntity<>(productService.updateStatus(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+        return new ResponseEntity<>(productService.delete(id), HttpStatus.OK);
     }
 }

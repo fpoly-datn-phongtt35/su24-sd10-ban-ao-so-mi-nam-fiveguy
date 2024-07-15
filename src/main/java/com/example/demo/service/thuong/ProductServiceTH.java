@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 public interface ProductServiceTH {
     Product create(ProductRequestTH productRequestTH);
     Product update(ProductRequestTH productRequestTH, Long id);
+    Product updateStatus(Long id);
+    Product delete(Long id);
     Page<Product> getProducts(int page, int size, String keyword, String sortField, String sortDirection);
     Product findById(Long id);
 }

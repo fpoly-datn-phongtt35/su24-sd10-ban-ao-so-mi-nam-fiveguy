@@ -808,11 +808,10 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 });
                 if (!$scope.checkListImageUpdate()) return;
             }
-            console.log($scope.productUpdate);
             $http.put(`${config.host}/product/${$scope.productUpdate.id}`, $scope.productUpdate).then((response) => {
                 $scope.getAllProducts();
-                $scope.resetForm();
-                $('#addProductModel').modal('hide');
+                $scope.resetFormUpdate();
+                $('#editProductModel').modal('hide');
                 toastr["success"]("Cập nhật " + response.data.name + " thành công");
            }).catch(error => {
                 if (error.status === 400) {
@@ -857,7 +856,7 @@ app.directive('customOnChange', function() {
       if (isNaN(input)) {
         return input;
       }
-      return parseInt(input).toLocaleString('vi-VN');
+      return parseInt(input).toLocaleString('vi-VN') + '₫';
     };
   });
   
