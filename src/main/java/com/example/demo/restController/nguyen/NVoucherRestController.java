@@ -4,6 +4,7 @@ import com.example.demo.entity.Voucher;
 import com.example.demo.model.request.nguyen.VoucherRequest;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
+import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NVoucherService;
 import com.example.demo.model.response.nguyen.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
@@ -25,6 +27,9 @@ public class NVoucherRestController {
 
     @Autowired
     NVoucherService NVoucherService;
+
+    @Autowired
+    private SCAccountService accountService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
@@ -75,22 +80,32 @@ public class NVoucherRestController {
     }
 
     @PostMapping("/saveVoucher")
-    public ResponseEntity<?> saveVoucher(@RequestBody VoucherRequest voucherRequest) {
+    public ResponseEntity<?> saveVoucher(@RequestHeader("Authorization") String token,
+                                         @RequestBody VoucherRequest voucherRequest) {
         System.out.println(voucherRequest.getVoucher());
         System.out.println(voucherRequest.getCustomerTypeList().size());
         System.out.println(voucherRequest.getCustomerTypeList());
+
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+
+        voucherRequest.getVoucher().setCreatedBy(fullName.get());
+
         return ResponseEntity.ok(NVoucherService
                 .createVoucher(voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList()));
-//        return null;
     }
 
     @PutMapping("/updateVoucher/{id}")
-    public ResponseEntity<?> updateVoucher(@RequestBody VoucherRequest voucherRequest,
+    public ResponseEntity<?> updateVoucher(@RequestHeader("Authorization") String token,
+                                           @RequestBody VoucherRequest voucherRequest,
                                            @PathVariable Long id) {
         System.out.println(voucherRequest.getVoucher());
         System.out.println(voucherRequest.getCustomerTypeList().size());
         System.out.println(voucherRequest.getCustomerTypeList());
-//        return null;
+
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+
+        voucherRequest.getVoucher().setUpdatedBy(fullName.get());
+
         return ResponseEntity.ok(NVoucherService
                 .updateVoucher(id, voucherRequest.getVoucher(),
                         voucherRequest.getCustomerTypeList()));

@@ -27,6 +27,7 @@ public class NBillHistoryServiceImpl implements NBillHistoryService {
 
     @Override
     public BillHistory save(BillHistory billHistory) {
+        billHistory.setCreatedBy(billHistory.getCreatedBy());
         billHistory.setCreatedAt(new Date());
         return billHistoryRepository.save(billHistory);
     }

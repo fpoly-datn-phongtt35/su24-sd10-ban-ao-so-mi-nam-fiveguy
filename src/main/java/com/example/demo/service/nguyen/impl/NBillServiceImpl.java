@@ -86,7 +86,7 @@ public class NBillServiceImpl implements NBillService {
         existingBill.setStatus(bill.getStatus());
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
-                billHistory.getDescription(), 1, billHistory.getReason(),"Admin");
+                billHistory.getDescription(), 1, billHistory.getReason(), "Admin");
 
         return billRepository.save(existingBill);
     }
@@ -103,13 +103,14 @@ public class NBillServiceImpl implements NBillService {
         existingBill.setStatus(bill.getStatus());
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
-                billHistory.getDescription(), 1, billHistory.getReason(),"Admin");
+                billHistory.getDescription(), 1, billHistory.getReason(),
+                billHistory.getCreatedBy());
 
         return billRepository.save(existingBill);
     }
 
     @Override
-    public Bill updateShipmentDetail(Bill bill, Long id) {
+    public Bill updateShipmentDetail(Bill bill, Long id, String fullName) {
         Optional<Bill> optionalBill = billRepository.findById(id);
         if (!optionalBill.isPresent()) {
             throw new EntityNotFoundException("Bill not found with id " + id);
@@ -124,7 +125,7 @@ public class NBillServiceImpl implements NBillService {
         newHistory.setBill(existingBill);
         newHistory.setStatus(existingBill.getStatus());
         newHistory.setDescription("Cập nhật thông tin giao hàng");
-        newHistory.setCreatedBy("Admin");
+        newHistory.setCreatedBy(fullName);
         newHistory.setType(2);
         newHistory.setReason(0);
         newHistory.setCreatedAt(new Date());
@@ -134,7 +135,8 @@ public class NBillServiceImpl implements NBillService {
         return billRepository.save(existingBill);
     }
 
-    private void addBillHistoryStatus(Long billId, int status, String description, int type, int reason,
+    private void addBillHistoryStatus(Long billId, int status, String description, int type,
+                                      int reason,
                                       String createdBy) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));

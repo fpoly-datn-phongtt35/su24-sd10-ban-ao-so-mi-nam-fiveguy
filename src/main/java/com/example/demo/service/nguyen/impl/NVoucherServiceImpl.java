@@ -156,9 +156,9 @@ public class NVoucherServiceImpl implements NVoucherService {
         }
         voucher.setName(voucher.getName().trim());
         voucher.setCreatedAt(new Date());
-        voucher.setCreatedBy("Admin add");
+        voucher.setCreatedBy(voucher.getCreatedBy());
         voucher.setUpdatedAt(new Date());
-        voucher.setUpdatedBy("Admin add");
+        voucher.setUpdatedBy(voucher.getCreatedBy());
         voucher.setStatus(checkDate(voucher.getStartDate(), voucher.getEndDate()));
 
         updateStatus();
@@ -209,7 +209,7 @@ public class NVoucherServiceImpl implements NVoucherService {
         existingVoucher.setCreatedAt(updatedVoucher.getCreatedAt());
         existingVoucher.setCreatedBy(updatedVoucher.getCreatedBy());
         existingVoucher.setUpdatedAt(new Date());
-        existingVoucher.setUpdatedBy("Admin update");
+        existingVoucher.setUpdatedBy(updatedVoucher.getUpdatedBy());
         existingVoucher.setStatus(updatedVoucher.getStatus() == 4 ? 4 : checkDate(
                 updatedVoucher.getStartDate(), updatedVoucher.getEndDate()));
 
