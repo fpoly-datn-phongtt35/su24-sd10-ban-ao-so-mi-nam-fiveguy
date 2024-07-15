@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/admin/customerType")
+@RequestMapping("/api/admin/customerTypeN")
 public class NCustomerTypeRestController {
 
     @Autowired
