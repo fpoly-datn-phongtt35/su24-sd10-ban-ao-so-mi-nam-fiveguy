@@ -1,4 +1,4 @@
-<div class="main-content" ng-controller="CollarController">
+<div class="main-content" ng-controller="SizeController">
     <div class="row">
         <div class="col-md-12">
             <div class="table-wrapper">
@@ -6,11 +6,11 @@
                 <div class="table-title">
                     <div class="row align-items-center">
                         <div class="col-sm-3 p-0 d-flex justify-content-lg-start justify-content-center">
-                            <h2 class="ml-lg-2">Cổ Áo</h2>
+                            <h2 class="ml-lg-2">Size</h2>
                         </div>
                        
                         <div class="col-sm-9 p-0 d-flex justify-content-lg-end justify-content-center">
-                            <a data-bs-target="#addCollarModel" class="btn btn-success" data-bs-toggle="modal">
+                            <a data-bs-target="#addSizeModel" class="btn btn-success" data-bs-toggle="modal">
                                 <i class="material-icons">&#xE147;</i>
                                 <span>Thêm mới</span>
                             </a>
@@ -19,7 +19,7 @@
                 </div>
                 <div class="row mx-0 mt-3 mb-3 align-items-end">
                     <div class="col-sm-4">                        
-                        <input type="text" id="name" ng-model="filter.name" class="form-control" placeholder="Tên cổ áo...">
+                        <input type="text" id="name" ng-model="filter.name" class="form-control" placeholder="Tên size...">
                     </div>
                     <div class="col-sm-3">
                         <label for="sortField">Sắp xếp theo</label>
@@ -36,7 +36,7 @@
                         </select>
                     </div>
                     <div class="col-sm-2">
-                            <button ng-click="searchCollars()" class="btn btn-primary" type="submit" id="button-addon2">
+                            <button ng-click="searchSizes()" class="btn btn-primary" type="submit" id="button-addon2">
                                 Tìm kiếm
                             </button>
                     </div>
@@ -45,7 +45,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Tên cổ áo</th>
+                            <th>Tên size</th>
                             <th>Thời gian tạo</th>
                             <th>Thời gian cập nhật</th>
                             <th>Trạng thái</th>
@@ -54,27 +54,27 @@
                     </thead>
 
                     <tbody>
-                        <tr class="text-center" ng-if="collars.content.length === 0">
+                        <tr class="text-center" ng-if="sizes.content.length === 0">
                             <th colspan="6">Không có dữ liệu</th>
                         </tr>
-                        <tr ng-repeat="collar in collars.content">
-                            <th>{{collar.id}}</th>
-                            <th>{{collar.name}}</th>
-                            <th>{{collar.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
-                            <th>{{collar.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                        <tr ng-repeat="size in sizes.content">
+                            <th>{{size.id}}</th>
+                            <th>{{size.name}}</th>
+                            <th>{{size.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                            <th>{{size.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
                             <th>
-                                <span class="badge rounded-pill" ng-class="{'bg-success': collar.status === 1, 'bg-danger': collar.status === 0}">
-                                    {{ collar.status === 1 ? 'Hiển thị' : 'Không hiển thị' }}
+                                <span class="badge rounded-pill" ng-class="{'bg-success': size.status === 1, 'bg-danger': size.status === 0}">
+                                    {{ size.status === 1 ? 'Hiển thị' : 'Không hiển thị' }}
                                 </span>
                             </th>   
                             <th>
-                                <a ng-click="editCollar(collar.id)" data-bs-target="#editCollarModal" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
+                                <a ng-click="editSize(size.id)" data-bs-target="#editSizeModal" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
                                     <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
                                 </a>
-                                <a ng-click="handleDelete(collar)" ng-if="collar.status === 1" data-bs-target="#deleteCollarModel" class="delete" data-bs-toggle="modal">
+                                <a ng-click="handleDelete(size)" ng-if="size.status === 1" data-bs-target="#deleteSizeModel" class="delete" data-bs-toggle="modal">
                                     <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
                                 </a>
-                                <a ng-click="handleStatus(collar)" ng-if="collar.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
+                                <a ng-click="handleStatus(size)" ng-if="size.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
                                     <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
                                 </a>
                             </th>
@@ -86,7 +86,7 @@
                     <div class="hint-text">Trang hiện tại <b>{{currentPage + 1}}</b> / <b>{{totalPages}}</b></div>
                     <div class="ms-4 me-3 hint-text">Số lượng hiển thị: 
                     </div>
-                    <input id="size" ng-model="size" ng-change="getAllCollars()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
+                    <input id="size" ng-model="num" ng-change="getAllSizes()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
                     <ul class="pagination">
                         <li class="page-item" ng-class="{disabled: currentPage === 0}">
                             <a class="page-link" ng-click="changePage(0)">Trang đầu</a>
@@ -107,24 +107,24 @@
                 </div>
 
                 <!----add-modal start--------->
-                <div class="modal fade" tabindex="-1" id="addCollarModel" role="dialog">
+                <div class="modal fade" tabindex="-1" id="addSizeModel" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Thêm mới</h5>
                                 <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form name="collarForm" ng-submit="createCollar()" novalidate>
+                            <form name="sizeForm" ng-submit="createSize()" novalidate>
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label>Tên cổ áo</label>
-                                        <input type="text" ng-model="collar.name" class="form-control" required>
+                                        <label>Tên size</label>
+                                        <input type="text" ng-model="size.name" class="form-control" required>
                                         <p class="text-danger" ng-if="errors.name">{{ errors.name}}</p>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                    <button type="submit" ng-disabled="collarForm.$invalid" class="btn btn-success">Thêm</button>
+                                    <button type="submit" ng-disabled="sizeForm.$invalid" class="btn btn-success">Thêm</button>
                                 </div>
                             </form>
                         </div>
@@ -133,24 +133,24 @@
                 <!----add-modal end--------->
 
                 <!----edit-modal start--------->
-                <div class="modal fade" tabindex="-1" id="editCollarModal" role="dialog">
+                <div class="modal fade" tabindex="-1" id="editSizeModal" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Cập nhật</h5>
                                 <button ng-click="resetFormUpdate()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form name="collarFormUpdate" ng-submit="updateCollar()" novalidate>
+                            <form name="sizeFormUpdate" ng-submit="updateSize()" novalidate>
                                 <div class="modal-body">
                                     <div class="form-group">
-                                        <label>Tên cổ áo</label>
-                                        <input type="text" ng-model="collarUpdate.name" class="form-control" required>
+                                        <label>Tên size</label>
+                                        <input type="text" ng-model="sizeUpdate.name" class="form-control" required>
                                         <p class="text-danger" ng-if="errorsUpdate.name">{{ errorsUpdate.name}}</p>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button ng-click="resetFormUpdate()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                    <button type="submit" ng-disabled="collarFormUpdate.$invalid" class="btn btn-success">Cập nhật</button>
+                                    <button type="submit" ng-disabled="sizeFormUpdate.$invalid" class="btn btn-success">Cập nhật</button>
                                 </div>
                             </form>
                         </div>
@@ -159,7 +159,7 @@
                 <!----edit-modal end--------->
 
                 <!----delete-modal start--------->
-                <div class="modal fade" tabindex="-1" id="deleteCollarModel" role="dialog">
+                <div class="modal fade" tabindex="-1" id="deleteSizeModel" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -167,7 +167,7 @@
                                 <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Bạn có chắc muốn xóa {{collar.name}} không?</p>
+                                <p>Bạn có chắc muốn xóa {{size.name}} không?</p>
                             </div>
                             <div class="modal-footer">
                                 <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -186,7 +186,7 @@
                 <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Bạn có chắc muốn khôi phục trạng thái {{collar.name}} không?</p>
+                <p>Bạn có chắc muốn khôi phục trạng thái {{size.name}} không?</p>
             </div>
             <div class="modal-footer">
                 <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>

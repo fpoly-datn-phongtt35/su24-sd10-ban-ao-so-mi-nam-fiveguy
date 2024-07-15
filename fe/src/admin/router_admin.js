@@ -1,4 +1,4 @@
-var app = angular.module("appAdmin", ["ngRoute"]);
+var app = angular.module("appAdmin", ["ngRoute", "angular.filter"]);
 app.config(function ($routeProvider, $locationProvider) {
   $locationProvider.hashPrefix("");
 
@@ -24,6 +24,9 @@ app.config(function ($routeProvider, $locationProvider) {
       controller: "tinh-bill-controller",
     })
     // <!-- Thưởng -->
+    .when("/admin/category", {
+      templateUrl: "pages/product/category.html",
+    })
     .when("/admin/product", {
       templateUrl: "pages/product/product.html",
     })
@@ -36,12 +39,15 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/material", {
       templateUrl: "pages/product/material.html",
     })
-    // <!-- Hiếu -->
-    // .when("/admin/customer", {
-    //   templateUrl: "pages/customer/customer.html",
-    //   controller: 'customerCtrl'
-
-    // })
+    .when("/admin/size", {
+      templateUrl: "pages/product/size.html",
+    })
+    .when("/admin/color", {
+      templateUrl: "pages/product/color.html",
+    })
+    .when("/admin/supplier", {
+      templateUrl: "pages/product/supplier.html",
+    })
     // <!-- Nguyên -->
     .when("/admin/voucher", {
       templateUrl: "pages/voucher/voucher.html",

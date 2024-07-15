@@ -1,0 +1,507 @@
+<div class="main-content" ng-controller="SuppilerController">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-wrapper">
+
+                <div class="table-title">
+                    <div class="row align-items-center">
+                        <div class="col-sm-3 p-0 d-flex justify-content-lg-start justify-content-center">
+                            <h2 class="ml-lg-2">Nhà cung cấp</h2>
+                        </div>
+                       
+                        <div class="col-sm-9 p-0 d-flex justify-content-lg-end justify-content-center">
+                            <a data-bs-target="#addSupplierModel" class="btn btn-success" data-bs-toggle="modal">
+                                <i class="material-icons">&#xE147;</i>
+                                <span>Thêm mới</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mx-0 mt-3 mb-3 align-items-end">
+                    <div class="col-sm-4">                        
+                        <input type="text" id="name" ng-model="filter.keyword" class="form-control" placeholder="Tìm kiếm ...">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="sortField">Sắp xếp theo</label>
+                        <select ng-model="filter.sortField" class="form-select" id="sortField">
+                          <option value="createdAt">Thời gian tạo</option>
+                          <option value="updatedAt">Thời gian cập nhật</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="sortDirection">Thứ tự</label>
+                        <select ng-model="filter.sortDirection" class="form-select" id="sortDirection">
+                          <option value="ASC">Tăng dần</option>
+                          <option value="DESC">Giảm dần</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                            <button ng-click="searchSuppilers()" class="btn btn-primary" type="submit" id="button-addon2">
+                                Tìm kiếm
+                            </button>
+                    </div>
+                </div>
+                
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Gmail</th>
+                            <th>Số điện thoại</th>
+                            <th>Thời gian tạo</th>
+                            <th>Thời gian cập nhật</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr class="text-center" ng-if="suppliers.content.length === 0">
+                            <th colspan="8">Không có dữ liệu</th>
+                        </tr>
+                        <tr ng-repeat="supplier in suppliers.content">
+                            <th>{{supplier.id}}</th>
+                            <th>{{supplier.name}}</th>
+                            <th>{{supplier.email}}</th>
+                            <th>{{supplier.phoneNumber}}</th>
+                            <th>{{supplier.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                            <th>{{supplier.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                            <th>
+                                <span class="badge rounded-pill" ng-class="{'bg-success': supplier.status === 1, 'bg-danger': supplier.status === 0}">
+                                    {{ supplier.status === 1 ? 'Hiển thị' : 'Không hiển thị' }}
+                                </span>
+                            </th>   
+                            <th>
+                                <a ng-click="editSupplier(supplier.id)" data-bs-target="#editSupplierModal" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
+                                    <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
+                                </a>
+                                <a ng-click="handleDelete(supplier)" ng-if="supplier.status === 1" data-bs-target="#deleteSupplierModel" class="delete" data-bs-toggle="modal">
+                                    <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                </a>
+                                <a ng-click="handleStatus(supplier)" ng-if="supplier.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
+                                    <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
+                                </a>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="clearfix">
+                    <div class="hint-text">Trang hiện tại <b>{{currentPage + 1}}</b> / <b>{{totalPages}}</b></div>
+                    <div class="ms-4 me-3 hint-text">Số lượng hiển thị: 
+                    </div>
+                    <input id="size" ng-model="size" ng-change="getAllSuppilers()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
+                    <ul class="pagination">
+                        <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                            <a class="page-link" ng-click="changePage(0)">Trang đầu</a>
+                        </li>
+                        <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                            <a class="page-link" ng-click="changePage(currentPage - 1)">&lt;</a>
+                        </li>
+                        <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index" ng-class="{active: $index === currentPage}">
+                            <a class="page-link" ng-click="currentPage !== $index && changePage($index)">{{$index + 1}}</a>
+                        </li>
+                        <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                            <a class="page-link" ng-click="changePage(currentPage + 1)">&gt;</a>
+                        </li>
+                        <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                            <a class="page-link" ng-click="changePage(totalPages - 1)">Trang cuối</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!----add-modal start--------->
+                <div class="modal fade" tabindex="-1" id="addSupplierModel" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <ul class="nav nav-tabs w-50" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="supplier-tab" data-bs-toggle="tab" data-bs-target="#supplier" type="button" role="tab" aria-controls="supplier" aria-selected="true">Nhà cung cấp</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="brand-tab" data-bs-toggle="tab" data-bs-target="#brand" type="button" role="tab" aria-controls="brand" aria-selected="false">Thương hiệu</button>
+                                      </li>
+                                </ul>
+                                <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form name="supplierForm" ng-submit="createSupplier()" novalidate>
+                                <div class="modal-body">
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="supplier" role="tabpanel" aria-labelledby="supplier-tab">
+                                            <p class="text-danger text-center" ng-if="errors.brands">{{ errors.brands}}</p>
+                                            <div class="form-group">
+                                                <label>Tên nhà cung cấp <span ng-if="!supplier.name" class="text-danger">*</span></label>
+                                                <input type="text" ng-model="supplier.name" class="form-control" required>
+                                                <p class="text-danger" ng-if="errors.name">{{ errors.name}}</p>
+                                            </div>
+                                            <div class="form-group mt-3">
+                                                <label>Gmail</label>
+                                                <input type="text" ng-model="supplier.email" class="form-control">
+                                                <p class="text-danger" ng-if="errors.email">{{ errors.email}}</p>
+                                            </div>
+                                            <div class="form-group mt-3">
+                                                <label>Số điện thoại <span ng-if="!supplier.phoneNumber" class="text-danger">*</span></label>
+                                                <input type="text" ng-model="supplier.phoneNumber" class="form-control" required>
+                                                <p class="text-danger" ng-if="errors.phoneNumber">{{ errors.phoneNumber}}</p>
+                                            </div>
+                                            <div id="box-province" class="form-group mt-3">
+                                                <label for="id-label-province">Tỉnh thành <span ng-if="!provinceValue" class="text-danger">*</span></label>
+                                                <div class="mt-2">
+                                                    <select class="province" id="id-label-province" data-placeholder="Chọn tỉnh thành">
+                                                        <option></option>
+                                                        <option ng-repeat="province in provinces" value="{{province.province_id}}">{{province.province_name}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div id="box-district" class="form-group mt-3">
+                                                <label for="id-label-district">Quận/huyện <span ng-if="!districtValue" class="text-danger">*</span></label>
+                                                <div class="mt-2">
+                                                    <select class="district" id="id-label-district" data-placeholder="Chọn quận/huyện">
+                                                        <option></option>
+                                                        <option ng-repeat="district in districts" value="{{district.district_id}}">{{district.district_name}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div id="box-ward" class="form-group mt-3">
+                                                <label for="id-label-ward">Phường/xã <span ng-if="!wardValue" class="text-danger">*</span></label>
+                                                <div class="mt-2">
+                                                    <select class="ward" id="id-label-ward" data-placeholder="Chọn phường/xã">
+                                                        <option></option>
+                                                        <option ng-repeat="ward in wards" value="{{ward.ward_id}}">{{ward.ward_name}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="tab-pane fade" id="brand" role="tabpanel" aria-labelledby="brand-tab">
+                                            <div class="row m-0 align-items-end">
+                                                <div class="col-sm-4">
+                                                    <input ng-model="filterBrand.keyword" type="text" id="name" class="form-control" placeholder="Tìm kiếm...">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="sortFieldBrand">Sắp xếp theo</label>
+                                                    <select ng-model="filterBrand.sortField" class="form-select" id="sortFieldBrand">
+                                                        <option value="createdAt">Thời gian tạo</option>
+                                                        <option value="updatedAt">Thời gian cập nhật</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="sortDirectionBrand">Thứ tự</label>
+                                                    <select ng-model="filterBrand.sortDirection" class="form-select" id="sortDirectionBrand">
+                                                        <option value="ASC">Tăng dần</option>
+                                                        <option value="DESC">Giảm dần</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <button ng-click="searchBrands()" class="btn btn-primary">
+                                                        Tìm kiếm
+                                                    </button>
+                                            </div>
+                                            </div>
+                                            <div class="row mx-5 mt-3">
+                                                <div class="col-sm-7">
+                                                    <input type="text" ng-model="brand.name" class="form-control" id="name" placeholder="Tên thương hiệu">
+                                                    <p class="text-danger" ng-if="errorsBrand.name">{{errorsBrand.name}}</p>
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <input type="submit" class="btn btn-success" id="addrow" ng-click="createBrand()" value="Thêm" />
+                                                    <input ng-disabled="!brand.id" ng-click="updateBrand()" type="button" class="btn btn-primary ms-2" id="addrow" value="Cập nhật" />
+
+                                                </div>
+                                                
+                                            </div>
+                                            <table class="table table-striped table-hover mt-3">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>Tên thương hiệu</th>
+                                                        <th>Thời gian tạo</th>
+                                                        <th>Thời gian cập nhật</th>
+                                                        <th>Trạng thái</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="text-center" ng-if="brands.content.length === 0">
+                                                        <th colspan="6">Không có dữ liệu</th>
+                                                    </tr>
+                                                    <tr ng-repeat="brandObj in brands.content" ng-class="{'table-warning': brand.id === brandObj.id}">
+                                                        <th class="text-center">
+                                                            <input class="form-check-input" ng-model="selected" ng-checked="exist(brandObj)" ng-click="toggleSelection(brandObj)" type="checkbox">
+                                                        </th>
+                                                        <th>{{brandObj.name}}</th>
+                                                        <th>{{brandObj.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                                                        <th>{{brandObj.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                                                        <th>
+                                                            <span class="badge rounded-pill" ng-class="{'bg-success': brandObj.status === 1, 'bg-danger': brandObj.status === 0}">
+                                                                {{ brandObj.status === 1 ? 'Hiển thị' : 'Không hiển thị' }}
+                                                            </span>
+                                                        </th>
+                                                        <th>
+                                                            <a ng-click="editBrand(brandObj.id)" style="cursor: pointer;" class="edit">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
+                                                            </a>
+                                                            <a ng-click="deleteBrand(brandObj.id)" ng-if="brandObj.status === 1" class="delete">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                                            </a>
+                                                            <a ng-click="updateStatusBrand(brandObj.id)" ng-if="brandObj.status === 0" class="status">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
+                                                            </a>
+                                                        </th>  
+                                                    </tr>                                                 
+                                                </tbody>
+                                            </table>
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled: brands.pageable.pageNumber === 0}">
+                                                    <a class="page-link" ng-click="changePageBrand(0)">Trang đầu</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled: brands.pageable.pageNumber === 0}">
+                                                    <a class="page-link" ng-click="changePageBrand(brands.pageable.pageNumber - 1)">&lt;</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <input type="number" ng-model="currentPageInput" ng-value="{{currentPageInput + 1}}" ng-change="changePageBrand(currentPageInput - 1)"  style="width: 40px; text-align: center; height: 30px; border: none; outline: none; border-bottom: 1px solid;">
+                                                    / {{brands.totalPages}}
+                                                </li>
+                                                <li class="page-item ms-2" ng-class="{disabled: brands.pageable.pageNumber === brands.totalPages - 1}">
+                                                    <a class="page-link" ng-click="changePageBrand(brands.pageable.pageNumber + 1)">&gt;</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled: brands.pageable.pageNumber === brands.totalPages - 1}">
+                                                    <a class="page-link" ng-click="changePageBrand(brands.totalPages - 1)">Trang cuối</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                      </div>
+                                    
+                                  
+                                </div>
+                                <div class="modal-footer">
+                                    <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                    <button type="submit" ng-disabled="supplierForm.$invalid" class="btn btn-success">Thêm</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!----add-modal end--------->
+                <!----edit-modal start--------->
+                <div class="modal fade" tabindex="-1" id="editSupplierModal" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <ul class="nav nav-tabs w-50" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="supplier-update-tab" data-bs-toggle="tab" data-bs-target="#supplierUpdate" type="button" role="tab" aria-controls="supplierUpdate" aria-selected="true">Nhà cung cấp</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="brand-update-tab" data-bs-toggle="tab" data-bs-target="#brandUpdate" type="button" role="tab" aria-controls="brandUpdate" aria-selected="false">Thương hiệu</button>
+                                      </li>
+                                </ul>
+                                <button ng-click="resetFormUpdate()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form name="supplierUpdateForm" ng-submit="updateSupplier()" novalidate>
+                                <div class="modal-body">
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="supplierUpdate" role="tabpanel" aria-labelledby="supplier-update-tab">
+                                            <p class="text-danger text-center" ng-if="errorsUpdate.brands">{{ errorsUpdate.brands}}</p>
+                                            <div class="form-group">
+                                                <label>Tên nhà cung cấp <span ng-if="!supplierUpdate.name" class="text-danger">*</span></label>
+                                                <input type="text" ng-model="supplierUpdate.name" class="form-control" required>
+                                                <p class="text-danger" ng-if="errorsUpdate.name">{{ errorsUpdate.name}}</p>
+                                            </div>
+                                            <div class="form-group mt-3">
+                                                <label>Gmail</label>
+                                                <input type="text" ng-model="supplierUpdate.email" class="form-control">
+                                                <p class="text-danger" ng-if="errorsUpdate.email">{{ errorsUpdate.email}}</p>
+                                            </div>
+                                            <div class="form-group mt-3">
+                                                <label>Số điện thoại <span ng-if="!supplierUpdate.phoneNumber" class="text-danger">*</span></label>
+                                                <input type="text" ng-model="supplierUpdate.phoneNumber" class="form-control" required>
+                                                <p class="text-danger" ng-if="errorsUpdate.phoneNumber">{{ errorsUpdate.phoneNumber}}</p>
+                                            </div>
+                                            <div id="box-update-province" class="form-group mt-3">
+                                                <label for="id-update-province">Tỉnh thành <span ng-if="!provinceName" class="text-danger">*</span></label>
+                                                <div class="mt-2">
+                                                    <select class="provinceUpdate" id="id-update-province" data-placeholder="Chọn tỉnh thành" ng-model="selectedProvince">
+                                                        <option></option>
+                                                        <option ng-repeat="province in provinces" value="{{province.province_id}}">{{province.province_name}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div id="box-update-district" class="form-group mt-3">
+                                                <label for="id-update-district">Quận/huyện <span ng-if="!districtName" class="text-danger">*</span></label>
+                                                <div class="mt-2">
+                                                    <select class="districtUpdate" id="id-update-district" data-placeholder="Chọn quận/huyện" ng-model="selectedDistrict">
+                                                        <option></option>
+                                                        <option ng-repeat="district in districts" value="{{district.district_id}}">{{district.district_name}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div id="box-update-ward" class="form-group mt-3">
+                                                <label for="id-update-ward">Phường/xã <span ng-if="!wardName" class="text-danger">*</span></label>
+                                                <div class="mt-2">
+                                                    <select class="wardUpdate" id="id-update-ward" data-placeholder="Chọn phường/xã" ng-model="selectedWard">
+                                                        <option></option>
+                                                        <option ng-repeat="ward in wards" value="{{ward.ward_id}}">{{ward.ward_name}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="tab-pane fade" id="brandUpdate" role="tabpanel" aria-labelledby="brand-update-tab">
+                                            <div class="row m-0 align-items-end">
+                                                <div class="col-sm-4">
+                                                    <input ng-model="filterBrand.keyword" type="text" id="name" class="form-control" placeholder="Tìm kiếm...">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="sortFieldBrand">Sắp xếp theo</label>
+                                                    <select ng-model="filterBrand.sortField" class="form-select" id="sortFieldBrand">
+                                                        <option value="createdAt">Thời gian tạo</option>
+                                                        <option value="updatedAt">Thời gian cập nhật</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="sortDirectionBrand">Thứ tự</label>
+                                                    <select ng-model="filterBrand.sortDirection" class="form-select" id="sortDirectionBrand">
+                                                        <option value="ASC">Tăng dần</option>
+                                                        <option value="DESC">Giảm dần</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <button ng-click="searchBrands()" class="btn btn-primary">
+                                                        Tìm kiếm
+                                                    </button>
+                                            </div>
+                                            </div>
+                                            <div class="row mx-5 mt-3">
+                                                <div class="col-sm-7">
+                                                    <input type="text" ng-model="brand.name" class="form-control" id="name" placeholder="Tên thương hiệu">
+                                                    <p class="text-danger" ng-if="errorsBrand.name">{{errorsBrand.name}}</p>
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <input type="submit" class="btn btn-success" id="addrow" ng-click="createBrand()" value="Thêm" />
+                                                    <input ng-disabled="!brand.id" ng-click="updateBrand()" type="button" class="btn btn-primary ms-2" id="addrow" value="Cập nhật" />
+
+                                                </div>
+                                                
+                                            </div>
+                                            <table class="table table-striped table-hover mt-3">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>Tên thương hiệu</th>
+                                                        <th>Thời gian tạo</th>
+                                                        <th>Thời gian cập nhật</th>
+                                                        <th>Trạng thái</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="text-center" ng-if="brands.content.length === 0">
+                                                        <th colspan="6">Không có dữ liệu</th>
+                                                    </tr>
+                                                    <tr ng-repeat="brandObj in brands.content" ng-class="{'table-warning': brand.id === brandObj.id}">
+                                                        <th class="text-center">
+                                                            <input class="form-check-input" ng-model="selectedUpdate" ng-checked="existUpdate(brandObj)" ng-click="toggleSelectionUpdate(brandObj)" type="checkbox">
+                                                        </th>
+                                                        <th>{{brandObj.name}}</th>
+                                                        <th>{{brandObj.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                                                        <th>{{brandObj.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                                                        <th>
+                                                            <span class="badge rounded-pill" ng-class="{'bg-success': brandObj.status === 1, 'bg-danger': brandObj.status === 0}">
+                                                                {{ brandObj.status === 1 ? 'Hiển thị' : 'Không hiển thị' }}
+                                                            </span>
+                                                        </th>
+                                                        <th>
+                                                            <a ng-click="editBrand(brandObj.id)" style="cursor: pointer;" class="edit">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
+                                                            </a>
+                                                            <a ng-click="deleteBrand(brandObj.id)" ng-if="brandObj.status === 1" class="delete">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                                            </a>
+                                                            <a ng-click="updateStatusBrand(brandObj.id)" ng-if="brandObj.status === 0" class="status">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
+                                                            </a>
+                                                        </th>  
+                                                    </tr>                                                 
+                                                </tbody>
+                                            </table>
+                                            <ul class="pagination">
+                                                <li class="page-item" ng-class="{disabled: brands.pageable.pageNumber === 0}">
+                                                    <a class="page-link" ng-click="changePageBrand(0)">Trang đầu</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled: brands.pageable.pageNumber === 0}">
+                                                    <a class="page-link" ng-click="changePageBrand(brands.pageable.pageNumber - 1)">&lt;</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <input type="number" ng-model="currentPageInput" ng-value="{{currentPageInput + 1}}" ng-change="changePageBrand(currentPageInput - 1)"  style="width: 40px; text-align: center; height: 30px; border: none; outline: none; border-bottom: 1px solid;">
+                                                    / {{brands.totalPages}}
+                                                </li>
+                                                <li class="page-item ms-2" ng-class="{disabled: brands.pageable.pageNumber === brands.totalPages - 1}">
+                                                    <a class="page-link" ng-click="changePageBrand(brands.pageable.pageNumber + 1)">&gt;</a>
+                                                </li>
+                                                <li class="page-item" ng-class="{disabled: brands.pageable.pageNumber === brands.totalPages - 1}">
+                                                    <a class="page-link" ng-click="changePageBrand(brands.totalPages - 1)">Trang cuối</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                      </div>
+                                    
+                                  
+                                </div>
+                                <div class="modal-footer">
+                                    <button ng-click="resetFormUpdate()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                    <button type="submit" ng-disabled="supplierUpdateForm.$invalid" class="btn btn-success">Cập nhật</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!----edit-modal end--------->
+
+
+                <!----delete-modal start--------->
+                <div class="modal fade" tabindex="-1" id="deleteSupplierModel" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Xóa</h5>
+                                <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có chắc muốn xóa {{supplier.name}} không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button ng-click="delete()" type="button" class="btn btn-success">Xóa</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!----delete-modal end--------->
+ <!----update-status-modal start--------->
+ <div class="modal fade" tabindex="-1" id="updateStatusModel" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Khôi phục trạng thái</h5>
+                <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc muốn khôi phục trạng thái {{supplier.name}} không?</p>
+            </div>
+            <div class="modal-footer">
+                <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button ng-click="updateStatus()" type="button" class="btn btn-success">Khôi phục</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!----update-status-modal end--------->
+            </div>
+        </div>
+    </div>
+</div>

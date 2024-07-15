@@ -1,1 +1,527 @@
-<h1>Sản phẩm</h1>
+<div class="main-content" ng-controller="ProductController">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-wrapper">
+
+                <div class="table-title">
+                    <div class="row align-items-center">
+                        <div class="col-sm-3 p-0 d-flex justify-content-lg-start justify-content-center">
+                            <h2 class="ml-lg-2">Sản phẩm</h2>
+                        </div>
+                        <div class="col-sm-9 p-0 d-flex justify-content-lg-end justify-content-center">
+                            <a data-bs-target="#addProductModel" class="btn btn-success" data-bs-toggle="modal">
+                                <i class="material-icons">&#xE147;</i>
+                                <span>Thêm mới</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mx-0 mt-3 mb-3 align-items-end">
+                    <div class="col-sm-4">                        
+                        <input type="text" id="name" ng-model="filter.keyword" class="form-control" placeholder="Tìm kiếm...">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="sortField">Sắp xếp theo</label>
+                        <select ng-model="filter.sortField" class="form-select" id="sortField">
+                          <option value="createdAt">Thời gian tạo</option>
+                          <option value="updatedAt">Thời gian cập nhật</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="sortDirection">Thứ tự</label>
+                        <select ng-model="filter.sortDirection" class="form-select" id="sortDirection">
+                          <option value="ASC">Tăng dần</option>
+                          <option value="DESC">Giảm dần</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                            <button ng-click="searchProducts()" class="btn btn-primary" type="submit" id="button-addon2">
+                                Tìm kiếm
+                            </button>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Mã</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Đơn giá</th>
+                            <th>Thời gian tạo</th>
+                            <th>Thời gian cập nhật</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr class="text-center" ng-if="products.content.length === 0">
+                            <th colspan="8">Không có dữ liệu</th>
+                        </tr>
+                        <tr ng-repeat="product in products.content">
+                            <th>{{product.id}}</th>
+                            <th>{{product.code}}</th>
+                            <th>{{product.name}}</th>
+                            <th>{{product.price | vndCurrency}}</th>
+                            <th>{{product.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                            <th>{{product.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
+                            <th>
+                                <span class="badge rounded-pill" ng-class="{'bg-success': product.status === 1, 'bg-danger': product.status === 0}">
+                                    {{ product.status === 1 ? 'Hiển thị' : 'Không hiển thị' }}
+                                </span>
+                            </th>   
+                            <th>
+                                <a ng-click="editProduct(product.id)" data-bs-target="#editProductModel" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
+                                    <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
+                                </a>
+                                <a ng-click="handleDelete(product)" ng-if="product.status === 1" data-bs-target="#deleteProductModel" class="delete" data-bs-toggle="modal">
+                                    <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                </a>
+                                <a ng-click="handleStatus(product)" ng-if="product.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
+                                    <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
+                                </a>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="clearfix">
+                    <div class="hint-text">Trang hiện tại <b>{{currentPage + 1}}</b> / <b>{{totalPages}}</b></div>
+                    <div class="ms-4 me-3 hint-text">Số lượng hiển thị: 
+                    </div>
+                    <input id="size" ng-model="size" ng-change="getAllProducts()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
+                    <ul class="pagination">
+                        <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                            <a class="page-link" ng-click="changePage(0)">Trang đầu</a>
+                        </li>
+                        <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                            <a class="page-link" ng-click="changePage(currentPage - 1)">&lt;</a>
+                        </li>
+                        <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index" ng-class="{active: $index === currentPage}">
+                            <a class="page-link" ng-click="currentPage !== $index && changePage($index)">{{$index + 1}}</a>
+                        </li>
+                        <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                            <a class="page-link" ng-click="changePage(currentPage + 1)">&gt;</a>
+                        </li>
+                        <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                            <a class="page-link" ng-click="changePage(totalPages - 1)">Trang cuối</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!----add-modal start--------->
+                <div class="modal fade" tabindex="-1" id="addProductModel" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <ul class="nav nav-tabs w-50" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="product-tab" data-bs-toggle="tab" data-bs-target="#product-tb" type="button" role="tab" aria-controls="product-tb" aria-selected="true">Sản phẩm</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="product-detail-tab" data-bs-toggle="tab" data-bs-target="#product-detail" type="button" role="tab" aria-controls="product-detail" aria-selected="false">Chi tiết sản phẩm</button>
+                                      </li>
+                                </ul>
+                                <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form name="productForm" ng-submit="createProduct()" novalidate>
+                                <div class="modal-body">
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="product-tb" role="tabpanel" aria-labelledby="product-tab">
+                                            <div class="form-group">
+                                                <label>Mã sản phẩm</label>
+                                                <input type="text" ng-model="product.code" class="form-control" placeholder="Mã tự động">
+                                                <p class="text-danger" ng-if="errors.code">{{errors.code}}</p>
+                                            </div>
+                                            <div class="row mt-3 p-0">
+                                                <div class="col-sm-6">
+                                                    <label>Tên sản phẩm <span ng-if="!product.name" class="text-danger">*</span></label>
+                                                    <input type="text" ng-model="product.name" class="form-control" required>
+                                                    <p class="text-danger" ng-if="errors.name">{{errors.name}}</p>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label>Đơn giá <span ng-if="!product.price" class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input type="number" ng-model="product.price" class="form-control" required>
+                                                        <span class="input-group-text" id="basic-addon2">VNĐ</span>
+                                                    </div>
+                                                    <p class="text-danger" ng-if="errors.price">{{errors.price}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mt-3">
+                                                <label for="description" class="form-label">Mô tả</label>
+                                                <textarea ng-model="product.describe" class="form-control" id="description" rows="2"></textarea>
+                                            </div>
+                                            <div class="row p-0 mt-3">
+                                                <div id="box-collar" class="col-sm-6">
+                                                    <label for="id-label-collar">Cổ áo <span ng-if="!product.collar.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-label-collar" data-placeholder="Chọn cổ áo" >
+                                                                <option></option>
+                                                                <option ng-repeat="collar in collars" value="{{collar.id}}">{{collar.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-wrist" class="col-sm-6">
+                                                    <label for="id-label-wrist">Cổ tay <span ng-if="!product.wrist.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-label-wrist" data-placeholder="Chọn cổ tay">
+                                                                <option></option>
+                                                                <option ng-repeat="wrist in wrists" value="{{wrist.id}}">{{wrist.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div class="row p-0 mt-3">
+                                                <div id="box-material" class="col-sm-6">
+                                                    <label for="id-label-material">Chất liệu <span ng-if="!product.material.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-label-material" data-placeholder="Chọn chất liệu">
+                                                                <option></option>
+                                                                <option ng-repeat="material in materials" value="{{material.id}}">{{material.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-category" class="col-sm-6">
+                                                    <label for="id-label-category">Nhóm sản phẩm <span ng-if="!product.category.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-label-category" data-placeholder="Chọn nhóm sản phẩm">
+                                                                <option></option>
+                                                                <option ng-repeat="category in categories" value="{{category.id}}">{{category.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div class="row p-0 mt-3">
+                                                <div id="box-supplier" class="col-sm-6">
+                                                    <label for="id-label-supplier">Nhà cung cấp <span ng-if="!product.supplier.id" class="text-danger">*</span></label>
+                                                    <div class="mt-2 d-flex">
+                                                        <select style="width: 100%" id="id-label-supplier" data-placeholder="Chọn nhà cung cấp">
+                                                            <option></option>
+                                                            <option ng-repeat="supplier in suppliers" value="{{supplier.id}}">{{supplier.name}}</option>
+                                                        </select> 
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label for="id-label-supplier">Trạng thái</label>
+                                                    <div class="mt-2 d-flex">
+                                                        <select class="form-select" ng-model="product.status">
+                                                            <option ng-value="1">Hiển thị</option>
+                                                            <option ng-value="0">Không hiển thị</option>
+                                                          </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+                                        <div class="tab-pane fade" id="product-detail" role="tabpanel" aria-labelledby="product-detail-tab">
+                                            <div class="row m-0">
+                                                <div id="box-size" class="col-sm-6">
+                                                    <label for="id-label-size">Size</label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%;" id="id-label-size" multiple="multiple" data-placeholder="Chọn size">
+                                                                <option></option>
+                                                                <option ng-repeat="size in sizes" value="{{size.id}}">{{size.name}}</option>
+                                                              </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-color" class="col-sm-6">
+                                                    <label for="id-label-color">Màu sắc</label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%;" id="id-label-color" multiple="multiple" data-placeholder="Chọn màu sắc">
+                                                                <option></option>
+                                                                <option ng-repeat="color in colors" value="{{color.colorCode}}">{{color.name}}</option>
+                                                              </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div ng-repeat="color in colorSelected" class="row mt-2 p-0">
+                                                <div class="table-title position-relative d-flex align-items-center">
+                                                    <input type="color" class="form-control form-control-color" ng-value="color.colorCode" disabled />
+                                                    <h6 class="m-0 ms-3">Danh sách sản phẩm {{color.name}}
+                                                    </h6>
+                                                </div>
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                      <tr>
+                                                        <th scope="col">Size</th>
+                                                        <th scope="col">Số lượng</th>
+                                                        <th scope="col">Trạng thái</th>
+                                                        <th scope="col"></th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      <tr ng-repeat="item in color.productDetails">
+                                                        <td>{{item.size.name}}</td>
+                                                        <td class="w-25"> <input type="number" ng-model="item.quantity" ng-change="updateQuantity(item)" class="form-control w-50" ng-value="item.quantity" /> </td>
+                                                        <td class="w-50">
+                                                            <select class="form-select w-75" ng-model="item.status">
+                                                                <option ng-value="1">Hoạt động</option>
+                                                                <option ng-value="0">Ngừng hoạt động</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="w-25">
+                                                            <a style="cursor: pointer; color: #F44336;" ng-click="deleteSize(item, color)">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                                            </a>
+                                                        </td>
+                                                      </tr>
+                                                    </tbody>
+                                                  </table>
+                                                  <div>
+                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple custom-on-change="uploadFile">
+                                                  </div>
+                                                    <div ng-repeat="item in color.images" class="image_container position-relative">
+                                                        <img ng-src="{{item.path}}" alt="Image"> 
+                                                            <span class="position-absolute" ng-click="deleteImg(color, item)">&times;</span>
+                                                     </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                               
+                                <div class="modal-footer">
+                                    <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                    <button type="submit" ng-disabled="productForm.$invalid" class="btn btn-success">Thêm</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!----add-modal end--------->
+                
+              
+                <!----edit-modal start--------->
+                <div class="modal fade" tabindex="-1" id="editProductModel" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <ul class="nav nav-tabs w-50" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="edt-product-tab" data-bs-toggle="tab" data-bs-target="#edt-product" type="button" role="tab" aria-controls="edt-product" aria-selected="true">Sản phẩm</button>
+                                      </li>
+                                      <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="edt-productdt-tab" data-bs-toggle="tab" data-bs-target="#edt-product-detail" type="button" role="tab" aria-controls="edt-product-detail" aria-selected="false">Chi tiết sản phẩm</button>
+                                      </li>
+                                </ul>
+                                <button ng-click="resetFormUpdate()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form name="productFormUpdate" ng-submit="updateProduct()" novalidate>
+                                <div class="modal-body">
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="edt-product" role="tabpanel" aria-labelledby="edt-productdt-tab">
+                                            <div class="form-group">
+                                                <label>Mã sản phẩm</label>
+                                                <input type="text" ng-model="productUpdate.code" class="form-control" placeholder="Mã tự động">
+                                                <p class="text-danger" ng-if="errorsUpdate.code">{{errorsUpdate.code}}</p>
+                                            </div>
+                                            <div class="row mt-3 p-0">
+                                                <div class="col-sm-6">
+                                                    <label>Tên sản phẩm <span ng-if="!productUpdate.name" class="text-danger">*</span></label>
+                                                    <input type="text" ng-model="productUpdate.name" class="form-control" required>
+                                                    <p class="text-danger" ng-if="errorsUpdate.name">{{errorsUpdate.name}}</p>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label>Đơn giá <span ng-if="!productUpdate.price" class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input type="number" ng-model="productUpdate.price" class="form-control" required>
+                                                        <span class="input-group-text" id="basic-addon2">VNĐ</span>
+                                                    </div>
+                                                    <p class="text-danger" ng-if="errorsUpdate.price">{{errorsUpdate.price}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mt-3">
+                                                <label for="description" class="form-label">Mô tả</label>
+                                                <textarea ng-model="productUpdate.describe" class="form-control" id="description" rows="2"></textarea>
+                                            </div>
+                                            <div class="row p-0 mt-3">
+                                                <div id="box-update-collar" class="col-sm-6">
+                                                    <label for="id-update-collar">Cổ áo <span ng-if="!productUpdate.collar.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-update-collar" data-placeholder="Chọn cổ áo" >
+                                                                <option></option>
+                                                                <option ng-repeat="collar in collars" value="{{collar.id}}">{{collar.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-update-wrist" class="col-sm-6">
+                                                    <label for="id-update-wrist">Cổ tay <span ng-if="!productUpdate.wrist.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-update-wrist" data-placeholder="Chọn cổ tay">
+                                                                <option></option>
+                                                                <option ng-repeat="wrist in wrists" value="{{wrist.id}}">{{wrist.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div class="row p-0 mt-3">
+                                                <div id="box-update-material" class="col-sm-6">
+                                                    <label for="id-update-material">Chất liệu <span ng-if="!productUpdate.material.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-update-material" data-placeholder="Chọn chất liệu">
+                                                                <option></option>
+                                                                <option ng-repeat="material in materials" value="{{material.id}}">{{material.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-update-category" class="col-sm-6">
+                                                    <label for="id-update-category">Nhóm sản phẩm <span ng-if="!productUpdate.category.id" class="text-danger">*</span></label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%" id="id-update-category" data-placeholder="Chọn nhóm sản phẩm">
+                                                                <option></option>
+                                                                <option ng-repeat="category in categories" value="{{category.id}}">{{category.name}}</option>
+                                                            </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div class="row p-0 mt-3">
+                                                <div id="box-update-supplier" class="col-sm-6">
+                                                    <label for="id-update-supplier">Nhà cung cấp <span ng-if="!productUpdate.supplier.id" class="text-danger">*</span></label>
+                                                    <div class="mt-2 d-flex">
+                                                        <select style="width: 100%" id="id-update-supplier" data-placeholder="Chọn nhà cung cấp">
+                                                            <option></option>
+                                                            <option ng-repeat="supplier in suppliers" value="{{supplier.id}}">{{supplier.name}}</option>
+                                                        </select> 
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label for="id-label-supplier">Trạng thái</label>
+                                                    <div class="mt-2 d-flex">
+                                                        <select class="form-select" ng-model="productUpdate.status">
+                                                            <option ng-value="1">Hiển thị</option>
+                                                            <option ng-value="0">Không hiển thị</option>
+                                                          </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+                                        <div class="tab-pane fade" id="edt-product-detail" role="tabpanel" aria-labelledby="product-detail-tab">
+                                            <div class="row m-0">
+                                                <div id="box-update-size" class="col-sm-6">
+                                                    <label for="id-update-size">Size</label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%;" id="id-update-size" multiple="multiple" data-placeholder="Chọn size">
+                                                                <option></option>
+                                                                <option ng-repeat="size in sizes" value="{{size.id}}">{{size.name}}</option>
+                                                              </select>
+                                                        </div>
+                                                </div>
+                                                <div id="box-update-color" class="col-sm-6">
+                                                    <label for="id-update-color">Màu sắc</label>
+                                                        <div class="mt-2 d-flex">
+                                                            <select style="width: 100%;" id="id-update-color" multiple="multiple" data-placeholder="Chọn màu sắc">
+                                                                <option></option>
+                                                                <option ng-repeat="color in colors" value="{{color.colorCode}}">{{color.name}}</option>
+                                                              </select>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                            <div ng-repeat="color in colorSelect" class="row mt-2 p-0">
+                                                <div class="table-title position-relative d-flex align-items-center">
+                                                    <input type="color" class="form-control form-control-color" ng-value="color.colorCode" disabled />
+                                                    <h6 class="m-0 ms-3">Danh sách sản phẩm {{color.name}}
+                                                    </h6>
+                                                </div>
+                                                <table class="table table-sm">
+                                                    <thead>
+                                                      <tr>
+                                                        <th scope="col">Size</th>
+                                                        <th scope="col">Số lượng</th>
+                                                        <th class="text-center" scope="col">Barcode</th>
+                                                        <th scope="col">Trạng thái</th>
+                                                        <th scope="col"></th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      <tr ng-repeat="item in color.productDetails">
+                                                        <td>{{item.size.name}}</td>
+                                                        <td style="width: 15%;"> <input type="number" ng-model="item.quantity" ng-change="updateQuantity(item)" class="form-control w-100" ng-value="item.quantity" /> </td>
+                                                        <td>
+                                                            <a href="https://barcode.tec-it.com/barcode.ashx?data={{item.barcode}}&code=Code128&amp;translate-esc=on&amp;download=true" style='text-align: center;'>
+                                                                <img ng-click="printBarcode(item.id)" alt='Barcode Generator TEC-IT'
+                                                                     src='https://barcode.tec-it.com/barcode.ashx?data={{item.barcode}}&code=Code128&translate-esc=on' style="width: 262px; cursor: pointer;" />
+                                                              </a>
+                                                        </td>
+                                                        <td class="w-50">
+                                                            <select class="form-select w-100" ng-model="item.status">
+                                                                <option ng-value="1">Hoạt động</option>
+                                                                <option ng-value="0">Ngừng hoạt động</option>
+                                                            </select>
+                                                        </td>
+                                                        <td class="w-25">
+                                                            <a ng-if="item.isNew" style="cursor: pointer; color: #F44336;" ng-click="deleteSizeUpdate(item, color)">
+                                                                <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                                            </a>
+                                                        </td>
+                                                      </tr>
+                                                    </tbody>
+                                                  </table>
+                                                  <div>
+                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple custom-on-change="uploadFileUpdate">
+                                                  </div>
+                                                  <div ng-repeat="item in color.images" class="image_container position-relative">
+                                                        <img ng-src="{{item.path}}" alt="Image" ng-class="{'overlay': item.status === 0}">
+                                                        <span class="position-absolute" ng-click="toggleImgStatus(color, item)">
+                                                            <i class="material-icons" style="font-size: 18px; font-weight: bold;"> {{item.status === 0 ? 'settings_backup_restore ' : 'close'}}</i>
+                                                        </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+                               
+                                <div class="modal-footer">
+                                    <button ng-click="resetFormUpdate()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                    <button type="submit" ng-disabled="productFormUpdate.$invalid" class="btn btn-success">Cập nhật</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!----edit-modal end--------->
+
+                <!----delete-modal start--------->
+                <div class="modal fade" tabindex="-1" id="deleteProductModel" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Xóa</h5>
+                                <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có chắc muốn xóa {{product.name}} không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button ng-click="delete()" type="button" class="btn btn-success">Xóa</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!----delete-modal end--------->
+                <!----update-status-modal start--------->
+                <div class="modal fade" tabindex="-1" id="updateStatusModel" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Khôi phục trạng thái</h5>
+                                <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Bạn có chắc muốn khôi phục trạng thái {{product.name}} không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button ng-click="updateStatus()" type="button" class="btn btn-success">Khôi phục</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!----update-status-modal end--------->
+            </div>
+        </div>
+    </div>
+</div>
