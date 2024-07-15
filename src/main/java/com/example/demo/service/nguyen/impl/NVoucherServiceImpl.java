@@ -28,7 +28,7 @@ public class NVoucherServiceImpl implements NVoucherService {
     private static final String PREFIX = "PGG";
     private static final String DISCOUNT_TYPE_K = "K";
     private static final String APPLY_FOR_ALL = "_ALL";
-    private static final String APPLY_FOR_LKH = "LKH";
+    private static final String APPLY_FOR_LKH = "_LKH";
     private static final String APPLY_FOR_CN = "CN";
 
     @Autowired
