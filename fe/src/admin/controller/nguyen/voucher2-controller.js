@@ -73,6 +73,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
     $scope.duplicateNameError = false;
     $scope.duplicateCodeError = false;
     $scope.codeLengthError = false;
+    $scope.codeLengthErrorMin = false;
 
     $scope.checkDuplicateName = function () {
         $scope.duplicateNameError = $scope.vouchers.some(voucher => voucher.name === $scope.formInputVoucher.name);
@@ -85,6 +86,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             voucher.code.toUpperCase() === $scope.formInputVoucher.code.toUpperCase()
         );
         $scope.codeLengthError = codeWithoutSpaces.length > 15;
+        $scope.codeLengthErrorMin = codeWithoutSpaces.length < 5;
     };
 
     $scope.validateValueError = false;
@@ -133,14 +135,14 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
 
     //#endregion
 
-    //ADD VOUCHER ***************
+    //#region ADD VOUCHER 
     $scope.addVoucher = function () {
 
         if ($scope.formInputVoucher.discountType == 1) {
             $scope.checkValidateAllValue()
         }
 
-        if ($scope.duplicateNameError || $scope.duplicateCodeError || $scope.validateValueError) {
+        if ($scope.duplicateNameError || $scope.duplicateCodeError || $scope.codeLengthErrorMin || $scope.validateValueError) {
             return;
         }
 
@@ -152,7 +154,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         }
 
         console.log($scope.entitiesCustomerType.length);
-        if ($scope.entitiesCustomerType.length == 0) {
+        if ($scope.entitiesCustomerType.length == 0 && $scope.formInputVoucher.applyfor == 1) {
             return;
         }
 
@@ -168,6 +170,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             $scope.resetFormAdd()
         })
     }
+    //#endregion
 
     //###########################################################################################################################
     //###########################################################################################################################
@@ -331,7 +334,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
     //#endregion
 
 
-    //UPDATE VOUCHER ************
+    //#region UPDATE VOUCHER 
     $scope.updateVoucher = function (id) {
         if ($scope.formUpdateVoucher.discountType == 1) {
             $scope.checkValidateAllValueUpdate()
@@ -353,7 +356,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         console.log($scope.formInputVoucher.applyfor);
 
         console.log($scope.entitiesCustomerTypeUpdate);
-        if($scope.entitiesCustomerTypeUpdate.length == 0 && $scope.formUpdateVoucher.applyfor == 2){
+        if ($scope.entitiesCustomerTypeUpdate.length == 0 && $scope.formUpdateVoucher.applyfor == 1) {
             return
         }
 
@@ -374,6 +377,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             $scope.getVouchers(0);
         })
     }
+    //#endregion
 
     //#region thong kê voucher
     $scope.staticVoucher = {}
@@ -394,10 +398,12 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
     };
     //#endregion
 
-    //reset form add
+    //#region reset form add & update
     $scope.resetFormAdd = function () {
         $scope.formInputVoucher = {}
         $scope.formInputVoucher.name = null
+        $scope.formInputVoucher.startDate = null
+        $scope.formInputVoucher.endDate = null
         $scope.formInputVoucher.discountType = 1
         $scope.formInputVoucher.applyfor = 0
 
@@ -407,6 +413,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         $scope.duplicateNameError = false;
         $scope.duplicateCodeError = false;
         $scope.codeLengthError = false;
+        $scope.codeLengthErrorMin = false;
 
         $scope.formAddVoucher.$setPristine();
         $scope.formAddVoucher.$setUntouched();
@@ -429,6 +436,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         $scope.formEditVoucher.$setUntouched();
 
     }
+    //#endregion
 
     //ham chuyen tieng viet co dau sang khong dau
     function toLowerCaseNonAccentVietnamese(str) {
@@ -446,6 +454,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         return str;
     }
 
+    // #region tối thiểu ngày hiện tại
     var now = new Date();
     var year = now.getFullYear();
     var month = String(now.getMonth() + 1).padStart(2, '0');
@@ -454,6 +463,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
     var minutes = String(now.getMinutes()).padStart(2, '0');
 
     $scope.currentDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+    //#endregion
 
     // PAGINATION, FILTER VOUCHER
     //#region

@@ -216,10 +216,10 @@
                                                     <input type="text" name="addCode" class="form-control"
                                                         ng-change="checkDuplicateCode()"
                                                         ng-model="formInputVoucher.code"
-                                                        ng-class="{'is-invalid': formAddVoucher.addCode.$touched && (duplicateCodeError || codeLengthError)}">
+                                                        ng-class="{'is-invalid': formAddVoucher.addCode.$touched && (duplicateCodeError || codeLengthError || codeLengthErrorMin)}">
 
                                                     <span
-                                                        ng-show="formAddVoucher.$submitted || duplicateCodeError || codeLengthError">
+                                                        ng-show="formAddVoucher.$submitted || duplicateCodeError || codeLengthError || codeLengthErrorMin">
                                                         <div ng-show="duplicateCodeError"
                                                             class="error-message text-danger form-text">
                                                             Mã voucher đã tồn tại
@@ -227,6 +227,10 @@
                                                         <div ng-show="codeLengthError"
                                                             class="error-message text-danger form-text">
                                                             Mã không được quá 15 ký tự
+                                                        </div>
+                                                        <div ng-show="codeLengthErrorMin"
+                                                            class="error-message text-danger form-text">
+                                                            Mã không được ít hơn 5 ký tự
                                                         </div>
                                                     </span>
                                                 </div>
@@ -444,6 +448,9 @@
                                                         <div ng-show="formAddVoucher.addStartDate.$error.max"
                                                             class="error-message text-danger form-text">
                                                             Ngày bắt đầu không được lớn hơn ngày kết thúc</div>
+                                                        <div ng-show="formAddVoucher.addStartDate.$error.min"
+                                                            class="error-message text-danger form-text">
+                                                            Ngày bắt đầu không được nhỏ hơn ngày hiện tại</div>
                                                     </span>
                                                 </div>
                                             </div>
@@ -451,7 +458,6 @@
                                                 <div class="form-group">
                                                     <label>Ngày kết thúc</label>
                                                     <input type="datetime-local" name="addEndDate" class="form-control"
-                                                        ng-attr-min="{{formInputVoucher.endDate}}"
                                                         min="{{formInputVoucher.startDate}}"
                                                         ng-model="formInputVoucher.endDate" ng-required="true"
                                                         ng-class="{'is-invalid': formAddVoucher.addEndDate.$touched && formAddVoucher.addEndDate.$invalid}">
@@ -784,7 +790,7 @@
                                                             Ngày bắt đầu không được để trống</div>
                                                         <div ng-show="formEditVoucher.updateStartDate.$error.max"
                                                             class="error-message text-danger form-text">
-                                                            Ngày bắt đầu không được nhỏ hơn ngày kết thúc</div>
+                                                            Ngày bắt đầu không được lớn hơn ngày kết thúc</div>
                                                     </span>
                                                 </div>
                                             </div>
