@@ -3,6 +3,7 @@ package com.example.demo.restController.nguyen;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillDetail;
 import com.example.demo.model.request.nguyen.BillRequest;
+import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NBillDetailService;
 import com.example.demo.service.nguyen.NBillService;
 import com.example.demo.service.nguyen.NPaymentStatusService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
@@ -29,6 +31,9 @@ public class NBillRestController {
 
     @Autowired
     NPaymentStatusService paymentStatusService;
+
+    @Autowired
+    private SCAccountService accountService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
@@ -57,27 +62,36 @@ public class NBillRestController {
     }
 
     @PutMapping("/shipUpdate/{id}")
-    public Bill updateShipmentDetail(@RequestBody Bill bill, @PathVariable Long id) {
-        return billService.updateShipmentDetail(bill, id);
+    public Bill updateShipmentDetail(@RequestHeader("Authorization") String token,
+                                     @RequestBody Bill bill, @PathVariable Long id) {
+
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+
+        return billService.updateShipmentDetail(bill, id, fullName.get());
     }
 
     @PutMapping("/billStatusUpdate/{id}")
-    public Bill updateBillStatusAndSaveBillHistory(@RequestBody BillRequest billRequest,
-                                                   @PathVariable Long id) {
-//        System.out.println(billRequest.getBill().getStatus());
-//        System.out.println(billRequest.getBillHistory());
-//        return null;
+    public Bill updateBillStatusAndSaveBillHistory(
+            @RequestHeader("Authorization") String token, @RequestBody BillRequest billRequest,
+            @PathVariable Long id) {
+
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+        billRequest.getBillHistory().setCreatedBy(fullName.get());
+
         return billService
                 .updateStatusAndBillStatus(billRequest.getBill(), id, billRequest.getBillHistory());
     }
 
     @PostMapping("/{billId}/details")
     public ResponseEntity<BillDetail> addProductDetailToBill(
+            @RequestHeader("Authorization") String token,
             @PathVariable Long billId,
             @RequestParam Long productDetailId,
             @RequestParam Integer quantity,
             @RequestParam BigDecimal price,
             @RequestParam BigDecimal promotionalPrice) {
+
+        Optional<String> fullName = accountService.getFullNameByToken(token);
 
         BillDetail billDetail = billDetailService
                 .addProductDetailToBill(billId, productDetailId, quantity, price, promotionalPrice);
@@ -85,15 +99,22 @@ public class NBillRestController {
     }
 
     @DeleteMapping("/details/{billDetailId}")
-    public ResponseEntity<Void> removeProductDetailFromBill(@PathVariable Long billDetailId) {
+    public ResponseEntity<Void> removeProductDetailFromBill(
+            @RequestHeader("Authorization") String token, @PathVariable Long billDetailId) {
+
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+
         billDetailService.removeProductDetailFromBill(billDetailId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/details/{billDetailId}/quantity")
     public ResponseEntity<BillDetail> updateBillDetailQuantity(
+            @RequestHeader("Authorization") String token,
             @PathVariable Long billDetailId,
             @RequestParam Integer newQuantity) {
+
+        Optional<String> fullName = accountService.getFullNameByToken(token);
 
         BillDetail updatedBillDetail = billDetailService
                 .updateBillDetailQuantity(billDetailId, newQuantity);
@@ -101,7 +122,7 @@ public class NBillRestController {
     }
 
     @GetMapping("/{billId}/paymentStatus")
-    public ResponseEntity<?> getAllPaymentStatusByBillId(@PathVariable Long billId){
+    public ResponseEntity<?> getAllPaymentStatusByBillId(@PathVariable Long billId) {
         return ResponseEntity.ok(paymentStatusService.getAllByBillId(billId));
     }
 }

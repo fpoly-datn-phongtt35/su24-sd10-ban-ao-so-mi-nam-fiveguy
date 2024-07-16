@@ -24,6 +24,6 @@ public interface NBillService {
 
     Bill updateStatusAndBillStatus(Bill bill, Long id, BillHistory billHistory);
 
-    Bill updateShipmentDetail(Bill bill, Long id);
+    Bill updateShipmentDetail(Bill bill, Long id, String fullName);
 
 }

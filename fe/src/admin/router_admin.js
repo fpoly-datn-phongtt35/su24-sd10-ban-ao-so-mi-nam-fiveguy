@@ -49,15 +49,11 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/product/supplier.html",
     })
     // <!-- Nguyên -->
-    .when("/admin/voucher", {
+    .when("/admin/v1", {
       templateUrl: "pages/voucher/voucher.html",
       controller: "nguyen-voucher-ctrl"
     })
-    .when("/admin/vouc", {
-      templateUrl: "pages/voucher/voucher copy.html",
-      controller: "nguyen-voucher-test"
-    })
-    .when("/admin/v2", {
+    .when("/admin/voucher", {
       templateUrl: "pages/voucher/voucher2.html",
       controller: "nguyen-voucher2-ctrl"
     })

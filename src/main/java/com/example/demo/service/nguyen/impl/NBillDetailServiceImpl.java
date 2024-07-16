@@ -123,29 +123,6 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 
             return billDetail;
         }
-
-//        // Create a new BillDetail instance
-//        BillDetail billDetail = new BillDetail();
-//        billDetail.setBill(bill);
-//        billDetail.setProductDetail(productDetail);
-//        billDetail.setQuantity(quantity);
-//        billDetail.setPrice(price);
-//        billDetail.setPromotionalPrice(promotionalPrice);
-//        billDetail.setStatus(1);
-//
-//        // Save the BillDetail instance
-//        billDetail = billDetailRepository.save(billDetail);
-//
-//        // Update the Bill's total amount
-//        bill.setTotalAmount(
-//                bill.getTotalAmount().add(price.multiply(BigDecimal.valueOf(quantity))));
-//        billRepository.save(bill);
-//
-//        // Update the ProductDetail quantity
-//        productDetail.setQuantity(productDetail.getQuantity() - quantity);
-//        productDetailRepository.save(productDetail);
-//
-//        return billDetail;
     }
 
     @Transactional

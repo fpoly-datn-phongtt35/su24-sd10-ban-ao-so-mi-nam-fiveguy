@@ -86,7 +86,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             voucher.code.toUpperCase() === $scope.formInputVoucher.code.toUpperCase()
         );
         $scope.codeLengthError = codeWithoutSpaces.length > 15;
-        $scope.codeLengthErrorMin = codeWithoutSpaces.length < 5;
+        $scope.codeLengthErrorMin = codeWithoutSpaces.length < 5 && codeWithoutSpaces.length > 0;
     };
 
     $scope.validateValueError = false;

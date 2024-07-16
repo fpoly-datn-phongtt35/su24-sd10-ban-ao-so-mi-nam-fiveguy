@@ -112,6 +112,8 @@
                         </thead>
 
                         <tbody style="text-transform: none; ">
+                            <td colspan="12" ng-if="filtervouchers.length == 0" class="text-center fs-6">
+                                Không có dữ liệu</td>
                             <tr ng-repeat="v in filtervouchers">
                                 <!-- <th><span class="custom-checkbox">
                                         <input type="checkbox" id="checkbox1" name="option[]" value="1">
