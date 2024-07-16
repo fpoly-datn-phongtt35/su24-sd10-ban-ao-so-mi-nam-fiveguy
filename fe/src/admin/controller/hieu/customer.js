@@ -725,6 +725,7 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
                         updatedAt: $scope.formUpdate.updatedAt,
                         createdBy: $scope.formUpdate.createdBy,
                         updatedBy: $scope.formUpdate.updatedBy,
+                        customerType: $scope.formUpdate.customerType,
                         status: $scope.formUpdate.status,
                     };
                     console.log(dataObject);

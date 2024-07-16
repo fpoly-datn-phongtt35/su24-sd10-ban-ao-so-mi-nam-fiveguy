@@ -95,7 +95,7 @@
                                 <div class="row">
                                     <div class="form-check col-md-5">
                                         <input class="form-check-input" type="radio" name="gender" id="gender1"
-                                            ng-model="filters.gender" value="true" />Nam
+                                            ng-model="filters.gender" value="True" />Nam
                                     </div>
                                     <div class="form-check col-md-5">
                                         <input class="form-check-input" type="radio" name="gender" id="gender2"
@@ -107,11 +107,10 @@
                                 <label>Loại khách hàng:</label>
                                 <select class="form-select" ng-model="filters.idCustomerType">
                                     <option selected value="">Chọn loại khách hàng</option>
-                                    <option value="1">Khách Vip</option>
-                                    <option value="2">Khách lẻ</option>
-                                    <option value="3">Khách trung</option>
-                                    <!-- <option value="3">Sắp diễn ra</option> -->
-                                    <!-- <option value="4">Tạm ngưng</option> -->
+                                    <option value="1">Khách VIP</option>
+                                    <option value="2">Khách Thường</option>
+                                    <option value="3">Khách Lẻ</option>
+                                    <option value="4">Khách Bán Buôn</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -356,31 +355,32 @@
                                 <div class="col-sm-9">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="gender" id="gender1"
-                                            value="true" ng-model="formInput.gender" ng-checked='true' />Nam
+                                            ng-value="true" ng-model="formInput.gender" ng-checked='true' />Nam
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="gender" id="gender2"
-                                            ng-model="formInput.gender" value="false" />Nữ
+                                            ng-model="formInput.gender" ng-value="false" />Nữ
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="row mb-3">
-                                <label for="inputcustomerType" class="col-sm-3 col-form-label">Loại Khách Hàng</label>
-                                <div class="col-sm-9">
-                                    <select name="customerType" id="inputcustomerType" class="form-control"
-                                        ng-model="formInput.customerType" required>
-                                        <option value="" disabled selected>Chọn loại khách hàng</option>
-                                        <option ng-repeat="type in customerTypes" value="{{type.id}}">{{type.name}}
-                                        </option>
+                            <div class="row mb-3">
+                                <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Loại Khách Hàng</label>
+                                <div class="col-sm-8">
+                                    <select name="customerTypes" class="form-select form-select-sm"
+                                        aria-label="Small select example" ng-model="formInputCustomer.customerTypes.id">
+                                        <option ng-value="1">Khách VIP</option>
+                                        <option ng-value="2">Khách Thường</option>
+                                        <option ng-value="3">Khách Lẻ</option>
+                                        <option ng-value="4">Khách Bán Buôn</option>
                                     </select>
                                     <span ng-show="formCreateCustomer.$submitted">
-                                        <div ng-show="formCreateCustomer.customerType.$invalid"
+                                        <div ng-show="formCreateCustomer.customerTypes.$invalid"
                                             class="error-message text-danger form-text">
                                             Không được để trống
                                         </div>
                                     </span>
                                 </div>
-                            </div> -->
+                            </div>
 
 
                             <!-- <div class="row mb-3">
@@ -532,7 +532,7 @@
                                 <div class="row col-sm-7">
                                     <div class="form-check col-sm-6">
                                         <input class="form-check-input" type="radio" name="gender" id="gender1"
-                                            ng-value="true" ng-model="formUpdate.gender" ng-checked="true" />Nam
+                                             ng-model="formUpdate.gender" ng-value="true" ng-checked="true" />Nam
                                     </div>
                                     <div class="form-check col-sm-6">
                                         <input class="form-check-input" type="radio" name="gender" id="gender2"
@@ -558,7 +558,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="row mb-3">
+                            <!-- <div class="row mb-3">
                                 <label for="inputAddress" class="col-sm-4 col-form-label">Địa Chỉ</label>
                                 <div class="col-sm-8">
                                     <input name="address" id="inputAddress" type="text" class="form-control"
@@ -570,7 +570,7 @@
                                         </div>
                                     </span>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="row mb-3">
                                 <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Tạo</label>
                                 <div class="col-sm-8">
@@ -601,12 +601,14 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Chức vụ</label>
+                                <label for="inputCustomerType" class="col-sm-4 col-form-label">Loại Khách Hàng</label>
                                 <div class="col-sm-8">
-                                    <select name="role" class="form-select form-select-sm"
-                                        aria-label="Small select example" ng-model="formInputAccount.role.id">
-                                        <option ng-value="1">Nhân viên</option>
-                                        <option ng-value="2">Quản lý</option>
+                                    <select name="customerType" id="inputCustomerType" class="form-select form-select-sm"
+                                    aria-label="Small select example" ng-model="formUpdate.customerType.id">
+                                        <option ng-value="1">Khách VIP</option>
+                                        <option ng-value="2">Khách Thường</option>
+                                        <option ng-value="3">Khách Lẻ</option>
+                                        <option ng-value="4">Khách Bán Buôn</option>
                                     </select>
                                     <span ng-show="formUpdateCustomer.$submitted">
                                         <div ng-show="formUpdateCustomer.role.$invalid"
