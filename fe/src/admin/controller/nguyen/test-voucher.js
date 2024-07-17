@@ -28,9 +28,8 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
 
 
     const apiVoucher = "http://localhost:8080/api/admin/voucher"
-    const apiCustomerType = "http://localhost:8080/api/admin/customerType"
+    const apiCustomerType = "http://localhost:8080/api/admin/customerTypeN"
     const apiCustomerTypeVoucher = "http://localhost:8080/api/admin/customerTypeVoucher"
-    const apiCustomerVoucher = "http://localhost:8080/api/admin/customerVoucher"
 
     // Hàm hiển thị thông báo thành công
     $scope.showSuccess = function (message) {
@@ -63,104 +62,6 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
     };
     $scope.getAllCustomerType();
 
-    //#region CUSTOMER logic
-
-    // Load selected customers from local storage
-    localStorage.setItem('selectedCustomers', []);
-    $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
-    // $scope.selectedCustomers = [];
-
-    let allCustomers = [];
-
-    $scope.selectedCount = 0
-    // Fetch all customers from the API and store them in allCustomers
-    $http.get('http://localhost:8080/api/admin/customerN/all').then(function (res) {
-        allCustomers = res.data || []; // Ensure allCustomers is an empty array if res.data is null or undefined
-        console.log(allCustomers);
-
-        // Apply saved selections after fetching all customers
-        $scope.applySavedSelections();
-
-        // Load and select customers from the voucher API
-        // $scope.loadAndSelectCustomersFromAPI();
-    }).catch(function (error) {
-        console.error('Error fetching all customers:', error);
-    });
-
-    $scope.listCustomer = [];
-
-    // Load selected customers from local storage
-    $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
-
-    $scope.submitSelected = function () {
-        var selectedCustomers = Object.keys($scope.selectedCustomers).map(function (id) {
-            return $scope.selectedCustomers[id];
-        });
-        console.log('Selected Customers:', selectedCustomers);
-    };
-
-    $scope.updateSelectedCustomers = function (customer) {
-        if (customer.selected) {
-            $scope.selectedCustomers[customer.id] = customer;
-        } else {
-            delete $scope.selectedCustomers[customer.id];
-        }
-        $scope.selectedCount = Object.keys($scope.selectedCustomers).length;
-        $scope.saveSelections();
-    };
-
-    $scope.saveSelections = function () {
-        localStorage.setItem('selectedCustomers', JSON.stringify($scope.selectedCustomers));
-    };
-
-    $scope.applySavedSelections = function () {
-        angular.forEach($scope.customers, function (customer) {
-            customer.selected = !!$scope.selectedCustomers[customer.id];
-        });
-    };
-
-    $scope.$watch('customers', function (newVal, oldVal) {
-        if (newVal !== oldVal) {
-            $scope.applySavedSelections();
-        }
-    });
-
-    // Function to fetch customers from the voucher API and mark them as selected
-    $scope.loadAndSelectCustomersFromAPI = function (id) {
-        $http.get(apiCustomerVoucher + "/voucher/" + id + "/customers")
-            .then(function (res) {
-                var apiCustomers = (res.data || []).map(function (object) {
-                    return object.id;
-                });
-
-                angular.forEach(allCustomers, function (customer) {
-                    if (apiCustomers.includes(customer.id)) {
-                        customer.selected = true;
-                        $scope.updateSelectedCustomers(customer);
-                    }
-                });
-
-                $scope.saveSelections(); // Save selections
-            })
-            .catch(function (error) {
-                console.error('Error fetching customers from voucher API:', error);
-            });
-    };
-
-    // Make sure to apply saved selections whenever the customers data is updated
-    $scope.$watch(function () {
-        return allCustomers;
-    }, function (newVal, oldVal) {
-        if (newVal !== oldVal) {
-            $scope.applySavedSelections();
-        }
-    }, true);
-
-    // Ensure saved selections are applied on initial load
-    $scope.applySavedSelections();
-
-    //#endregion
-
     $scope.formInputVoucher.applyfor = 0
 
     //set gia tri cua discountType trong add form
@@ -172,6 +73,7 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
     $scope.duplicateNameError = false;
     $scope.duplicateCodeError = false;
     $scope.codeLengthError = false;
+    $scope.codeLengthErrorMin = false;
 
     $scope.checkDuplicateName = function () {
         $scope.duplicateNameError = $scope.vouchers.some(voucher => voucher.name === $scope.formInputVoucher.name);
@@ -184,6 +86,7 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
             voucher.code.toUpperCase() === $scope.formInputVoucher.code.toUpperCase()
         );
         $scope.codeLengthError = codeWithoutSpaces.length > 15;
+        $scope.codeLengthErrorMin = codeWithoutSpaces.length < 5 && codeWithoutSpaces.length > 0;
     };
 
     $scope.validateValueError = false;
@@ -193,12 +96,19 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         let value = $scope.formInputVoucher.value
         let max = $scope.formInputVoucher.maximumReductionValue
         let min = $scope.formInputVoucher.minimumTotalAmount
+        if ($scope.formInputVoucher.maximumReductionValue == undefined) {
+            max = 0;
+        }
+        if ($scope.formInputVoucher.minimumTotalAmount == undefined) {
+            min = 0;
+        }
 
         console.log("-");
         console.log(value);
         console.log(max);
         console.log(min);
         console.log(min * value / 100);
+
         if (min * value / 100 > max) {
             $scope.validateValueError = true
             $scope.validateAddMaxReVa = min * value / 100;
@@ -206,7 +116,6 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
             $scope.validateValueError = false
             $scope.validateAddMaxReVa = 0;
         }
-        console.log($scope.validateAddMaxReVa);
     }
 
     $scope.validateAddValue = function (discountType) {
@@ -216,9 +125,6 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         if ($scope.formInputVoucher.value < 1 && discountType == 1) {
             $scope.formInputVoucher.value = 1
         }
-        // if( value < 1000  && $scope.formInputVoucher.discountType == 1){
-        //     $scope.formInputVoucher.value == 1000
-        // }
     };
 
     //chuyen doi gia tri cua MaximumValueReduce tranh loi luc validation *ADD*
@@ -227,58 +133,52 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         $scope.validateAddValue(discountType)
     }
 
-    $scope.applyforChangeAdd = function (value) {
-        $scope.formInputVoucher.quantity = 0
-    }
-
     //#endregion
 
-    $scope.listCustomerAdd = []
-
-    //ADD VOUCHER ***************
+    //#region ADD VOUCHER 
     $scope.addVoucher = function () {
 
-        $scope.checkValidateAllValue()
+        if ($scope.formInputVoucher.discountType == 1) {
+            $scope.checkValidateAllValue()
+        }
 
-        if ($scope.duplicateNameError || $scope.duplicateCodeError || $scope.validateValueError) {
+        if ($scope.duplicateNameError || $scope.duplicateCodeError || $scope.codeLengthErrorMin || $scope.validateValueError) {
             return;
         }
 
-        $scope.listCustomerAdd = Object.keys($scope.selectedCustomers).map(function (id) {
-            return $scope.selectedCustomers[id];
-        });
-
-        let entitiesCustomerType = $scope.customerTypes.filter(ct => ct.selected)
+        $scope.entitiesCustomerType = $scope.customerTypes.filter(ct => ct.selected)
         console.log($scope.formInputVoucher.applyfor);
 
         if ($scope.formInputVoucher.applyfor == 0) {
-            $scope.listCustomerAdd = [];
             entitiesCustomerType = [];
         }
-        if ($scope.formInputVoucher.applyfor == 1) {
-            $scope.listCustomerAdd = []
-        }
-        if ($scope.formInputVoucher.applyfor == 2) {
-            entitiesCustomerType = []
-        }
 
-        console.log(entitiesCustomerType);
+        console.log($scope.entitiesCustomerType.length);
+        if ($scope.entitiesCustomerType.length == 0 && $scope.formInputVoucher.applyfor == 1) {
+            return;
+        }
+        // var formattedStartDate = $scope.formInputVoucher.startDate ? new Date($scope.formInputVoucher.startDate).toISOString() : null;
+        // var formattedEndDate = $scope.formInputVoucher.endDate ? new Date($scope.formInputVoucher.endDate).toISOString() : null;
+
+        var formattedStartDate = $scope.formInputVoucher.startDate ? flatpickr.parseDate($scope.formInputVoucher.startDate, "d-m-Y H:i:S").toISOString() : null;
+        var formattedEndDate = $scope.formInputVoucher.endDate ? flatpickr.parseDate($scope.formInputVoucher.endDate, "d-m-Y H:i:S").toISOString() : null;
+
+        $scope.formInputVoucher.startDate = formattedStartDate
+        $scope.formInputVoucher.endDate = formattedEndDate
 
         let data = {
-            voucher: $scope.formInputVoucher, customerTypeList: entitiesCustomerType,
-            customerList: $scope.listCustomerAdd
+            voucher: $scope.formInputVoucher, customerTypeList: $scope.entitiesCustomerType
         }
         console.log(data)
 
         $http.post(apiVoucher + "/saveVoucher", data).then(function (res) {
             $('#addVoucherModal').modal('hide');
             $scope.showSuccess("Thêm thành công")
-
             $scope.getVouchers(0);
+            $scope.resetFormAdd()
         })
-
-        $scope.resetFormAdd()
     }
+    //#endregion
 
     //###########################################################################################################################
     //###########################################################################################################################
@@ -301,7 +201,6 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         document.getElementById("updateEndDate").disabled = bool;
         document.getElementById("flexRadioUpdate0").disabled = bool;
         document.getElementById("flexRadioUpdate1").disabled = bool;
-        document.getElementById("flexRadioUpdate2").disabled = bool;
         document.getElementById("radioTypeUpdate1").disabled = bool;
         document.getElementById("radioTypeUpdate2").disabled = bool;
 
@@ -334,6 +233,7 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
 
     // Get the voucher value by id
     $scope.getVoucherById = function (voucher) {
+        $scope.resetFormUpdate()
         $scope.formUpdateVoucher = angular.copy(voucher);
         if (voucher.startDate != null) {
             $scope.formUpdateVoucher.startDate = new Date(voucher.startDate);
@@ -366,18 +266,76 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         } else {
             document.getElementById("updateButton").style.display = "block"
         }
-
-
-        document.getElementById("flexRadioUpdate0").disabled = true;
-        document.getElementById("flexRadioUpdate1").disabled = true;
-        document.getElementById("flexRadioUpdate2").disabled = true; updateStartDate
+        // document.getElementById("flexRadioUpdate0").disabled = true;
+        // document.getElementById("flexRadioUpdate1").disabled = true;
         document.getElementById("updateStartDate").disabled = true;
 
-        localStorage.setItem('selectedCustomers', []);
-        $scope.loadAndSelectCustomersFromAPI($scope.currentVoucher.id);
-        $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
-        $scope.applySavedSelections();
-        $scope.getCustomers(0)
+        if (voucher.startDate != null) {
+            $scope.formUpdateVoucher.startDate = flatpickr.formatDate(new Date(voucher.startDate), "d-m-Y H:i:S");
+        } else {
+            $scope.formUpdateVoucher.startDate = null;
+        }
+        if (voucher.endDate != null) {
+            $scope.formUpdateVoucher.endDate = flatpickr.formatDate(new Date(voucher.endDate), "d-m-Y H:i:S");
+        } else {
+            $scope.formUpdateVoucher.endDate = null;
+        }
+
+        $timeout(function () {
+            var now = new Date();
+            var minStartDate = new Date(now.getTime() + 86400000);
+            var minEndDate = new Date(now.getTime() + 86300000)
+            if ($scope.formUpdateVoucher.startDate) {
+                var startDateObj = flatpickr.parseDate($scope.formUpdateVoucher.startDate, "d-m-Y H:i:S");
+
+                if (now < startDateObj) {
+                    // Nếu ngày hiện tại bé hơn ngày bắt đầu
+                    minEndDate = new Date(startDateObj.getTime() + 86400000); // startDate + 1 ngày
+                } else {
+                    // Nếu ngày hiện tại lớn hơn hoặc bằng ngày bắt đầu
+                    minEndDate = new Date(now.getTime() + 86400000); // Ngày hiện tại + 1 ngày
+                }
+            } else {
+                // Trường hợp startDate chưa được chọn
+                minEndDate = new Date(now.getTime() + 86400000); // Ngày hiện tại + 1 ngày
+            }
+
+            var startPicker = flatpickr("#updateStartDate", {
+                enableTime: true,
+                time_24hr: true,
+                enableSeconds: true,
+                defaultDate: $scope.formUpdateVoucher.startDate,
+                minDate: minStartDate,
+                dateFormat: "d-m-Y H:i:S",
+                onChange: function (selectedDates, dateStr, instance) {
+                    $timeout(function () {
+                        if (selectedDates.length > 0) {
+                            $scope.formUpdateVoucher.startDate = instance.formatDate(selectedDates[0], "d-m-Y H:i:S");
+                        } else {
+                            $scope.formUpdateVoucher.startDate = null;
+                        }
+                    });
+                }
+            });
+
+            var endPicker = flatpickr("#updateEndDate", {
+                enableTime: true,
+                time_24hr: true,
+                enableSeconds: true,
+                defaultDate: $scope.formUpdateVoucher.endDate,
+                minDate: minEndDate,
+                dateFormat: "d-m-Y H:i:S",
+                onChange: function (selectedDates, dateStr, instance) {
+                    $timeout(function () {
+                        if (selectedDates.length > 0) {
+                            $scope.formUpdateVoucher.endDate = instance.formatDate(selectedDates[0], "d-m-Y H:i:S");
+                        } else {
+                            $scope.formUpdateVoucher.endDate = null;
+                        }
+                    });
+                }
+            });
+        }, 0);
 
     };
 
@@ -394,6 +352,12 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         let max = $scope.formUpdateVoucher.maximumReductionValue
         let min = $scope.formUpdateVoucher.minimumTotalAmount
 
+        if ($scope.formUpdateVoucher.maximumReductionValue == undefined) {
+            max = 0;
+        }
+        if ($scope.formUpdateVoucher.minimumTotalAmount == undefined) {
+            min = 0;
+        }
         console.log("-");
         console.log(value);
         console.log(max);
@@ -429,10 +393,6 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         $scope.validateUpdateValue(discountType)
     }
 
-    $scope.applyforChangeUpdate = function (value) {
-        $scope.formUpdateVoucher.quantity = 0
-    }
-
     //check trung ten va ma update
     $scope.duplicateUpdateNameError = false;
     $scope.duplicateUpdateCodeError = false;
@@ -448,12 +408,12 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
     };
     //#endregion
 
-    $scope.listCustomerUpdate = []
 
-    //UPDATE VOUCHER ************
+    //#region UPDATE VOUCHER 
     $scope.updateVoucher = function (id) {
-
-        $scope.checkValidateAllValueUpdate()
+        if ($scope.formUpdateVoucher.discountType == 1) {
+            $scope.checkValidateAllValueUpdate()
+        }
 
         if ($scope.duplicateUpdateNameError || $scope.duplicateUpdateCodeError || $scope.validateValueErrorUpdate) {
             return;
@@ -461,36 +421,34 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
 
         // let entitiesCustomerType = []
 
-        $scope.listCustomerUpdate = Object.keys($scope.selectedCustomers).map(function (id) {
-            return $scope.selectedCustomers[id];
-        });
         if (checkPauseStatus.checked) {
             $scope.formUpdateVoucher.status = 4
         } else {
             $scope.formUpdateVoucher.status = 0
         }
 
-        let entitiesCustomerType = $scope.customerTypes.filter(ct => ct.selected)
+        $scope.entitiesCustomerTypeUpdate = $scope.customerTypes.filter(ct => ct.selected)
         console.log($scope.formInputVoucher.applyfor);
 
-        console.log(entitiesCustomerType);
+        console.log($scope.entitiesCustomerTypeUpdate);
+        if ($scope.entitiesCustomerTypeUpdate.length == 0 && $scope.formUpdateVoucher.applyfor == 1) {
+            return
+        }
 
         if ($scope.formUpdateVoucher.applyfor == 0) {
-            $scope.listCustomerUpdate = [];
-            entitiesCustomerType = [];
+            $scope.entitiesCustomerTypeUpdate = [];
         }
-        if ($scope.formUpdateVoucher.applyfor == 1) {
-            $scope.listCustomerUpdate = []
-        }
-        if ($scope.formUpdateVoucher.applyfor == 2) {
-            entitiesCustomerType = []
-        }
+
+        var formattedstartDate = $scope.formUpdateVoucher.startDate ? flatpickr.parseDate($scope.formUpdateVoucher.startDate, "d-m-Y H:i:S").toISOString() : null;
+        var formattedEndDate = $scope.formUpdateVoucher.endDate ? flatpickr.parseDate($scope.formUpdateVoucher.endDate, "d-m-Y H:i:S").toISOString() : null;
+
+        $scope.formUpdateVoucher.startDate = formattedstartDate
+        $scope.formUpdateVoucher.endDate = formattedEndDate
 
         let data = angular.copy($scope.formUpdateVoucher)
         let dataUpdate = {
             voucher: angular.copy($scope.formUpdateVoucher),
-            customerTypeList: entitiesCustomerType,
-            customerList: $scope.listCustomerUpdate
+            customerTypeList: $scope.entitiesCustomerTypeUpdate
         }
         console.log(data);
         $http.put(apiVoucher + "/updateVoucher/" + id, dataUpdate).then(function (res) {
@@ -500,7 +458,9 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
             $scope.getVouchers(0);
         })
     }
+    //#endregion
 
+    //#region thong kê voucher
     $scope.staticVoucher = {}
     $scope.statVoucher = {}
     $scope.voucherInfo = []
@@ -517,18 +477,20 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         });
         $scope.voucherInfo = v
     };
+    //#endregion
 
-    //reset form add
+    //#region reset form add & update
     $scope.resetFormAdd = function () {
         $scope.formInputVoucher = {}
         $scope.formInputVoucher.name = null
+        $scope.formInputVoucher.startDate = null
+        $scope.formInputVoucher.endDate = null
         $scope.formInputVoucher.discountType = 1
         $scope.formInputVoucher.applyfor = 0
 
-        localStorage.setItem('selectedCustomers', []);
-        $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
-        $scope.selectedCount = 0
-        $scope.applySavedSelections();
+        // $scope.startPicker.clear();
+        // $scope.endPicker.clear();
+        $scope.clear()
 
         $scope.validateValueError = false;
         $scope.validateAddMaxReVa = null;
@@ -536,6 +498,7 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         $scope.duplicateNameError = false;
         $scope.duplicateCodeError = false;
         $scope.codeLengthError = false;
+        $scope.codeLengthErrorMin = false;
 
         $scope.formAddVoucher.$setPristine();
         $scope.formAddVoucher.$setUntouched();
@@ -548,23 +511,17 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
     $scope.resetFormUpdate = function () {
         $scope.formUpdateVoucher = {}
 
-        localStorage.setItem('selectedCustomers', []);
-        $scope.selectedCustomers = JSON.parse(localStorage.getItem('selectedCustomers') || '{}');
-        $scope.applySavedSelections();
-
         $scope.validateValueErrorUpdate = false;
         $scope.validateAddMaxReVaUpdate = null;
 
         $scope.duplicateUpdateNameError = false;
         $scope.duplicateUpdateCodeError = false;
 
-        $scope.formUpdateVoucher.$setPristine();
-        $scope.formUpdateVoucher.$setUntouched();
+        $scope.formEditVoucher.$setPristine();
+        $scope.formEditVoucher.$setUntouched();
 
-        $scope.getCustomers(0);
-
-        localStorage.setItem('selectedCustomers', []);
     }
+    //#endregion
 
     //ham chuyen tieng viet co dau sang khong dau
     function toLowerCaseNonAccentVietnamese(str) {
@@ -582,6 +539,7 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
         return str;
     }
 
+    // #region tối thiểu ngày hiện tại
     var now = new Date();
     var year = now.getFullYear();
     var month = String(now.getMonth() + 1).padStart(2, '0');
@@ -591,7 +549,6 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
 
     $scope.currentDateTime = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
     //#endregion
-
 
     // PAGINATION, FILTER VOUCHER
     //#region
@@ -660,75 +617,14 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
             endDate: null,
             status: null
         };
+
+        $scope.clearFilter()
         $scope.getVouchers(0);
     };
 
     // Initial load
     $scope.getVouchers(0);
     //#endregion
-
-    // PAGINATION, FILTER CUSTOMER
-    //#region
-    $scope.customers = [];
-    $scope.totalPagesCustomer = 0;
-    $scope.currentPageCustomer = 0;
-    $scope.desiredPageCustomer = 1;
-    $scope.filtersCustomer = {
-        fullName: null,
-        phoneNumber: null,
-        email: null,
-        customerTypeId: null
-    };
-
-    $scope.getCustomers = function (pageNumber) {
-        var params = {
-            pageNumber: pageNumber,
-            fullName: $scope.filtersCustomer.fullName,
-            phoneNumber: $scope.filtersCustomer.phoneNumber,
-            email: $scope.filtersCustomer.email,
-            customerTypeId: $scope.filtersCustomer.customerTypeId
-        };
-
-        $http.get('http://localhost:8080/api/admin/customerN/page', { params: params })
-            .then(function (response) {
-                $scope.customers = response.data.content;
-                $scope.totalPagesCustomer = response.data.totalPages;
-                $scope.currentPageCustomer = response.data.number;
-                $scope.desiredPageCustomer = response.data.number + 1;
-                $scope.applySavedSelections(); // Apply saved selections
-            })
-            .catch(function (error) {
-                console.error('Error fetching customers:', error);
-            });
-    };
-
-    $scope.applyFiltersCustomer = function () {
-        $scope.getCustomers(0);
-    };
-
-    $scope.goToPageCustomer = function () {
-        var pageNumber = $scope.desiredPageCustomer - 1;
-        if (pageNumber >= 0 && pageNumber < $scope.totalPagesCustomer) {
-            $scope.getCustomers(pageNumber);
-        } else {
-            $scope.desiredPageCustomer = $scope.currentPageCustomer + 1;
-        }
-    };
-
-    // Initial load
-    $scope.getCustomers(0);
-
-    $scope.resetFiltersCustomer = function () {
-        $scope.filtersCustomer = {
-            fullName: null,
-            phoneNumber: null,
-            email: null,
-            customerTypeId: null
-        };
-        $scope.getCustomers(0);
-    };
-    //#endregion
-
 
     //#region CHECK BOX CUSTOMER TYPE
     $scope.toggleSelectAll = function () {
@@ -767,4 +663,155 @@ app.controller("nguyen-voucher-test", function ($scope, $http, $timeout) {
     };
     //#endregion
 
+    $scope.startDateError = '';
+    $scope.endDateError = '';
+
+    $timeout(function () {
+        var now = new Date();
+        var minStartDate = new Date(now.getTime() + 60000); // Ngày hiện tại + 1 phút
+
+        var startPicker = flatpickr("#startDate", {
+            enableTime: true,
+            time_24hr: true,
+            enableSeconds: true,
+            minDate: minStartDate,
+            dateFormat: "d-m-Y H:i:S",
+            onChange: function (selectedDates, dateStr, instance) {
+                $timeout(function () { // Sử dụng $timeout để tránh lỗi $rootScope:inprog
+                    if (selectedDates.length > 0) {
+                        $scope.formInputVoucher.startDate = dateStr; // Sử dụng chuỗi định dạng sẵn
+                        validateDates();
+                    } else {
+                        $scope.formInputVoucher.startDate = null;
+                    }
+                });
+                updateEndDateMinDate();
+            }
+        });
+
+        var endPicker = flatpickr("#endDate", {
+            enableTime: true,
+            time_24hr: true,
+            enableSeconds: true,
+            minDate: now, // Đặt mặc định là ngày hiện tại
+            dateFormat: "d-m-Y H:i:S",
+            onChange: function (selectedDates, dateStr, instance) {
+                $timeout(function () { // Sử dụng $timeout để tránh lỗi $rootScope:inprog
+                    if (selectedDates.length > 0) {
+                        $scope.formInputVoucher.endDate = dateStr; // Sử dụng chuỗi định dạng sẵn
+                        validateDates();
+                    } else {
+                        $scope.formInputVoucher.endDate = null;
+                    }
+                });
+            }
+        });
+
+        function updateEndDateMinDate() {
+            if ($scope.formInputVoucher.startDate) {
+                var startDateObj = flatpickr.parseDate($scope.formInputVoucher.startDate, "d-m-Y H:i:S");
+                var minEndDate = new Date(startDateObj.getTime() + 86400000); // startDate + 1 ngày (86400000 milliseconds)
+                endPicker.set('minDate', minEndDate);
+            } else {
+                endPicker.set('minDate', now);
+            }
+        }
+
+        function validateDates() {
+            $scope.startDateError = '';
+            $scope.endDateError = '';
+
+            var startDateObj = $scope.formInputVoucher.startDate ? flatpickr.parseDate($scope.formInputVoucher.startDate, "d-m-Y H:i:S") : null;
+            var endDateObj = $scope.formInputVoucher.endDate ? flatpickr.parseDate($scope.formInputVoucher.endDate, "d-m-Y H:i:S") : null;
+
+            if (startDateObj && startDateObj < minStartDate) {
+                $scope.startDateError = 'Ngày bắt đầu phải cách hiện tại ít nhất 1 phút';
+            }
+
+            if (endDateObj && startDateObj && endDateObj <= new Date(startDateObj.getTime() + 86400000)) {
+                $scope.endDateError = 'Ngày kết thúc phải sau ngày bắt đầu ít nhất 1 ngày.';
+            }
+
+            updateEndDateMinDate();
+        }
+
+        $scope.clear = function () {
+            $timeout(function () { // Sử dụng $timeout để tránh lỗi $rootScope:inprog
+                $scope.formInputVoucher.startDate = null;
+                $scope.formInputVoucher.endDate = null;
+                startPicker.clear();
+                endPicker.clear();
+                $scope.startDateError = '';
+                $scope.endDateError = '';
+                updateEndDateMinDate();
+            });
+        };
+
+        var filterStartPicker = flatpickr("#filterStartTime", {
+            enableTime: true, // Không cần thiết phải cho phép thời gian nếu chỉ cần ngày
+            time_24hr: true,
+            dateFormat: "d-m-Y H:i", // Định dạng theo yêu cầu của Spring Boot
+            onChange: function (selectedDates, dateStr, instance) {
+                $timeout(function () {
+                    if (selectedDates.length > 0) {
+                        $scope.filters.startDate = dateStr; // Sử dụng chuỗi định dạng "yyyy-MM-dd"
+                        validateDates();
+                    } else {
+                        $scope.filters.startDate = null;
+                    }
+                    $scope.updateEndDateMinDateFilter()
+                });
+            }
+        });
+        
+        var filterEndPicker = flatpickr("#filterEndTime", {
+            enableTime: true, // Không cần thiết phải cho phép thời gian nếu chỉ cần ngày
+            time_24hr: true,
+            dateFormat: "d-m-Y H:i", // Định dạng theo yêu cầu của Spring Boot
+            onChange: function (selectedDates, dateStr, instance) {
+                $timeout(function () {
+                    if (selectedDates.length > 0) {
+                        $scope.filters.endDate = dateStr; // Sử dụng chuỗi định dạng "yyyy-MM-dd"
+                        validateDates();
+                    } else {
+                        $scope.filters.endDate = null;
+                    }
+                });
+            }
+        });
+
+        $scope.updateEndDateMinDateFilter = function() {
+            if ($scope.filters.startDate) {
+                var startDateObj = flatpickr.parseDate($scope.filters.startDate, "d-m-Y H:i:S");
+                var minEndDate = new Date(startDateObj.getTime());
+                filterEndPicker.set('minDate', minEndDate);
+            } else {
+                filterEndPicker.set('minDate', null);
+            }
+        }
+
+        $scope.clearFilter = function () {
+            $timeout(function () { // Sử dụng $timeout để tránh lỗi $rootScope:inprog
+                filterStartPicker.clear();
+                filterEndPicker.clear();
+                $scope.updateEndDateMinDateFilter();
+            });
+        };
+    }, 0);
+
+
+
+});
+
+app.filter('ceil', ['$filter', function ($filter) {
+    return function (input) {
+        if (isNaN(input)) return input;
+        return $filter('number')(parseInt(Math.ceil(input), 0), 0);
+    };
+}]);
+app.filter('toInt', function () {
+    return function (input) {
+        if (isNaN(input)) return input;
+        return parseInt(input, 10);
+    };
 });

@@ -59,19 +59,19 @@ public class NVoucherRestController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer applyfor,
             @RequestParam(required = false) Integer discountType,
-            @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date startDate,
-            @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(required = false) Date endDate,
+            @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm") @RequestParam(required = false) Date startDate,
+            @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm") @RequestParam(required = false) Date endDate,
             @RequestParam(required = false) Integer status,
             @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
 
         // Kiểm tra và thêm một ngày vào startDate nếu không null
-        if (startDate != null) {
-            LocalDate localDate = startDate.toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-            localDate = localDate.plusDays(1);
-            startDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        }
+//        if (startDate != null) {
+//            LocalDate localDate = startDate.toInstant()
+//                    .atZone(ZoneId.systemDefault())
+//                    .toLocalDate();
+//            localDate = localDate.plusDays(1);
+//            startDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//        }
 
         Pageable pageable = PageRequest.of(pageNumber, 5);
         Page<Voucher> page = NVoucherService.findVouchers(code, name, applyfor,

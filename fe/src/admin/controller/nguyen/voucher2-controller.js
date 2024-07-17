@@ -157,6 +157,12 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         if ($scope.entitiesCustomerType.length == 0 && $scope.formInputVoucher.applyfor == 1) {
             return;
         }
+        
+        var formattedStartDate = $scope.formInputVoucher.startDate ? flatpickr.parseDate($scope.formInputVoucher.startDate, "d-m-Y H:i:S").toISOString() : null;
+        var formattedEndDate = $scope.formInputVoucher.endDate ? flatpickr.parseDate($scope.formInputVoucher.endDate, "d-m-Y H:i:S").toISOString() : null;
+
+        $scope.formInputVoucher.startDate = formattedStartDate
+        $scope.formInputVoucher.endDate = formattedEndDate
 
         let data = {
             voucher: $scope.formInputVoucher, customerTypeList: $scope.entitiesCustomerType
@@ -262,6 +268,73 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         // document.getElementById("flexRadioUpdate1").disabled = true;
         document.getElementById("updateStartDate").disabled = true;
 
+        if (voucher.startDate != null) {
+            $scope.formUpdateVoucher.startDate = flatpickr.formatDate(new Date(voucher.startDate), "d-m-Y H:i:S");
+        } else {
+            $scope.formUpdateVoucher.startDate = null;
+        }
+        if (voucher.endDate != null) {
+            $scope.formUpdateVoucher.endDate = flatpickr.formatDate(new Date(voucher.endDate), "d-m-Y H:i:S");
+        } else {
+            $scope.formUpdateVoucher.endDate = null;
+        }
+
+        $timeout(function () {
+            var now = new Date();
+            var minStartDate = new Date(now.getTime() + 86400000);
+            var minEndDate = new Date(now.getTime() + 86300000)
+            if ($scope.formUpdateVoucher.startDate) {
+                var startDateObj = flatpickr.parseDate($scope.formUpdateVoucher.startDate, "d-m-Y H:i:S");
+
+                if (now < startDateObj) {
+                    // Nếu ngày hiện tại bé hơn ngày bắt đầu
+                    minEndDate = new Date(startDateObj.getTime() + 86400000); // startDate + 1 ngày
+                } else {
+                    // Nếu ngày hiện tại lớn hơn hoặc bằng ngày bắt đầu
+                    minEndDate = new Date(now.getTime() + 86400000); // Ngày hiện tại + 1 ngày
+                }
+            } else {
+                // Trường hợp startDate chưa được chọn
+                minEndDate = new Date(now.getTime() + 86400000); // Ngày hiện tại + 1 ngày
+            }
+
+            var startPicker = flatpickr("#updateStartDate", {
+                enableTime: true,
+                time_24hr: true,
+                enableSeconds: true,
+                defaultDate: $scope.formUpdateVoucher.startDate,
+                minDate: minStartDate,
+                dateFormat: "d-m-Y H:i:S",
+                onChange: function (selectedDates, dateStr, instance) {
+                    $timeout(function () {
+                        if (selectedDates.length > 0) {
+                            $scope.formUpdateVoucher.startDate = instance.formatDate(selectedDates[0], "d-m-Y H:i:S");
+                        } else {
+                            $scope.formUpdateVoucher.startDate = null;
+                        }
+                    });
+                }
+            });
+
+            var endPicker = flatpickr("#updateEndDate", {
+                enableTime: true,
+                time_24hr: true,
+                enableSeconds: true,
+                defaultDate: $scope.formUpdateVoucher.endDate,
+                minDate: minEndDate,
+                dateFormat: "d-m-Y H:i:S",
+                onChange: function (selectedDates, dateStr, instance) {
+                    $timeout(function () {
+                        if (selectedDates.length > 0) {
+                            $scope.formUpdateVoucher.endDate = instance.formatDate(selectedDates[0], "d-m-Y H:i:S");
+                        } else {
+                            $scope.formUpdateVoucher.endDate = null;
+                        }
+                    });
+                }
+            });
+        }, 0);
+
     };
 
     // Call getAllCustomerType on load
@@ -364,6 +437,12 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             $scope.entitiesCustomerTypeUpdate = [];
         }
 
+        var formattedstartDate = $scope.formUpdateVoucher.startDate ? flatpickr.parseDate($scope.formUpdateVoucher.startDate, "d-m-Y H:i:S").toISOString() : null;
+        var formattedEndDate = $scope.formUpdateVoucher.endDate ? flatpickr.parseDate($scope.formUpdateVoucher.endDate, "d-m-Y H:i:S").toISOString() : null;
+
+        $scope.formUpdateVoucher.startDate = formattedstartDate
+        $scope.formUpdateVoucher.endDate = formattedEndDate
+
         let data = angular.copy($scope.formUpdateVoucher)
         let dataUpdate = {
             voucher: angular.copy($scope.formUpdateVoucher),
@@ -406,6 +485,8 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         $scope.formInputVoucher.endDate = null
         $scope.formInputVoucher.discountType = 1
         $scope.formInputVoucher.applyfor = 0
+
+        $scope.clear()
 
         $scope.validateValueError = false;
         $scope.validateAddMaxReVa = null;
@@ -532,6 +613,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             endDate: null,
             status: null
         };
+        $scope.clearFilter()
         $scope.getVouchers(0);
     };
 
@@ -575,6 +657,143 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         $scope.updateSelectAll();
     };
     //#endregion
+
+
+    $scope.startDateError = '';
+    $scope.endDateError = '';
+
+    $timeout(function () {
+        var now = new Date();
+        var minStartDate = new Date(now.getTime() + 60000); // Ngày hiện tại + 1 phút
+
+        var startPicker = flatpickr("#startDate", {
+            enableTime: true,
+            time_24hr: true,
+            enableSeconds: true,
+            minDate: minStartDate,
+            dateFormat: "d-m-Y H:i:S",
+            onChange: function (selectedDates, dateStr, instance) {
+                $timeout(function () { // Sử dụng $timeout để tránh lỗi $rootScope:inprog
+                    if (selectedDates.length > 0) {
+                        $scope.formInputVoucher.startDate = dateStr; // Sử dụng chuỗi định dạng sẵn
+                        validateDates();
+                    } else {
+                        $scope.formInputVoucher.startDate = null;
+                    }
+                });
+                updateEndDateMinDate();
+            }
+        });
+
+        var endPicker = flatpickr("#endDate", {
+            enableTime: true,
+            time_24hr: true,
+            enableSeconds: true,
+            minDate: now, // Đặt mặc định là ngày hiện tại
+            dateFormat: "d-m-Y H:i:S",
+            onChange: function (selectedDates, dateStr, instance) {
+                $timeout(function () { // Sử dụng $timeout để tránh lỗi $rootScope:inprog
+                    if (selectedDates.length > 0) {
+                        $scope.formInputVoucher.endDate = dateStr; // Sử dụng chuỗi định dạng sẵn
+                        validateDates();
+                    } else {
+                        $scope.formInputVoucher.endDate = null;
+                    }
+                });
+            }
+        });
+
+        function updateEndDateMinDate() {
+            if ($scope.formInputVoucher.startDate) {
+                var startDateObj = flatpickr.parseDate($scope.formInputVoucher.startDate, "d-m-Y H:i:S");
+                var minEndDate = new Date(startDateObj.getTime() + 86400000); // startDate + 1 ngày (86400000 milliseconds)
+                endPicker.set('minDate', minEndDate);
+            } else {
+                endPicker.set('minDate', now);
+            }
+        }
+
+        function validateDates() {
+            $scope.startDateError = '';
+            $scope.endDateError = '';
+
+            var startDateObj = $scope.formInputVoucher.startDate ? flatpickr.parseDate($scope.formInputVoucher.startDate, "d-m-Y H:i:S") : null;
+            var endDateObj = $scope.formInputVoucher.endDate ? flatpickr.parseDate($scope.formInputVoucher.endDate, "d-m-Y H:i:S") : null;
+
+            if (startDateObj && startDateObj < minStartDate) {
+                $scope.startDateError = 'Ngày bắt đầu phải cách hiện tại ít nhất 1 phút';
+            }
+
+            if (endDateObj && startDateObj && endDateObj <= new Date(startDateObj.getTime() + 86400000)) {
+                $scope.endDateError = 'Ngày kết thúc phải sau ngày bắt đầu ít nhất 1 ngày.';
+            }
+
+            updateEndDateMinDate();
+        }
+
+        $scope.clear = function () {
+            $timeout(function () { // Sử dụng $timeout để tránh lỗi $rootScope:inprog
+                $scope.formInputVoucher.startDate = null;
+                $scope.formInputVoucher.endDate = null;
+                startPicker.clear();
+                endPicker.clear();
+                $scope.startDateError = '';
+                $scope.endDateError = '';
+                updateEndDateMinDate();
+            });
+        };
+
+        var filterStartPicker = flatpickr("#filterStartTime", {
+            enableTime: true, // Không cần thiết phải cho phép thời gian nếu chỉ cần ngày
+            time_24hr: true,
+            dateFormat: "d-m-Y H:i", // Định dạng theo yêu cầu của Spring Boot
+            onChange: function (selectedDates, dateStr, instance) {
+                $timeout(function () {
+                    if (selectedDates.length > 0) {
+                        $scope.filters.startDate = dateStr; // Sử dụng chuỗi định dạng "yyyy-MM-dd"
+                        validateDates();
+                    } else {
+                        $scope.filters.startDate = null;
+                    }
+                    $scope.updateEndDateMinDateFilter()
+                });
+            }
+        });
+        
+        var filterEndPicker = flatpickr("#filterEndTime", {
+            enableTime: true, // Không cần thiết phải cho phép thời gian nếu chỉ cần ngày
+            time_24hr: true,
+            dateFormat: "d-m-Y H:i", // Định dạng theo yêu cầu của Spring Boot
+            onChange: function (selectedDates, dateStr, instance) {
+                $timeout(function () {
+                    if (selectedDates.length > 0) {
+                        $scope.filters.endDate = dateStr; // Sử dụng chuỗi định dạng "yyyy-MM-dd"
+                        validateDates();
+                    } else {
+                        $scope.filters.endDate = null;
+                    }
+                });
+            }
+        });
+
+        $scope.updateEndDateMinDateFilter = function() {
+            if ($scope.filters.startDate) {
+                var startDateObj = flatpickr.parseDate($scope.filters.startDate, "d-m-Y H:i:S");
+                var minEndDate = new Date(startDateObj.getTime());
+                filterEndPicker.set('minDate', minEndDate);
+            } else {
+                filterEndPicker.set('minDate', null);
+            }
+        }
+
+        $scope.clearFilter = function () {
+            $timeout(function () { // Sử dụng $timeout để tránh lỗi $rootScope:inprog
+                filterStartPicker.clear();
+                filterEndPicker.clear();
+                $scope.updateEndDateMinDateFilter();
+            });
+        };
+    }, 0);
 
 });
 

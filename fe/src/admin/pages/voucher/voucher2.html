@@ -1,18 +1,71 @@
-<h1>voucher</h1>
+<link rel="stylesheet" href="/src/admin/pages/voucher/voucher.css">
 <div class="container" style="text-transform: none;">
-    <div class="col-8">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#homefilter"
-                    type="button" role="tab" aria-controls="home" aria-selected="true"
-                    ng-click="resetFilter(); clearKeyword()">Tìm kiếm
+    <div style="justify-content: space-between;" class="title d-flex align-items-center">
+        <div class="d-flex align-items-center">
+            <span class="material-icons fs-4 me-2">view_headline</span>
+            <p class="m-0">Quản Lý Đợt Giảm Giá</p>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="col-auto d-flex align-items-center">
+                <button class="button-submit btn btn-success" data-bs-toggle="modal" data-bs-target="#addVoucherModal"
+                    ng-click="resetFormAdd();resetFiltersCustomer">
+                    <span class="material-icons align-middle">add</span> Tạo mới
                 </button>
-            </li>
-        </ul>
+            </div>
+        </div>
     </div>
-    <div class="tab-content mb-3 rounded border p-3 shadow bg-body" id="myTabContent">
+    <div class="search-bar">
+        <!-- <div class="row"> -->
+        <!-- <label>Mã:</label> -->
+        <div class="input-with-clear">
+            <input type="text" ng-model="searchKeyword" placeholder="Nhập mã hoặc tên" class="form-control">
+            <span class="clear-btn" ng-if="searchKeyword" ng-click="clearKeyword()">&times;</span>
+        </div>
+        <!-- <label>Loại giảm giá:</label> -->
+        <select class="form-select" ng-model="filters.discountType">
+            <option selected value="">Chọn loại giảm giá:</option>
+            <option ng-value="1">Giảm theo %</option>
+            <option ng-value="2">Giảm theo số tiền</option>
+        </select>
+        <!-- <label>Áp dụng:</label> -->
+        <select class="form-select" ng-model="filters.applyfor">
+            <option selected value="">Chọn loại áp dụng:</option>
+            <option ng-value="0">Tất cả</option>
+            <option ng-value="1">Loại khách hàng</option>
+        </select>
+        <!-- <label>Trạng thái:</label> -->
+        <select class="form-select" ng-model="filters.status">
+            <option selected value="">Chọn trạng thái</option>
+            <option value="1">Đang diễn ra</option>
+            <option value="2">Đã hết hạn</option>
+            <option value="3">Sắp diễn ra</option>
+            <option value="4">Tạm ngưng</option>
+        </select>
+        <!-- <label>Ngày bắt đầu:</label> -->
+        <input type="text" id="filterStartTime" placeholder="Chọn ngày bắt đầu" class="form-control"
+            ng-model="filters.startDate">
+        <!-- <label>Ngày kết thúc:</label> -->
+        <input type="text" id="filterEndTime" placeholder="Chọn ngày kết thúc" class="form-control"
+            ng-model="filters.endDate">
+        <!-- </div> -->
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-auto d-flex align-items-center">
+            <button class="button-submit btn btn-primary" ng-click="applyFilters()">
+                <span class="material-icons align-middle">search</span> Tìm kiếm
+            </button>
+        </div>
+        <div class="col-auto d-flex align-items-center">
+            <button class="button-submit btn btn-secondary" ng-click="resetFilters()">
+                <span class="material-icons align-middle">refresh</span> Làm mới
+            </button>
+        </div>
+    </div>
+    <!-- <div class="tab-content mb-3 rounded border p-3 shadow bg-body" id="myTabContent">
         <div class="tab-pane fade show active" id="homefilter" role="tabpanel" aria-labelledby="home-tab">
-            <form ng-submit="applyFilters()">
+            <form ng-submit="">
                 <div class="row">
                     <div class="col-10">
                         <div class="row">
@@ -50,9 +103,11 @@
                             </div>
                             <div class="col-md-4">
                                 <label>Ngày bắt đầu:</label>
-                                <input type="date" class="form-control" ng-model="filters.startDate">
+                                <input type="text" id="filterStartTime" placeholder="Chọn ngày bắt đầu"
+                                    class="form-control" ng-model="filters.startDate">
                                 <label>Ngày kết thúc:</label>
-                                <input type="date" class="form-control" ng-model="filters.endDate">
+                                <input type="text" id="filterEndTime" placeholder="Chọn ngày kết thúc"
+                                    class="form-control" ng-model="filters.endDate">
                             </div>
                         </div>
                     </div>
@@ -60,7 +115,7 @@
                         <div class="row mt-4">
                             <div class="col-md-3"></div>
                             <div class="col-md-9">
-                                <button type="submit" class="btn btn-outline-primary mb-2 form-control">Tìm
+                                <button type="button" ng-click="applyFilters()" class="btn btn-outline-primary mb-2 form-control">Tìm
                                     kiếm</button>
                                 <button type="button" class="btn btn-outline-info mb-2 form-control"
                                     ng-click="resetFilters()">Làm mới</button>
@@ -70,1014 +125,1087 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> -->
 
-    <div class="rounded border p-3 shadow mb-5 bg-body"> <!--main-content -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="table-wrapper">
+    <div class="table-container">
+        <table class="table table-striped table-hover ">
+            <thead>
+                <tr>
+                    <!-- <th><span class="custom-checkbox">
+                                <input type="checkbox" id="selectAll">
+                                <label for="selectAll"></label></th> -->
+                    <th scope="col-1">STT</th>
+                    <th scope="col-1">Mã</th>
+                    <th scope="col-2">Tên</th>
+                    <th scope="col-2">Áp dụng</th>
+                    <th scope="col-2">Giá trị</th>
+                    <!-- <th scope="col-1">Loại</th> -->
+                    <th scope="col-1">Số lượng</th>
+                    <!-- <th scope="col-1">Bắt đầu</th>
+                    <th scope="col-1">Kết thúc</th> -->
+                    <th scope="col-4">Trạng thái</th>
+                    <th scope="col-1">Thao tác</th>
+                </tr>
+            </thead>
 
-                    <div class="table-title">
-                        <div class="row">
-                            <div class="col-sm-6 p-0 flex justify-content-lg-start justify-content-center">
-                                <h2 class="ml-lg-2">Quản lý khuyến mãi</h2>
+            <tbody style="text-transform: none; ">
+                <td colspan="12" ng-if="filtervouchers.length == 0" class="text-center fs-6">
+                    Không có dữ liệu</td>
+                <tr ng-repeat="v in filtervouchers">
+                    <td scope="col-1">{{$index + 1}}</td>
+                    <td class="col-1">{{v.code}}</td>
+                    <td class="col-2">{{v.name}}</td>
+                    <td scope="col-1">{{v.applyfor == 0 ? 'Tất cả' :
+                        v.applyfor == 1 ? 'Loại KH' : 'Cá nhân'}}</td>
+                    <td scope="col-1" class="text-end" style="white-space: nowrap;">{{v.value | number:0}}
+                        {{v.discountType == 1 ? '%' : 'đ'}}</td>
+                    <!-- <td scope="col-1">{{v.discountType == 1 ? '%' : 'vnđ'}}</td> -->
+                    <td class="col-1">{{v.quantity}}</td>
+                    <!-- <td class="col-1 text-center">{{v.startDate | date: 'dd/MM/yyyy HH:mm'}}</td>
+                    <td class="col-1 text-center">{{v.endDate | date: 'dd/MM/yyyy HH:mm'}}</td> -->
+                    <!-- <td>{{v.status == 1 ? 'Hoạt động' : ' Ngừng'}}</td> -->
+
+                    <td scope="col-4" ng-switch="v.status" style="font-size: 18px;">
+                        <span ng-switch-when="1" class="status bg-success text-white fw-bold" style="width: 120px;">Đang
+                            diễn ra</span>
+                        <span ng-switch-when="2" class="status bg-danger text-white fw-bold" style="width: 120px;">Đã
+                            hết hạn</span>
+                        <span ng-switch-when="3" class="status bg-warning text-white fw-bold" style="width: 120px;">Sắp
+                            diễn ra</span>
+                        <span ng-switch-when="4" class="status bg-secondary text-white fw-bold"
+                            style="width: 120px;">Tạm ngưng</span>
+                        <p style="margin-top: -3px;">{{v.startDate | date: 'HH:mm:ss dd/MM/yyyy'}} - {{v.endDate | date:
+                            'HH:mm:ss dd/MM/yyyy'}}</p>
+
+                        <!-- <span ng-switch-when="1">
+                            <div class="badge bg-success text-wrap" style="width: 65%;">
+                                Đang diễn ra
                             </div>
-                            <div class="col-sm-6 p-0 flex justify-content-lg-end justify-content-center">
-                                <a type="button" class="btn btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#addVoucherModal" ng-click="resetFormAdd();resetFiltersCustomer">
-                                    <i class="material-icons">&#xE147;</i>
-                                    <span>Thêm mới</span>
-                                </a>
+                        </span>
+                        
+                        <span ng-switch-when="2">
+                            <div class="badge bg-danger text-wrap" style="width: 65%;">
+                                Đã hết hạn
                             </div>
-                        </div>
-                    </div>
-
-                    <table class="table table-striped table-hover ">
-                        <thead>
-                            <tr>
-                                <!-- <th><span class="custom-checkbox">
-                                        <input type="checkbox" id="selectAll">
-                                        <label for="selectAll"></label></th> -->
-                                <th scope="col-1">Mã</th>
-                                <th scope="col-2">Tên</th>
-                                <th scope="col-2">Áp dụng</th>
-                                <th scope="col-2">Giá trị</th>
-                                <!-- <th scope="col-1">Loại</th> -->
-                                <th scope="col-1">Số lượng</th>
-                                <th scope="col-1">Bắt đầu</th>
-                                <th scope="col-1">Kết thúc</th>
-                                <th scope="col-2">Trạng thái</th>
-                                <th scope="col-1">Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody style="text-transform: none; ">
-                            <td colspan="12" ng-if="filtervouchers.length == 0" class="text-center fs-6">
-                                Không có dữ liệu</td>
-                            <tr ng-repeat="v in filtervouchers">
-                                <!-- <th><span class="custom-checkbox">
-                                        <input type="checkbox" id="checkbox1" name="option[]" value="1">
-                                        <label for="checkbox1"></label></th> -->
-                                <td scope="col-1">{{v.code}}</td>
-                                <td class="col-2">{{v.name}}</td>
-                                <td scope="col-2">{{v.applyfor == 0 ? 'Tất cả' :
-                                    v.applyfor == 1 ? 'Loại KH' : 'Cá nhân'}}</td>
-                                <td scope="col-2">{{v.value}} {{v.discountType == 1 ? '%' : 'vnđ'}}</td>
-                                <!-- <td scope="col-1">{{v.discountType == 1 ? '%' : 'vnđ'}}</td> -->
-                                <td scope="col-1">{{v.quantity}}</td>
-                                <td class="col-1 text-center">{{v.startDate | date: 'dd/MM/yyyy HH:mm'}}</td>
-                                <td class="col-1 text-center">{{v.endDate | date: 'dd/MM/yyyy HH:mm'}}</td>
-                                <!-- <td>{{v.status == 1 ? 'Hoạt động' : ' Ngừng'}}</td> -->
-                                <td class="col-2" ng-switch="v.status" style="font-size: 18px;">
-                                    <span ng-switch-when="1">
-                                        <div class="badge bg-success text-wrap" style="width: 65%;">
-                                            Đang diễn ra
-                                        </div>
-                                    </span>
-                                    <span ng-switch-when="2">
-                                        <div class="badge bg-danger text-wrap" style="width: 65%;">
-                                            Đã hết hạn
-                                        </div>
-                                    </span>
-                                    <span ng-switch-when="3">
-                                        <div class="badge bg-warning text-wrap" style="width: 65%;">
-                                            Sắp diễn ra
-                                        </div>
-                                    </span>
-                                    <span ng-switch-when="4">
-                                        <div class="badge bg-secondary text-wrap" style="width: 65%;">
-                                            Tạm ngưng
-                                        </div>
-                                    </span>
-                                </td>
-                                <td scope="col-1">
-                                    <a type="button" class="edit" data-bs-toggle="modal"
-                                        data-bs-target="#updateVoucherModal" ng-click="getVoucherById(v)">
-                                        <i class="material-icons" title="Edit">&#xE254;</i>
-                                    </a>
-                                    <a type="button" class="edit" data-bs-toggle="modal" data-bs-target="#staticVoucher"
-                                        ng-click="getStaticVoucher(v)">
-                                        <i class="material-icons" title="Edit">&#xe8f4;</i>
-                                    </a>
-                                    <!-- <a data-target="#addEmployeeModal" class="delete" data-toggle="modal">
-                                        <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
-                                    </a> -->
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="clearfix">
-                        <!-- <div class="hint-text">showing <b>5</b> out of <b>25</b></div> -->
-                        <ul class="pagination">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <button class="btn btn-primary" ng-disabled="currentPage == 0"
-                                    ng-click="getVouchers(currentPage - 1)">Previous</button>
-                                <span class="ms-3 me-3">Page <input type="number"
-                                        class="form-control d-inline-block w-auto ms-2 me-2" ng-model="desiredPage"
-                                        min="1" max="{{totalPages}}" ng-change="goToPage()"> of
-                                    {{totalPages}}</span>
-                                <button class="btn btn-primary" ng-disabled="currentPage == totalPages - 1"
-                                    ng-click="getVouchers(currentPage + 1)">Next</button>
+                        </span>
+                        <span ng-switch-when="3">
+                            <div class="badge bg-warning text-wrap" style="width: 65%;">
+                                Sắp diễn ra
                             </div>
-                        </ul>
-
-                    </div>
-
+                        </span>
+                        <span ng-switch-when="4">
+                            <div class="badge bg-secondary text-wrap" style="width: 65%;">
+                                Tạm ngưng
+                            </div>
+                        </span> -->
+                    </td>
+                    <td scope="col-2">
+                        <a type="button" class="edit" data-bs-toggle="modal" data-bs-target="#updateVoucherModal"
+                            ng-click="getVoucherById(v)">
+                            <i class="material-icons" title="Edit">&#xE254;</i>
+                        </a>
+                        <a type="button" class="edit" data-bs-toggle="modal" data-bs-target="#staticVoucher"
+                            ng-click="getStaticVoucher(v)">
+                            <i class="material-icons" title="Edit">&#xe8f4;</i>
+                        </a>
+                        <!-- <a data-target="#addEmployeeModal" class="delete" data-toggle="modal">
+                                <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                            </a> -->
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="d-flex align-items-center">
+                <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
+                <div>
+                    <input id="size" ng-model="size" ng-change="getAllProducts()" value="1" type="number" max="100"
+                        min="1" class="form-control" style="width: 5rem;" required />
                 </div>
             </div>
 
-            <!-- add-modal start -->
-            <div class="modal fade" tabindex="-1" id="addVoucherModal" role="dialog">
-                <div class="modal-dialog modal-lg" ng-class="{
-                        'modal-xl': formInputVoucher.applyfor == 1,
-                        'modal-lg': formInputVoucher.applyfor == 0
-                      }">
-                    <div class="modal-content">
-                        <form name="formAddVoucher" ng-submit="formAddVoucher.$valid && addVoucher()" novalidate>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Thêm mới voucher</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div
-                                        ng-class="{'col-12': formInputVoucher.applyfor == 0, 'col-8': formInputVoucher.applyfor == 1}">
-                                        <!-- Form nội dung -->
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label class="d-flex justify-content-between">
-                                                        <div>Mã</div>
-                                                        <div style="font-size: 14px; margin-top: 5px;"
-                                                            class="text-danger">
-                                                            Tự động tạo mã nếu để trống
-                                                        </div>
-                                                    </label>
-                                                    <input type="text" name="addCode" class="form-control"
-                                                        ng-change="checkDuplicateCode()"
-                                                        ng-model="formInputVoucher.code"
-                                                        ng-class="{'is-invalid': formAddVoucher.addCode.$touched && (duplicateCodeError || codeLengthError || codeLengthErrorMin)}">
-
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || duplicateCodeError || codeLengthError || codeLengthErrorMin">
-                                                        <div ng-show="duplicateCodeError"
-                                                            class="error-message text-danger form-text">
-                                                            Mã voucher đã tồn tại
-                                                        </div>
-                                                        <div ng-show="codeLengthError"
-                                                            class="error-message text-danger form-text">
-                                                            Mã không được quá 15 ký tự
-                                                        </div>
-                                                        <div ng-show="codeLengthErrorMin"
-                                                            class="error-message text-danger form-text">
-                                                            Mã không được ít hơn 5 ký tự
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Tên</label>
-                                                    <input type="text" name="addName" class="form-control"
-                                                        ng-change="checkDuplicateName()"
-                                                        ng-model="formInputVoucher.name" ng-required="true"
-                                                        ng-class="{'is-invalid': formAddVoucher.addName.$touched && (formAddVoucher.addName.$invalid || duplicateNameError)}">
-
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addName.$touched">
-                                                        <div ng-show="formAddVoucher.addName.$invalid"
-                                                            class="error-message text-danger form-text">
-                                                            Tên không được để trống
-                                                        </div>
-                                                    </span>
-                                                    <span ng-show="formAddVoucher.$submitted || duplicateNameError">
-                                                        <div ng-show="duplicateNameError"
-                                                            class="error-message text-danger form-text">
-                                                            Tên voucher đã tồn tại
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <label>Loại giảm giá</label>
-                                                <div class="form-group">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="radioType1"
-                                                            id="radioType1" ng-value="1"
-                                                            ng-click="discountTypeChangeAdd(1)"
-                                                            ng-model="formInputVoucher.discountType">
-                                                        <label class="form-check-label" for="radioType1">Phần trăm
-                                                            (%)</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="radioType2"
-                                                            id="radioType2" ng-value="2"
-                                                            ng-click="discountTypeChangeAdd(2)"
-                                                            ng-model="formInputVoucher.discountType">
-                                                        <label class="form-check-label" for="radioType2">Số tiền</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Giá trị</label>
-                                                    <div class="input-group">
-                                                        <input type="number" name="addValue" class="form-control"
-                                                            min="{{formInputVoucher.discountType == 1 ? 1 : 1000}}"
-                                                            ng-change="validateAddValue(formInputVoucher.discountType); checkValidateAllValue()"
-                                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                                            ng-model="formInputVoucher.value" ng-required="true"
-                                                            ng-class="{'is-invalid': formAddVoucher.addValue.$touched && formAddVoucher.addValue.$invalid}">
-                                                        <span ng-if="formInputVoucher.discountType == 1"
-                                                            class="input-group-text" id="basic-addon2">%</span>
-                                                        <span ng-if="formInputVoucher.discountType == 2"
-                                                            class="input-group-text" id="basic-addon3">vnđ</span>
-                                                    </div>
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addValue.$touched">
-                                                        <div ng-show="formAddVoucher.addValue.$invalid"
-                                                            class="error-message text-danger form-text">
-                                                            <div ng-show="formAddVoucher.addValue.$error.required">Giá
-                                                                trị không được trống</div>
-                                                            <div
-                                                                ng-show="formAddVoucher.addValue.$error.min && formInputVoucher.discountType == 1">
-                                                                Giá trị phải >= 1
-                                                            </div>
-                                                            <div
-                                                                ng-show="formAddVoucher.addValue.$error.min && formInputVoucher.discountType !== 1">
-                                                                Giá trị phải >= 1.000 đ
-                                                            </div>
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Giá trị tối thiểu HD</label>
-                                                    <div class="input-group">
-                                                        <input type="number" name="addMinBill" class="form-control"
-                                                            min="0" ng-change="checkValidateAllValue()"
-                                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
-                                                            ng-model="formInputVoucher.minimumTotalAmount"
-                                                            ng-required="true"
-                                                            ng-class="{'is-invalid': formAddVoucher.addMinBill.$touched && formAddVoucher.addMinBill.$invalid}">
-                                                        <span class="input-group-text" id="basic-addon2">vnđ</span>
-                                                    </div>
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addMinBill.$touched">
-                                                        <div ng-show="formAddVoucher.addMinBill.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị tối thiểu HD không được để trống
-                                                        </div>
-                                                        <div ng-show="formAddVoucher.addMinBill.$error.min"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị tối thiểu HD phải >= 0 đ
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Giá trị giảm tối đa</label>
-                                                    <div class="input-group">
-                                                        <input type="number" name="addMaxReVa" class="form-control"
-                                                            id="maximumReductionValue" min="{{validateAddMaxReVa}}"
-                                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
-                                                            ng-model="formInputVoucher.maximumReductionValue"
-                                                            ng-disabled="formInputVoucher.discountType == 2 ? true : false"
-                                                            ng-required="true"
-                                                            ng-class="{'is-invalid': formAddVoucher.addMaxReVa.$touched && formAddVoucher.addMaxReVa.$invalid}">
-                                                        <span class="input-group-text" id="basic-addon2">vnđ</span>
-                                                    </div>
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addMaxReVa.$touched">
-                                                        <div ng-show="formAddVoucher.addMaxReVa.$error.required && formInputVoucher.discountType == 1"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị giảm tối đa không được để trống
-                                                        </div>
-                                                        <div ng-show="formAddVoucher.addMaxReVa.$error.min && formInputVoucher.discountType == 1"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị giảm tối đa phải >= {{validateAddMaxReVa | ceil}} đ
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <label>Áp dụng</label>
-                                            <div class="col-12">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault0" ng-value="0"
-                                                        ng-model="formInputVoucher.applyfor">
-                                                    <label class="form-check-label" for="flexRadioDefault0">Tất
-                                                        cả</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                                        id="flexRadioDefault1" ng-value="1"
-                                                        ng-model="formInputVoucher.applyfor">
-                                                    <label class="form-check-label" for="flexRadioDefault1">Loại khách
-                                                        hàng</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Số lượng</label>
-                                                    <input type="number" name="addQuantity" class="form-control" min="1"
-                                                        oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                                        ng-model="formInputVoucher.quantity" ng-required="true"
-                                                        ng-class="{'is-invalid': formAddVoucher.addQuantity.$touched && formAddVoucher.addQuantity.$invalid}">
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addQuantity.$touched">
-                                                        <div ng-show="formAddVoucher.addQuantity.$error.required"
-                                                            class="error-message text-danger form-text">Số lượng không
-                                                            được để trống</div>
-                                                        <div ng-show="formAddVoucher.addQuantity.$error.min"
-                                                            class="error-message text-danger form-text">
-                                                            Số lượng phải >= 1
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Số lượt sử dụng</label>
-                                                    <input type="number" name="addNumberOfUses" class="form-control"
-                                                        min="1" max="{{formInputVoucher.quantity}}"
-                                                        oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                                        ng-model="formInputVoucher.numberOfUses" ng-required="true"
-                                                        ng-class="{'is-invalid': formAddVoucher.addNumberOfUses.$touched && formAddVoucher.addNumberOfUses.$invalid}">
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addNumberOfUses.$touched">
-                                                        <div ng-show="formAddVoucher.addNumberOfUses.$error.required"
-                                                            class="error-message text-danger form-text">Số lần sử dụng
-                                                            không được để trống</div>
-                                                        <div ng-show="formAddVoucher.addNumberOfUses.$error.min"
-                                                            class="error-message text-danger form-text">
-                                                            Số lần sử dụng phải >= 1
-                                                        </div>
-                                                        <div ng-show="formAddVoucher.addNumberOfUses.$error.max"
-                                                            class="error-message text-danger form-text">
-                                                            Số lượt sử dụng không được lớn hơn số lượng</div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Ngày bắt đầu</label>
-                                                    <input type="datetime-local" name="addStartDate"
-                                                        class="form-control" ng-attr-min="{{currentDateTime}}"
-                                                        max="{{formInputVoucher.endDate}}"
-                                                        ng-model="formInputVoucher.startDate" ng-required="true"
-                                                        ng-class="{'is-invalid': formAddVoucher.addStartDate.$touched && formAddVoucher.addStartDate.$invalid}">
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addStartDate.$touched">
-                                                        <div ng-show="formAddVoucher.addStartDate.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày bắt đầu không được để trống
-                                                        </div>
-                                                        <div ng-show="formAddVoucher.addStartDate.$error.max"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày bắt đầu không được lớn hơn ngày kết thúc</div>
-                                                        <div ng-show="formAddVoucher.addStartDate.$error.min"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày bắt đầu không được nhỏ hơn ngày hiện tại</div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Ngày kết thúc</label>
-                                                    <input type="datetime-local" name="addEndDate" class="form-control"
-                                                        min="{{formInputVoucher.startDate}}"
-                                                        ng-model="formInputVoucher.endDate" ng-required="true"
-                                                        ng-class="{'is-invalid': formAddVoucher.addEndDate.$touched && formAddVoucher.addEndDate.$invalid}">
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addEndDate.$touched">
-                                                        <div ng-show="formAddVoucher.addEndDate.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày kết thúc không được để trống
-                                                        </div>
-                                                        <div ng-show="formAddVoucher.addEndDate.$error.min"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày kết thúc không được nhỏ hơn ngày bắt đầu</div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-12">
-                                                <div class="form-group">
-                                                    <label>Mô tả</label>
-                                                    <textarea name="addDescription" class="form-control"
-                                                        ng-model="formInputVoucher.describe" ng-required="true"
-                                                        ng-class="{'is-invalid': formAddVoucher.addDescription.$touched && formAddVoucher.addDescription.$error.required}"></textarea>
-                                                    <span
-                                                        ng-show="formAddVoucher.$submitted || formAddVoucher.addDescription.$touched">
-                                                        <div ng-show="formAddVoucher.addDescription.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Mô tả không được để trống
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- CustomerType -->
-                                    <div class="col-4" ng-if="formInputVoucher.applyfor == 1">
-                                        Chọn loại khách hàng được sử dụng
-                                        <ul class="list-group">
-                                            <!-- <li class="list-group-item">
-                                                <input type="checkbox" id="selectAll" class="form-check-input me-1"
-                                                    ng-checked="allChecked" ng-click="toggleSelectAll()">
-                                                <label for="selectAll" class="form-check-label"><strong>Tất cả</strong></label>
-                                            </li> -->
-                                            <li class="list-group-item" ng-repeat="ct in customerTypes">
-                                                <input type="checkbox" id="{{ct.id}}" name="items"
-                                                    ng-model="ct.selected" class="form-check-input me-1"
-                                                    ng-change="updateSelectAll()">
-                                                <label for="{{ct.id}}" class="form-check-label">{{ct.name}}</label>
-                                            </li>
-                                            <div ng-show="formAddVoucher.$submitted && formInputVoucher.applyfor == 1 && entitiesCustomerType.length == 0"
-                                                class="error-message text-danger form-text">Chọn tối thiểu 1 loại khách
-                                                hàng</div>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-success">Add</button>
-                            </div>
-                        </form>
+            <ul class="pagination">
+                <div class="d-flex justify-content-between align-items-center">
+                    <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="getVouchers(0)">
+                        <span class="material-icons align-middle">first_page</span>
+                    </button>
+                    <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0"
+                        ng-click="getVouchers(currentPage - 1)">
+                        <span class="material-icons align-middle">chevron_left</span>
+                    </button>
+                    <div class="d-flex align-items-center mx-1">
+                        <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
+                            style="width: 40px;" ng-model="desiredPage" min="1" max="{{totalPages}}"
+                            ng-change="goToPage()">
+                        <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages}}</span>
                     </div>
+                    <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1"
+                        ng-click="getVouchers(currentPage + 1)">
+                        <span class="material-icons align-middle">chevron_right</span>
+                    </button>
+                    <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1"
+                        ng-click="getVouchers(totalPages - 1)">
+                        <span class="material-icons align-middle">last_page</span>
+                    </button>
                 </div>
-            </div>
-            <!----add-modal end--------->
-
-            <!----edit-modal start--------->
-            <div class="modal fade" tabindex="-1" id="updateVoucherModal" role="dialog">
-                <div class="modal-dialog modal-lg"
-                    ng-class="{
-                    'modal-xl': formUpdateVoucher.applyfor == 1  && formUpdateVoucher.status !== 2,
-                    'modal-lg': formUpdateVoucher.applyfor == 0 || (formUpdateVoucher.applyfor == 1 && formUpdateVoucher.status == 2)}">
-                    <div class="modal-content">
-                        <form name="formEditVoucher"
-                            ng-submit="formEditVoucher.$valid && updateVoucher(formUpdateVoucher.id)" novalidate>
-                            <div class="modal-header">
-                                <h5 class="modal-title">Cập nhật voucher</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div
-                                        ng-class="{'col-12': formUpdateVoucher.applyfor == 0, 'col-8': formUpdateVoucher.applyfor == 1  && formUpdateVoucher.status !== 2}">
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Mã</label>
-                                                    <input type="text" id="updateCode" name="updateCode"
-                                                        class="form-control" ng-change="checkDuplicateCodeOnUpdate()"
-                                                        ng-model="formUpdateVoucher.code" ng-required="true">
-
-                                                    <!-- <span ng-show="formEditVoucher.$submitted">
-                                                        <div ng-show="formEditVoucher.updateCode.$invalid"
-                                                            class="error-message text-danger form-text">
-                                                            Mã không được để trống</div>
-                                                    </span>
-                                                    <span
-                                                        ng-show="formEditVoucher.$submitted || duplicateUpdateCodeError">
-                                                        <div ng-show="duplicateUpdateCodeError"
-                                                            class="error-message text-danger form-text">
-                                                            Mã voucher đã tồn tại
-                                                        </div>
-                                                    </span> -->
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Tên</label>
-                                                    <input type="text" id="updateName" name="updateName"
-                                                        class="form-control" ng-change="checkDuplicateNameOnUpdate()"
-                                                        ng-model="formUpdateVoucher.name" ng-required="true"
-                                                        ng-class="{'is-invalid': formEditVoucher.updateName.$touched && (formEditVoucher.updateName.$invalid || duplicateUpdateNameError)}">
-                                                    <div class="invalid-feedback"
-                                                        ng-show="formEditVoucher.$submitted && formEditVoucher.updateName.$invalid">
-                                                        Tên không được để trống
-                                                    </div>
-                                                    <span
-                                                        ng-show="formEditVoucher.$submitted || formEditVoucher.updateName.$touched">
-                                                        <div ng-show="formEditVoucher.updateName.$error.required"
-                                                            class="error-message text-danger form-text">Tên không được
-                                                            để trống</div>
-                                                    </span>
-                                                    <span
-                                                        ng-show="formEditVoucher.$submitted || duplicateUpdateNameError">
-                                                        <div ng-show="duplicateUpdateNameError"
-                                                            class="error-message text-danger form-text">Tên voucher đã
-                                                            tồn tại</div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <label>Loại giảm giá</label>
-                                                <div class="form-group">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio"
-                                                            name="radioTypeUpdate1" id="radioTypeUpdate1" ng-value="1"
-                                                            ng-click="discountTypeChangeUpdate(1)"
-                                                            ng-model="formUpdateVoucher.discountType">
-                                                        <label class="form-check-label" for="radioTypeUpdate1">
-                                                            Phần trăm (%)
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio"
-                                                            name="radioTypeUpdate2" id="radioTypeUpdate2" ng-value="2"
-                                                            ng-click="discountTypeChangeUpdate(2)"
-                                                            ng-model="formUpdateVoucher.discountType">
-                                                        <label class="form-check-label" for="radioTypeUpdate2">
-                                                            Số tiền
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Giá trị</label>
-                                                    <!-- <input type="number" id="updateValue" name="updateValue"
-                                                        class="form-control" ng-model="formUpdateVoucher.value"
-                                                        ng-required="true"> -->
-                                                    <div class="input-group">
-                                                        <input type="number" id="updateValue" name="updateValue"
-                                                            class="form-control"
-                                                            min="{{formUpdateVoucher.discountType == 1 ? 1 : 1000}}"
-                                                            ng-change="validateUpdateValue(formUpdateVoucher.discountType); checkValidateAllValueUpdate()"
-                                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                                            ng-model="formUpdateVoucher.value" ng-required="true"
-                                                            ng-class="{'is-invalid': formEditVoucher.updateValue.$touched && (formEditVoucher.updateName.$invalid)}">
-                                                        <span ng-if="formUpdateVoucher.discountType == 1"
-                                                            class="input-group-text" id="basic-addonUp2">%</span>
-                                                        <span ng-if="formUpdateVoucher.discountType == 2"
-                                                            class="input-group-text" id="basic-addonUp3">vnđ</span>
-                                                    </div>
-                                                    <span
-                                                        ng-show="formEditVoucher.$submitted || formEditVoucher.updateValue.$touched">
-                                                        <div ng-show="formEditVoucher.updateValue.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị không được để trống</div>
-                                                        <div class="error-message text-danger form-text"
-                                                            ng-show="formEditVoucher.updateValue.$error.min && formUpdateVoucher.discountType == 1">
-                                                            Giá trị phải >= 1
-                                                        </div>
-                                                        <div class="error-message text-danger form-text"
-                                                            ng-show="formEditVoucher.updateValue.$error.min && formUpdateVoucher.discountType !== 1">
-                                                            Giá trị phải >= 1.000 đ
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Giá trị tối thiếu HD</label>
-                                                    <div class="input-group">
-                                                        <input type="number" min="0" id="updateMinBill"
-                                                            name="updateMinBill" class="form-control"
-                                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
-                                                            ng-model="formUpdateVoucher.minimumTotalAmount"
-                                                            ng-change="checkValidateAllValueUpdate()" ng-required="true"
-                                                            ng-class="{'is-invalid': formEditVoucher.updateMinBill.$touched && formEditVoucher.updateMinBill.$invalid}">
-                                                        <span class="input-group-text">vnđ</span>
-                                                    </div>
-
-                                                    <span
-                                                        ng-show="formEditVoucher.$submitted || formEditVoucher.updateMinBill.$touched">
-                                                        <div ng-show="formEditVoucher.updateMinBill.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị tối thiểu HD không được để trống</div>
-                                                        <div ng-show="formEditVoucher.updateMinBill.$error.min"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị tối thiểu HD >= 0 đ</div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Giá trị giảm tối đa</label>
-                                                    <div class="input-group">
-                                                        <input type="number" id="updateMaxReVa" name="updateMaxReVa"
-                                                            class="form-control" min="{{validateAddMaxReVaUpdate}}"
-                                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
-                                                            ng-model="formUpdateVoucher.maximumReductionValue"
-                                                            ng-disabled="formUpdateVoucher.discountType == 2 ? true : fasle"
-                                                            ng-required="true"
-                                                            ng-class="{'is-invalid': formEditVoucher.updateMaxReVa.$touched && formEditVoucher.updateMaxReVa.$invalid}">
-                                                        <span class="input-group-text">vnđ</span>
-                                                    </div>
-                                                    <span
-                                                        ng-show=" formEditVoucher.$submitted || formEditVoucher.updateMaxReVa.$touched">
-                                                        <div ng-show="
-                                                            formEditVoucher.updateMaxReVa.$error.required &&
-                                                            formUpdateVoucher.discountType==1"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị giảm không được để trống
-                                                        </div>
-                                                        <div ng-show="formEditVoucher.updateMaxReVa.$error.min && formUpdateVoucher.discountType == 1"
-                                                            class="error-message text-danger form-text">
-                                                            Giá trị giảm tối đa phải >= {{validateAddMaxReVaUpdate |
-                                                            ceil}} đ</div>
-                                                    </span>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <label>Áp dụng</label>
-                                            <div class="col-12">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioUpdate"
-                                                        id="flexRadioUpdate0" ng-value="0"
-                                                        ng-click="applyforChangeUpdate(0)"
-                                                        ng-model="formUpdateVoucher.applyfor">
-                                                    <label class="form-check-label" for="flexRadioUpdate0">
-                                                        Tất cả
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="flexRadioUpdate"
-                                                        id="flexRadioUpdate1" ng-value="1"
-                                                        ng-click="applyforChangeUpdate(1)"
-                                                        ng-model="formUpdateVoucher.applyfor">
-                                                    <label class="form-check-label" for="flexRadioUpdate1">
-                                                        Loại khách hàng
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Số lượng</label>
-                                                    <input type="number" min="1" id="updateQuantity"
-                                                        name="updateQuantity"
-                                                        oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                                        class="form-control" ng-model="formUpdateVoucher.quantity"
-                                                        ng-required="true"
-                                                        ng-class="{'is-invalid': formEditVoucher.updateQuantity.$touched && formEditVoucher.updateQuantity.$invalid}">
-
-                                                    <span ng-show="formEditVoucher.$submitted">
-                                                        <div ng-show="formEditVoucher.updateQuantity.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Số lượng không được để trống</div>
-                                                        <div ng-show="formEditVoucher.updateQuantity.$error.min"
-                                                            class="error-message text-danger form-text">
-                                                            Số lượng phải >= 1
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Số lượt sử dụng</label>
-                                                    <input type="number" id="updateNumberOfUses" min="1"
-                                                        max="{{formUpdateVoucher.quantity}}"
-                                                        oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                                        name="updateNumberOfUses" class="form-control"
-                                                        ng-model="formUpdateVoucher.numberOfUses" ng-required="true"
-                                                        ng-class="{'is-invalid': formEditVoucher.updateNumberOfUses.$touched && formEditVoucher.updateNumberOfUses.$invalid}">
-
-                                                    <span
-                                                        ng-show="formEditVoucher.$submitted || formEditVoucher.updateNumberOfUses.$touched">
-                                                        <div ng-show="formEditVoucher.updateNumberOfUses.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Số lượt sử dụng không được để trống</div>
-                                                        <div ng-show="formEditVoucher.updateNumberOfUses.$error.max"
-                                                            class="error-message text-danger form-text">
-                                                            Số lượt sử dụng không được lớn hơn số lượng</div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Ngày bắt đầu</label>
-                                                    <input type="datetime-local" id="updateStartDate"
-                                                        name="updateStartDate" class="form-control"
-                                                        max="{{formUpdateVoucher.endDate}}"
-                                                        ng-model="formUpdateVoucher.startDate" ng-required="true"
-                                                        ng-class="{'is-invalid': formEditVoucher.updateStartDate.$touched && formEditVoucher.updateStartDate.$invalid}">
-
-                                                    <span
-                                                        ng-show="formEditVoucher.$submitted || formEditVoucher.updateStartDate.$touched">
-                                                        <div ng-show="formEditVoucher.updateStartDate.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày bắt đầu không được để trống</div>
-                                                        <div ng-show="formEditVoucher.updateStartDate.$error.max"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày bắt đầu không được lớn hơn ngày kết thúc</div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Ngày kết thúc</label>
-                                                    <input type="datetime-local" id="updateEndDate" name="updateEndDate"
-                                                        min="{{formUpdateVoucher.startDate}}" class="form-control"
-                                                        ng-model="formUpdateVoucher.endDate" ng-required="true"
-                                                        ng-class="{'is-invalid': formEditVoucher.updateEndDate.$touched && formEditVoucher.updateEndDate.$invalid}">
-
-                                                    <span
-                                                        ng-show="formEditVoucher.$submitted || formEditVoucher.updateEndDate.$touched">
-                                                        <div ng-show="formEditVoucher.updateEndDate.$error.required"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày kết thúc không được để trống</div>
-                                                        <div ng-show="formEditVoucher.updateEndDate.$error.min"
-                                                            class="error-message text-danger form-text">
-                                                            Ngày kết thúc không được nhỏ hơn ngày bắt đầu</div>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="form-group">
-                                                <label>Mô tả</label>
-                                                <textarea type="text" id="updateDescribe" name="updateDescribe"
-                                                    class="form-control" ng-model="formUpdateVoucher.describe"
-                                                    ng-required="true"
-                                                    ng-class="{'is-invalid': formEditVoucher.updateDescribe.$touched && formEditVoucher.updateDescribe.$invalid}"></textarea>
-
-                                                <span
-                                                    ng-show="formEditVoucher.$submitted || formEditVoucher.updateDescribe.$touched">
-                                                    <div ng-show="formEditVoucher.updateDescribe.$invalid"
-                                                        class="error-message text-danger form-text">
-                                                        Mô tả không được để trống</div>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="row ms-1 mt-3" id="checkPause">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" style="margin-top: 0.40em;"
-                                                    type="checkbox" id="checkPauseStatus">
-                                                <label class="form-check-label" for="checkPauseStatus">
-                                                    Tạm ngưng</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Customer Type -->
-                                    <div class="col-4"
-                                        ng-if="formUpdateVoucher.applyfor == 1 && formUpdateVoucher.status !== 2">
-                                        Chọn loại khách hàng được sử dụng
-                                        <ul class="list-group">
-                                            <!-- <li class="list-group-item">
-                                                <input type="checkbox" id="selectAll1" class="form-check-input me-1"
-                                                    ng-checked="allChecked" ng-click="toggleSelectAll()">
-                                                <label for="selectAll1" class="form-check-label"><strong>Select
-                                                        All</strong></label>
-                                            </li> -->
-                                            <li class="list-group-item" ng-repeat="ct in customerTypes">
-                                                <input type="checkbox" id="{{ct.id}}" name="items"
-                                                    ng-model="ct.selected" class="form-check-input me-1"
-                                                    ng-change="updateSelectAll()">
-                                                <label for="{{ct.id}}" class="form-check-label">{{ct.name}}</label>
-                                            </li>
-                                            <div ng-show="formEditVoucher.$submitted && formUpdateVoucher.applyfor == 1 && entitiesCustomerTypeUpdate.length == 0"
-                                                class="error-message text-danger form-text">Chọn tối thiểu 1 loại khách
-                                                hàng</div>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-success" id="updateButton">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!----edit-modal end--------->
-
-
-            <!----delete-modal start--------->
-            <div class="modal fade" tabindex="-1" id="deleteEmployeeModal" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Delete Employees</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete this Records</p>
-                            <p class="text-warning"><small>this action Cannot be Undone,</small></p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-success">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!----edit-modal end--------->
-
-
-            <div class="modal fade" tabindex="-1" id="staticVoucher" role="dialog">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home1"
-                                        role="tab" aria-controls="home1" aria-selected="true">Thông tin</a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#menu23" role="tab"
-                                        aria-controls="menu23" aria-selected="false">Thống kê</a>
-                                </li>
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="tab-content" id="myTabContent">
-                                <div class="tab-pane fade show active" id="home1" role="tabpanel"
-                                    aria-labelledby="home-tab">
-                                    <table class="table table-striped table-bordered mt-3">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th scope="col">Tên thuộc tính</th>
-                                                <th scope="col">Dữ liệu</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Mã</td>
-                                                <td class="fs-6">{{voucherInfo.code}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Tên</td>
-                                                <td class="fs-6">{{voucherInfo.name}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Giá trị</td>
-                                                <td class="fs-6">{{voucherInfo.value}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Loại giảm giá</td>
-                                                <td class="fs-6">{{voucherInfo.discountType == 1 ? '%' : 'Số tiền'}}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Giá trị giảm tối đa</td>
-                                                <td class="fs-6">{{voucherInfo.maximumReductionValue}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Giá trị tối thiểu hóa đơn</td>
-                                                <td class="fs-6">{{voucherInfo.minimumTotalAmount}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Số lượng</td>
-                                                <td class="fs-6">{{voucherInfo.quantity}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Lượt sử dụng / người</td>
-                                                <td class="fs-6">{{voucherInfo.numberOfUses}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Áp dụng</td>
-                                                <td class="fs-6">{{voucherInfo.applyfor == 0 ? 'Tất cả' :
-                                                    voucherInfo.applyfor == 1 ? 'Loại khách hàng' : 'Cá nhân'}}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Mô tả</td>
-                                                <td class="fs-6">{{voucherInfo.describe}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Ngày bắt đầu</td>
-                                                <td class="fs-6">{{voucherInfo.startDate | date: 'dd/MM/yyyy HH:mm'}}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Ngày kết thúc</td>
-                                                <td class="fs-6">{{voucherInfo.endDate | date: 'dd/MM/yyyy HH:mm'}}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Người tạo</td>
-                                                <td class="fs-6">{{voucherInfo.createdBy | date: 'dd/MM/yyyy HH:mm'}}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Ngày tạo</td>
-                                                <td class="fs-6">{{voucherInfo.createdAt | date: 'dd/MM/yyyy HH:mm'}}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Status</td>
-                                                <!-- <td class="fs-6">{{voucherInfo.status}}</td> -->
-                                                <td scope="col-2" ng-switch="voucherInfo.status"
-                                                    style="font-size: 18px;">
-                                                    <span ng-switch-when="1">
-                                                        <div class="badge bg-success text-wrap">
-                                                            Đang diễn ra
-                                                        </div>
-                                                    </span>
-                                                    <span ng-switch-when="2">
-                                                        <div class="badge bg-danger text-wrap">
-                                                            Đã hết hạn
-                                                        </div>
-                                                    </span>
-                                                    <span ng-switch-when="3">
-                                                        <div class="badge bg-warning text-wrap">
-                                                            Sắp diễn ra
-                                                        </div>
-                                                    </span>
-                                                    <span ng-switch-when="4">
-                                                        <div class="badge bg-secondary text-wrap">
-                                                            Tạm ngưng
-                                                        </div>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="tab-pane fade" id="menu23" role="tabpanel" aria-labelledby="profile-tab">
-                                    <div class="mt-3">
-                                        <p>Số lượt sử dụng: {{staticVoucher.usageCount}}</p>
-                                        <p>Doanh số tương ứng: {{staticVoucher.totalRevenue | number:0}} đ</p>
-                                        <p>Tổng số tiền đã giảm: {{staticVoucher.totalRevenue -
-                                            staticVoucher.totalRevenueAfterDiscount | number:0}} đ</p>
-                                        <p>Tổng doanh số sau khi giảm giá: {{staticVoucher.totalRevenueAfterDiscount |
-                                            number:0}} đ</p>
-                                    </div>
-
-                                    <table class="table table-striped table-hover mt-3">
-                                        <thead>
-                                            <tr>
-                                                <th class="col-2">Tên khách hàng</th>
-                                                <th class="col-2">Liên hệ</th>
-                                                <th class="col-1">Số lần</th>
-                                                <th class="col-2">Tổng tiền</th>
-                                                <th class="col-2">Giảm giá</th>
-                                                <th class="col-3">Thanh toán</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <td colspan="6" ng-if="statVoucher.length == 0" class="text-center fs-6">
-                                                Không có dữ liệu</td>
-                                            <tr ng-repeat="s in statVoucher">
-                                                <td class="col-2">{{s.customerName}}</td>
-                                                <td class="col-2">
-                                                    <div>{{ s.phoneNumber }}</div>
-                                                    <div>{{ s.email }}</div>
-                                                </td>
-                                                <td class="col-1">{{s.usageCount}}</td>
-                                                <td class="col-2">{{s.totalPurchaseAmount | number:0}} đ</td>
-                                                <td class="col-2">{{s.totalPurchaseAmount - s.totalDiscountAmount |
-                                                    number:0}} đ</td>
-                                                <td class="col-3">{{s.totalDiscountAmount | number:0}} đ</td>
-                                            </tr>
-                                            <tr ng-if="statVoucher.length != 0">
-                                                <td colspan="2"></td>
-                                                <td>{{staticVoucher.usageCount}}</td>
-                                                <td>{{staticVoucher.totalRevenue | number:0}} đ</td>
-                                                <td>{{staticVoucher.totalRevenue -
-                                                    staticVoucher.totalRevenueAfterDiscount | number:0}} đ</td>
-                                                <td>{{staticVoucher.totalRevenueAfterDiscount |
-                                                    number:0}} đ</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- END STATIC VOUCHER -->
-
+            </ul>
         </div>
     </div>
+    <!-- <div class="clearfix">
+        <ul class="pagination">
+            <div class="d-flex justify-content-between align-items-center">
+                <button class="btn btn-primary" ng-disabled="currentPage == 0"
+                    ng-click="getVouchers(currentPage - 1)">Previous</button>
+                <span class="ms-3 me-3">Page <input type="number" class="form-control d-inline-block w-auto ms-2 me-2"
+                        ng-model="desiredPage" min="1" max="{{totalPages}}" ng-change="goToPage()"> of
+                    {{totalPages}}</span>
+                <button class="btn btn-primary" ng-disabled="currentPage == totalPages - 1"
+                    ng-click="getVouchers(currentPage + 1)">Next</button>
+            </div>
+        </ul>
+    </div> -->
+    <!-- add-modal start -->
+    <div class="modal fade" tabindex="-1" id="addVoucherModal" role="dialog">
+        <div class="modal-dialog modal-lg" ng-class="{
+                'modal-xl': formInputVoucher.applyfor == 1,
+                'modal-lg': formInputVoucher.applyfor == 0
+              }">
+            <div class="modal-content">
+                <form name="formAddVoucher" ng-submit="formAddVoucher.$valid && addVoucher()" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Thêm mới voucher</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div
+                                ng-class="{'col-12': formInputVoucher.applyfor == 0, 'col-8': formInputVoucher.applyfor == 1}">
+                                <!-- Form nội dung -->
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label class="d-flex justify-content-between">
+                                                <div>Mã</div>
+                                                <div style="font-size: 14px; margin-top: 5px;" class="text-danger">
+                                                    Tự động tạo mã nếu để trống
+                                                </div>
+                                            </label>
+                                            <input type="text" name="addCode" class="form-control"
+                                                ng-change="checkDuplicateCode()" ng-model="formInputVoucher.code"
+                                                ng-class="{'is-invalid': (formAddVoucher.addCode.$touched || formAddVoucher.$submitted) && (duplicateCodeError || codeLengthError || codeLengthErrorMin)}">
+
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || duplicateCodeError || codeLengthError || codeLengthErrorMin">
+                                                <div ng-show="duplicateCodeError"
+                                                    class="error-message text-danger form-text">
+                                                    Mã voucher đã tồn tại
+                                                </div>
+                                                <div ng-show="codeLengthError"
+                                                    class="error-message text-danger form-text">
+                                                    Mã không được quá 15 ký tự
+                                                </div>
+                                                <div ng-show="codeLengthErrorMin"
+                                                    class="error-message text-danger form-text">
+                                                    Mã không được ít hơn 5 ký tự
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Tên</label>
+                                            <input type="text" name="addName" class="form-control"
+                                                ng-change="checkDuplicateName()" ng-model="formInputVoucher.name"
+                                                ng-required="true"
+                                                ng-class="{'is-invalid': (formAddVoucher.addName.$touched || formAddVoucher.$submitted) && (formAddVoucher.addName.$invalid || duplicateNameError)}">
+
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addName.$touched">
+                                                <div ng-show="formAddVoucher.addName.$invalid"
+                                                    class="error-message text-danger form-text">
+                                                    Tên không được để trống
+                                                </div>
+                                            </span>
+                                            <span ng-show="formAddVoucher.$submitted || duplicateNameError">
+                                                <div ng-show="duplicateNameError"
+                                                    class="error-message text-danger form-text">
+                                                    Tên voucher đã tồn tại
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <label>Loại giảm giá</label>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="radioType1"
+                                                    id="radioType1" ng-value="1" ng-click="discountTypeChangeAdd(1)"
+                                                    ng-model="formInputVoucher.discountType">
+                                                <label class="form-check-label" for="radioType1">Phần trăm
+                                                    (%)</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="radioType2"
+                                                    id="radioType2" ng-value="2" ng-click="discountTypeChangeAdd(2)"
+                                                    ng-model="formInputVoucher.discountType">
+                                                <label class="form-check-label" for="radioType2">Số tiền</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị</label>
+                                            <div class="input-group">
+                                                <input type="number" name="addValue" class="form-control"
+                                                    min="{{formInputVoucher.discountType == 1 ? 1 : 1000}}"
+                                                    ng-change="validateAddValue(formInputVoucher.discountType); checkValidateAllValue()"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                                    ng-model="formInputVoucher.value" ng-required="true"
+                                                    ng-class="{'is-invalid': (formAddVoucher.addValue.$touched || formAddVoucher.$submitted) && formAddVoucher.addValue.$invalid}">
+                                                <span ng-if="formInputVoucher.discountType == 1"
+                                                    class="input-group-text" id="basic-addon2">%</span>
+                                                <span ng-if="formInputVoucher.discountType == 2"
+                                                    class="input-group-text" id="basic-addon3">vnđ</span>
+                                            </div>
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addValue.$touched">
+                                                <div ng-show="formAddVoucher.addValue.$invalid"
+                                                    class="error-message text-danger form-text">
+                                                    <div ng-show="formAddVoucher.addValue.$error.required">Giá
+                                                        trị không được trống</div>
+                                                    <div
+                                                        ng-show="formAddVoucher.addValue.$error.min && formInputVoucher.discountType == 1">
+                                                        Giá trị phải >= 1
+                                                    </div>
+                                                    <div
+                                                        ng-show="formAddVoucher.addValue.$error.min && formInputVoucher.discountType !== 1">
+                                                        Giá trị phải >= 1.000 đ
+                                                    </div>
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị tối thiểu HD</label>
+                                            <div class="input-group">
+                                                <input type="number" name="addMinBill" class="form-control" min="0"
+                                                    ng-change="checkValidateAllValue()"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
+                                                    ng-model="formInputVoucher.minimumTotalAmount" ng-required="true"
+                                                    ng-class="{'is-invalid': (formAddVoucher.addMinBill.$touched || formAddVoucher.$submitted) && formAddVoucher.addMinBill.$invalid}">
+                                                <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                            </div>
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addMinBill.$touched">
+                                                <div ng-show="formAddVoucher.addMinBill.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị tối thiểu HD không được để trống
+                                                </div>
+                                                <div ng-show="formAddVoucher.addMinBill.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị tối thiểu HD phải >= 0 đ
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị giảm tối đa</label>
+                                            <div class="input-group">
+                                                <input type="number" name="addMaxReVa" class="form-control"
+                                                    id="maximumReductionValue" min="{{validateAddMaxReVa}}"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
+                                                    ng-model="formInputVoucher.maximumReductionValue"
+                                                    ng-disabled="formInputVoucher.discountType == 2 ? true : false"
+                                                    ng-required="true"
+                                                    ng-class="{'is-invalid': (formAddVoucher.addMaxReVa.$touched || formAddVoucher.$submitted) && formAddVoucher.addMaxReVa.$invalid}">
+                                                <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                            </div>
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addMaxReVa.$touched">
+                                                <div ng-show="formAddVoucher.addMaxReVa.$error.required && formInputVoucher.discountType == 1"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị giảm tối đa không được để trống
+                                                </div>
+                                                <div ng-show="formAddVoucher.addMaxReVa.$error.min && formInputVoucher.discountType == 1"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị giảm tối đa phải >= {{validateAddMaxReVa | ceil}} đ
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <label>Áp dụng</label>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                id="flexRadioDefault0" ng-value="0"
+                                                ng-model="formInputVoucher.applyfor">
+                                            <label class="form-check-label" for="flexRadioDefault0">Tất
+                                                cả</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                id="flexRadioDefault1" ng-value="1"
+                                                ng-model="formInputVoucher.applyfor">
+                                            <label class="form-check-label" for="flexRadioDefault1">Loại khách
+                                                hàng</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Số lượng</label>
+                                            <input type="number" name="addQuantity" class="form-control" min="1"
+                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                                ng-model="formInputVoucher.quantity" ng-required="true"
+                                                ng-class="{'is-invalid': (formAddVoucher.addQuantity.$touched || formAddVoucher.$submitted) && formAddVoucher.addQuantity.$invalid}">
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addQuantity.$touched">
+                                                <div ng-show="formAddVoucher.addQuantity.$error.required"
+                                                    class="error-message text-danger form-text">Số lượng không
+                                                    được để trống</div>
+                                                <div ng-show="formAddVoucher.addQuantity.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Số lượng phải >= 1
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Số lượt sử dụng</label>
+                                            <input type="number" name="addNumberOfUses" class="form-control" min="1"
+                                                max="{{formInputVoucher.quantity}}"
+                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                                ng-model="formInputVoucher.numberOfUses" ng-required="true"
+                                                ng-class="{'is-invalid': (formAddVoucher.addNumberOfUses.$touched || formAddVoucher.$submitted) && formAddVoucher.addNumberOfUses.$invalid}">
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addNumberOfUses.$touched">
+                                                <div ng-show="formAddVoucher.addNumberOfUses.$error.required"
+                                                    class="error-message text-danger form-text">Số lần sử dụng
+                                                    không được để trống</div>
+                                                <div ng-show="formAddVoucher.addNumberOfUses.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Số lần sử dụng phải >= 1
+                                                </div>
+                                                <div ng-show="formAddVoucher.addNumberOfUses.$error.max"
+                                                    class="error-message text-danger form-text">
+                                                    Số lượt sử dụng không được lớn hơn số lượng</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Ngày bắt đầu</label>
+                                            <input type="datetime-local" name="addStartDate"
+                                                class="form-control" ng-attr-min="{{currentDateTime}}"
+                                                max="{{formInputVoucher.endDate}}"
+                                                ng-model="formInputVoucher.startDate" ng-required="true"
+                                                ng-class="{'is-invalid': (formAddVoucher.addStartDate.$touched || formAddVoucher.$submitted) && formAddVoucher.addStartDate.$invalid}">
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addStartDate.$touched">
+                                                <div ng-show="formAddVoucher.addStartDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được để trống
+                                                </div>
+                                                <div ng-show="formAddVoucher.addStartDate.$error.max"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được lớn hơn ngày kết thúc</div>
+                                                <div ng-show="formAddVoucher.addStartDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được nhỏ hơn ngày hiện tại</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Ngày kết thúc</label>
+                                            <input type="datetime-local" name="addEndDate" class="form-control"
+                                                min="{{formInputVoucher.startDate}}"
+                                                ng-model="formInputVoucher.endDate" ng-required="true"
+                                                ng-class="{'is-invalid': (formAddVoucher.addEndDate.$touched || formAddVoucher.$submitted) && formAddVoucher.addEndDate.$invalid}">
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addEndDate.$touched">
+                                                <div ng-show="formAddVoucher.addEndDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được để trống
+                                                </div>
+                                                <div ng-show="formAddVoucher.addEndDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được nhỏ hơn ngày bắt đầu</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="startDate">Ngày bắt đầu</label>
+                                            <input type="text" id="startDate" name="addStartDate"
+                                                ng-model="formInputVoucher.startDate" class="form-control"
+                                                placeholder="Chọn ngày bắt đầu" ng-required="true"
+                                                ng-class="{'is-invalid': (formAddVoucher.$submitted || formAddVoucher.addStartDate.$touched) && formAddVoucher.addStartDate.$invalid}">
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addStartDate.$touched">
+                                                <div class="invalid-feedback" ng-show="startDateError">
+                                                    {{startDateError}}
+                                                </div>
+                                                <div ng-show="formAddVoucher.addStartDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được để trống
+                                                </div>
+                                                <div ng-show="formAddVoucher.addStartDate.$error.max"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được lớn hơn ngày kết thúc</div>
+                                                <div ng-show="formAddVoucher.addStartDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được nhỏ hơn ngày hiện tại</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="endDate">Ngày kết thúc</label>
+                                            <input type="text" id="endDate" name="addEndDate"
+                                                ng-model="formInputVoucher.endDate" class="form-control"
+                                                placeholder="Chọn ngày kết thúc" ng-required="true"
+                                                ng-class="{'is-invalid': (formAddVoucher.$submitted || formAddVoucher.addEndDate.$touched) && formAddVoucher.addEndDate.$invalid}">
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addEndDate.$touched">
+                                                <div class="invalid-feedback" ng-show="endDateError">
+                                                    {{endDateError}}
+                                                </div>
+                                                <div ng-show="formAddVoucher.addEndDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được để trống
+                                                </div>
+                                                <div ng-show="formAddVoucher.addEndDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được nhỏ hơn ngày bắt đầu</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label>Mô tả</label>
+                                            <textarea name="addDescription" class="form-control"
+                                                ng-model="formInputVoucher.describe" ng-required="true"
+                                                ng-class="{'is-invalid': (formAddVoucher.addDescription.$touched || formAddVoucher.$submitted) && formAddVoucher.addDescription.$error.required}"></textarea>
+                                            <span
+                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addDescription.$touched">
+                                                <div ng-show="formAddVoucher.addDescription.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Mô tả không được để trống
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CustomerType -->
+                            <div class="col-4" ng-if="formInputVoucher.applyfor == 1">
+                                Chọn loại khách hàng được sử dụng
+                                <ul class="list-group">
+                                    <!-- <li class="list-group-item">
+                                        <input type="checkbox" id="selectAll" class="form-check-input me-1"
+                                            ng-checked="allChecked" ng-click="toggleSelectAll()">
+                                        <label for="selectAll" class="form-check-label"><strong>Tất cả</strong></label>
+                                    </li> -->
+                                    <li class="list-group-item" ng-repeat="ct in customerTypes">
+                                        <input type="checkbox" id="{{ct.id}}" name="items" ng-model="ct.selected"
+                                            class="form-check-input me-1" ng-change="updateSelectAll()">
+                                        <label for="{{ct.id}}" class="form-check-label">{{ct.name}}</label>
+                                    </li>
+                                    <div ng-show="formAddVoucher.$submitted && formInputVoucher.applyfor == 1 && entitiesCustomerType.length == 0"
+                                        class="error-message text-danger form-text">Chọn tối thiểu 1 loại khách
+                                        hàng</div>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!----add-modal end--------->
+
+    <!----edit-modal start--------->
+    <div class="modal fade" tabindex="-1" id="updateVoucherModal" role="dialog">
+        <div class="modal-dialog modal-lg"
+            ng-class="{
+            'modal-xl': formUpdateVoucher.applyfor == 1  && formUpdateVoucher.status !== 2,
+            'modal-lg': formUpdateVoucher.applyfor == 0 || (formUpdateVoucher.applyfor == 1 && formUpdateVoucher.status == 2)}">
+            <div class="modal-content">
+                <form name="formEditVoucher" ng-submit="formEditVoucher.$valid && updateVoucher(formUpdateVoucher.id)"
+                    novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cập nhật voucher</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div
+                                ng-class="{'col-12': formUpdateVoucher.applyfor == 0, 'col-8': formUpdateVoucher.applyfor == 1  && formUpdateVoucher.status !== 2}">
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Mã</label>
+                                            <input type="text" id="updateCode" name="updateCode" class="form-control"
+                                                ng-change="checkDuplicateCodeOnUpdate()"
+                                                ng-model="formUpdateVoucher.code" ng-required="true">
+
+                                            <!-- <span ng-show="formEditVoucher.$submitted">
+                                                <div ng-show="formEditVoucher.updateCode.$invalid"
+                                                    class="error-message text-danger form-text">
+                                                    Mã không được để trống</div>
+                                            </span>
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || duplicateUpdateCodeError">
+                                                <div ng-show="duplicateUpdateCodeError"
+                                                    class="error-message text-danger form-text">
+                                                    Mã voucher đã tồn tại
+                                                </div>
+                                            </span> -->
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Tên</label>
+                                            <input type="text" id="updateName" name="updateName" class="form-control"
+                                                ng-change="checkDuplicateNameOnUpdate()"
+                                                ng-model="formUpdateVoucher.name" ng-required="true"
+                                                ng-class="{'is-invalid': (formEditVoucher.updateName.$touched || formAddVoucher.$submitted) && (formEditVoucher.updateName.$invalid || duplicateUpdateNameError)}">
+                                            <div class="invalid-feedback"
+                                                ng-show="formEditVoucher.$submitted && formEditVoucher.updateName.$invalid">
+                                                Tên không được để trống
+                                            </div>
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateName.$touched">
+                                                <div ng-show="formEditVoucher.updateName.$error.required"
+                                                    class="error-message text-danger form-text">Tên không được
+                                                    để trống</div>
+                                            </span>
+                                            <span ng-show="formEditVoucher.$submitted || duplicateUpdateNameError">
+                                                <div ng-show="duplicateUpdateNameError"
+                                                    class="error-message text-danger form-text">Tên voucher đã
+                                                    tồn tại</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <label>Loại giảm giá</label>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="radioTypeUpdate1"
+                                                    id="radioTypeUpdate1" ng-value="1"
+                                                    ng-click="discountTypeChangeUpdate(1)"
+                                                    ng-model="formUpdateVoucher.discountType">
+                                                <label class="form-check-label" for="radioTypeUpdate1">
+                                                    Phần trăm (%)
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="radioTypeUpdate2"
+                                                    id="radioTypeUpdate2" ng-value="2"
+                                                    ng-click="discountTypeChangeUpdate(2)"
+                                                    ng-model="formUpdateVoucher.discountType">
+                                                <label class="form-check-label" for="radioTypeUpdate2">
+                                                    Số tiền
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị</label>
+                                            <!-- <input type="number" id="updateValue" name="updateValue"
+                                                class="form-control" ng-model="formUpdateVoucher.value"
+                                                ng-required="true"> -->
+                                            <div class="input-group">
+                                                <input type="number" id="updateValue" name="updateValue"
+                                                    class="form-control"
+                                                    min="{{formUpdateVoucher.discountType == 1 ? 1 : 1000}}"
+                                                    ng-change="validateUpdateValue(formUpdateVoucher.discountType); checkValidateAllValueUpdate()"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                                    ng-model="formUpdateVoucher.value" ng-required="true"
+                                                    ng-class="{'is-invalid': (formEditVoucher.updateValue.$touched || formAddVoucher.$submitted) && (formEditVoucher.updateName.$invalid)}">
+                                                <span ng-if="formUpdateVoucher.discountType == 1"
+                                                    class="input-group-text" id="basic-addonUp2">%</span>
+                                                <span ng-if="formUpdateVoucher.discountType == 2"
+                                                    class="input-group-text" id="basic-addonUp3">vnđ</span>
+                                            </div>
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateValue.$touched">
+                                                <div ng-show="formEditVoucher.updateValue.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị không được để trống</div>
+                                                <div class="error-message text-danger form-text"
+                                                    ng-show="formEditVoucher.updateValue.$error.min && formUpdateVoucher.discountType == 1">
+                                                    Giá trị phải >= 1
+                                                </div>
+                                                <div class="error-message text-danger form-text"
+                                                    ng-show="formEditVoucher.updateValue.$error.min && formUpdateVoucher.discountType !== 1">
+                                                    Giá trị phải >= 1.000 đ
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị tối thiếu HD</label>
+                                            <div class="input-group">
+                                                <input type="number" min="0" id="updateMinBill" name="updateMinBill"
+                                                    class="form-control"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0"
+                                                    ng-model="formUpdateVoucher.minimumTotalAmount"
+                                                    ng-change="checkValidateAllValueUpdate()" ng-required="true"
+                                                    ng-class="{'is-invalid': (formEditVoucher.updateMinBill.$touched || formAddVoucher.$submitted) && formEditVoucher.updateMinBill.$invalid}">
+                                                <span class="input-group-text">vnđ</span>
+                                            </div>
+
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateMinBill.$touched">
+                                                <div ng-show="formEditVoucher.updateMinBill.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị tối thiểu HD không được để trống</div>
+                                                <div ng-show="formEditVoucher.updateMinBill.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị tối thiểu HD >= 0 đ</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị giảm tối đa</label>
+                                            <div class="input-group">
+                                                <input type="number" id="updateMaxReVa" name="updateMaxReVa"
+                                                    class="form-control" min="{{validateAddMaxReVaUpdate}}"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+                                                    ng-model="formUpdateVoucher.maximumReductionValue"
+                                                    ng-disabled="formUpdateVoucher.discountType == 2 ? true : fasle"
+                                                    ng-required="true"
+                                                    ng-class="{'is-invalid': (formEditVoucher.updateMaxReVa.$touched || formAddVoucher.$submitted) && formEditVoucher.updateMaxReVa.$invalid}">
+                                                <span class="input-group-text">vnđ</span>
+                                            </div>
+                                            <span
+                                                ng-show=" formEditVoucher.$submitted || formEditVoucher.updateMaxReVa.$touched">
+                                                <div ng-show="
+                                                    formEditVoucher.updateMaxReVa.$error.required &&
+                                                    formUpdateVoucher.discountType==1"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị giảm không được để trống
+                                                </div>
+                                                <div ng-show="formEditVoucher.updateMaxReVa.$error.min && formUpdateVoucher.discountType == 1"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị giảm tối đa phải >= {{validateAddMaxReVaUpdate |
+                                                    ceil}} đ</div>
+                                            </span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <label>Áp dụng</label>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioUpdate"
+                                                id="flexRadioUpdate0" ng-value="0" ng-click="applyforChangeUpdate(0)"
+                                                ng-model="formUpdateVoucher.applyfor">
+                                            <label class="form-check-label" for="flexRadioUpdate0">
+                                                Tất cả
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioUpdate"
+                                                id="flexRadioUpdate1" ng-value="1" ng-click="applyforChangeUpdate(1)"
+                                                ng-model="formUpdateVoucher.applyfor">
+                                            <label class="form-check-label" for="flexRadioUpdate1">
+                                                Loại khách hàng
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Số lượng</label>
+                                            <input type="number" min="1" id="updateQuantity" name="updateQuantity"
+                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                                class="form-control" ng-model="formUpdateVoucher.quantity"
+                                                ng-required="true"
+                                                ng-class="{'is-invalid': (formEditVoucher.updateQuantity.$touched || formAddVoucher.$submitted) && formEditVoucher.updateQuantity.$invalid}">
+
+                                            <span ng-show="formEditVoucher.$submitted">
+                                                <div ng-show="formEditVoucher.updateQuantity.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Số lượng không được để trống</div>
+                                                <div ng-show="formEditVoucher.updateQuantity.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Số lượng phải >= 1
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Số lượt sử dụng</label>
+                                            <input type="number" id="updateNumberOfUses" min="1"
+                                                max="{{formUpdateVoucher.quantity}}"
+                                                oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                                name="updateNumberOfUses" class="form-control"
+                                                ng-model="formUpdateVoucher.numberOfUses" ng-required="true"
+                                                ng-class="{'is-invalid': (formEditVoucher.updateNumberOfUses.$touched || formAddVoucher.$submitted) && formEditVoucher.updateNumberOfUses.$invalid}">
+
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateNumberOfUses.$touched">
+                                                <div ng-show="formEditVoucher.updateNumberOfUses.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Số lượt sử dụng không được để trống</div>
+                                                <div ng-show="formEditVoucher.updateNumberOfUses.$error.max"
+                                                    class="error-message text-danger form-text">
+                                                    Số lượt sử dụng không được lớn hơn số lượng</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Ngày bắt đầu</label>
+                                            <input type="datetime-local" id="updateStartDate"
+                                                name="updateStartDate" class="form-control"
+                                                max="{{formUpdateVoucher.endDate}}"
+                                                ng-model="formUpdateVoucher.startDate" ng-required="true"
+                                                ng-class="{'is-invalid': (formEditVoucher.updateStartDate.$touched || formAddVoucher.$submitted) && formEditVoucher.updateStartDate.$invalid}">
+
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateStartDate.$touched">
+                                                <div ng-show="formEditVoucher.updateStartDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được để trống</div>
+                                                <div ng-show="formEditVoucher.updateStartDate.$error.max"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày bắt đầu không được lớn hơn ngày kết thúc</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Ngày kết thúc</label>
+                                            <input type="datetime-local" id="updateEndDate" name="updateEndDate"
+                                                min="{{formUpdateVoucher.startDate}}" class="form-control"
+                                                ng-model="formUpdateVoucher.endDate" ng-required="true"
+                                                ng-class="{'is-invalid': (formEditVoucher.updateEndDate.$touched || formAddVoucher.$submitted) && formEditVoucher.updateEndDate.$invalid}">
+
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateEndDate.$touched">
+                                                <div ng-show="formEditVoucher.updateEndDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được để trống</div>
+                                                <div ng-show="formEditVoucher.updateEndDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được nhỏ hơn ngày bắt đầu</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="row mb-1">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Ngày bắt đầu</label>
+                                            <input id="updateStartDate" name="updateStartDate" class="form-control"
+                                                placeholder="Chọn ngày bắt đầu" ng-model="formUpdateVoucher.startDate"
+                                                ng-required="true">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Ngày kết thúc</label>
+                                            <input id="updateEndDate" name="updateEndDate" class="form-control"
+                                                placeholder="Chọn ngày kết thúc" ng-model="formUpdateVoucher.endDate"
+                                                ng-required="true"
+                                                ng-class="{'is-invalid': formEditVoucher.updateEndDate.$touched && formEditVoucher.updateEndDate.$invalid}">
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateEndDate.$touched">
+                                                <div ng-show="formEditVoucher.updateEndDate.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được để trống</div>
+                                                <div ng-show="formEditVoucher.updateEndDate.$error.min"
+                                                    class="error-message text-danger form-text">
+                                                    Ngày kết thúc không được nhỏ hơn ngày bắt đầu</div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <div class="form-group">
+                                        <label>Mô tả</label>
+                                        <textarea type="text" id="updateDescribe" name="updateDescribe"
+                                            class="form-control" ng-model="formUpdateVoucher.describe"
+                                            ng-required="true"
+                                            ng-class="{'is-invalid': (formEditVoucher.updateDescribe.$touched || formAddVoucher.$submitted) && formEditVoucher.updateDescribe.$invalid}"></textarea>
+
+                                        <span
+                                            ng-show="formEditVoucher.$submitted || formEditVoucher.updateDescribe.$touched">
+                                            <div ng-show="formEditVoucher.updateDescribe.$invalid"
+                                                class="error-message text-danger form-text">
+                                                Mô tả không được để trống</div>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row ms-1 mt-3" id="checkPause">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" style="margin-top: 0.40em;" type="checkbox"
+                                            id="checkPauseStatus">
+                                        <label class="form-check-label" for="checkPauseStatus">
+                                            Tạm ngưng</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Customer Type -->
+                            <div class="col-4"
+                                ng-if="formUpdateVoucher.applyfor == 1 && formUpdateVoucher.status !== 2">
+                                Chọn loại khách hàng được sử dụng
+                                <ul class="list-group">
+                                    <!-- <li class="list-group-item">
+                                        <input type="checkbox" id="selectAll1" class="form-check-input me-1"
+                                            ng-checked="allChecked" ng-click="toggleSelectAll()">
+                                        <label for="selectAll1" class="form-check-label"><strong>Select
+                                                All</strong></label>
+                                    </li> -->
+                                    <li class="list-group-item" ng-repeat="ct in customerTypes">
+                                        <input type="checkbox" id="{{ct.id}}" name="items" ng-model="ct.selected"
+                                            class="form-check-input me-1" ng-change="updateSelectAll()">
+                                        <label for="{{ct.id}}" class="form-check-label">{{ct.name}}</label>
+                                    </li>
+                                    <div ng-show="formEditVoucher.$submitted && formUpdateVoucher.applyfor == 1 && entitiesCustomerTypeUpdate.length == 0"
+                                        class="error-message text-danger form-text">Chọn tối thiểu 1 loại khách
+                                        hàng</div>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success" id="updateButton">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!----edit-modal end--------->
+
+
+    <!----delete-modal start--------->
+    <div class="modal fade" tabindex="-1" id="deleteEmployeeModal" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Employees</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this Records</p>
+                    <p class="text-warning"><small>this action Cannot be Undone,</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!----edit-modal end--------->
+
+    <!-- START STATIC VOUCHER -->
+    <div class="modal fade" tabindex="-1" id="staticVoucher" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home1" role="tab"
+                                aria-controls="home1" aria-selected="true">Thông tin</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#menu23" role="tab"
+                                aria-controls="menu23" aria-selected="false">Thống kê</a>
+                        </li>
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home1" role="tabpanel" aria-labelledby="home-tab">
+                            <table class="table table-striped table-bordered mt-3">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">Tên thuộc tính</th>
+                                        <th scope="col">Dữ liệu</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Mã</td>
+                                        <td class="fs-6">{{voucherInfo.code}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tên</td>
+                                        <td class="fs-6">{{voucherInfo.name}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Giá trị</td>
+                                        <td class="fs-6">{{voucherInfo.value | number: 0}} {{voucherInfo.discountType ==
+                                            1 ? '%' : 'Số tiền'}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Giá trị giảm tối đa</td>
+                                        <td class="fs-6">{{voucherInfo.maximumReductionValue}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Giá trị tối thiểu hóa đơn</td>
+                                        <td class="fs-6">{{voucherInfo.minimumTotalAmount}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Áp dụng</td>
+                                        <td class="fs-6">{{voucherInfo.applyfor == 0 ? 'Tất cả' :
+                                            voucherInfo.applyfor == 1 ? 'Loại khách hàng' : 'Cá nhân'}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Số lượng</td>
+                                        <td class="fs-6">{{voucherInfo.quantity}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Lượt sử dụng / người</td>
+                                        <td class="fs-6">{{voucherInfo.numberOfUses}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Thời gian</td>
+                                        <td class="fs-6">Từ {{voucherInfo.startDate | date: 'HH:mm:ss dd/MM/yyyy'}} đến
+                                            {{voucherInfo.endDate | date: 'HH:mm:ss dd/MM/yyyy'}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Người tạo</td>
+                                        <td class="fs-6">{{voucherInfo.createdBy}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ngày tạo</td>
+                                        <td class="fs-6">{{voucherInfo.createdAt | date: 'HH:mm:ss dd/MM/yyyy'}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status</td>
+                                        <!-- <td class="fs-6">{{voucherInfo.status}}</td> -->
+                                        <td scope="col-2" ng-switch="voucherInfo.status" style="font-size: 18px;">
+                                            <span ng-switch-when="1">
+                                                <div class="badge bg-success text-wrap">
+                                                    Đang diễn ra
+                                                </div>
+                                            </span>
+                                            <span ng-switch-when="2">
+                                                <div class="badge bg-danger text-wrap">
+                                                    Đã hết hạn
+                                                </div>
+                                            </span>
+                                            <span ng-switch-when="3">
+                                                <div class="badge bg-warning text-wrap">
+                                                    Sắp diễn ra
+                                                </div>
+                                            </span>
+                                            <span ng-switch-when="4">
+                                                <div class="badge bg-secondary text-wrap">
+                                                    Tạm ngưng
+                                                </div>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mô tả</td>
+                                        <td class="fs-6">{{voucherInfo.describe}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="menu23" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="mt-3">
+                                <p>Số lượt sử dụng: {{staticVoucher.usageCount}}</p>
+                                <p>Doanh số tương ứng: {{staticVoucher.totalRevenue | number:0}} đ</p>
+                                <p>Tổng số tiền đã giảm: {{staticVoucher.totalRevenue -
+                                    staticVoucher.totalRevenueAfterDiscount | number:0}} đ</p>
+                                <p>Tổng doanh số sau khi giảm giá: {{staticVoucher.totalRevenueAfterDiscount |
+                                    number:0}} đ</p>
+                            </div>
+
+                            <table class="table table-striped table-hover mt-3">
+                                <thead>
+                                    <tr>
+                                        <th class="col-2">Tên khách hàng</th>
+                                        <th class="col-2">Liên hệ</th>
+                                        <th class="col-1">Số lần</th>
+                                        <th class="col-2">Tổng tiền</th>
+                                        <th class="col-2">Giảm giá</th>
+                                        <th class="col-3">Thanh toán</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <td colspan="6" ng-if="statVoucher.length == 0" class="text-center fs-6">
+                                        Không có dữ liệu</td>
+                                    <tr ng-repeat="s in statVoucher">
+                                        <td class="col-2">{{s.customerName}}</td>
+                                        <td class="col-2">
+                                            <div>{{ s.phoneNumber }}</div>
+                                            <div>{{ s.email }}</div>
+                                        </td>
+                                        <td class="col-1">{{s.usageCount}}</td>
+                                        <td class="col-2">{{s.totalPurchaseAmount | number:0}} đ</td>
+                                        <td class="col-2">{{s.totalPurchaseAmount - s.totalDiscountAmount |
+                                            number:0}} đ</td>
+                                        <td class="col-3">{{s.totalDiscountAmount | number:0}} đ</td>
+                                    </tr>
+                                    <tr ng-if="statVoucher.length != 0">
+                                        <td colspan="2"></td>
+                                        <td>{{staticVoucher.usageCount}}</td>
+                                        <td>{{staticVoucher.totalRevenue | number:0}} đ</td>
+                                        <td>{{staticVoucher.totalRevenue -
+                                            staticVoucher.totalRevenueAfterDiscount | number:0}} đ</td>
+                                        <td>{{staticVoucher.totalRevenueAfterDiscount |
+                                            number:0}} đ</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END STATIC VOUCHER -->
 </div>
