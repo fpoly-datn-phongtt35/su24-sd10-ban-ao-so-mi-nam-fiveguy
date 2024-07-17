@@ -25,9 +25,6 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
     @Query("SELECT COUNT(s) FROM Sale s WHERE s.endDate < :currentDate")
     Long countExpiredSales(Date currentDate);
 
-    @Query("SELECT s FROM Sale s WHERE LOWER(s.code) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-    List<Sale> searchByCodeNameValue(@Param("searchTerm") String searchTerm);
-
     List<Sale> findAllByStatusNot(int status);
 
     // Hàm thực hiện truy vấn đầu tiên: Tổng quan về doanh số của mỗi sale
@@ -35,7 +32,7 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    s.id AS saleId, " +
             "    SUM(bd.quantity) AS totalProductsSold, " +
             "    SUM(bd.promotionalPrice * bd.quantity) AS totalRevenue, " +
-            "    SUM((bd.price - bd.promotionalPrice) * bd.quantity) AS totalProfit " +
+            "    SUM((bd.productDetail.product.importPrice - bd.promotionalPrice) * bd.quantity) AS totalProfit " +
             "FROM " +
             "    Sale s " +
             "    JOIN ProductSale ps ON s.id = ps.sale.id " +

@@ -24,7 +24,7 @@ public class ProductServiceImpl2 implements ProductService2 {
     @Override
     public List<Product> getProductsWithoutSaleOrExpiredPromotion() {
         Date currentDate = new Date();
-        List<Product> productsWithoutSale = productRepository2.findByProductSalesIsNull();
+        List<Product> productsWithoutSale = productRepository2.findByProductSalesIsNullAndStatusEquals(1);
         List<Product> productsWithExpiredPromotion = productRepository2.findByProductSalesEndDateBefore(currentDate);
         List<Product> mergedProducts = new ArrayList<>(productsWithoutSale);
         mergedProducts.addAll(productsWithExpiredPromotion);

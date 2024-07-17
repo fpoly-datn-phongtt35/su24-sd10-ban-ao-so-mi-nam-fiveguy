@@ -13,11 +13,10 @@ import java.util.List;
 @Repository
 public interface ProductRepository2 extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
-    List<Product> findByProductSalesIsNull();
+    List<Product> findByProductSalesIsNullAndStatusEquals(int status);
 
-    @Query("SELECT DISTINCT ps.product FROM ProductSale ps WHERE ps.sale.endDate < :currentDate")
+
+    @Query("SELECT DISTINCT ps.product FROM ProductSale ps WHERE ps.sale.endDate < :currentDate AND ps.product.status = 1")
     List<Product> findByProductSalesEndDateBefore(Date currentDate);
 
-    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(p.code) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-    List<Product> searchByNameOrCode(String searchTerm);
 }
