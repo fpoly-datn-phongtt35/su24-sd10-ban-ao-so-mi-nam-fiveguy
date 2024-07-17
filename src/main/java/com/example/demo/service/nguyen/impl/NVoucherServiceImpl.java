@@ -96,6 +96,7 @@ public class NVoucherServiceImpl implements NVoucherService {
 
     private Integer checkDate(Date startDate, Date endDate) {
         Date currentDate = new Date();
+        if(startDate == null || endDate == null) return null;
         if (currentDate.after(startDate) && currentDate.before(endDate)) return 1;
         if (currentDate.after(endDate)) return 2;
         if (currentDate.before(startDate)) return 3;
@@ -204,7 +205,7 @@ public class NVoucherServiceImpl implements NVoucherService {
         existingVoucher.setQuantity(updatedVoucher.getQuantity());
         existingVoucher.setNumberOfUses(updatedVoucher.getNumberOfUses());
         existingVoucher.setDescribe(updatedVoucher.getDescribe());
-        existingVoucher.setStartDate(updatedVoucher.getStartDate());
+//        existingVoucher.setStartDate(updatedVoucher.getStartDate());
         existingVoucher.setEndDate(updatedVoucher.getEndDate());
         existingVoucher.setCreatedAt(updatedVoucher.getCreatedAt());
         existingVoucher.setCreatedBy(updatedVoucher.getCreatedBy());
