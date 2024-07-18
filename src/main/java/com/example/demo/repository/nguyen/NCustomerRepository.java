@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface NCustomerRepository extends JpaRepository<Customer, Long> {
 
@@ -21,4 +23,7 @@ public interface NCustomerRepository extends JpaRepository<Customer, Long> {
                                  @Param("email") String email,
                                  @Param("customerTypeId") Long customerTypeId,
                                  Pageable pageable);
+
+    List<Customer> findByCustomerTypeId(Long customerTypeId);
+
 }

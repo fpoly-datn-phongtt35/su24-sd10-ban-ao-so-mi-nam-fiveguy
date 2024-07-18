@@ -42,6 +42,12 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
     $scope.showWarning = function (message) {
         toastr["warning"](message);
     };
+    $scope.load = function () {
+        $scope.loading = true
+    }
+    $scope.unload = function () {
+        $scope.loading = false
+    }
 
     $scope.getAllVoucher = function () {
         $http.get(apiVoucher + "/all").then(function (res) {
@@ -93,6 +99,11 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
     $scope.validateAddMaxReVa = null;
 
     $scope.checkValidateAllValue = function () {
+        if ($scope.formInputVoucher.discountType == 2) {
+            $scope.validateValueError = false;
+            $scope.validateAddMaxReVa = null;
+            return;
+        }
         let value = $scope.formInputVoucher.value
         let max = $scope.formInputVoucher.maximumReductionValue
         let min = $scope.formInputVoucher.minimumTotalAmount
@@ -142,7 +153,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             $scope.checkValidateAllValue()
         }
 
-        if ($scope.duplicateNameError || $scope.duplicateCodeError || $scope.codeLengthErrorMin || $scope.validateValueError) {
+        if ($scope.duplicateNameError || $scope.duplicateCodeError || $scope.codeLengthErrorMin || ($scope.validateValueError && $scope.formInputVoucher.discountType == 1)) {
             return;
         }
 
@@ -157,7 +168,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         if ($scope.entitiesCustomerType.length == 0 && $scope.formInputVoucher.applyfor == 1) {
             return;
         }
-        
+
         var formattedStartDate = $scope.formInputVoucher.startDate ? flatpickr.parseDate($scope.formInputVoucher.startDate, "d-m-Y H:i:S").toISOString() : null;
         var formattedEndDate = $scope.formInputVoucher.endDate ? flatpickr.parseDate($scope.formInputVoucher.endDate, "d-m-Y H:i:S").toISOString() : null;
 
@@ -169,8 +180,10 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         }
         console.log(data)
 
+        $('#addVoucherModal').modal('hide');
+        $scope.load()
         $http.post(apiVoucher + "/saveVoucher", data).then(function (res) {
-            $('#addVoucherModal').modal('hide');
+            $scope.unload()
             $scope.showSuccess("Thêm thành công")
             $scope.getVouchers(0);
             $scope.resetFormAdd()
@@ -346,6 +359,12 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
     $scope.validateAddMaxReVaUpdate = null;
 
     $scope.checkValidateAllValueUpdate = function () {
+        // console.log($scope.formUpdateVoucher.discountType)
+        if ($scope.formUpdateVoucher.discountType == 2) {
+            $scope.validateValueErrorUpdate = false;
+            $scope.validateAddMaxReVaUpdate = null;
+            return;
+        }
         let value = $scope.formUpdateVoucher.value
         let max = $scope.formUpdateVoucher.maximumReductionValue
         let min = $scope.formUpdateVoucher.minimumTotalAmount
@@ -409,11 +428,12 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
 
     //#region UPDATE VOUCHER 
     $scope.updateVoucher = function (id) {
+        console.log("aa");
         if ($scope.formUpdateVoucher.discountType == 1) {
             $scope.checkValidateAllValueUpdate()
         }
 
-        if ($scope.duplicateUpdateNameError || $scope.duplicateUpdateCodeError || $scope.validateValueErrorUpdate) {
+        if ($scope.duplicateUpdateNameError || $scope.duplicateUpdateCodeError || ($scope.validateValueErrorUpdate && $scope.formUpdateVoucher.discountType == 1)) {
             return;
         }
 
@@ -429,12 +449,15 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         console.log($scope.formInputVoucher.applyfor);
 
         console.log($scope.entitiesCustomerTypeUpdate);
-        if ($scope.entitiesCustomerTypeUpdate.length == 0 && $scope.formUpdateVoucher.applyfor == 1) {
-            return
-        }
 
         if ($scope.formUpdateVoucher.applyfor == 0) {
             $scope.entitiesCustomerTypeUpdate = [];
+        }
+
+        console.log($scope.formUpdateVoucher.applyfor);
+
+        if ($scope.entitiesCustomerTypeUpdate.length == 0 && $scope.formUpdateVoucher.applyfor == 1) {
+            return
         }
 
         var formattedstartDate = $scope.formUpdateVoucher.startDate ? flatpickr.parseDate($scope.formUpdateVoucher.startDate, "d-m-Y H:i:S").toISOString() : null;
@@ -759,7 +782,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
                 });
             }
         });
-        
+
         var filterEndPicker = flatpickr("#filterEndTime", {
             enableTime: true, // Không cần thiết phải cho phép thời gian nếu chỉ cần ngày
             time_24hr: true,
@@ -776,7 +799,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             }
         });
 
-        $scope.updateEndDateMinDateFilter = function() {
+        $scope.updateEndDateMinDateFilter = function () {
             if ($scope.filters.startDate) {
                 var startDateObj = flatpickr.parseDate($scope.filters.startDate, "d-m-Y H:i:S");
                 var minEndDate = new Date(startDateObj.getTime());
