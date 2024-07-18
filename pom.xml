@@ -120,6 +120,10 @@
             <artifactId>modelmapper</artifactId>
             <version>2.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+        </dependency>
         <!--model mapper-->
 
     </dependencies>

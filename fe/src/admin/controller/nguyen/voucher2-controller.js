@@ -65,6 +65,7 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
             $scope.customerTypes = res.data;
             console.log($scope.customerTypes);
         });
+
     };
     $scope.getAllCustomerType();
 
@@ -75,6 +76,12 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
 
     //#region validate form add
 
+    setTimeout(function () {
+        $('#customerTypeSelect').multipleSelect({
+            filter: true, // Enables search functionality
+            placeholder: "Chọn Customer Type" // Sets placeholder text in Vietnamese
+        });
+    }, 0);
     //check trung ten va ma add
     $scope.duplicateNameError = false;
     $scope.duplicateCodeError = false;

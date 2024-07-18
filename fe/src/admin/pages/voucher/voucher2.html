@@ -376,9 +376,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                </div>
-                                <div class="row mb-1">
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Giá trị</label>
@@ -412,6 +409,8 @@
                                             </span>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row mb-1">
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Điều kiện</label>
@@ -434,19 +433,6 @@
                                                     Điều kiện phải lớn hơn 0 đ
                                                 </div>
                                             </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mb-1">
-
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label>Giá trị giảm tối thiểu</label>
-                                            <div class="input-group">
-                                                <input type="number" class="form-control" min="0" disabled
-                                                    ng-value="validateAddMaxReVa | toInt">
-                                                <span class="input-group-text" id="basic-addon2">vnđ</span>
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -476,6 +462,20 @@
                                             </span>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row mb-1">
+
+                                    <!-- <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị giảm tối thiểu</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" min="0" disabled
+                                                    ng-value="validateAddMaxReVa | toInt">
+                                                <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                            </div>
+                                        </div>
+                                    </div> -->
+
                                 </div>
                                 <div class="row mb-1">
                                     <label>Áp dụng</label>
@@ -775,41 +775,6 @@
                                 <div class="row mb-1">
                                     <div class="col-6">
                                         <div class="form-group">
-                                            <label>Giá trị</label>
-                                            <!-- <input type="number" id="updateValue" name="updateValue"
-                                                class="form-control" ng-model="formUpdateVoucher.value"
-                                                ng-required="true"> -->
-                                            <div class="input-group">
-                                                <input type="number" id="updateValue" name="updateValue"
-                                                    class="form-control"
-                                                    min="{{formUpdateVoucher.discountType == 1 ? 1 : 1000}}"
-                                                    ng-change="validateUpdateValue(formUpdateVoucher.discountType); checkValidateAllValueUpdate()"
-                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                                    ng-model="formUpdateVoucher.value" ng-required="true"
-                                                    ng-class="{'is-invalid': (formEditVoucher.updateValue.$touched || formAddVoucher.$submitted) && (formEditVoucher.updateName.$invalid)}">
-                                                <span ng-if="formUpdateVoucher.discountType == 1"
-                                                    class="input-group-text" id="basic-addonUp2">%</span>
-                                                <span ng-if="formUpdateVoucher.discountType == 2"
-                                                    class="input-group-text" id="basic-addonUp3">vnđ</span>
-                                            </div>
-                                            <span
-                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateValue.$touched">
-                                                <div ng-show="formEditVoucher.updateValue.$error.required"
-                                                    class="error-message text-danger form-text">
-                                                    Giá trị không được để trống</div>
-                                                <div class="error-message text-danger form-text"
-                                                    ng-show="formEditVoucher.updateValue.$error.min && formUpdateVoucher.discountType == 1">
-                                                    Giá trị phải lớn hơn 1
-                                                </div>
-                                                <div class="error-message text-danger form-text"
-                                                    ng-show="formEditVoucher.updateValue.$error.min && formUpdateVoucher.discountType !== 1">
-                                                    Giá trị phải lớn hơn 1.000 đ
-                                                </div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-group">
                                             <label>Điều kiện</label>
                                             <div class="input-group">
                                                 <input type="number" min="0" id="updateMinBill" name="updateMinBill"
@@ -830,20 +795,6 @@
                                                     class="error-message text-danger form-text">
                                                     Điều kiện lớn hơn 0 đ</div>
                                             </span>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="row mb-1">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <label>Giá trị giảm tối thiểu</label>
-                                            <div class="input-group">
-                                                <input type="number" class="form-control" min="0" disabled
-                                                    ng-value="formUpdateVoucher.discountType==1 ? 
-                                                    ((formUpdateVoucher.minimumTotalAmount * formUpdateVoucher.value / 100)  | toInt):(formUpdateVoucher.value | toInt)">
-                                                <span class="input-group-text" id="basic-addon2">vnđ</span>
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -875,6 +826,20 @@
                                             </span>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row mb-1">
+                                    <!-- <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị giảm tối thiểu</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" min="0" disabled
+                                                    ng-value="formUpdateVoucher.discountType==1 ? 
+                                                    ((formUpdateVoucher.minimumTotalAmount * formUpdateVoucher.value / 100)  | toInt):(formUpdateVoucher.value | toInt)">
+                                                <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                            </div>
+                                        </div>
+                                    </div> -->
+
                                 </div>
                                 <div class="row mb-1">
                                     <label>Áp dụng</label>
@@ -1065,7 +1030,7 @@
                                         <label for="selectAll" class="form-check-label"><strong>Tất cả</strong></label>
                                     </li> -->
                                     <li class="list-group-item" ng-repeat="ctv in listCustomerTypeVoucher">
-                                        {{$index + 1}} - 
+                                        {{$index + 1}} -
                                         <label for="{{ct.id}}"
                                             class="form-check-label">{{ctv.customerType.name}}</label>
                                     </li>
@@ -1146,9 +1111,9 @@
                                     <tr>
                                         <td>Giá trị</td>
                                         <td class="fs-6">{{voucherInfo.value | number: 0}} {{voucherInfo.discountType ==
-                                            1 ? '%' : 'Số tiền'}}</td>
+                                            1 ? '%' : 'đồng'}}</td>
                                     </tr>
-                                    <tr>
+                                    <tr ng-if="voucherInfo.discountType == 1">
                                         <td>Giá trị giảm tối đa</td>
                                         <td class="fs-6">{{voucherInfo.maximumReductionValue}}</td>
                                     </tr>
@@ -1221,51 +1186,67 @@
                         </div>
                         <div class="tab-pane fade" id="menu23" role="tabpanel" aria-labelledby="profile-tab">
                             <div class="mt-3">
-                                <p>Số lượt sử dụng: {{staticVoucher.usageCount}}</p>
-                                <p>Doanh số tương ứng: {{staticVoucher.totalRevenue | number:0}} đ</p>
-                                <p>Tổng số tiền đã giảm: {{staticVoucher.totalRevenue -
-                                    staticVoucher.totalRevenueAfterDiscount | number:0}} đ</p>
-                                <p>Tổng doanh số sau khi giảm giá: {{staticVoucher.totalRevenueAfterDiscount |
-                                    number:0}} đ</p>
+                                <div class="row mb-3">
+                                    <div class="col text-center">
+                                        <p class="fw-bold">Tổng số lần sử dụng:</p>
+                                        <p class="fs-4">{{staticVoucher.usageCount}} lần</p>
+                                    </div>
+                                    <div class="col text-center">
+                                        <p class="fw-bold">Doanh số tương ứng:</p>
+                                        <p class="fs-4">{{staticVoucher.totalRevenue | number:0}} đ</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col text-center">
+                                        <p class="fw-bold">Tổng số tiền đã giảm:</p>
+                                        <p class="fs-4">{{staticVoucher.totalRevenue -
+                                            staticVoucher.totalRevenueAfterDiscount | number:0}} đ</p>
+                                    </div>
+                                    <div class="col text-center">
+                                        <p class="fw-bold">Tổng doanh số sau khi giảm giá:</p>
+                                        <p class="fs-4">{{staticVoucher.totalRevenueAfterDiscount | number:0}} đ</p>
+                                    </div>
+                                </div>
                             </div>
-
-                            <table class="table table-striped table-hover mt-3">
-                                <thead>
-                                    <tr>
-                                        <th class="col-2">Tên khách hàng</th>
-                                        <th class="col-2">Liên hệ</th>
-                                        <th class="col-1">Số lần</th>
-                                        <th class="col-2">Tổng tiền</th>
-                                        <th class="col-2">Giảm giá</th>
-                                        <th class="col-3">Thanh toán</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <td colspan="6" ng-if="statVoucher.length == 0" class="text-center fs-6">
-                                        Không có dữ liệu</td>
-                                    <tr ng-repeat="s in statVoucher">
-                                        <td class="col-2">{{s.customerName}}</td>
-                                        <td class="col-2">
-                                            <div>{{ s.phoneNumber }}</div>
-                                            <div>{{ s.email }}</div>
-                                        </td>
-                                        <td class="col-1">{{s.usageCount}}</td>
-                                        <td class="col-2">{{s.totalPurchaseAmount | number:0}} đ</td>
-                                        <td class="col-2">{{s.totalPurchaseAmount - s.totalDiscountAmount |
-                                            number:0}} đ</td>
-                                        <td class="col-3">{{s.totalDiscountAmount | number:0}} đ</td>
-                                    </tr>
-                                    <tr ng-if="statVoucher.length != 0">
-                                        <td colspan="2"></td>
-                                        <td>{{staticVoucher.usageCount}}</td>
-                                        <td>{{staticVoucher.totalRevenue | number:0}} đ</td>
-                                        <td>{{staticVoucher.totalRevenue -
-                                            staticVoucher.totalRevenueAfterDiscount | number:0}} đ</td>
-                                        <td>{{staticVoucher.totalRevenueAfterDiscount |
-                                            number:0}} đ</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-container">
+                                <table class="table table-striped table-hover mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-2">Tên khách hàng</th>
+                                            <th class="col-2">Liên hệ</th>
+                                            <th class="col-1">Số lần</th>
+                                            <th class="col-2">Tổng tiền</th>
+                                            <th class="col-2">Giảm giá</th>
+                                            <th class="col-3">Thanh toán</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <td colspan="6" ng-if="statVoucher.length == 0" class="text-center fs-6">
+                                            Không có dữ liệu</td>
+                                        <tr ng-repeat="s in statVoucher">
+                                            <td class="col-2">{{s.customerName}}</td>
+                                            <td class="col-2">
+                                                <div>{{ s.phoneNumber }}</div>
+                                                <div>{{ s.email }}</div>
+                                            </td>
+                                            <td class="col-1">{{s.usageCount}}</td>
+                                            <td class="col-2">{{s.totalPurchaseAmount | number:0}} đ</td>
+                                            <td class="col-2">{{s.totalPurchaseAmount - s.totalDiscountAmount |
+                                                number:0}} đ</td>
+                                            <td class="col-3">{{s.totalDiscountAmount | number:0}} đ</td>
+                                        </tr>
+                                        <!-- <tr ng-if="statVoucher.length != 0">
+                                            <td colspan="2"></td>
+                                            <td>{{staticVoucher.usageCount}}</td>
+                                            <td>{{staticVoucher.totalRevenue | number:0}} đ</td>
+                                            <td>{{staticVoucher.totalRevenue -
+                                                staticVoucher.totalRevenueAfterDiscount | number:0}} đ</td>
+                                            <td>{{staticVoucher.totalRevenueAfterDiscount |
+                                                number:0}} đ</td>
+                                        </tr> -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1273,4 +1254,10 @@
         </div>
     </div>
     <!-- END STATIC VOUCHER -->
+    <select data-placeholder="Choose a Country..." id="customerTypeSelect" class="chosen-select" multiple tabindex="4">
+        <option value=""></option>
+        <option value="United States">United States</option>
+        <option value="United Kingdom">United Kingdom</option>
+    </select>
+
 </div>
