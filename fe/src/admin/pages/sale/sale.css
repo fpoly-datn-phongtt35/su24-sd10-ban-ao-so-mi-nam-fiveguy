@@ -1,14 +1,99 @@
-/* .table-product tr{
-    font-size: 1rem;    
-    padding: 16px 10px;
-} */
-
-
- table.table-product-sale tr td{
-    font-size: 1rem;    
-    padding: 16px 10px;
+.container {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px 0;
+}
+
+.search-bar input {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+    font-size: 15px;
+}
+
+
+/* Add styles for select dropdown */
+.search-bar select {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
+    background-color: white;
+    flex: 1;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.search-bar select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.table-container {
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden; /* To apply border-radius to the table */
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container th, .table-container td {
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+
+
+.table-container th {
+    padding: 22px 8px;
+
+    background-color: #353b48;
+    color: white;
+    text-transform: uppercase;
+    border-right: 1px solid white;
+    border-left: 1px solid white;
+}
+
+.table-container th:first-child {
+    border-left: none;
+}
+
+.table-container th:last-child {
+    border-right: none;
+}
+
+.table-container tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+.table-container tbody tr:hover {
+    background-color: #e9e9e9;
+}
+
+.table-container .status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 15px;
+    margin-bottom: 8px;
+}
 .status.ongoing {
     background-color: #28a745; /* Green for 'Đang diễn ra' */
     color: white;
@@ -24,10 +109,67 @@
     color: white;
 }
 
-.table-container .status {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 15px;
-    margin-bottom: 8px;
+
+.table-container .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
 }
+
+.table-container .action-btn i {
+    font-size: 16px;
+    color: #333;
+}
+
+.table-container .action-btn i:hover {
+    color: #007bff;
+}
+
+.title p{
+    font-size: 22px;
+}
+
+.title {
+    margin: 5px 0 40px 0;
+
+}
+
+.button-submit {
+    padding: 10px 16px !important;
+}
+
+
+
+.no-spinners::-webkit-outer-spin-button,
+.no-spinners::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* input[type=number] {
+    -moz-appearance: textfield;
+} */
+
+.form-control-custom {
+    border: none;
+    border-bottom: 3px solid #ced4da;
+    outline: none; /* Xóa đường viền khi focus */
+    transition: border-color 0.2s ease-in-out; /* Hiệu ứng chuyển đổi màu viền */
+    font-weight: bold;
+}
+
+.form-control-custom:focus {
+    border-color: #007bff; /* Màu viền khi focus */
+}
+
+/* .table-productSale tr th {
+padding: 8px 15px !important;
+background-color: #353b48;
+
+
+}
+.table-productSale tr {
+
+    } */
+

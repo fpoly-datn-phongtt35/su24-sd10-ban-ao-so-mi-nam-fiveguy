@@ -158,55 +158,75 @@
                     </form>
                 </div>
             </div>
-            
         </div>
         <div class="col-lg-8 mb-4">
             <h5>Sản phẩm chưa áp dụng</h5>
+            <div class="search-bar">
 
-            <div class="filters d-flex justify-content-between flex-wrap align-items-center">
-                <div class="mb-3">
-                    <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchTerm" ng-change="filterProducts(0)">
-                </div>
-                <div class="mb-3">
-                    <select class="form-select" id="neckStyleFilter" ng-model="selectedCollar" ng-change="filterProducts(0)" ng-options="collar.id as collar.name for collar in collars">
+
+            <!-- <div class="filters d-flex justify-content-between flex-wrap align-items-center"> -->
+                <!-- <div class="mb-3"> -->
+                    <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchTerm" >
+                <!-- </div> -->
+                <!-- <div class="mb-3"> -->
+                    <select class="form-select" id="neckStyleFilter" ng-model="selectedCollar"  ng-options="collar.id as collar.name for collar in collars">
                         <option value="">Chọn cổ áo</option>
                     </select>
-                </div>
-                <div class="mb-3">
-                    <select class="form-select" id="sleeveStyleFilter" ng-model="selectedWrist" ng-change="filterProducts(0)" ng-options="wrist.id as wrist.name for wrist in wrists">
+                <!-- </div> -->
+                <!-- <div class="mb-3"> -->
+                    <select class="form-select" id="sleeveStyleFilter" ng-model="selectedWrist"  ng-options="wrist.id as wrist.name for wrist in wrists">
                         <option value="">Chọn cổ tay</option>
                     </select>
-                </div>
-                <div class="mb-3">
-                    <select class="form-select" id="sizeFilter" ng-model="selectedSize" ng-change="filterProducts(0)" ng-options="size.id as size.name for size in sizes">
+                <!-- </div> -->
+                <!-- <div class="mb-3"> -->
+                    <select class="form-select" id="sizeFilter" ng-model="selectedSize"  ng-options="size.id as size.name for size in sizes">
                         <option value="">Chọn kích cỡ</option>
                     </select>
-                </div>
-                <div class="mb-3">
-                    <select class="form-select" id="colorFilter" ng-model="selectedColor" ng-change="filterProducts(0)" ng-options="color.id as color.name for color in colors">
+                <!-- </div> -->
+                <!-- <div class="mb-3"> -->
+                    <select class="form-select" id="colorFilter" ng-model="selectedColor"  ng-options="color.id as color.name for color in colors">
                         <option value="">Chọn màu sắc</option>
                     </select>
-                </div>
-                <div class="mb-3">
-                    <select class="form-select" id="materialFilter" ng-model="selectedMaterial" ng-change="filterProducts(0)" ng-options="material.id as material.name for material in materials">
+                <!-- </div> -->
+                <!-- <div class="mb-3"> -->
+                    <select class="form-select" id="materialFilter" ng-model="selectedMaterial" ng-options="material.id as material.name for material in materials">
                         <option value="">Chọn chất liệu</option>
                     </select>
+                <!-- </div> -->
+
+            </div>
+
+
+            <div class="row justify-content-end">
+                <div class="col-auto d-flex align-items-center">
+                    <button class="button-submit btn btn-primary" ng-click="filterProducts(0)">
+                        <span class="material-icons align-middle">search</span> Tìm kiếm
+                    </button>
                 </div>
-                <div class="col-sm-3">
-                    <button class="btn btn-primary" ng-click="refreshDataProduct(0)">Làm mới</button>
+                <div class="col-auto d-flex align-items-center">
+                    <button class="button-submit btn btn-secondary" ng-click="refreshDataProduct(0)">
+                        <span class="material-icons align-middle">refresh</span> Làm mới
+                    </button>
                 </div>
             </div>
+
+
+                <!-- <div class="col-sm-3">
+                    <button class="btn btn-primary" ng-click="refreshDataProduct(0)">Làm mới</button>
+                </div> -->
+            <!-- </div> -->
             
             <div class="content">
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="notAppliedProductsTab">
-                        <table class="table table-striped table-product-sale">
+                        <table class="table table-striped table-product-sale table-container">
                             <thead>
                                 <tr>
                                     <th></th>
                                     <th>Mã</th>
-                                    <th>Tên</th>
                                     <th>Ảnh</th>
+
+                                    <th>Tên</th>
                                     <th>Giá</th>
                                 </tr>
                             </thead>
@@ -214,8 +234,15 @@
                                 <tr ng-repeat="product in products" style="white-space: nowrap; ">
                                     <td><input type="checkbox" ng-model="product.selected" ng-change="toggleProductSelection(product)"></td>
                                     <td>{{ product.code }}</td>
+                                    <td>
+                                        <img ng-src="{{product.path}}" class="border rounded me-3" style="width: 96px; height: 100px" alt="Product Image" />
+                                    </td>
+                                    
+                                    
                                     <td>{{ product.name }}</td>
-                                    <td>Ảnh</td>
+                                    <!-- <td>{{ product.path }}</td> -->
+                                
+
                                     <td>{{formatCurrency(product.price)  }}đ</td>
                                 </tr>
                                 
@@ -225,7 +252,45 @@
                         <button type="button" class="btn btn-success" ng-click="addAllProductSales()" ng-if="getSaleStatusFromLocal() !== '3'">Thêm tất cả sản phẩm</button>
                     </div>
                 </div>
-                <div class="row text-center">
+
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div class="d-flex align-items-center">
+                        <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
+                        <div>
+                            <input id="size" ng-model="pageSize" ng-change="filterProducts()" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required />
+                        </div>
+                    </div>
+                    
+                    <ul class="pagination">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPageRateProduct(0)">
+                                <span class="material-icons align-middle">first_page</span>
+                            </button>
+                            <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPageRateProduct(currentPage - 1)">
+                                <span class="material-icons align-middle">chevron_left</span>
+                            </button>
+                    
+                            <div class="d-flex align-items-center mx-1">
+                                <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
+                                    style="width: 40px;" ng-model="desiredPageProduct" min="1" max="{{totalPagesProduct}}"
+                                    ng-change="goToPageProduct()">
+                                <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPagesProduct}}</span>
+                            </div>
+                    
+                            <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPagesProduct - 1" ng-click="setCurrentPageRateProduct(currentPage + 1)">
+                                <span class="material-icons align-middle">chevron_right</span>
+                            </button>
+                            <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPagesProduct - 1" ng-click="setCurrentPageRateProduct(totalPagesProduct - 1)">
+                                <span class="material-icons align-middle">last_page</span>
+                            </button>
+                        </div>
+                    </ul>
+                    
+                    
+                </div>
+
+                <!-- <div class="row text-center">
                     <div class="col-md-12" ng-if="totalPages > 1">
                         <ul class="pagination">
                             <li ng-class="{disabled: currentPage === 0}">
@@ -253,59 +318,80 @@
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
+
             </div>
         </div>
         
         
     
     </div>
-    <div class="filters d-flex justify-content-between flex-wrap align-items-center">
-        <div class="mb-3">
-            <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchTerm2" ng-change="filterProductSale(0)">
-        </div>
-        <div class="mb-3">
-            <select class="form-select" id="neckStyleFilter" ng-model="selectedCollar2" ng-change="filterProductSale(0)" ng-options="collar.id as collar.name for collar in collars">
+    <!-- <div class="filters d-flex justify-content-between flex-wrap align-items-center"> -->
+        <div class="search-bar">
+
+        <!-- <div class="mb-3"> -->
+            <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchTerm2" >
+        <!-- </div>
+        <div class="mb-3"> -->
+            <select class="form-select" id="neckStyleFilter" ng-model="selectedCollar2"  ng-options="collar.id as collar.name for collar in collars">
                 <option value="">Chọn cổ áo</option>
             </select>
-        </div>
-        <div class="mb-3">
-            <select class="form-select" id="sleeveStyleFilter" ng-model="selectedWrist2" ng-change="filterProductSale(0)" ng-options="wrist.id as wrist.name for wrist in wrists">
+        <!-- </div>
+        <div class="mb-3"> -->
+            <select class="form-select" id="sleeveStyleFilter" ng-model="selectedWrist2"  ng-options="wrist.id as wrist.name for wrist in wrists">
                 <option value="">Chọn cổ tay</option>
             </select>
-        </div>
-        <div class="mb-3">
-            <select class="form-select" id="sizeFilter" ng-model="selectedSize2" ng-change="filterProductSale(0)" ng-options="size.id as size.name for size in sizes">
+        <!-- </div>
+        <div class="mb-3"> -->
+            <select class="form-select" id="sizeFilter" ng-model="selectedSize2"  ng-options="size.id as size.name for size in sizes">
                 <option value="">Chọn kích cỡ</option>
             </select>
-        </div>
-        <div class="mb-3">
-            <select class="form-select" id="colorFilter" ng-model="selectedColor2" ng-change="filterProductSale(0)" ng-options="color.id as color.name for color in colors">
+        <!-- </div>
+        <div class="mb-3"> -->
+            <select class="form-select" id="colorFilter" ng-model="selectedColor2"  ng-options="color.id as color.name for color in colors">
                 <option value="">Chọn màu sắc</option>
             </select>
-        </div>
-        <div class="mb-3">
-            <select class="form-select" id="materialFilter" ng-model="selectedMaterial2" ng-change="filterProductSale(0)" ng-options="material.id as material.name for material in materials">
+        <!-- </div> -->
+        <!-- <div class="mb-3"> -->
+            <select class="form-select" id="materialFilter" ng-model="selectedMaterial2"  ng-options="material.id as material.name for material in materials">
                 <option value="">Chọn chất liệu</option>
             </select>
+        <!-- </div> -->
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-auto d-flex align-items-center">
+            <button class="button-submit btn btn-primary" ng-click="filterProductSale(0)">
+                <span class="material-icons align-middle">search</span> Tìm kiếm
+            </button>
         </div>
-        <div class="col-sm-3">
-            <button class="btn btn-primary" ng-click="refreshDataProductSale()">Làm mới</button>
+        <div class="col-auto d-flex align-items-center">
+            <button class="button-submit btn btn-secondary" ng-click="refreshDataProductSale(0)">
+                <span class="material-icons align-middle">refresh</span> Làm mới
+            </button>
         </div>
     </div>
+
+
+
+        <!-- <div class="col-sm-3">
+            <button class="btn btn-primary" ng-click="refreshDataProductSale()">Làm mới</button>
+        </div> -->
+    <!-- </div> -->
     
           <!-- Row for "Sản phẩm đã áp dụng" -->
           <div class="row">
             <div class="col-12">
                 <div class="tab-pane fade show active" id="appliedProductsTab">
                     <h5>Sản phẩm đã áp dụng</h5>
-                    <table class="table table-striped table-product-sale">
+                    <table class=" table  table-productSale table-container">
                         <thead>
-                            <tr>
+                            <tr style="white-space: nowrap;">
                                 <th></th>
                                 <th>Mã</th>
-                                <th>Tên</th>
                                 <th>Ảnh</th>
+
+                                <th>Tên</th>
                                 <th>Giá</th>
                                 <th>Giá khuyến mãi</th>
                             </tr>
@@ -313,11 +399,14 @@
                         <tbody>
                             <tr ng-repeat="productSale in productSales" style="white-space: nowrap;">
                                 <td><input type="checkbox" ng-model="productSale.selected" ng-change="toggleProductSaleSelection(productSale)"></td>
-                                <td>{{ productSale.product.code }}</td>
-                                <td>{{ productSale.product.name }}</td>
-                                <td></td>
-                                <td>{{formatCurrency(productSale.product.price)  }}đ</td>
-                                <td>{{formatCurrency(productSale.promotionalPrice)  }}đ</td>
+                                <td>{{ productSale.code }}</td>
+                                <td>
+                                    <img ng-src="{{productSale.path}}" class="border rounded me-3" style="width: 96px; height: 100px" alt="Product Image" />
+                                </td>
+                                <td>{{ productSale.name }}</td>
+                              
+                                <td>{{formatCurrency(productSale.price)  }}đ</td>
+                                <td>{{formatCurrency(productSale.pricePromotion)  }}đ</td>
                             </tr>
                         </tbody>
                     </table>
@@ -325,7 +414,45 @@
                     <button class="btn btn-danger" ng-click="deleteAll()" ng-if="getSaleStatusFromLocal() !== '3'">Xóa tất cả</button>
                 </div>
             </div>
-            <div class="row text-center">
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="d-flex align-items-center">
+                    <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
+                    <div>
+                        <input id="size" ng-model="pageSize2" ng-change="filterProductSale()" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required />
+                    </div>
+                </div>
+                
+                <ul class="pagination">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-primary mx-1" ng-disabled="currentPage2 == 0" ng-click="setCurrentPageProductSales2(0)">
+                            <span class="material-icons align-middle">first_page</span>
+                        </button>
+                        <button class="btn btn-primary mx-1" ng-disabled="currentPage2 == 0" ng-click="setCurrentPageProductSales2(currentPage2 - 1)">
+                            <span class="material-icons align-middle">chevron_left</span>
+                        </button>
+                
+                        <div class="d-flex align-items-center mx-1">
+                            <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
+                                style="width: 40px;" ng-model="desiredPageProductSale" min="1" max="{{totalPages2}}"
+                                ng-change="goToPageProductSale()">
+                            <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages2}}</span>
+                        </div>
+                
+                        <button class="btn btn-primary mx-1" ng-disabled="currentPage2 == totalPages2 - 1" ng-click="setCurrentPageProductSales2(currentPage2 + 1)">
+                            <span class="material-icons align-middle">chevron_right</span>
+                        </button>
+                        <button class="btn btn-primary mx-1" ng-disabled="currentPage2 == totalPages2 - 1" ng-click="setCurrentPageProductSales2(totalPages2 - 1)">
+                            <span class="material-icons align-middle">last_page</span>
+                        </button>
+                    </div>
+                </ul>
+                
+                
+            </div>
+
+
+            <!-- <div class="row text-center">
                 <div class="col-md-12" ng-if="totalPages2 > 1">
                     <ul class="pagination">
                         <li ng-class="{disabled: currentPage2 === 0}">
@@ -353,7 +480,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
             
         </div>
 

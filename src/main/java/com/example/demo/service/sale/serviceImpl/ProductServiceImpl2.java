@@ -1,7 +1,9 @@
 package com.example.demo.service.sale.serviceImpl;
 
 import com.example.demo.entity.Product;
+import com.example.demo.model.response.sale.ProductDTO;
 import com.example.demo.repository.sale.ProductRepository2;
+import com.example.demo.service.sale.ImageService2;
 import com.example.demo.service.sale.ProductService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,10 @@ public class ProductServiceImpl2 implements ProductService2 {
     @Autowired
     private ProductRepository2 productRepository2;
 
+
+    @Autowired
+    private ImageService2 imageService2;
+
     @Override
     public List<Product> getProductsWithoutSaleOrExpiredPromotion() {
         Date currentDate = new Date();
@@ -32,7 +38,7 @@ public class ProductServiceImpl2 implements ProductService2 {
     }
 
     @Override
-    public Page<Product> filterProducts(Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId, String searchTerm, int page, int size) {
+    public Page<ProductDTO> filterProducts(Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId, String searchTerm, int page, int size) {
         List<Product> products = getProductsWithoutSaleOrExpiredPromotion();
 
         List<Product> filteredProducts = products.stream()
@@ -51,7 +57,10 @@ public class ProductServiceImpl2 implements ProductService2 {
         int end = Math.min((start + PageRequest.of(page, size).getPageSize()), filteredProducts.size());
         List<Product> output = filteredProducts.subList(start, end);
 
-        return new PageImpl<>(output, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")), filteredProducts.size());
-    }
+        List<ProductDTO> productDTOs = output.stream()
+                .map(product -> new ProductDTO(product.getId(),product.getCode(), product.getName(), imageService2.findImagesByProductId(product.getId()), product.getPrice()))
+                .collect(Collectors.toList());
 
+        return new PageImpl<>(productDTOs, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")), filteredProducts.size());
+    }
 }

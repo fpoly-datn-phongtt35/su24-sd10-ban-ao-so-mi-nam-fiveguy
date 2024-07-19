@@ -135,6 +135,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
                     $scope.sales = response.data.content;
                     $scope.totalPages = response.data.totalPages;
                     $scope.currentPage = page;
+                    $scope.desiredPage = page + 1;
                 }
             }, function(error) {
                 console.error('Error fetching sales:', error);
@@ -144,6 +145,17 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
     $scope.setCurrentPageSale = function(page) {
         if (page >= 0 && page < $scope.totalPages) {
             $scope.getSalesByConditions(page);
+        }
+    };
+
+    $scope.desiredPage = 1;
+    $scope.goToPage = function() {
+        var page = $scope.desiredPage - 1; // Chuyển từ 1-based index sang 0-based index
+        if (page >= 0 && page < $scope.totalPages) {
+            $scope.getSalesByConditions(page);
+        } else {
+            // Nếu trang không hợp lệ, đặt lại desiredPage về trang hiện tại
+            $scope.desiredPage = $scope.currentPage + 1;
         }
     };
     
@@ -585,7 +597,7 @@ $scope.refreshDataProductSale = function() {
 
 $scope.productSales = [];
 $scope.currentPage2 = 0;
-// $scope.pageSize2 = 10;
+$scope.pageSize2 = 10;
 $scope.totalPages2 = 0;
 $scope.searchTerm2 = null;
 
@@ -632,8 +644,10 @@ $scope.filterProductSale = function(page) {
                 return $scope.refreshDataProductSale(); // Recursive call to get the first page if the current page is empty
             } else {
                 $scope.productSales = response.data.content;
+                console.log($scope.productSales)
                 $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = page;
+                $scope.desiredPageProductSale = page + 1;
 
                 var selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
 
@@ -660,6 +674,19 @@ $scope.setCurrentPageProductSales2 = function(page) {
         $scope.filterProductSale(page);
     }
 };
+
+$scope.desiredPageProductSale = 1;
+$scope.goToPageProductSale = function() {
+    var page = $scope.desiredPageProductSale - 1; // Chuyển từ 1-based index sang 0-based index
+    if (page >= 0 && page < $scope.desiredPageProductSale) {
+        $scope.filterProductSale(page);
+    } else {
+        // Nếu trang không hợp lệ, đặt lại desiredPage về trang hiện tại
+        $scope.desiredPageProductSale = $scope.currentPage + 1;
+    }
+};
+
+
 
 // Ensure selected product sales are saved to localStorage when toggled
 $scope.toggleProductSelection = function(productSale) {
@@ -734,6 +761,21 @@ $scope.deleteAll = function() {
     }).catch(function(error) {
         $scope.showErrorNotification("Xóa sản phẩm thất bại");
         console.error('Error fetching product sales:', error);
+    });
+};
+
+
+
+$scope.getFirstImagePath = function(productId) {
+    $http.get('http://localhost:8080/api/admin/image/firstImagePath', {
+        params: {
+            productId: productId
+        }
+    }).then(function(response) {
+        return response.data;
+    }, function(error) {
+        // Handle error if needed
+        console.error('Error fetching first image path:', error);
     });
 };
 
@@ -883,23 +925,6 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/infoProduct';
     };
 
         // Thêm tất cả sản phẩm vào đợt giảm giá
-// $scope.addAllProductSales = function() {
-//     var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.idSale;
-//     $http.post(apiUrl)
-//         .then(function(response) {
-//             $scope.productSales = [];
-//             response.data.forEach(function(newProductSale) {
-//                 $scope.productSales.push(newProductSale);
-//             });
-//             $scope.filterProducts(0);
-//             $scope.filterProductSale(0);
-//             $scope.showSuccessNotification("Thêm sản phẩm thành công")
-//         })
-//         .catch(function(error) {
-//             $scope.showErrorNotification("Thêm sản phẩm thất bại")
-//             console.error('Error adding all product sales:', error);
-//         });
-// };
 
 $scope.fetchAllProducts = function() {
     var allProducts = [];
@@ -942,7 +967,9 @@ $scope.fetchAllProductSales = function() {
 
 
 $scope.addAllProductSales = function() {
-    // Call the fetchAllProducts function to get all products across multiple pages
+
+
+
     $scope.fetchAllProducts().then(function(allProducts) {
         if (allProducts && allProducts.length > 0) {
         var sale = $scope.saleDetail;
@@ -1050,8 +1077,9 @@ $scope.addAllProductSales = function() {
                 } else {
                     $scope.products = response.data.content;
                     console.log($scope.products)
-                    $scope.totalPages = response.data.totalPages;
+                    $scope.totalPagesProduct = response.data.totalPages;
                     $scope.currentPage = page;
+                    $scope.desiredPageProduct = page + 1;
                     let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
     
                     $scope.products.forEach(function(product) {
@@ -1063,7 +1091,7 @@ $scope.addAllProductSales = function() {
     
                     return {
                         products: $scope.products,
-                        totalPages: $scope.totalPages
+                        totalPages: $scope.totalPagesProduct
                     }; // Return the products and totalPages to the caller
                 }
             }).catch(function(error) {
@@ -1076,10 +1104,24 @@ $scope.addAllProductSales = function() {
 
 
     $scope.setCurrentPageRateProduct = function(page) {
-        if (page >= 0 && page < $scope.totalPages) {
+        if (page >= 0 && page < $scope.totalPagesProduct) {
             $scope.filterProducts(page);
         }
     };
+
+
+    $scope.desiredPageProduct = 1;
+    $scope.goToPageProduct = function() {
+        var page = $scope.desiredPageProduct - 1; // Chuyển từ 1-based index sang 0-based index
+        if (page >= 0 && page < $scope.totalPagesProduct) {
+            $scope.filterProducts(page);
+        } else {
+            // Nếu trang không hợp lệ, đặt lại desiredPage về trang hiện tại
+            $scope.desiredPageProduct = $scope.currentPage + 1;
+        }
+    };
+    
+
 
 
     // $scope.filterProducts(0);
