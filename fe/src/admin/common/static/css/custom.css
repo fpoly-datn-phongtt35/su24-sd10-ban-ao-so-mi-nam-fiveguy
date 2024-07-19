@@ -537,9 +537,9 @@ background-color:rgba(0,0,0,0.09);
 			width:60px;
 		}
 		
-		table.table tr th:last-child{
+		/* table.table tr th:last-child{
 			width:100px;
-		}
+		} */
 		
 	   table.table-stripped tbody tr:nth-of-type(odd){
 		   background-color:#fcfcfc;
