@@ -55,10 +55,15 @@ public class ProductServiceTHImpl implements ProductServiceTH {
                 productDetail.setProduct(product);
                 productDetail.setSize(dt.getSize());
                 productDetail.setColor(dt.getColor());
+                if(dt.getQuantity() == 0) {
+                    productDetail.setStatus(0);
+                } else {
+                    productDetail.setStatus(dt.getStatus());
+                }
                 productDetail.setQuantity(dt.getQuantity());
                 productDetail.setCreatedAt(new Date());
                 productDetail.setBarcode(dt.getBarcode());
-                productDetail.setStatus(1);
+
                 productDetails.add(productDetail);
             }
 
@@ -69,7 +74,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
                 image.setName(img.getName());
                 image.setPath(img.getPath());
                 image.setCreatedAt(new Date());
-                image.setStatus(img.getStatus());
+                image.setStatus(1);
                 image.setProduct(saveProduct);
                 image.setColor(img.getColor());
                 images.add(image);
@@ -107,6 +112,11 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             if (productRequestTH.getProductDetails().size() > 0) {
                 product.getProductDetails().clear();
                 productRequestTH.getProductDetails().forEach(dt -> {
+                    if(dt.getQuantity() == 0) {
+                        dt.setStatus(0);
+                    } else {
+                        dt.setStatus(dt.getStatus());
+                    }
                     dt.setProduct(product);
                     product.getProductDetails().add(dt);
                 });

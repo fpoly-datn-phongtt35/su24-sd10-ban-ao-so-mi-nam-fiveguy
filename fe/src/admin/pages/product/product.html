@@ -235,7 +235,7 @@
                                                         </div>
                                                 </div>
                                             </div>
-                                            <div ng-repeat="color in colorSelected" class="row mt-2 p-0">
+                                            <div ng-repeat="color in colorSelected" ng-if="color.productDetails.length > 0" class="row mt-2 p-0">
                                                 <div class="table-title position-relative d-flex align-items-center">
                                                     <input type="color" class="form-control form-control-color" ng-value="color.colorCode" disabled />
                                                     <h6 class="m-0 ms-3">Danh sách sản phẩm {{color.name}}
@@ -273,7 +273,7 @@
                                                   </div>
                                                     <div ng-repeat="item in color.images" class="image_container position-relative">
                                                         <img ng-src="{{item.path}}" alt="Image"> 
-                                                            <span class="position-absolute" ng-click="deleteImg(color, item)">&times;</span>
+                                                            <span class="position-absolute close" ng-click="deleteImg(color, item)">&times;</span>
                                                      </div>
                                             </div>
                                         </div>
@@ -423,6 +423,11 @@
                                                     <input type="color" class="form-control form-control-color" ng-value="color.colorCode" disabled />
                                                     <h6 class="m-0 ms-3">Danh sách sản phẩm {{color.name}}
                                                     </h6>
+                                                    <button type="button" class="btn btn-outline-secondary ms-auto" 
+                                                        ng-if="hasMissingSizes(color)"
+                                                        ng-click="addMissingSizes(color)">
+                                                        <span class="material-icons m-0">cached</span>
+                                                    </button>
                                                 </div>
                                                 <table class="table table-sm">
                                                     <thead>
@@ -463,10 +468,13 @@
                                                   </div>
                                                   <div ng-repeat="item in color.images" class="image_container position-relative">
                                                         <img ng-src="{{item.path}}" alt="Image" ng-class="{'overlay': item.status === 0}">
-                                                        <span class="position-absolute" ng-click="toggleImgStatus(color, item)">
+                                                        <span class="position-absolute close" ng-click="toggleImgStatus(color, item)">
                                                             <i class="material-icons" style="font-size: 18px; font-weight: bold;"> {{item.status === 0 ? 'settings_backup_restore ' : 'close'}}</i>
                                                         </span>
-                                                </div>
+                                                        <span ng-if="!item.isNew" class="position-absolute cached" ng-click="reloadImage(color, item)">
+                                                            <i class="material-icons" style="font-size: 18px; font-weight: bold;">cached</i>
+                                                        </span>
+                                                  </div>
                                             </div>
                                         </div>
                                     </div>
