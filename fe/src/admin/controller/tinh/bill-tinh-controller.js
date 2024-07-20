@@ -79,14 +79,25 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
         $scope.productSelected = $scope.selectedProductDetails.length > 0;
     };
 
-    $scope.validateQuantity = function (pdIn) {
-        $scope.filterProductDetall.forEach(function (pd) {
-            if (pd === pdIn) {
-                if (pdIn.inputQuantity > pd.quantity) {
-                    alert('Hết hàng');
-                    pdIn.inputQuantity = pd.quantity;
-                }
-                pdIn.remainingQuantity = pd.quantity - pdIn.inputQuantity;
+    $scope.validateQuantity = function (employee) {
+        if (employee.inputQuantity > employee.quantity) {
+            alert('Hết hàng');
+            employee.inputQuantity = employee.quantity;
+        }
+        employee.remainingQuantity = employee.quantity - employee.inputQuantity;
+    };
+
+    // Hàm để gọi validateQuantity ngay khi giá trị được thiết lập
+    $scope.initializeEmployee = function (employee) {
+        // Gọi validateQuantity ngay khi khởi tạo
+        $scope.validateQuantity(employee);
+
+        // Sử dụng $watch để theo dõi sự thay đổi của inputQuantity và gọi lại validateQuantity khi thay đổi
+        $scope.$watch(function () {
+            return employee.inputQuantity;
+        }, function (newVal, oldVal) {
+            if (newVal !== oldVal) {
+                $scope.validateQuantity(employee);
             }
         });
     };
@@ -96,28 +107,34 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
             $scope.product = response.data;
         });
     };
+    // $scope.validateQuantity(1);
 
     $scope.filterProductDetall = [];
     $scope.totalPages = 0;
     $scope.currentPage = 0;
     $scope.desiredPage = 1;
+    $scope.size = 5
     $scope.filters = {
         name: null,
         price: null,
     };
 
     $scope.getProductDetall = function (pageNumber) {
-        let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+        let params = angular.extend({ pageNumber: pageNumber, size: $scope.size }, $scope.filters);
         $http.get("http://localhost:8080/api/admin/product-tinh/page", { params: params })
             .then(function (response) {
                 $scope.filterProductDetall = response.data.content;
+
                 $scope.filterProductDetall.forEach(function (productDetail) {
                     productDetail.inputQuantity = 1;
                     productDetail.remainingQuantity = productDetail.quantity;
+                    // Gọi initializeEmployee ngay sau khi khởi tạo giá trị cho từng productDetail
+                    $scope.initializeEmployee(productDetail);
                 });
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage = pageNumber;
                 $scope.desiredPage = pageNumber + 1;
+
             });
     };
 
@@ -136,28 +153,48 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
 
     $scope.getProductDetall(0);
 
+    $scope.resetFilters = function () {
+        $scope.filters = {
+            name: null,
+            price: null,
+        };
+        $scope.getProductDetall(0);
+    };
     //============================End ProductDetail================================================
     //============================Bill============================================================
 
     const apiBill = "http://localhost:8080/api/admin/bill-tinh";
 
-    $scope.getAllBill = function () {
-        $http.get(apiBill).then(function (response) {
-            $scope.bill = response.data;
-        });
-    };
-    $scope.getAllBill();
-
     $scope.createBill = function () {
         let databill = {
-            createAt: new Date,
+            createAt: new Date(),
             status: 1,
         };
+
         $http.post(apiBill + "/save", databill).then(function (response) {
-            // $scope.bills.unshift(response.data);
+            let createdBillId = response.data.id;
+            console.log(response.data);
+            console.log("Bill created with ID:", createdBillId);
+
+            // Chuẩn bị dữ liệu cho BillHistory
+            let dataCreateBillHistory = {
+                bill: createdBillId
+            };
+
+            // Thêm BillHistory
+            $http.post(apiBillHistoryTinh + "/save", dataCreateBillHistory).then(function (response1) {
+                console.log("Bill history created:", JSON.stringify(response1.data, null, 2));
+            }).catch(function (error) {
+                console.error("Error creating bill history:", error);
+            });
+
             $scope.getAllBill();
+        }).catch(function (error) {
+            console.error("Error creating bill:", error);
         });
     };
+
+
     // $scope.createBill();
     $scope.editBill = function (employee) {
         $scope.selectedBill = angular.copy(employee);
@@ -176,6 +213,49 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
         var seconds = String(date.getSeconds()).padStart(2, '0');
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     };
+
+    $scope.getBill = function () {
+        $http.get(apiBill).then(function (response) {
+            $scope.bill = response.data;
+            console.log(response.data);
+        });
+    };
+
+    $scope.getBill = [];
+    $scope.filtersBill = {
+        // name: null,
+        // price: null,
+    };
+
+    $scope.getAllBill = function (pageNumber) {
+        let params = angular.extend({ pageNumber: pageNumber, size: $scope.size }, $scope.filtersBill);
+        $http
+            .get("http://localhost:8080/api/admin/bill-tinh/page", {
+                params: params,
+            })
+            .then(function (response) {
+                $scope.getBill = response.data.content;
+                $scope.totalPages = response.data.totalPages;
+                $scope.currentPage = pageNumber;
+                $scope.desiredPage = pageNumber + 1;
+            });
+    };
+
+    $scope.applyFiltersBill = function () {
+        $scope.getAllBill(0);
+    };
+
+    $scope.goToPageBill = function () {
+        let pageNumber = $scope.desiredPage - 1;
+        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+            $scope.getAllBill(pageNumber);
+        } else {
+            $scope.desiredPage = $scope.currentPage + 1;
+        }
+    };
+
+    $scope.getAllBill(0);
+
     //====================End Bill============================================
     //====================BillDetail============================================
 
@@ -193,9 +273,7 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
         }
 
         $scope.selectedProductDetails[$scope.idBill.id].forEach(productDetail => {
-            console.log("ID productDetail: " + productDetail.id); // Sử dụng id của productDetail từ cơ sở dữ liệu
-            console.log("ID bill: " + $scope.idBill.id);
-
+            console.log(productDetail.id);
             let payload = {
                 bill: { id: $scope.idBill.id },
                 productDetail: { id: productDetail.id }, // Sử dụng id của productDetail
@@ -204,14 +282,44 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
                 promotionalPrice: productDetail.promotionalPrice || 0, // Giá khuyến mãi nếu có
                 status: 1 // Trạng thái
             };
+            let updatedQuantity = productDetail.remainingQuantity - productDetail.quantity;
+            console.log(updatedQuantity);
+            let payloadProductDetail = {
+                quantity: updatedQuantity,
+                barcode: productDetail.barcode,
+                createdAt: productDetail.createdAt,
+                updatedAt: productDetail.updateddAt,
+                createdBy: productDetail.createdBy,
+                updatedBy: productDetail.updatedBy,
+                product: productDetail.product,
+                color: productDetail.color,
+                size: productDetail.size,
+                status: 1,
+            };
 
             $http.post(apiBillDetail + "/save", payload).then(function (response) {
                 console.log('Bill detail saved successfully', response.data);
+
+                // Sau khi lưu chi tiết hóa đơn thành công, cập nhật chi tiết sản phẩm
+                $http.put("http://localhost:8080/api/admin/product-tinh" + "/update-quantity/" + `${productDetail.id}`, payloadProductDetail).then(function (response) {
+                    console.log('ProductDetail update successfully', response.data);
+                }).catch(function (error) {
+                    console.error('Error updating product detail', error);
+                });
+
+                $http.put("http://localhost:8080/api/admin/bill-tinh/update-bill-status-thanh-cong/" + `${$scope.idBill.id}`).then(function (response) {
+                    console.log('bill update successfully', response.data);
+                    $scope.getAllBill();
+                }).catch(function (error) {
+                    console.error('Error updating bill', error);
+                });
             }).catch(function (error) {
                 console.error('Error saving bill detail', error);
             });
+
         });
     };
+
 
     //====================End BillDetail============================================
 

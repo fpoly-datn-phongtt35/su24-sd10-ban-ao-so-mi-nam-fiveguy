@@ -105,6 +105,46 @@
         </li>
       </ul>
     </div> -->
+        <!-------sidebar--design- close----------->
+        <!-------page-content start----------->
+
+
+        <li class="dropdown">
+          <a data-bs-toggle="collapse" href="#voucher" role="button" aria-expanded="false" aria-controls="voucher"
+            class="dropdown-toggle">
+            <i class="material-icons">monetization_on</i>Giảm Giá
+          </a>
+          <ul class="collapse list-unstyled menu" id="voucher">
+            <li><a href="#/admin/sale">Đợt Giảm Giá</a></li>
+            <li><a href="#/admin/voucher">Phiếu Giảm Giá</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a data-bs-toggle="collapse" href="#bill" role="button" aria-expanded="false" aria-controls="bill"
+            class="dropdown-toggle">
+            <i class="material-icons">receipt</i>Quản lý đơn hàng
+          </a>
+          <ul class="collapse list-unstyled menu" id="bill">
+            <li><a href="#">Pages 1</a></li>
+            <li><a href="#">Pages 2</a></li>
+            <li><a href="#/admin/bil-tinh/create">Pages 3</a></li>
+            <li><a href="#">Hóa đơn</a></li>
+            <!-- Tịnh -->
+            <li><a href="#/admin/bil-history-tinh">Lịch sử </a></li>
+            <!-- end tịnh -->
+
+          </ul>
+        </li>
+        <li class="">
+          <a href="#/admin/employee" class=""><i class="material-icons">groups</i>Nhân Viên
+          </a>
+        </li>
+        <li class="">
+          <a href="#/admin/customer" class=""><i class="material-icons">person</i>Khách Hàng
+          </a>
+        </li>
+      </ul>
+    </div>
     <!-------sidebar--design- close----------->
     <!-------page-content start----------->
 
@@ -334,6 +374,7 @@
   <!-- Tịnh -->
   <script src="/src/admin/controller/tinh/employee-controller.js"></script>
   <script src="/src/admin/controller/tinh/bill-tinh-controller.js"></script>
+  <script src="/src/admin/controller/tinh/bill-history-tinh.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.2.0/exceljs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="./pages/employee/employee.css">

@@ -23,6 +23,11 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/bill-tinh/bill-tinh-create.html",
       controller: "tinh-bill-controller",
     })
+    .when("/admin/bil-history-tinh", {
+      templateUrl: "pages/bill-tinh/bill-history-tinh.html",
+      controller: "tinh-bill-history-controller",
+    })
+    // end Tinh
     // <!-- Thưởng -->
     .when("/admin/category", {
       templateUrl: "pages/product/category.html",
