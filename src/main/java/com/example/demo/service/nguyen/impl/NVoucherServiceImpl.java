@@ -4,6 +4,7 @@ import com.example.demo.entity.*;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
 import com.example.demo.repository.nguyen.*;
+import com.example.demo.service.nguyen.EmailService;
 import com.example.demo.service.nguyen.NVoucherService;
 //import org.hibernate.query.Page;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +41,13 @@ public class NVoucherServiceImpl implements NVoucherService {
     NCustomerTypeVoucherRepository customerTypeVoucherRepository;
 
     @Autowired
+    NCustomerRepository customerRepository;
+
+    @Autowired
     private com.example.demo.repository.nguyen.bill.NBillRepository billRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public List<Voucher> getAllVoucher() {
@@ -96,7 +105,7 @@ public class NVoucherServiceImpl implements NVoucherService {
 
     private Integer checkDate(Date startDate, Date endDate) {
         Date currentDate = new Date();
-        if(startDate == null || endDate == null) return null;
+        if (startDate == null || endDate == null) return null;
         if (currentDate.after(startDate) && currentDate.before(endDate)) return 1;
         if (currentDate.after(endDate)) return 2;
         if (currentDate.before(startDate)) return 3;
@@ -148,11 +157,12 @@ public class NVoucherServiceImpl implements NVoucherService {
 
     @Override
     public Voucher createVoucher(Voucher voucher, List<CustomerType> customerTypeList) {
-        if (voucher.getCode() == null) {
+        if (voucher.getCode() == null || voucher.getCode() == "" ||
+                voucher.getCode().trim().isBlank() || voucher.getCode().trim().isEmpty()) {
             String uniqueCode = generateVoucherCode(voucher.getValue(), voucher.getDiscountType(),
                     voucher.getApplyfor());
             voucher.setCode(uniqueCode);
-        }else{
+        } else {
             voucher.setCode(voucher.getCode().trim().toUpperCase());
         }
         voucher.setName(voucher.getName().trim());
@@ -176,6 +186,19 @@ public class NVoucherServiceImpl implements NVoucherService {
             customerTypeVoucher.setStatus(1);
 
             customerTypeVoucherRepository.save(customerTypeVoucher);
+
+            if (voucher.getApplyfor() == 1) {
+                List<Customer> customers = customerRepository
+                        .findByCustomerTypeId(customerType.getId());
+                for (Customer customer : customers) {
+                    if (customer.getAccount() != null && customer.getAccount().getEmail() != null) {
+                        String email = customer.getAccount().getEmail();
+                        String subject = "Phiếu Giảm Giá Mới: " + returnVoucher.getName();
+                        String htmlContent = buildVoucherEmailContent(customer, returnVoucher);
+                        emailService.sendHtmlMessage(email, subject, htmlContent);
+                    }
+                }
+            }
         }
 
         return returnVoucher;
@@ -308,5 +331,51 @@ public class NVoucherServiceImpl implements NVoucherService {
         }
 
         return finalCode;
+    }
+
+    private String buildVoucherEmailContent(Customer customer, Voucher voucher) {
+        String discountType = voucher.getDiscountType() == 1 ? "%" : "đồng";
+        String valueWithType =
+                voucher.getDiscountType() == 1 ? (voucher.getValue() + " " +
+                        discountType) : formatCurrency(voucher.getValue());
+        String maxReductionValue = formatCurrency(voucher.getMaximumReductionValue());
+        String minTotalAmount = formatCurrency(voucher.getMinimumTotalAmount());
+        String startDate = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy")
+                .format(voucher.getStartDate());
+        String endDate = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy").format(voucher.getEndDate());
+
+        String htmlContent = "<html>" +
+                "<body style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;'>" +
+                "<div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);'>" +
+                "<h2 style='color: #4CAF50; text-align: center; font-size: 24px;'>Kính chào " +
+                customer.getFullName() + ",</h2>" +
+                "<p style='text-align: center; font-size: 18px;'>Chúng tôi rất vui mừng được gửi đến bạn một phiếu giảm giá mới!</p>" +
+                "<div style='border: 2px dashed #4CAF50; padding: 20px; margin: 20px 0; text-align: center;'>" +
+                "<h1 style='color: #4CAF50; margin: 0; font-size: 36px;'>" + voucher.getCode() +
+                "</h1>" +
+                "<h2 style='color: #000; margin: 10px 0; font-size: 30px;'> Giảm " + valueWithType +
+                "</h2>" +
+                "</div>" +
+                "<div style='text-align: center;'>" +
+                (voucher.getDiscountType() == 1 ?
+                        "<p style='color: #555; font-size: 20px; margin: 10px 0;'>Giảm tối đa: " +
+                                maxReductionValue + "</p>" : "") +
+                "<p style='color: #555; font-size: 20px; margin: 10px 0;'>Cho đơn hàng từ: " +
+                minTotalAmount + "</p>" +
+                "<p style='color: #555; font-size: 20px; margin: 10px 0;'>Hiệu lực từ: " +
+                startDate + " đến " + endDate + "</p>" +
+                "</div>" +
+                "<p style='text-align: center; font-size: 18px;'>Đừng bỏ lỡ cơ hội tiết kiệm này!</p>" +
+                "<p style='text-align: center; font-size: 18px;'>Trân trọng,</p>" +
+                "<p style='text-align: center; color: #4CAF50; font-size: 18px;'>Công ty của bạn</p>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+        return htmlContent;
+    }
+
+    private String formatCurrency(double amount) {
+        DecimalFormat formatter = new DecimalFormat("#,###");
+        return formatter.format(amount) + " đồng";
     }
 }

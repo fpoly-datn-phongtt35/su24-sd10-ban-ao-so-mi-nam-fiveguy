@@ -26,6 +26,10 @@
 	<!-- AngularJS -->
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+
+	<!-- toastr -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+
 	<!-- End AngularJS -->
 
 	<!-- Libabary Alert -->
@@ -33,7 +37,7 @@
 
 
 	<!-- Thư viện muốn thêm riêng phần của mn  -->
-	 
+
 	<!-- Hiếu -->
 
 	<!-- Thưởng -->
@@ -105,8 +109,8 @@
     <!-------page-content start----------->
 
 				<li class="dropdown">
-					<a data-bs-toggle="collapse" href="#product" role="button" aria-expanded="false" aria-controls="product"
-						class="dropdown-toggle">
+					<a data-bs-toggle="collapse" href="#product" role="button" aria-expanded="false"
+						aria-controls="product" class="dropdown-toggle">
 						<i class="material-icons">style</i>Quản Lý Sản Phẩm
 					</a>
 					<ul class="collapse list-unstyled menu" id="product">
@@ -124,8 +128,8 @@
 				</li>
 
 				<li class="dropdown">
-					<a data-bs-toggle="collapse" href="#voucher" role="button" aria-expanded="false" aria-controls="voucher"
-						class="dropdown-toggle">
+					<a data-bs-toggle="collapse" href="#voucher" role="button" aria-expanded="false"
+						aria-controls="voucher" class="dropdown-toggle">
 						<i class="material-icons">monetization_on</i>Giảm Giá
 					</a>
 					<ul class="collapse list-unstyled menu" id="voucher">
@@ -292,6 +296,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+
   <script type="text/javascript">
     $(document).ready(function () {
       $(".xp-menubar").on("click", function () {
@@ -307,15 +312,14 @@
 
 	<script src="common/js/toastr.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+
 	<script type="text/javascript">
-		
     $(document).ready(function () {
     $(".xp-menubar").on("click", function () {
         $("#sidebar").toggleClass("active");
         $("#content").toggleClass("active");
     });
-});
-
+	});
     </script>
   <!-- App js -->
   <script src="router_admin.js"></script>
@@ -360,14 +364,23 @@
 	<script src="/src/admin/controller/nguyen/voucher-controller.js"></script>
 	<script src="/src/admin/controller/nguyen/test-voucher.js"></script>
 	<script src="/src/admin/controller/nguyen/voucher2-controller.js"></script>
-	<script src="/src/admin/controller/nguyen/voucher-create-controller.js"></script>
+	<script src="/src/admin/controller/nguyen/voucher-chart-controller.js"></script>
 	<script src="/src/admin/controller/nguyen/testbill-controller.js"></script>
+	
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.5.2/multiple-select.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.5.2/multiple-select.min.css">
+
 
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-	
+
 	<script src="/src/admin/controller/nguyen/bill-controller.js"></script>
 	<script src="/src/admin/controller/nguyen/bill-detail-controller.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js">
+
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+
 	<!-- noUiSlider JS -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/wnumb/1.1.0/wNumb.min.js"></script>
