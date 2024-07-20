@@ -52,8 +52,10 @@
                             <td scope="col-1" class="css-text-overfolow">{{employee.code}}</td>
                             <td scope="col-1" class="css-text-overfolow">{{employee.employee.fullName}}</td>
                             <td scope="col-1" class="css-text-overfolow">{{formatDateTime(employee.createdAt)}}</td>
-                            <td scope="col-1" class="css-text-overfolow">{{employee.customer.customerType.name}}</td>
-                            <td scope="col-1" class="css-text-overfolow">{{employee.typeBill == 1 ? 'Bán onl' : 'Bán Off'}}</td>
+                            <td scope="col-1" class="css-text-overfolow">{{employee.customer.fullName == null ?
+                                'Khach lẻ' : employee.customer.fullName}}</td>
+                            <td scope="col-1" class="css-text-overfolow">{{employee.typeBill == 1 ? 'Bán onl' : 'Bán
+                                Off'}}</td>
                             <td class="col-2" ng-switch="employee.status">
                                 <span ng-switch-when="1">
                                     <div class="badge bg-success text-wrap">

@@ -1,7 +1,10 @@
 package com.example.demo.restController.tinh;
 
 import com.example.demo.entity.AuditLogs;
+import com.example.demo.entity.BillHistory;
 import com.example.demo.entity.Employee;
+import com.example.demo.repository.tinh.AuditLogRepositoryTinh;
+import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.tinh.AuditLogServiceTinh;
 import com.example.demo.untility.tinh.PaginationResponse;
 import org.apache.poi.ss.usermodel.*;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
@@ -32,6 +37,12 @@ public class AuditLogRestControllerTinh {
     @Autowired
     AuditLogServiceTinh auditLogServiceTinh;
 
+    @Autowired
+    AuditLogRepositoryTinh auditLogRepositoryTinh;
+
+    @Autowired
+    SCEmployeeService scEmployeeService;
+
     @GetMapping("")
     public ResponseEntity<List<AuditLogs>> getAll() {
         List<AuditLogs> customers = auditLogServiceTinh.getAll();
@@ -39,16 +50,25 @@ public class AuditLogRestControllerTinh {
     }
 
 
-//
-//    @PostMapping("/save")
-//    public ResponseEntity<?> create(@RequestBody AuditLogs auditLogs) {
-//        try {
-//            AuditLogs createdAuditlog = auditLogServiceTinh.create(auditLogs);
-//            return ResponseEntity.status(HttpStatus.CREATED).body(createdAuditlog);
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
+    @PostMapping(value = "/save", produces = "application/json")
+    public AuditLogs create(@RequestHeader("Authorization")String token, @RequestBody AuditLogs bill){
+        AuditLogs bill1 = new AuditLogs();
+        Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
+
+//        bill1.setEmpCode(employee.get().getCode());
+//        bill1.setImplementer(employee.get().getFullName());
+//        bill1.setActionType("Tạo hoa đơn");
+//        bill1.setDetailedAction("Nhân viên " + employee.get().getFullName() + " dã tạo hóa đơn ");
+        bill1.setEmpCode(bill.getEmpCode());
+        bill1.setImplementer(bill.getImplementer());
+        bill1.setActionType(bill.getActionType());
+        bill1.setDetailedAction(bill.getDetailedAction());
+        bill1.setTime(new Date());
+        bill1.setStatus(1);
+
+        return auditLogRepositoryTinh.save(bill1);
+
+    }
 
     //Xuất file excel lich sử nhân viên
     @GetMapping("/exce-lich-su")
@@ -176,11 +196,12 @@ public class AuditLogRestControllerTinh {
             @RequestParam(required = false) Date time,
             @RequestParam(required = false) String detailAction,
             @RequestParam(required = false) Integer status,
-//            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
-//            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber, size);
+            @RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, size,sort);
         Page<AuditLogs> page = auditLogServiceTinh.findAuditLog(implementer, code, actionType, time, detailAction, status, pageable);
         return new PaginationResponse<>(page);
     }
