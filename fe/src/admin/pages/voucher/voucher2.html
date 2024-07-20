@@ -770,7 +770,41 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label>Giá trị</label>
+                                            <!-- <input type="number" id="updateValue" name="updateValue"
+                                                class="form-control" ng-model="formUpdateVoucher.value"
+                                                ng-required="true"> -->
+                                            <div class="input-group">
+                                                <input type="number" id="updateValue" name="updateValue"
+                                                    class="form-control"
+                                                    min="{{formUpdateVoucher.discountType == 1 ? 1 : 1000}}"
+                                                    ng-change="validateUpdateValue(formUpdateVoucher.discountType); checkValidateAllValueUpdate()"
+                                                    oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                                    ng-model="formUpdateVoucher.value" ng-required="true"
+                                                    ng-class="{'is-invalid': (formEditVoucher.updateValue.$touched || formAddVoucher.$submitted) && (formEditVoucher.updateName.$invalid)}">
+                                                <span ng-if="formUpdateVoucher.discountType == 1"
+                                                    class="input-group-text" id="basic-addonUp2">%</span>
+                                                <span ng-if="formUpdateVoucher.discountType == 2"
+                                                    class="input-group-text" id="basic-addonUp3">vnđ</span>
+                                            </div>
+                                            <span
+                                                ng-show="formEditVoucher.$submitted || formEditVoucher.updateValue.$touched">
+                                                <div ng-show="formEditVoucher.updateValue.$error.required"
+                                                    class="error-message text-danger form-text">
+                                                    Giá trị không được để trống</div>
+                                                <div class="error-message text-danger form-text"
+                                                    ng-show="formEditVoucher.updateValue.$error.min && formUpdateVoucher.discountType == 1">
+                                                    Giá trị phải lớn hơn 1
+                                                </div>
+                                                <div class="error-message text-danger form-text"
+                                                    ng-show="formEditVoucher.updateValue.$error.min && formUpdateVoucher.discountType !== 1">
+                                                    Giá trị phải lớn hơn 1.000 đ
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row mb-1">
                                     <div class="col-6">
@@ -1254,10 +1288,5 @@
         </div>
     </div>
     <!-- END STATIC VOUCHER -->
-    <select data-placeholder="Choose a Country..." id="customerTypeSelect" class="chosen-select" multiple tabindex="4">
-        <option value=""></option>
-        <option value="United States">United States</option>
-        <option value="United Kingdom">United Kingdom</option>
-    </select>
 
 </div>
