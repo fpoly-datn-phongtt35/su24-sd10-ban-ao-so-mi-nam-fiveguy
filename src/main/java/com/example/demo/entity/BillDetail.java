@@ -33,6 +33,9 @@ public class BillDetail {
     @Column(name = "PromotionalPrice", nullable = false)
     private BigDecimal promotionalPrice;
 
+    @Column(name = "Status")
+    private int status;
+
     @ManyToOne
     @JoinColumn(name = "IdBill", referencedColumnName = "Id")
     private Bill bill;
@@ -41,6 +44,7 @@ public class BillDetail {
     @JoinColumn(name = "IdProductDetail", referencedColumnName = "Id")
     private ProductDetail productDetail;
 
-    @Column(name = "Status")
-    private int status;
+    @OneToOne(mappedBy = "billDetail", cascade = CascadeType.ALL)
+    private ReturnOrder returnOrder;
+
 }
