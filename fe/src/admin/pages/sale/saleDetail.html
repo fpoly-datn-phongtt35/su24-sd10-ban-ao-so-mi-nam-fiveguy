@@ -1,5 +1,8 @@
 <!-- Main content -->
 <div class="container-fluid px-4" ng-init="clearSelectedProducts(); clearSelectedProductSales(); refreshDataProductSale(); refreshDataProduct()">
+
+	 <link rel="stylesheet" href="/src/admin/pages/sale/sale.css">
+
     <!-- <div class="row" style="margin-bottom: 20px;">
         <div class="col-12">
             <h2 class="text-center mb-4">BÁO CÁO HIỆU QUẢ CHƯƠNG TRÌNH GIẢM GIÁ</h2>
@@ -79,7 +82,7 @@
                             <div class="col-md-6">
                                 <div class="form-group" ng-class="{'has-error': (saleFormUpdate.discountType.$touched || saleFormUpdate.$submitted) && saleFormUpdate.discountType.$invalid}">
                                     <label for="discountType" class="form-label">Loại giảm giá</label>
-                                    <select class="form-control" id="discountType" name="discountType" ng-model="saleDetail.discountType" ng-change="updateDiscountType()" required>
+                                    <select class="form-control" id="discountType" name="discountType" ng-model="saleDetail.discountType" ng-change="updateDiscountTypeUpdate()" required>
                                         <option value="1" ng-selected="saleDetail.discountType == 1">Giảm giá cố định</option>
                                         <option value="2" ng-selected="saleDetail.discountType == 2">Giảm giá phần trăm</option>
                                     </select>
@@ -105,16 +108,16 @@
                             
                         </div>
                         <div class="row">
-                        
                             <div class="col-md-6">
                                 <div class="form-group" ng-class="{'has-error': (saleFormUpdate.maximumDiscountAmount.$touched || saleFormUpdate.$submitted) && saleFormUpdate.maximumDiscountAmount.$invalid}">
                                     <label for="maximumDiscountAmount" class="form-label">Số tiền giảm giá tối đa</label>
-                                    <input type="number" class="form-control" id="maximumDiscountAmount" name="maximumDiscountAmount" ng-model="saleDetail.maximumDiscountAmount" ng-required="saleDetail.discountType === '2'" ng-disabled="saleDetail.discountType === '1'">
+                                    <input type="number" class="form-control" id="maximumDiscountAmount" name="maximumDiscountAmount" ng-model="saleDetail.maximumDiscountAmount" ng-required="saleDetail.discountType === '2'" ng-disabled="saleDetail.discountType === 1 || saleDetail.discountType === '1'">
                                     <div class="text-danger" ng-show="(saleFormUpdate.maximumDiscountAmount.$touched || saleFormUpdate.$submitted) && saleFormUpdate.maximumDiscountAmount.$invalid">
                                         Số tiền giảm giá tối đa là bắt buộc.
                                     </div>
                                 </div>
                             </div>
+                            
                             
                         <!-- <div class="col-md-6">
                             <div class="form-group" ng-class="{'has-error': (saleFormUpdate.numberOfUses.$touched || saleFormUpdate.$submitted) && saleFormUpdate.numberOfUses.$invalid}">
@@ -154,7 +157,7 @@
                         <!-- Nút "Lưu" chỉ hiển thị khi trạng thái khác 3 -->
                         <button type="submit" class="btn btn-primary" ng-if="getSaleStatusFromLocal() !== '3'">Lưu</button>
                         
-
+                        discountType
                     </form>
                 </div>
             </div>
@@ -384,7 +387,7 @@
             <div class="col-12">
                 <div class="tab-pane fade show active" id="appliedProductsTab">
                     <h5>Sản phẩm đã áp dụng</h5>
-                    <table class=" table  table-productSale table-container">
+                    <table class=" table table-container">
                         <thead>
                             <tr style="white-space: nowrap;">
                                 <th></th>
@@ -406,7 +409,7 @@
                                 <td>{{ productSale.name }}</td>
                               
                                 <td>{{formatCurrency(productSale.price)  }}đ</td>
-                                <td>{{formatCurrency(productSale.pricePromotion)  }}đ</td>
+                                <td>{{formatCurrency(productSale.promotionalPrice)  }}đ</td>
                             </tr>
                         </tbody>
                     </table>
