@@ -177,10 +177,10 @@ public class AuditLogRestControllerTinh {
             @RequestParam(required = false) String detailAction,
             @RequestParam(required = false) Integer status,
 //            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "5") int size,
 //            @RequestParam(defaultValue = "id") String sortField,
             @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber, 5);
+        Pageable pageable = PageRequest.of(pageNumber, size);
         Page<AuditLogs> page = auditLogServiceTinh.findAuditLog(implementer, code, actionType, time, detailAction, status, pageable);
         return new PaginationResponse<>(page);
     }

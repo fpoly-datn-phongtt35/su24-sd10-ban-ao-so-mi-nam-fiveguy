@@ -32,6 +32,25 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   imgShow("image", "image-preview");
   imgShow("image-update", "image-preview-update");
+
+
+  // notify
+  toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": true,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+  }
   // Hàm hiển thị thông báo thành công
   $scope.showSuccessNotification = function (message) {
     toastr["success"](message);
@@ -41,6 +60,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.showErrorNotification = function (message) {
     toastr["error"](message);
   };
+
 
   $scope.showWarningNotification = function (message) {
     toastr["warning"](message);
@@ -283,6 +303,8 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         if (!$scope.uploading) {
           $scope.submitForm();
         }
+        // $("#modalAdd").modal("hide");
+        // $scope.resetFormInput();
       });
     };
   };
@@ -317,8 +339,8 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         console.log("addEmployeesData = ", addEmployeesData);
         $scope.showSuccessNotification("Thêm thông tin thành công");
         $scope.getEmployee(0);
-        $scope.resetFormUpdate();
-        $("#modalUpdate").modal("hide");
+        $scope.resetFormInput();
+        $("#modalAdd").modal("hide");
       }
     } else {
       // Hiển thị lỗi
@@ -446,7 +468,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
           };
           console.log(dataObject);
           const updateEmployeesData = await $scope.updateEmployee(dataObject);
-          $scope.showSuccessNotification("Sửa thông tin thành công");
+          $scope.showErrorNotification("Sửa thông tin thành công");
           $scope.getEmployee(0);
           $scope.resetFormUpdate();
           console.log("updateEmployeesData = ", updateEmployeesData);
@@ -588,8 +610,9 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
       $scope.formUpdate = angular.copy(employee);
 
       $scope.formUpdate.updatedAt = new Date();
-      $scope.formInputAccount = angular.copy(employee.account);
-    }
+
+    } $scope.formInputAccount = angular.copy(employee.account);
+    $scope.formInputAccount.role.id = angular.copy(employee.role.id);
     $scope.formUpdate.birthDate = new Date(birthDateNew);
     $scope.formUpdate.avatar = angular.copy(employee.avatar);
   };
@@ -636,6 +659,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.totalPages = 0;
   $scope.currentPage = 0;
   $scope.desiredPage = 1;
+  $scope.size = 5
   $scope.filters = {
     name: null,
     code: null,
@@ -646,7 +670,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   };
 
   $scope.getEmployee = function (pageNumber) {
-    let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+    let params = angular.extend({ pageNumber: pageNumber, size: $scope.size }, $scope.filters);
     $http
       .get("http://localhost:8080/api/admin/employee/page", {
         params: params,
@@ -745,7 +769,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   };
 
   $scope.getAllAuditLog = function (pageNumber) {
-    let params = angular.extend({ pageNumber: pageNumber }, $scope.filterAuditlog);
+    let params = angular.extend({ pageNumber: pageNumber, size: $scope.size }, $scope.filterAuditlog);
     $http
       .get("http://localhost:8080/api/admin/audit-log/auditlog-page", {
         params: params,

@@ -1,11 +1,17 @@
 package com.example.demo.restController.tinh;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.entity.BillHistory;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.tinh.BillRepositoryTinh;
 import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.tinh.BillServiceTinh;
+import com.example.demo.untility.tinh.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +34,11 @@ public class BillRestControllerTinh {
     @Autowired
     BillRepositoryTinh billRepositoryTinh;
 
-    @GetMapping("")
-    public ResponseEntity<List<Bill>> getAll(){
-        List<Bill> bills = billServiceTinh.getAll();
-        return ResponseEntity.ok(bills);
-    }
+//    @GetMapping("")
+//    public ResponseEntity<List<Bill>> getAll(){
+//        List<Bill> bills = billServiceTinh.getAll();
+//        return ResponseEntity.ok(bills);
+//    }
 
     @PostMapping("/")
     public ResponseEntity<?> create(@RequestBody Bill bill) {
@@ -45,7 +51,7 @@ public class BillRestControllerTinh {
     }
 
     @PostMapping(value = "/save", produces = "text/plain")
-    public Bill createBill(@RequestHeader("Authorization")String token, Bill bill){
+    public Bill createBill(@RequestHeader("Authorization")String token,@RequestBody Bill bill){
         Bill bill1 = new Bill();
         Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
 //        Employee employee1 = new Employee();
@@ -72,5 +78,27 @@ public class BillRestControllerTinh {
         }
 
         return randomCode.toString();
+    }
+
+    @PutMapping("/update-bill-status-thanh-cong/{id}")
+    public ResponseEntity<String> updateBillStatus(@PathVariable Long id) {
+        try {
+            billServiceTinh.updateBillStatus(id);
+            return ResponseEntity.ok("Bill status updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error updating Bill status");
+        }
+    }
+
+    @GetMapping("/page")
+    public PaginationResponse<Bill> getBillPage(
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, size, sort);
+        Page<Bill> page = billRepositoryTinh.getAllBillChoThanhToan(pageable);
+        return new PaginationResponse<>(page);
     }
 }

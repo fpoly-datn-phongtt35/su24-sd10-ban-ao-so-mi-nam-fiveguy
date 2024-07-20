@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -135,11 +136,13 @@ public class EmployeeRestControllerTinh {
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) Long idRole,
             @RequestParam(required = false) Integer status,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "5") int size,
-//            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber, 5);
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, size, sort);
         Page<Employee> page = employeeService.findEmployee(fullName, code, avatar, birthDate, gender, address, account, email, phoneNumber, idRole, status, pageable);
         return new PaginationResponse<>(page);
     }

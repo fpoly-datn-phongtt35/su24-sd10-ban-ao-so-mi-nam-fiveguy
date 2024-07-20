@@ -281,7 +281,7 @@ public class AccountServiceImpl  implements AccountService {
         }
             Account account2 = new Account();
             Role role = new Role();
-            role.setId(1L);
+            role.setId(3L);
             account2.setAccount(accountEntity.getAccount());
             account2.setPassword("123456789");
             account2.setEmail(accountEntity.getEmail());

@@ -32,4 +32,6 @@ public class BillDetailServiceImplTinh implements BillDetailServiceTinh {
 
         return billDetailRepositoryTinh.save(bill1);
     }
+
+
 }
