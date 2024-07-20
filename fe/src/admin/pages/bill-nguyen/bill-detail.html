@@ -224,8 +224,8 @@
     <div class="row card mt-4 border rounded p-4 shadow mb-5 bg-body">
         <div class="d-flex justify-content-between mb-3">
             <h5>Thông tin đơn hàng</h5>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShipmentDetail">Cập
-                nhật</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShipmentDetail"
+                ng-show="[1, 2].includes(status)">Cập nhật</button>
         </div>
         <hr>
         <div class="row">
@@ -311,7 +311,7 @@
             <div class="d-flex justify-content-between mb-3">
                 <h5>Sản phẩm trong đơn hàng</h5>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBillDetail"
-                    ng-click="resetFilters()">Thêm sản phẩm</button>
+                    ng-click="resetFilters()" ng-show="[1, 2].includes(status)">Thêm sản phẩm</button>
             </div>
             <hr>
             <table class="table text-center">
@@ -351,7 +351,8 @@
                             {{bd.price | number:0}} VND
                         </td>
                         <td class="col-2 fs-6 text-end">{{bd.price * bd.quantity | number:0}} VND</td>
-                        <td><a class="btn" ng-click="removeBillDetail(bd.id)"><i class="material-icons">&#xE15C;</i></a>
+                        <td><a class="btn" ng-click="removeBillDetail(bd.id)" ng-show="[1, 2].includes(status)">
+                                <i class="material-icons">&#xE15C;</i></a>
                         </td>
                     </tr>
                 </tbody>
@@ -603,7 +604,8 @@
                                             <p class="fs-6">{{bd.productDetail.product.name + ' '
                                                 + bd.productDetail.color.name + ' '
                                                 + bd.productDetail.size.name}}</p>
-                                            <p class="text-danger" style="margin-top: -5px;">{{bd.price | number:0}} đ</p>
+                                            <p class="text-danger" style="margin-top: -5px;">{{bd.price | number:0}} đ
+                                            </p>
                                         </div>
                                     </div>
 
