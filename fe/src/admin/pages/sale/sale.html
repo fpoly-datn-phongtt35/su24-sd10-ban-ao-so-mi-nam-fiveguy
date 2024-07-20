@@ -1,11 +1,30 @@
 
+<div  ng-init="clear()">
+    <link rel="stylesheet" href="/src/admin/pages/sale/sale.css">
 
 
 <!-- Dashboard -->
 <div class="mx-5 mb-4 mt-4"> 
     <div class="row">
         <div class="col-12">
-            <h1 class="mb-4">Quản lý Đợt Giảm Giá</h1>
+
+            <div style="justify-content: space-between;" class="title d-flex align-items-center">
+                <div class="d-flex align-items-center">
+                    <span class="material-icons fs-4 me-2">view_headline</span>
+                    <p class="m-0">Quản Lý Đợt Giảm Giá</p>
+                </div>
+    
+                <div class="row justify-content-end">
+                    <div class="col-auto d-flex align-items-center">
+                        <button class="button-submit btn btn-success" data-bs-toggle="modal" data-bs-target="#saleModal" data-bs-whatever="@mdo">
+                            <span class="material-icons align-middle">add</span> Tạo mới đợt giảm giá
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- <h1 class="mb-4">Quản lý Đợt Giảm Giá</h1> -->
             <div class="card mb-4">
                 <div class="card-header">
                     Tổng quan đợt giảm giá
@@ -16,7 +35,7 @@
                     <p>Đợt giảm giá đã kết thúc: {{ expiredSalesCount }}</p>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saleModal" data-bs-whatever="@mdo">Tạo mới đợt giảm giá</button>
+            <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saleModal" data-bs-whatever="@mdo">Tạo mới đợt giảm giá</button> -->
             
 
 <!-- Include the modal HTML code below or in your main HTML file where appropriate -->
@@ -40,9 +59,9 @@
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="info" role="tabpanel"
                         aria-labelledby="info-tab">
-                        <table class="table table-striped table-bordered mt-3">
-                            <thead class="table-dark">
-                                <tr>
+                        <table class="table  table-container">
+                            <thead  class="">
+                                <tr style="white-space: nowrap;">
                                     <th scope="col">Tên thuộc tính</th>
                                     <th scope="col">Dữ liệu</th>
                                 </tr>
@@ -73,7 +92,7 @@
                                 </tr>
                                 <tr>
                                     <td>Giá trị giảm tối đa</td>
-                                    <td class="fs-6">{{formatCurrency(saleInfo.maximumDiscountAmount)}} VNĐ</td>
+                                    <td class="fs-6">{{formatCurrency(saleInfo.maximumDiscountAmount)}}đ</td>
                                 </tr>
                                 <!-- <tr>
                                     <td>Lượt sử dụng / người</td>
@@ -138,14 +157,14 @@
                     </div>
                     <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
                         <div class="row" style="margin-bottom: 20px;">
-                            <div class="col-12">
-                                <h4 class="text-center mb-4">BÁO CÁO HIỆU QUẢ CHƯƠNG TRÌNH GIẢM GIÁ</h4>
+                            <div class="col-12 ">
+                                <p style="    font-size: 22px;" class="text-center mb-4">BÁO CÁO HIỆU QUẢ CHƯƠNG TRÌNH GIẢM GIÁ</p>
                                 <div class="card mt-4">
                                     <div class="card-body">
                                         <p class="card-text">Số lần sử dụng giảm giá: <strong>{{ summary.totalProductsSold }}</strong></p>
-                                        <p class="card-text">Doanh số tương ứng: <strong>{{ formatCurrency(summary.totalRevenue) }} VNĐ</strong></p>
-                                        <!-- <p class="card-text">Lợi nhuận sau giảm giá: <strong>{{ formatCurrency(summary.totalProfit) }} VNĐ</strong></p>
-                                        <p class="card-text">Tỷ lệ lợi nhuận: <strong>{{ summary.profitMargin.toFixed(2) }}%</strong></p> -->
+                                        <p class="card-text">Doanh số tương ứng: <strong>{{ formatCurrency(summary.totalRevenue) }}đ</strong></p>
+                                        <p class="card-text">Lợi nhuận sau giảm giá: <strong>{{ formatCurrency(summary.totalProfit) }}đ</strong></p>
+                                        <!-- <p class="card-text">Tỷ lệ lợi nhuận: <strong>{{ summary.profitMargin.toFixed(2) }}%</strong></p> -->
                                     </div>
                                 </div>
                             </div>
@@ -153,9 +172,10 @@
                         <div class="row">
                             
                             <div class="col-12">
-                                <h4 class="text-center mb-4">Chi Tiết Số Lượng Sản Phẩm Đã Mua Theo Khách Hàng</h4>
+
+                                <p style="font-size: 22px;" class="text-center mb-4">Khách hàng sử dụng</p>
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-customer-sale">
+                                    <table class="table table-bordered table-customer-sale table-container">
                                         <thead>
                                             <tr style="white-space: nowrap;">
                                                 <th>Khách hàng</th>
@@ -164,7 +184,7 @@
                                                 <!-- <th>Tổng tiền trước khi giảm giá</th> -->
                                                 <th>Tổng giá trị giảm</th>
                                                 <th>Tổng tiền sau khi giảm</th>
-                                               
+                                               <th>Hành động</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -172,10 +192,10 @@
                                                 <td>{{ staticCustomer.customerName }}</td>
                                                 <td>{{ staticCustomer.customerPhone }} <br> {{ staticCustomer.customerEmail }}</td>
                                                 <td>{{ staticCustomer.numberOfPurchases }}</td>
-                                                <!-- <td>{{ formatCurrency(staticCustomer.totalAmountBeforeDiscount) }} VNĐ</td> -->
+                                                <!-- <td>{{ formatCurrency(staticCustomer.totalAmountBeforeDiscount) }}đ</td> -->
                                         
-                                                <td>{{ formatCurrency(staticCustomer.totalDiscountAmount) }} VNĐ</td>
-                                                <td>{{ formatCurrency(staticCustomer.totalAmountAfterDiscount) }} VNĐ</td>
+                                                <td>{{ formatCurrency(staticCustomer.totalDiscountAmount) }}đ</td>
+                                                <td>{{ formatCurrency(staticCustomer.totalAmountAfterDiscount) }}đ</td>
                                                 <td>
                                                     <button class="btn btn-primary" ng-click="showCustomerDetails(staticCustomer, $index)">
                                                         Xem
@@ -201,11 +221,11 @@
                                                     <tr>
                                                         <td>{{ productDetail.productName }}</td>
                                                         <td>{{ productDetail.totalQuantityBought }}</td>
-                                                        <td>{{formatCurrency (productDetail.originalPrice) }} VNĐ</td>
-                                                        <td>{{ formatCurrency(productDetail.promotionalPrice) }} VNĐ</td>
-                                                        <!-- <td>{{ formatCurrency(productDetail.totalAmountBeforeDiscount) }} VNĐ</td> -->
+                                                        <td>{{formatCurrency (productDetail.originalPrice) }}đ</td>
+                                                        <td>{{ formatCurrency(productDetail.promotionalPrice) }}đ</td>
+                                                        <!-- <td>{{ formatCurrency(productDetail.totalAmountBeforeDiscount) }}đ</td> -->
                                                         <td style="font-size: 14px; font-weight: bold;">
-                                                            {{ formatCurrency(productDetail.totalAmountAfterDiscount) }} VNĐ
+                                                            {{ formatCurrency(productDetail.totalAmountAfterDiscount) }}đ
                                                         </td>
                                                         
                                                     </tr>
@@ -220,9 +240,9 @@
                                                 <td><strong>Tổng cộng</strong></td>
                                                 <td></td>
                                                 <td><strong>{{ getTotalNumberOfPurchases() }}</strong></td>
-                                                <td><strong>{{ formatCurrency(getTotalAmountBeforeDiscount()) }} VNĐ</strong></td>
-                                                <td><strong>{{ formatCurrency(getTotalAmountAfterDiscount()) }} VNĐ</strong></td>
-                                                <td><strong>{{ formatCurrency(getTotalDiscountAmount()) }} VNĐ</strong></td>
+                                                <td><strong>{{ formatCurrency(getTotalAmountBeforeDiscount()) }}đ</strong></td>
+                                                <td><strong>{{ formatCurrency(getTotalAmountAfterDiscount()) }}đ</strong></td>
+                                                <td><strong>{{ formatCurrency(getTotalDiscountAmount()) }}đ</strong></td>
                                                 <td></td> 
                                             </tr> -->
                                         </tbody>
@@ -255,6 +275,23 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.saleCode.$touched || saleForm.$submitted) && saleCodeError}">
+                                    <label for="saleCode" class="form-label">Mã giảm giá</label>
+                                    <input placeholder="Nhập mã nếu không sẽ tự tạo" type="text" class="form-control" id="saleCode" name="saleCode" ng-model="saleDetail.code" ng-blur="validateSaleCode()">
+                                    
+                                    <!-- Error message for required and touched/submitted -->
+                                    <div class="text-danger" ng-show="saleForm.saleCode.$error.required && (saleForm.saleCode.$touched || saleForm.$submitted)">
+                                        {{ saleCodeError }}
+                                    </div>
+                                    
+                                    <!-- Error message from custom validation function -->
+                                    <div class="text-danger" ng-show="saleCodeError">
+                                        {{ saleCodeError }}
+                                    </div>
+                                </div>
+                                
+                                
+
                                 <div class="form-group" ng-class="{'has-error': (saleForm.saleName.$touched || saleForm.$submitted) && saleForm.saleName.$invalid}">
                                     <label for="saleName" class="form-label">Tên đợt giảm giá</label>
                                     <input type="text" class="form-control" id="saleName" name="saleName" ng-model="saleDetail.name" required>
@@ -262,16 +299,7 @@
                                         Tên đợt giảm giá là bắt buộc.
                                     </div>
                                 </div>
-                                <!-- <div class="form-group" ng-class="{'has-error': (saleForm.saleCode.$touched || saleForm.$submitted) && (saleForm.saleCode.$error.required || checkSaleCode(saleDetail.code))}">
-                                    <label for="saleCode" class="form-label">Mã giảm giá</label>
-                                    <input type="text" class="form-control" id="saleCode" name="saleCode" ng-model="saleDetail.code" required>
-                                    <div class="text-danger" ng-show="(saleForm.saleCode.$touched || saleForm.$submitted) && saleForm.saleCode.$error.required">
-                                        Mã giảm giá là bắt buộc.
-                                    </div>
-                                    <div class="text-danger" ng-show="(saleForm.saleCode.$touched || saleForm.$submitted) && checkSaleCode(saleDetail.code)">
-                                        Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.
-                                    </div>
-                                </div> -->
+                   
                                 <div class="form-group" ng-class="{'has-error': (saleForm.saleDescription.$touched || saleForm.$submitted) && saleForm.saleDescription.$invalid}">
                                     <label for="saleDescription" class="form-label">Mô tả</label>
                                     <textarea class="form-control" id="saleDescription" name="saleDescription" rows="3" ng-model="saleDetail.describe" required></textarea>
@@ -281,30 +309,34 @@
                                 </div>
                                 <div class="form-group" ng-class="{'has-error': (saleForm.startTime.$touched || saleForm.$submitted) && saleForm.startTime.$invalid}">
                                     <label for="startTime" class="form-label">Thời gian bắt đầu</label>
-                                    <input type="datetime-local" class="form-control" id="startTime" name="startTime" ng-model="saleDetail.startDate" required>
+                                    <input type="text" class="form-control" id="startTime" name="startTime" ng-model="displayStartDate" required>
                                     <div class="text-danger" ng-show="(saleForm.startTime.$touched || saleForm.$submitted) && saleForm.startTime.$error.required">
                                         Thời gian bắt đầu là bắt buộc.
                                     </div>
-                                    <div class="text-danger" ng-show="(saleForm.startTime.$touched || saleForm.$submitted) && !checkStartDate()">
-                                        Thời gian bắt đầu phải lớn hơn thời gian hiện tại.
+                                    <div class="text-danger" ng-show="(saleForm.startTime.$touched || saleForm.$submitted) && startDateError">
+                                        {{startDateError}}
                                     </div>
                                 </div>
+                                
                                 <div class="form-group" ng-class="{'has-error': (saleForm.endTime.$touched || saleForm.$submitted) && saleForm.endTime.$invalid}">
                                     <label for="endTime" class="form-label">Thời gian kết thúc</label>
-                                    <input type="datetime-local" class="form-control" id="endTime" name="endTime" ng-model="saleDetail.endDate" required>
+                                    <input type="text" class="form-control" id="endTime" name="endTime" ng-model="displayEndDate" required>
                                     <div class="text-danger" ng-show="(saleForm.endTime.$touched || saleForm.$submitted) && saleForm.endTime.$error.required">
                                         Thời gian kết thúc là bắt buộc.
                                     </div>
-                                    <div class="text-danger" ng-show="(saleForm.endTime.$touched || saleForm.$submitted) && !checkEndDate()">
-                                        Thời gian kết thúc phải lớn hơn thời gian hiện tại và thời gian bắt đầu.
+                                    <div class="text-danger" ng-show="(saleForm.endTime.$touched || saleForm.$submitted) && endDateError">
+                                        {{endDateError}}
                                     </div>
                                 </div>
+                                
+                                
+                                
                                 
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group" ng-class="{'has-error': (saleForm.discountType.$touched || saleForm.$submitted) && saleForm.discountType.$invalid}">
                                     <label for="discountType" class="form-label">Loại giảm giá</label>
-                                    <select class="form-control" id="discountType" name="discountType" ng-model="saleDetail.discountType" ng-change="updateDiscountType()" required>
+                                    <select class="form-control" id="discountType" name="discountType" ng-model="saleDetail.discountType" ng-change="updateDiscountTypeAdd()" required>
                                         <option value="1">Giảm giá cố định</option>
                                         <option value="2">Giảm giá phần trăm</option>
                                     </select>
@@ -314,26 +346,29 @@
                                 </div>
                                 
                       
-                                <div class="form-group" ng-class="{'has-error': (saleForm.value.$touched || saleForm.$submitted) && (saleForm.value.$invalid || !checkDiscountValue())}">
+                                <div class="form-group" ng-class="{'has-error': (saleForm.value.$touched || saleForm.$submitted) && (saleForm.value.$invalid || !checkDiscountValueAdd())}">
                                     <label for="value" class="form-label">Mức giảm giá</label>
-                                    <input type="number" class="form-control" id="value" name="value" ng-model="saleDetail.value" required>
-                                    <div class="text-danger" ng-show="(saleForm.value.$touched || saleForm.$submitted) && saleForm.value.$invalid">
+                                    <input type="number" class="form-control" id="value" name="value" ng-model="saleDetail.value" required ng-change="checkDiscountValueAdd()">
+                                    <div class="text-danger" ng-show="saleForm.value.$error.required && (saleForm.value.$touched || saleForm.$submitted)">
                                         Mức giảm giá là bắt buộc.
                                     </div>
-                                    <div class="text-danger" ng-show="(saleForm.value.$touched || saleForm.$submitted) && !checkDiscountValue()">
+                                    <div class="text-danger" ng-show="!saleForm.value.$error.required && saleForm.value.$error.max && (saleForm.value.$touched || saleForm.$submitted)">
                                         Mức giảm giá không được vượt quá 100 cho loại giảm giá phần trăm.
                                     </div>
                                 </div>
                                 
-                                <div class="col-md-6" ng-show="saleDetail.discountType === '2'">
-                                    <div class="form-group" ng-class="{'has-error': (saleFormUpdate.maximumDiscountAmount.$touched || saleFormUpdate.$submitted) && saleFormUpdate.maximumDiscountAmount.$invalid}">
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group" ng-class="{'has-error': (saleForm.maximumDiscountAmount.$touched || saleForm.$submitted) && saleForm.maximumDiscountAmount.$invalid}">
                                         <label for="maximumDiscountAmount" class="form-label">Số tiền giảm giá tối đa</label>
-                                        <input type="number" class="form-control" id="maximumDiscountAmount" name="maximumDiscountAmount" ng-model="saleDetail.maximumDiscountAmount" ng-required="saleDetail.discountType === '2'">
-                                        <div class="text-danger" ng-show="(saleFormUpdate.maximumDiscountAmount.$touched || saleFormUpdate.$submitted) && saleFormUpdate.maximumDiscountAmount.$invalid">
+                                        <input type="number" class="form-control" id="maximumDiscountAmount" name="maximumDiscountAmount" ng-model="saleDetail.maximumDiscountAmount" ng-required="saleDetail.discountType === '2'" ng-disabled="saleDetail.discountType === '1'">
+                                        <div class="text-danger" ng-show="(saleForm.maximumDiscountAmount.$touched || saleForm.$submitted) && saleForm.maximumDiscountAmount.$invalid">
                                             Số tiền giảm giá tối đa là bắt buộc.
                                         </div>
                                     </div>
                                 </div>
+                                
+                                
                                 
                                 
                                 <!-- <div class="form-group" ng-class="{'has-error': (saleForm.numberOfUses.$touched || saleForm.$submitted) && saleForm.numberOfUses.$invalid}">
@@ -369,28 +404,67 @@
     </div>
 </div>
             
-<div class="row">
+<!-- <div class="row">
     <div class="col-md-6">
         <form>
             <div class="form-group">
-                <input type="text" class="form-control" id="searchTerm" ng-model="searchTerm" ng-change="getSalesByConditions()">
+                <input type="text" class="form-control" id="searchTerm" ng-model="searchTerm" >
             </div>
         </form>
     </div>
-</div>
+</div> -->
 
 <div class="row">
-    <div class="col-sm-3">
+
+    <div class="search-bar">
+        <!-- <input type="text" placeholder="Nhập tên hoặc mã"> -->
+        <input type="text" placeholder="Tìm kiếm" class="form-control" id="searchTerm" ng-model="searchTerm" >
+        <!-- <input type="date" placeholder="Ngày bắt đầu"> -->
+        <input type="text" placeholder="Ngày bắt đầu" id="filterStartTime" class="form-control" ng-model="filterStartDate">
+
+        
+        <!-- <input type="date" placeholder="Ngày kết thúc"> -->
+        <input type="text" placeholder="Ngày kết thúc" id="filterEndTime" class="form-control" ng-model="filterEndDate">
+
+
+        <!-- <select>
+            <option value="all">Tất cả</option>
+            <option value="ongoing">Đang diễn ra</option>
+            <option value="expired">Đã hết hạn</option>
+        </select> -->
+
+
+        <select  ng-model="status" >
+            <option value="" selected>Chọn trạng thái</option>
+            <option value="2">Sắp bắt đầu</option>
+            <option value="1">Đang hoạt động</option>
+            <option value="3">Hết hạn</option>
+            <option value="4">Dừng hoạt động</option>
+        </select>
+
+
+        <select  ng-model="discountType" >
+            <option value="" selected>Chọn loại giảm giá</option>
+            <option value="1">Giảm giá theo giá tiền</option>
+            <option value="2">Giảm giá theo phần trăm</option>
+        </select>
+    </div>
+
+
+
+
+    <!-- <div class="col-sm-3">
         <label>Ngày bắt đầu:</label>
-        <input type="datetime-local" class="form-control" ng-model="startDate" ng-change="getSalesByConditions()">
+        <input type="text" id="filterStartTime" class="form-control" ng-model="filterStartDate">
     </div>
     <div class="col-sm-3">
         <label>Ngày kết thúc:</label>
-        <input type="datetime-local" class="form-control" ng-model="endDate" ng-change="getSalesByConditions()">
+        <input type="text" id="filterEndTime" class="form-control" ng-model="filterEndDate">
     </div>
+    
     <div class="col-sm-3">
         <label>Trạng thái:</label>
-        <select class="form-control" ng-model="status" ng-change="getSalesByConditions()">
+        <select class="form-control" ng-model="status" >
             <option value="" selected>Chọn trạng thái</option>
             <option value="2">Sắp bắt đầu</option>
             <option value="1">Đang hoạt động</option>
@@ -400,69 +474,133 @@
     </div>
     <div class="col-sm-3">
         <label>Loại giảm giá:</label>
-        <select class="form-control" ng-model="discountType" ng-change="getSalesByConditions()">
+        <select class="form-control" ng-model="discountType" >
             <option value="" selected>Chọn loại giảm giá</option>
             <option value="1">Giảm giá theo giá tiền</option>
             <option value="2">Giảm giá theo phần trăm</option>
         </select>
-    </div>
+    </div> -->
     
-    <div class="col-sm-3">
-        <button class="btn btn-primary" ng-click="refreshData()">Làm mới</button>
+
+    <div class="row justify-content-end">
+        <div class="col-auto d-flex align-items-center">
+            <button class="button-submit btn btn-primary" ng-click="getSalesByConditions()">
+                <span class="material-icons align-middle">search</span> Tìm kiếm
+            </button>
+        </div>
+        <div class="col-auto d-flex align-items-center">
+            <button class="button-submit btn btn-secondary" ng-click="refreshData(0)">
+                <span class="material-icons align-middle">refresh</span> Làm mới
+            </button>
+        </div>
     </div>
 </div>
 
+<div class="row">
+    <table class=" table-container">
+        <thead>
+            <tr style="white-space: nowrap;">
+                <th>Tên</th>
+                <th>Mã</th>
+                <th>Giá trị</th>
+                <th>Loại giảm giá</th>
+                <th>Thời gian bắt đầu</th>
+                <th>Thời gian kết thúc</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="sale in sales" >
+                <td>{{ sale.name }}</td>
+                <td>{{ sale.code }}</td>
+                <td>
+                    <span ng-if="sale.discountType == 1">{{ formatCurrency(sale.value) }} </span>
+                    <span ng-if="sale.discountType != 1">{{ sale.value }}</span>
+                </td>
+                <td>
+                    <span ng-if="sale.discountType == 1">theo giá tiền</span>
+                    <span ng-if="sale.discountType == 2">theo phần trăm</span>
+                    <span ng-if="sale.discountType != 1 && sale.discountType != 2">Không rõ loại giảm giá</span>
+                </td>
+                
+                <td style="white-space: nowrap;">{{ formatDate(sale.startDate)  }}</td>
+                <td style="white-space: nowrap;">{{ formatDate(sale.endDate) }}</td>
+                <td>
+                    <span class="status" ng-class="getStatusClass(sale.status)">{{ getStatusText(sale.status) }}</span>
+                </td>
+                <td >
 
-            <div class="card">
-                <div class="card-header">
-                    Danh sách các đợt giảm giá
-                </div>
-                <div class="card-body">
-                    <table class="table table-striped table-product-sale">
-                        <thead>
-                            <tr>
-                                <th>Tên</th>
-                                <th>Mã</th>
-                                <th>Giá trị</th>
-                                <th>Loại giảm giá</th>
-                                <th>Thời gian bắt đầu</th>
-                                <th>Thời gian kết thúc</th>
-                                <th>Trạng thái</th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="sale in sales" style="white-space: nowrap;">
-                                <td>{{ sale.name }}</td>
-                                <td>{{ sale.code }}</td>
-                                <td>
-                                    <span ng-if="sale.discountType == 1">{{ formatCurrency(sale.value) }} </span>
-                                    <span ng-if="sale.discountType != 1">{{ sale.value }}</span>
-                                </td>
-                                <td>
-                                    <span ng-if="sale.discountType == 1">theo giá tiền</span>
-                                    <span ng-if="sale.discountType == 2">theo phần trăm</span>
-                                    <span ng-if="sale.discountType != 1 && sale.discountType != 2">Không rõ loại giảm giá</span>
-                                </td>
-                                
-                                <td>{{ sale.startDate | date:'dd/MM/yyyy h:mm a' }}</td>
-                                <td>{{ sale.endDate | date:'dd/MM/yyyy h:mm a' }}</td>
-                                <td>
-                                    {{getStatusText(sale.status)}}
-                                </td>
-                                <td>
-                                    <a ng-href="#admin/sale/update/{{sale.id}}" class="btn btn-sm btn-warning">Xem chi tiết</a>
-                                    <!-- Button to trigger the modal -->
-                                    <button type="button" class="btn btn-primary" ng-click="showSaleDetails(sale)">
-                                       Thống kê
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        
+                    <!-- <span class="material-icons-outlined">
+                        edit
+                        </span> -->
+
+                    <a ng-href="#admin/sale/update/{{sale.id}}" class="button-submit action-btn">
+                        <span class="material-icons">edit</span> 
+                    </a>
+
+                    
+                    <button class="button-submit action-btn" ng-click="showSaleDetails(sale)"><span class="material-icons">
+                        visibility
+                    </span></button>
+<!-- 
+                    <a ng-href="#admin/sale/update/{{sale.id}}" class="btn btn-sm btn-warning">Xem chi tiết</a> -->
+                    <!-- Button to trigger the modal -->
+                    <!-- <button type="button" class="btn btn-primary" ng-click="showSaleDetails(sale)">
+                       Thống kê
+                    </button> -->
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+          
+     
+
+
+
                 <div class="row text-center">
-                    <div class="col-md-12" ng-if="totalPages > 1">
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="d-flex align-items-center">
+                            <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
+                            <div>
+                                <input id="size" ng-model="pageSize" ng-change="getSalesByConditions()" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required />
+                            </div>
+                        </div>
+                        
+                        <ul class="pagination">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPageSale(0)">
+                                    <span class="material-icons align-middle">first_page</span>
+                                </button>
+                                <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPageSale(currentPage - 1)">
+                                    <span class="material-icons align-middle">chevron_left</span>
+                                </button>
+                        
+                                <div class="d-flex align-items-center mx-1">
+                                    <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
+                                        style="width: 40px;" ng-model="desiredPage" min="1" max="{{totalPages}}"
+                                        ng-change="goToPage()">
+                                    <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages}}</span>
+                                </div>
+                        
+                                <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1" ng-click="setCurrentPageSale(currentPage + 1)">
+                                    <span class="material-icons align-middle">chevron_right</span>
+                                </button>
+                                <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1" ng-click="setCurrentPageSale(totalPages - 1)">
+                                    <span class="material-icons align-middle">last_page</span>
+                                </button>
+                            </div>
+                        </ul>
+                        
+                        
+                    </div>
+
+
+
+                    <!-- <div class="col-md-12" ng-if="totalPages > 1">
                         <ul class="pagination">
                             <li ng-class="{disabled: currentPage === 0}">
                                 <a href="" ng-click="setCurrentPageSale(0)">
@@ -488,13 +626,13 @@
                                 </a>
                             </li>
                         </ul>
-                    </div>
+                    </div> -->
                 </div>
                 
                 
-            </div>
         </div>
     </div>
 </div>
 
 
+</div>

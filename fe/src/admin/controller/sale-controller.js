@@ -1,7 +1,6 @@
-app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location', function($scope, $http, $routeParams, $location) {
+app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout', function($scope, $http, $routeParams,$timeout) {
 
   // notify
-
   toastr.options = {
     "closeButton": false,
     "debug": false,
@@ -56,19 +55,57 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     };
 
 
+    var filterStartPicker = flatpickr("#filterStartTime", {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: "d/m/Y H:i:S",
+        onChange: function(selectedDates) {
+            $timeout(function() {
+                if (selectedDates.length > 0) {
+                    var formattedStartDate = $scope.formatDate(selectedDates[0]);
+                    $scope.filterStartDate = formattedStartDate;
+                    $scope.startDateSale = selectedDates[0];
+                } else {
+                    $scope.filterStartDate = null;
+                    $scope.startDateSale = null;
+                }
+            });
+        }
+    });
+    
+    var filterEndPicker = flatpickr("#filterEndTime", {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: "d/m/Y H:i:S",
+        onChange: function(selectedDates) {
+            $timeout(function() {
+                if (selectedDates.length > 0) {
+                    var formattedEndDate = $scope.formatDate(selectedDates[0]);
+                    $scope.filterEndDate = formattedEndDate;
+                    $scope.endDateSale = selectedDates[0];
+                } else {
+                    $scope.filterEndDate = null;
+                    $scope.endDateSale = null;
+                }
+            });
+        }
+    });
+
     $scope.refreshData = function() {
-        $scope.startDate = null;
-        $scope.endDate = null;
+        $scope.startDateSale = null;
+        $scope.endDateSale = null;
         $scope.status = null;
         $scope.discountType = null;
         $scope.searchTerm = null;
         $scope.currentPage = 0;
+        $scope.filterStartDate = null;
+        $scope.filterEndDate = null;
     
         $scope.getSalesByConditions(0);
     };
     
-    $scope.startDate = null;
-    $scope.endDate = null;
+    $scope.startDateSale = null;
+    $scope.endDateSale = null;
     $scope.status = null;
     $scope.discountType = null; 
     $scope.currentPage = 0;
@@ -81,8 +118,8 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     
         var config = {
             params: {
-                startDate: $scope.startDate,
-                endDate: $scope.endDate,
+                startDate: $scope.startDateSale,
+                endDate: $scope.endDateSale,
                 status: $scope.status,
                 discountType: $scope.discountType, 
                 searchTerm: $scope.searchTerm,
@@ -100,6 +137,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
                     $scope.sales = response.data.content;
                     $scope.totalPages = response.data.totalPages;
                     $scope.currentPage = page;
+                    $scope.desiredPage = page + 1;
                 }
             }, function(error) {
                 console.error('Error fetching sales:', error);
@@ -109,6 +147,17 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     $scope.setCurrentPageSale = function(page) {
         if (page >= 0 && page < $scope.totalPages) {
             $scope.getSalesByConditions(page);
+        }
+    };
+
+    $scope.desiredPage = 1;
+    $scope.goToPage = function() {
+        var page = $scope.desiredPage - 1; // Chuyển từ 1-based index sang 0-based index
+        if (page >= 0 && page < $scope.totalPages) {
+            $scope.getSalesByConditions(page);
+        } else {
+            // Nếu trang không hợp lệ, đặt lại desiredPage về trang hiện tại
+            $scope.desiredPage = $scope.currentPage + 1;
         }
     };
     
@@ -132,6 +181,22 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
                 return "Không xác định"; 
         }
     };
+
+    $scope.getStatusClass = function(status) {
+        switch(status) {
+            case 1:
+                return 'ongoing';
+            case 2:
+                return 'upcoming';
+            case 3:
+                return 'expired';
+            case 4:
+                return 'stopped';
+            default:
+                return '';
+        }
+    };
+
     $scope.getDiscountValueAndType = function(value, type) {
         var typeText = '';
         if (type == 1) {
@@ -148,23 +213,43 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
         if (!dateString) return null;
         return new Date(dateString);
     }
+    // $scope.saleDetail.startDate = instance.formatDate(selectedDates[0], "Y-m-d H:i:S");
+
+
+    
+
+    
+    
+    
+
+
 
     $scope.getSale = function(saleId) {
         $http.get(baseUrl + '/' + saleId)
             .then(function(response) {
                 var saleData = response.data;
-                saleData.startDate = parseDate(saleData.startDate);
-                saleData.endDate = parseDate(saleData.endDate);
+                // Chuyển đổi startDate và endDate sang định dạng phù hợp
+                // saleData.startDate = formatDate(saleData.startDate);
+                // saleData.endDate = formatDate(saleData.endDate);
+
+                $scope.displayStartDate = $scope.formatDate(saleData.startDate);
+                $scope.displayEndDate = $scope.formatDate(saleData.endDate);
+
                 $scope.saleDetail = saleData;
+    
+                // Lưu trạng thái nếu có vào localStorage
                 if (saleData.status) {
                     localStorage.setItem('saleStatus', saleData.status);
                 }
-                    $scope.updateStatus();
-
+    
+                // Cập nhật trạng thái
+                $scope.updateStatus();
+    
             }, function(error) {
                 console.error('Error fetching sale details:', error);
             });
     };
+    
 
     if ($routeParams.idSale) {
         $scope.getSale($routeParams.idSale);
@@ -224,9 +309,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     
     $scope.fetchAllSales();
     
-    $scope.checkSaleCode = function(code) {
-        return $scope.allSales.some(sale => sale.code === code);
-    };
+
 
     $scope.checkSaleCodeUpdate = function(code) {
         var updatedSaleId = $routeParams.idSale.toString(); 
@@ -234,45 +317,201 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
             return sale.code === code && sale.id.toString() !== updatedSaleId; 
         });
     };
-    
-    $scope.checkDiscountValue = function () {
-        if ($scope.saleDetail.discountType === '2' || $scope.saleDetail.discountType === 2) { // Giảm giá phần trăm
-            return $scope.saleDetail.value <= 100;
-        }
-        return true;
-    };
 
-    $scope.updateDiscountType = function () {
+
+    $scope.updateDiscountTypeAdd = function () {
         if ($scope.saleDetail.discountType === '1' || $scope.saleDetail.discountType === 1) {
             $scope.saleDetail.maximumDiscountAmount = null;
-            console.log($scope.saleDetail.maximumDiscountAmount)
+        }
+        $scope.checkDiscountValueAdd();
+    };
+
+    $scope.updateDiscountTypeUpdate = function () {
+        if ($scope.saleDetail.discountType === '1' || $scope.saleDetail.discountType === 1) {
+            $scope.saleDetail.maximumDiscountAmount = null;
+        }
+        $scope.checkDiscountValueUpdate();
+    };
+
+    
+    $scope.checkDiscountValueUpdate = function () {
+        if ($scope.saleDetail.discountType === '2' || $scope.saleDetail.discountType === 2) { 
+            var isValid = $scope.saleDetail.value <= 100;
+            $scope.saleFormUpdate.value.$setValidity('max', isValid); // Đánh dấu validity của input value
+
+            return isValid;
+        }
+
+        $scope.saleFormUpdate.value.$setValidity('max', true); 
+        return true;
+    };
+    
+
+    $scope.checkDiscountValueAdd = function () {
+        if ($scope.saleDetail.discountType === '2' || $scope.saleDetail.discountType === 2) { 
+            var isValid = $scope.saleDetail.value <= 100;
+            $scope.saleForm.value.$setValidity('max', isValid); 
+            return isValid;
+        }
+
+        $scope.saleForm.value.$setValidity('max', true); 
+        return true;
+    };
+    
+
+
+
+
+    $scope.startDateError = '';
+    $scope.endDateError = '';
+
+    // Declare variables for flatpickr instances
+    var startPicker, endPicker;
+
+    // Function to update minimum end date based on start date
+    function updateEndDateMinDate() {
+        if ($scope.saleDetail.startDate) {
+            var startDateObj = new Date($scope.saleDetail.startDate);
+            var minEndDate = new Date(startDateObj.getTime() + 86400000); // startDate + 1 day (86400000 milliseconds)
+            endPicker.set('minDate', minEndDate);
+        } else {
+            endPicker.set('minDate', new Date());
+        }
+    }
+
+    // Function to validate start and end dates
+    function validateDates() {
+        $scope.startDateError = '';
+        $scope.endDateError = '';
+        $scope.saleCodeError = '';
+    
+        var startDateObj = $scope.saleDetail.startDate ? new Date($scope.saleDetail.startDate) : null;
+        var endDateObj = $scope.saleDetail.endDate ? new Date($scope.saleDetail.endDate) : null;
+        var saleCode = $scope.saleDetail.code;
+    
+        var minStartDate = new Date(new Date().getTime() + 60000); // Current time + 1 minute
+    
+        if (startDateObj && startDateObj < minStartDate) {
+            $scope.startDateError = 'Ngày bắt đầu phải cách hiện tại ít nhất 1 phút';
+        }
+    
+        if (endDateObj && startDateObj && endDateObj <= new Date(startDateObj.getTime() + 86400000)) {
+            $scope.endDateError = 'Ngày kết thúc phải sau ngày bắt đầu ít nhất 1 ngày.';
+        }
+    
+    
+        updateEndDateMinDate();
+    }
+    
+    
+    $scope.validateSaleCode = function() {
+        var saleCode = $scope.saleDetail.code;
+    
+        if (saleCode && saleCode.length >= 6 && !$scope.checkSaleCodeUpdate(saleCode)) {
+            // Valid sale code and not already taken
+            $scope.saleCodeError = '';
+        } else if (saleCode && saleCode.length < 6) {
+            // Sale code too short
+            $scope.saleCodeError = 'Mã giảm giá phải có ít nhất 6 ký tự.';
+        } else if (saleCode && $scope.checkSaleCodeUpdate(saleCode)) {
+            // Sale code already exists
+            $scope.saleCodeError = 'Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.';
+        } else {
+            $scope.saleCodeError = ''; // No error case
         }
     };
     
+    $scope.formatDate = function(dateString) {
+        if (!dateString) return ''; // Xử lý trường hợp dateString không hợp lệ
     
-    $scope.checkStartDate = function () {
-        var currentDate = new Date();
-        var startDate = new Date($scope.saleDetail.startDate);
-        return startDate > currentDate;
+        var date = new Date(dateString);
+    
+        if (isNaN(date.getTime())) return ''; // Xử lý trường hợp date không hợp lệ
+    
+        var day = ('0' + date.getDate()).slice(-2);
+        var month = ('0' + (date.getMonth() + 1)).slice(-2); // Tháng bắt đầu từ 0
+        var year = date.getFullYear();
+        var hour = ('0' + date.getHours()).slice(-2);
+        var minute = ('0' + date.getMinutes()).slice(-2);
+        var second = ('0' + date.getSeconds()).slice(-2);
+    
+        // Định dạng chuỗi ngày tháng năm giờ phút giây
+        var formattedDate = day + '/' + month + '/' + year + ' ' + hour + ':' + minute + ':' + second;
+    
+        return formattedDate;
     };
     
-    $scope.checkEndDate = function () {
-        var currentDate = new Date();
-        var startDate = new Date($scope.saleDetail.startDate);
-        var endDate = new Date($scope.saleDetail.endDate);
+    // Initialize flatpickr instances inside $timeout to ensure DOM readiness
+    $timeout(function() {
+        var now = new Date();
     
-        return endDate > currentDate && endDate > startDate;
+        startPicker = flatpickr("#startTime", {
+            enableTime: true,
+            time_24hr: true,
+            dateFormat: "d/m/Y H:i:S", // Định dạng mới dd/mm/yyyy HH:MM
+            onChange: function(selectedDates, dateStr, instance) {
+                $timeout(function() {
+                    if (selectedDates.length > 0) {
+                        var formattedStartDate = $scope.formatDate(selectedDates[0]);
+                        $scope.displayStartDate = formattedStartDate; // Hiển thị định dạng ngày
+                        $scope.saleDetail.startDate = selectedDates[0]; // Gán giá trị gốc
+                        validateDates();
+                    } else {
+                        $scope.displayStartDate = null;
+                        $scope.saleDetail.startDate = null;
+                    }
+                });
+            }
+        });
+    
+        endPicker = flatpickr("#endTime", {
+            enableTime: true,
+            time_24hr: true,
+            dateFormat: "d/m/Y H:i:S", // Định dạng mới dd/mm/yyyy HH:MM
+            onChange: function(selectedDates, dateStr, instance) {
+                $timeout(function() {
+                    if (selectedDates.length > 0) {
+                        var formattedEndDate = $scope.formatDate(selectedDates[0]);
+                        $scope.displayEndDate = formattedEndDate; // Hiển thị định dạng ngày
+                        $scope.saleDetail.endDate = selectedDates[0]; // Gán giá trị gốc
+                        validateDates();
+                    } else {
+                        $scope.displayEndDate = null;
+                        $scope.saleDetail.endDate = null;
+                    }
+                });
+            }
+        });
+    }, 0);
+    
+
+    // Function to clear form and reset errors
+    $scope.clear = function() {
+        $timeout(function() {
+            $scope.saleDetail.startDate = null;
+            $scope.saleDetail.endDate = null;
+            if (startPicker) startPicker.clear();
+            if (endPicker) endPicker.clear();
+            $scope.startDateError = '';
+            $scope.endDateError = '';
+            updateEndDateMinDate();
+        });
     };
-    
+
+    // Function to save sale data
     $scope.saveSale = function() {
         if ($scope.saleForm.$valid && $scope.isImageUploaded) {
+    
+            // Kiểm tra value chỉ khi discountType là 2
+            if ($scope.saleDetail.discountType === 2 && $scope.saleDetail.value > 100) {
+                $scope.saleForm.value.$setValidity('max', false); // Đánh dấu input value là không hợp lệ
+                return;
+            }
+    
             var saleData = $scope.saleDetail;
             saleData.code = 'SALE' + Number(String(Date.now()).slice(-6));
-            // if ($scope.checkSaleCode(saleData.code)) {
-            //     $scope.showErrorNotification("Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.");
-            //     return;
-            // }
-    
+            saleData.startDate = parseDate(saleData.startDate);
+            saleData.endDate = parseDate(saleData.endDate);
             $http.post(baseUrl, saleData)
                 .then(function(response) {
                     $('#saleModal').modal('hide');
@@ -290,18 +529,17 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$location'
     };
     
     
+    
 
  // Hàm cập nhật sale
  $scope.updateSale = function() {
-    if ($scope.saleFormUpdate.$valid) {
-        var saleData = $scope.saleDetail;
-
-        // Kiểm tra mã giảm giá trùng lặp
-        if ($scope.checkSaleCodeUpdate(saleData.code)) {
-            $scope.showErrorNotification("Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.");
+    if ($scope.saleFormUpdate.$valid ) {
+        if ($scope.saleDetail.value >= 100 && $scope.saleDetail.discountType === 2) {
+            $scope.saleFormUpdate.value.$setValidity('max', false); // Đánh dấu input value là không hợp lệ
             return;
         }
 
+        var saleData = $scope.saleDetail;
         // Gửi yêu cầu cập nhật sale
         $http.post(baseUrl, saleData)
             .then(function(response) {
@@ -371,9 +609,15 @@ $scope.refreshDataProductSale = function() {
     $scope.filterProductSale(0);
 };
 
+
+
+
+
+
+
 $scope.productSales = [];
 $scope.currentPage2 = 0;
-// $scope.pageSize2 = 10;
+$scope.pageSize2 = 10;
 $scope.totalPages2 = 0;
 $scope.searchTerm2 = null;
 
@@ -420,8 +664,10 @@ $scope.filterProductSale = function(page) {
                 return $scope.refreshDataProductSale(); // Recursive call to get the first page if the current page is empty
             } else {
                 $scope.productSales = response.data.content;
+                console.log($scope.productSales)
                 $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = page;
+                $scope.desiredPageProductSale = page + 1;
 
                 var selectedProductSales = JSON.parse(localStorage.getItem('selectedProductSales')) || [];
 
@@ -448,6 +694,19 @@ $scope.setCurrentPageProductSales2 = function(page) {
         $scope.filterProductSale(page);
     }
 };
+
+$scope.desiredPageProductSale = 1;
+$scope.goToPageProductSale = function() {
+    var page = $scope.desiredPageProductSale - 1; // Chuyển từ 1-based index sang 0-based index
+    if (page >= 0 && page < $scope.desiredPageProductSale) {
+        $scope.filterProductSale(page);
+    } else {
+        // Nếu trang không hợp lệ, đặt lại desiredPage về trang hiện tại
+        $scope.desiredPageProductSale = $scope.currentPage + 1;
+    }
+};
+
+
 
 // Ensure selected product sales are saved to localStorage when toggled
 $scope.toggleProductSelection = function(productSale) {
@@ -522,6 +781,21 @@ $scope.deleteAll = function() {
     }).catch(function(error) {
         $scope.showErrorNotification("Xóa sản phẩm thất bại");
         console.error('Error fetching product sales:', error);
+    });
+};
+
+
+
+$scope.getFirstImagePath = function(productId) {
+    $http.get('http://localhost:8080/api/admin/image/firstImagePath', {
+        params: {
+            productId: productId
+        }
+    }).then(function(response) {
+        return response.data;
+    }, function(error) {
+        // Handle error if needed
+        console.error('Error fetching first image path:', error);
     });
 };
 
@@ -671,23 +945,6 @@ var baseUrlInfoProduct = 'http://localhost:8080/api/infoProduct';
     };
 
         // Thêm tất cả sản phẩm vào đợt giảm giá
-// $scope.addAllProductSales = function() {
-//     var apiUrl = baseUrl + '/product-sales/addAll/' + $routeParams.idSale;
-//     $http.post(apiUrl)
-//         .then(function(response) {
-//             $scope.productSales = [];
-//             response.data.forEach(function(newProductSale) {
-//                 $scope.productSales.push(newProductSale);
-//             });
-//             $scope.filterProducts(0);
-//             $scope.filterProductSale(0);
-//             $scope.showSuccessNotification("Thêm sản phẩm thành công")
-//         })
-//         .catch(function(error) {
-//             $scope.showErrorNotification("Thêm sản phẩm thất bại")
-//             console.error('Error adding all product sales:', error);
-//         });
-// };
 
 $scope.fetchAllProducts = function() {
     var allProducts = [];
@@ -730,7 +987,9 @@ $scope.fetchAllProductSales = function() {
 
 
 $scope.addAllProductSales = function() {
-    // Call the fetchAllProducts function to get all products across multiple pages
+
+
+
     $scope.fetchAllProducts().then(function(allProducts) {
         if (allProducts && allProducts.length > 0) {
         var sale = $scope.saleDetail;
@@ -837,8 +1096,10 @@ $scope.addAllProductSales = function() {
                     return $scope.filterProducts(0); // Recursive call to get the first page if the current page is empty
                 } else {
                     $scope.products = response.data.content;
-                    $scope.totalPages = response.data.totalPages;
+                    console.log($scope.products)
+                    $scope.totalPagesProduct = response.data.totalPages;
                     $scope.currentPage = page;
+                    $scope.desiredPageProduct = page + 1;
                     let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
     
                     $scope.products.forEach(function(product) {
@@ -850,7 +1111,7 @@ $scope.addAllProductSales = function() {
     
                     return {
                         products: $scope.products,
-                        totalPages: $scope.totalPages
+                        totalPages: $scope.totalPagesProduct
                     }; // Return the products and totalPages to the caller
                 }
             }).catch(function(error) {
@@ -863,10 +1124,24 @@ $scope.addAllProductSales = function() {
 
 
     $scope.setCurrentPageRateProduct = function(page) {
-        if (page >= 0 && page < $scope.totalPages) {
+        if (page >= 0 && page < $scope.totalPagesProduct) {
             $scope.filterProducts(page);
         }
     };
+
+
+    $scope.desiredPageProduct = 1;
+    $scope.goToPageProduct = function() {
+        var page = $scope.desiredPageProduct - 1; // Chuyển từ 1-based index sang 0-based index
+        if (page >= 0 && page < $scope.totalPagesProduct) {
+            $scope.filterProducts(page);
+        } else {
+            // Nếu trang không hợp lệ, đặt lại desiredPage về trang hiện tại
+            $scope.desiredPageProduct = $scope.currentPage + 1;
+        }
+    };
+    
+
 
 
     // $scope.filterProducts(0);

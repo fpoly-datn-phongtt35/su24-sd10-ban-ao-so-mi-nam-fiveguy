@@ -17,6 +17,6 @@ public class CollarServiceImpl2 implements CollarService2 {
 
     @Override
     public List<Collar> getAllCollars() {
-        return collarRepository2.findAll();
+        return collarRepository2.findByStatus(1);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.demo.restController.sale;
 
 import com.example.demo.entity.Product;
+import com.example.demo.model.response.sale.ProductDTO;
 import com.example.demo.service.sale.ProductService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ public class ProductRestController2 {
     }
 
     @GetMapping("/filter")
-    public Page<Product> filterProducts(
+    public Page<ProductDTO> filterProducts(
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Long collarId,
             @RequestParam(required = false) Long wristId,

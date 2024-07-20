@@ -1,17 +1,21 @@
 package com.example.demo.service.sale.serviceImpl;
 
 import com.example.demo.entity.ProductSale;
+import com.example.demo.model.response.sale.ProductSaleDTO;
 import com.example.demo.repository.sale.ProductSaleRepository2;
+import com.example.demo.service.sale.ImageService2;
 import com.example.demo.service.sale.ProductSaleService2;
 import com.example.demo.untility.ProductSaleSpecification2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductSaleServiceImpl2 implements ProductSaleService2 {
@@ -24,6 +28,9 @@ public class ProductSaleServiceImpl2 implements ProductSaleService2 {
 //
 //    @Autowired
 //    private SaleService saleService;
+
+    @Autowired
+    private ImageService2 imageService2;
 
     @Override
     public ProductSale saveProductSale(ProductSale productSale) {
@@ -85,7 +92,7 @@ public class ProductSaleServiceImpl2 implements ProductSaleService2 {
 //    }
 
     @Override
-    public Page<ProductSale> filterProductSales(Long saleId, Long productId, Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId, Integer status, String searchTerm, Pageable pageable) {
+    public Page<ProductSaleDTO> filterProductSales(Long saleId, Long productId, Long categoryId, Long collarId, Long wristId, Long colorId, Long sizeId, Long materialId, Integer status, String searchTerm, Pageable pageable) {
         Specification<ProductSale> spec = Specification.where(null);
 
         if (saleId != null) {
@@ -119,7 +126,20 @@ public class ProductSaleServiceImpl2 implements ProductSaleService2 {
             spec = spec.and(ProductSaleSpecification2.containsSearchTerm(searchTerm));
         }
 
-        return productSaleRepository2.findAll(spec, pageable);
+        Page<ProductSale> productSalesPage = productSaleRepository2.findAll(spec, pageable);
+
+        List<ProductSaleDTO> productSaleDTOList = productSalesPage.getContent().stream()
+                .map(productSale -> new ProductSaleDTO(
+                        productSale.getId(),
+                        productSale.getProduct().getCode(),
+                        productSale.getProduct().getName(),
+                        imageService2.findImagesByProductId(productSale.getProduct().getId()),
+                        productSale.getProduct().getPrice(),
+                        productSale.getPromotionalPrice()
+                ))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(productSaleDTOList, pageable, productSalesPage.getTotalElements());
     }
 
 //    @Override

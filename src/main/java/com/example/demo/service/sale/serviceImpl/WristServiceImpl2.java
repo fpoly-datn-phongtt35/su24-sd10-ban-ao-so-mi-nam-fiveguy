@@ -16,6 +16,6 @@ public class WristServiceImpl2 implements WristService2 {
 
     @Override
     public List<Wrist> getAllWrists() {
-        return wristRepository2.findAll();
+        return wristRepository2.findByStatus(1);
     }
 }

@@ -17,6 +17,6 @@ public class MaterialServiceImpl2 implements MaterialService2 {
 
     @Override
     public List<Material> getAllMaterials() {
-        return materialRepository2.findAll();
+        return materialRepository2.findByStatus(1);
     }
 }

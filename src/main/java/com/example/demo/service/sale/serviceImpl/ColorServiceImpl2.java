@@ -16,6 +16,6 @@ public class ColorServiceImpl2 implements ColorService2 {
 
     @Override
     public List<Color> getAllColors() {
-        return colorRepository2.findAll();
+        return colorRepository2.findByStatus(1);
     }
 }

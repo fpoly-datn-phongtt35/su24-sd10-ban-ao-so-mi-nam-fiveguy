@@ -16,6 +16,6 @@ public class SizeServiceImpl2 implements SizeService2 {
 
     @Override
     public List<Size> getAllSizes() {
-        return sizeRepository2.findAll();
+        return sizeRepository2.findByStatus(1);
     }
 }

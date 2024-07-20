@@ -1,6 +1,7 @@
 package com.example.demo.restController.sale;
 
 import com.example.demo.entity.ProductSale;
+import com.example.demo.model.response.sale.ProductSaleDTO;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.sale.ProductSaleService2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,8 @@ public class ProductSaleRestController2 {
     @PostMapping("/addList")
     public ResponseEntity<List<ProductSale>> addProductSales(@RequestBody List<ProductSale> productSales) {
         List<ProductSale> savedProductSales = productSaleService2.addProductSales(productSales);
+        System.out.println(savedProductSales);
+        System.out.println(productSales);
         return ResponseEntity.ok(savedProductSales);
     }
 
@@ -96,7 +99,7 @@ public class ProductSaleRestController2 {
 //    }
 
     @GetMapping("/fillProductSale")
-    public Page<ProductSale> filterProductSales(
+    public Page<ProductSaleDTO> filterProductSales(
             @RequestParam(required = false) Long saleId,
             @RequestParam(required = false) Long productId,
             @RequestParam(required = false) Long categoryId,
