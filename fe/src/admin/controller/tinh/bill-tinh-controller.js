@@ -178,14 +178,29 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
 
             // Chuẩn bị dữ liệu cho BillHistory
             let dataCreateBillHistory = {
-                bill: createdBillId
+                bill: { id: createdBillId }
             };
 
             // Thêm BillHistory
-            $http.post(apiBillHistoryTinh + "/save", dataCreateBillHistory).then(function (response1) {
+            $http.post("http://localhost:8080/api/admin/bill-history-tinh" + "/save", dataCreateBillHistory).then(function (response1) {
                 console.log("Bill history created:", JSON.stringify(response1.data, null, 2));
             }).catch(function (error) {
                 console.error("Error creating bill history:", error);
+            });
+
+            // Chuẩn bị dữ liệu cho Auditlog
+            let dataCreateAuditLog = {
+                empCode: response.data.employee.code,
+                implementer: response.data.employee.fullName,
+                actionType: "Tạo hóa đơn",
+                detailedAction: "Nhân viên: " + response.data.employee.fullName + " đã tạo mơi hóa đơn với mã hóa đơn là " + response.data.code
+            };
+
+            // Thêm AuditLog
+            $http.post("http://localhost:8080/api/admin/audit-log" + "/save", dataCreateAuditLog).then(function (response2) {
+                console.log("Audit log created:", JSON.stringify(response2.data, null, 2));
+            }).catch(function (error) {
+                console.error("Error creating Audit log:", error);
             });
 
             $scope.getAllBill();
@@ -301,18 +316,37 @@ app.controller("tinh-bill-controller", function ($scope, $http) {
                 console.log('Bill detail saved successfully', response.data);
 
                 // Sau khi lưu chi tiết hóa đơn thành công, cập nhật chi tiết sản phẩm
-                $http.put("http://localhost:8080/api/admin/product-tinh" + "/update-quantity/" + `${productDetail.id}`, payloadProductDetail).then(function (response) {
-                    console.log('ProductDetail update successfully', response.data);
+                $http.put("http://localhost:8080/api/admin/product-tinh" + "/update-quantity/" + `${productDetail.id}`, payloadProductDetail).then(function (response1) {
+                    console.log('ProductDetail update successfully', response1.data);
                 }).catch(function (error) {
                     console.error('Error updating product detail', error);
                 });
 
-                $http.put("http://localhost:8080/api/admin/bill-tinh/update-bill-status-thanh-cong/" + `${$scope.idBill.id}`).then(function (response) {
-                    console.log('bill update successfully', response.data);
-                    $scope.getAllBill();
+                //ập nhật trạng thái của bill (chờ thanh toán  -> thành công)
+                $http.put("http://localhost:8080/api/admin/bill-tinh/update-bill-status-thanh-cong/" + `${$scope.idBill.id}`).then(function (response2) {
+                    console.log('bill update successfully', response2.data);
+                    $scope.getAllBill(0);
                 }).catch(function (error) {
                     console.error('Error updating bill', error);
                 });
+
+                // thêm auditlog khi nhân viên thanh toán
+                // Chuẩn bị dữ liệu cho Auditlog
+                let dataCreateAuditLog = {
+                    empCode: $scope.idBill.employee.code,
+                    implementer: $scope.idBill.employee.fullName,
+                    actionType: "Thanh toán đơn hàng",
+                    detailedAction: "Nhân viên: " + $scope.idBill.employee.fullName + " đã thanh toán đơn hàng có mã " + $scope.idBill.code,
+                };
+
+                // Thêm AuditLog
+                $http.post("http://localhost:8080/api/admin/audit-log" + "/save", dataCreateAuditLog).then(function (response2) {
+                    console.log("Audit log created:", JSON.stringify(response2.data, null, 2));
+                }).catch(function (error) {
+                    console.error("Error creating Audit log:", error);
+                });
+
+
             }).catch(function (error) {
                 console.error('Error saving bill detail', error);
             });

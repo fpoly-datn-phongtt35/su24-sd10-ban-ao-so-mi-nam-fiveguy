@@ -39,7 +39,7 @@ public class BillHistoryRestControllerTinh {
         return ResponseEntity.ok(billHistories);
     }
 
-    @PostMapping(value = "/save", produces = "text/plain")
+    @PostMapping(value = "/save", produces = "application/json")
     public BillHistory create(@RequestHeader("Authorization")String token,@RequestBody BillHistory bill){
         BillHistory bill1 = new BillHistory();
         Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);

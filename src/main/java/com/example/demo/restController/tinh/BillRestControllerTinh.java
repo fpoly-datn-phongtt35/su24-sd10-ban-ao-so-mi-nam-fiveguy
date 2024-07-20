@@ -50,22 +50,34 @@ public class BillRestControllerTinh {
         }
     }
 
-    @PostMapping(value = "/save", produces = "text/plain")
-    public Bill createBill(@RequestHeader("Authorization")String token,@RequestBody Bill bill){
+    @PostMapping(value = "/save", produces = "application/json")
+    public Bill createBill(@RequestHeader("Authorization") String token, @RequestBody Bill bill) {
         Bill bill1 = new Bill();
         Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
-//        Employee employee1 = new Employee();
+
         String randomCode = generateRandomCode(6);
         bill1.setCode(randomCode);
-        bill1.setEmployee(employee.get());;
+        bill1.setReciverName(bill.getReciverName());
+        bill1.setDeliveryDate(bill.getDeliveryDate());
+        bill1.setShippingFee(bill.getShippingFee());
+        bill1.setTransId(bill.getTransId());
+        bill1.setAddress(bill.getAddress());
+        bill1.setPhoneNumber(bill.getPhoneNumber());
+        bill1.setTotalAmount(bill.getTotalAmount());
+        bill1.setTotalAmountAfterDiscount(bill.getTotalAmountAfterDiscount());
+        bill1.setPaymentMethod(bill.getPaymentMethod());
+        bill1.setVoucher(bill.getVoucher());
+        bill1.setNote(bill.getNote());
+        bill1.setReason(bill.getReason());
+        bill1.setEmployee(employee.get());
         bill1.setCreatedAt(new Date());
         bill1.setCustomer(bill.getCustomer());
         bill1.setTypeBill(1);
         bill1.setStatus(1);
 
         return billRepositoryTinh.save(bill1);
-
     }
+
     private String generateRandomCode(int length) {
         String uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder randomCode = new StringBuilder();

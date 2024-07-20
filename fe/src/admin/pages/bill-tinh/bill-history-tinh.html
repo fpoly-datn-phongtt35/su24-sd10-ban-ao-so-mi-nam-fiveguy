@@ -38,8 +38,8 @@
 
                 <select class="form-select" ng-model="filterBillHistory.type">
                     <option selected value=""> Chọn loại hóa đơn</option>
-                    <option value="1">Bán Onl</option>
-                    <option value="2">Bán Off</option>
+                    <option value="0">Bán Onl</option>
+                    <option value="1">Bán Off</option>
                     <!-- <option value="3">Sắp diễn ra</option> -->
                     <!-- <option value="4">Tạm ngưng</option> -->
                 </select>
@@ -99,8 +99,8 @@
                             </td>
                             <!-- <td scope="col-1" class="css-text-overfolow">{{employee.bill.employee.fullName}}</td> -->
                             <td scope="col-1" class="css-text-overfolow">{{employee.createdBy}}</td>
-                            <td scope="col-1" class="css-text-overfolow">{{employee.createdAt}}</td>
-                            <td scope="col-1" class="css-text-overfolow">{{employee.type == 1 ? 'Bán onl':'Bán Off'}}
+                            <td scope="col-1" class="css-text-overfolow">{{formatDateTime(employee.createdAt)}}</td>
+                            <td scope="col-1" class="css-text-overfolow">{{employee.type == 0 ? 'Bán onl':'Bán Off'}}
                             </td>
                             <td scope="col-1" class="css-text-overfolow">{{employee.reason}}</td>
                             <td class="col-1.5" ng-switch="employee.bill.status">
@@ -150,8 +150,8 @@
             <div class="d-flex align-items-center">
                 <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                 <div>
-                    <input id="size" ng-model="size" ng-change="applyFiltersBillHistory()" value="1" type="number" max="100"
-                        min="1" class="form-control" style="width: 5rem;" required />
+                    <input id="size" ng-model="size" ng-change="applyFiltersBillHistory()" value="1" type="number"
+                        max="100" min="1" class="form-control" style="width: 5rem;" required />
                 </div>
             </div>
             <ul class="pagination">
