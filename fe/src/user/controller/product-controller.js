@@ -846,9 +846,9 @@ $scope.dataCity.ProvinceName;
         bill.address = fullAddress;
         bill.paymentMethod = $scope.selectedPayment;
 
-        console.log($scope.selectedVoucher)
         if ($scope.selectedVoucher != null) {
           delete $scope.selectedVoucher.selected;
+          delete $scope.selectedVoucher.valueVoucher;
           bill.voucher = $scope.selectedVoucher; 
         }
         
