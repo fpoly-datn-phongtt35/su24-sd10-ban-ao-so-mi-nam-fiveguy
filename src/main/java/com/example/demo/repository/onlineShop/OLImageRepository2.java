@@ -11,6 +11,11 @@ import java.util.List;
 @Repository
 public interface OLImageRepository2 extends JpaRepository<Image, Long> {
 
-    @Query("SELECT i.path FROM Image i WHERE i.product.id = :productId AND i.color.id = :colorId")
-    List<String> findPathsByProductIdAndColorId(Long productId, Long colorId);
+    @Query("SELECT i.path FROM Image i " +
+            "WHERE i.product.id = :productId " +
+            "AND i.color.id = :colorId " +
+            "AND i.status = 1")
+    List<String> findPathsByProductIdAndColorId(@Param("productId") Long productId,
+                                                @Param("colorId") Long colorId);
+
 }
