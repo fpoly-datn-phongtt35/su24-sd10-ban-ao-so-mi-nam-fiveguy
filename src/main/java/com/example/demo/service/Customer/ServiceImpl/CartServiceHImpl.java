@@ -2,28 +2,28 @@ package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.Cart;
 import com.example.demo.repository.Customer.CartRepositoryH;
-import com.example.demo.service.Customer.AccountService;
-import com.example.demo.service.Customer.CartService;
-import com.example.demo.service.Customer.CustomerService;
+import com.example.demo.service.Customer.AccountServiceH;
+import com.example.demo.service.Customer.CartServiceH;
+import com.example.demo.service.Customer.CustomerServiceH;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CartServiceImpl implements CartService {
+public class CartServiceHImpl implements CartServiceH {
 //OL
 
     @Autowired
-    private AccountService accountService;
+    private AccountServiceH accountServiceH;
 
     @Autowired
     private CartRepositoryH olCartRepositoryH;
 
     @Autowired
-    private CustomerService olCustomerService;
+    private CustomerServiceH olCustomerServiceH;
 
 //    @Autowired
-//    private CartService olCartService;
+//    private CartServiceH olCartService;
 
 //    @Autowired
 //    private CartDetailService olCartDetailService;
@@ -47,9 +47,9 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart saveAllProductDetail(JsonNode orderData) {
 //        String currentUsername =String.valueOf(orderData.get("username").asText());
-//        Optional<Account> account = accountService.findByAccountLogin(currentUsername);
+//        Optional<Account> account = accountServiceH.findByAccountLogin(currentUsername);
 //        if (account.isPresent()) {
-//            Optional<Customer> customer = Optional.ofNullable(olCustomerService.findByAccount_Id(account.get().getId()));
+//            Optional<Customer> customer = Optional.ofNullable(olCustomerServiceH.findByAccount_Id(account.get().getId()));
 //
 //            if (customer.isPresent()) {
 //                Cart cart = olCartRepository.findByCustomerId(customer.get().getId());

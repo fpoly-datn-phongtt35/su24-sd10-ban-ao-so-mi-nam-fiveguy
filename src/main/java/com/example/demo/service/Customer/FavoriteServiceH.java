@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public interface FavoriteService {
+public interface FavoriteServiceH {
     List<Favorite> getAllFavorite();
 
 //    Page<Favorite> getAll(Integer page);

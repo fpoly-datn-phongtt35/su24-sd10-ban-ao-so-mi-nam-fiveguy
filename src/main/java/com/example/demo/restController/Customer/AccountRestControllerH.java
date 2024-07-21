@@ -1,8 +1,7 @@
 package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Account;
-import com.example.demo.entity.Employee;
-import com.example.demo.service.Customer.AccountService;
+import com.example.demo.service.Customer.AccountServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,7 @@ import java.util.List;
 
 public class AccountRestControllerH {
     @Autowired
-    AccountService accountService;
+    AccountServiceH accountService;
 
     @GetMapping("")
     public ResponseEntity<List<Account>> getAllAccount() {
@@ -97,6 +96,15 @@ public class AccountRestControllerH {
     public ResponseEntity<?> saveAccountEmployee(@RequestBody Account accountEntity) {
         try {
             Account save = accountService.saveAccountEmployee(accountEntity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(save);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping("/saveAccountCustomer")
+    public ResponseEntity<?> saveAccountCustomer(@RequestBody Account accountEntity) {
+        try {
+            Account save = accountService.saveAccountCustomer(accountEntity);
             return ResponseEntity.status(HttpStatus.CREATED).body(save);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

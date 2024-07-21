@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.Optional;
 
-public interface AccountService {
+public interface AccountServiceH {
 
     List<Account> getAllAccount();
 
@@ -45,6 +45,8 @@ public interface AccountService {
 
 // //OL
     Optional<Account> findByAccountLogin(String username);
+
+    Account saveAccountCustomer(Account accountEntity);
 ////     List<UserRequestDTO> getAllAccount();
 ////    AccountEntity createAccount(AccountEntity accountEntity);
 //
