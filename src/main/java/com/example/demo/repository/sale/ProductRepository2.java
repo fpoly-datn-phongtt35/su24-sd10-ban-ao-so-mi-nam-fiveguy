@@ -16,7 +16,11 @@ public interface ProductRepository2 extends JpaRepository<Product, Long>, JpaSpe
     List<Product> findByProductSalesIsNullAndStatusEquals(int status);
 
 
-    @Query("SELECT DISTINCT ps.product FROM ProductSale ps WHERE ps.sale.endDate < :currentDate AND ps.product.status = 1")
+    @Query("SELECT ps.product FROM ProductSale ps " +
+            "WHERE ps.product.status = 1 " +
+            "GROUP BY ps.product " +
+            "HAVING COUNT(ps) = SUM(CASE WHEN ps.sale.endDate < :currentDate THEN 1 ELSE 0 END)")
     List<Product> findByProductSalesEndDateBefore(Date currentDate);
+
 
 }

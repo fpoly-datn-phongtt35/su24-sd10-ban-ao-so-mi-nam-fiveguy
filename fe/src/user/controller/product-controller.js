@@ -1224,48 +1224,66 @@ $scope.dataCity.ProvinceName;
   //     });
 
   // };
-$scope.selectBestVoucher = function() {
-
-
-
-  if (!$scope.customerVouchers || $scope.customerVouchers.length === 0) {
-    console.log("Không có vouchers để chọn.");
-    return;
-  }
-
-  // Sử dụng reduce để tìm best voucher dựa trên totalAmount và minimumTotalAmount
-  var bestVoucher = $scope.customerVouchers.reduce(function(minVoucher, currentVoucher) {
-    // Kiểm tra nếu voucher còn số lượng và totalAmount đủ lớn để áp dụng voucher này
-    if (currentVoucher.quantity > 0 && $scope.totalAmount >= currentVoucher.minimumTotalAmount) {
-      // Tính độ chênh lệch giữa totalAmount và minimumTotalAmount của voucher
-      var difference = $scope.totalAmount - currentVoucher.minimumTotalAmount;
-      // So sánh để chọn voucher có độ chênh lệch nhỏ nhất
-      return difference < minVoucher.difference ? { voucher: currentVoucher, difference: difference } : minVoucher;
+  $scope.selectBestVoucher = function() {
+    if (!$scope.customerVouchers || $scope.customerVouchers.length === 0) {
+      console.log("Không có vouchers để chọn.");
+      return;
     }
-    return minVoucher;
-  }, { voucher: null, difference: Infinity }).voucher; // Khởi tạo giá trị ban đầu cho minVoucher và difference
-
-  // Nếu tìm được voucher phù hợp, chọn và áp dụng
-  if (bestVoucher) {
+  
+    // Bước 1: Lọc danh sách voucher còn số lượng và đủ điều kiện áp dụng
+    var validVouchers = $scope.customerVouchers.filter(function(voucher) {
+      return voucher.quantity > 0 && $scope.totalAmount >= voucher.minimumTotalAmount;
+    });
+  
+    if (validVouchers.length === 0) {
+      console.log("Không tìm được voucher phù hợp.");
+      if ($scope.selectedVoucher) {
+        $scope.selectedVoucher.selected = false; // Bỏ chọn voucher trước đó
+      }
+      $scope.voucherData = null;
+      $scope.voucherMessage = '';
+      $scope.valueVoucher = 0;
+      $scope.totalAmountAfterDiscount = $scope.totalAmount;
+      return;
+    }
+  
+    // Bước 2: Tính toán giá trị giảm giá cho mỗi voucher
+    validVouchers.forEach(function(voucher) {
+      var valueVoucher = 0;
+      if (voucher.discountType === 1) {
+        // Percentage discount
+        var discountPercentage = voucher.value / 100;
+        valueVoucher = $scope.totalAmount * discountPercentage;
+        if (valueVoucher >= voucher.maximumReductionValue) {
+          valueVoucher = voucher.maximumReductionValue;
+        }
+      } else if (voucher.discountType === 2) {
+        // Fixed amount discount
+        valueVoucher = voucher.value;
+        if (valueVoucher >= voucher.maximumReductionValue) {
+          valueVoucher = voucher.maximumReductionValue;
+        }
+      }
+      voucher.valueVoucher = valueVoucher;
+    });
+  
+    // Bước 3: Tìm voucher có giá trị giảm giá cao nhất
+    var bestVoucher = validVouchers.reduce(function(prev, current) {
+      return (prev.valueVoucher > current.valueVoucher) ? prev : current;
+    });
+  
+    // Áp dụng voucher tốt nhất
     if ($scope.selectedVoucher) {
       $scope.selectedVoucher.selected = false; // Bỏ chọn voucher trước đó
     }
     $scope.selectedVoucher = bestVoucher;
     $scope.selectedVoucher.selected = true;
-    $scope.applyVoucher();
-  } else {
-    // Không tìm được voucher phù hợp
-    if ($scope.selectedVoucher) {
-      $scope.selectedVoucher.selected = false; // Bỏ chọn voucher trước đó
-    }
-
-    $scope.voucherData = null;
-    $scope.voucherMessage = '';
-    $scope.valueVoucher = 0;
-    $scope.totalAmountAfterDiscount = $scope.totalAmount;
-    console.log("Không tìm được voucher phù hợp.");
-  }
-};
+    $scope.valueVoucher = bestVoucher.valueVoucher;
+    $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
+  
+    console.log("Chọn voucher tốt nhất:", bestVoucher);
+  };
+  
 
 
 
@@ -1334,18 +1352,22 @@ $scope.selectBestVoucher = function() {
           // $scope.voucherData = voucherCopy;
   
           if ($scope.selectedVoucher.discountType === 1) {
-            // Percentage discount
+
+
             var discountPercentage = $scope.selectedVoucher.value / 100;
+
             $scope.valueVoucher = $scope.totalAmount * discountPercentage;
-            if ($scope.valueVoucher > $scope.selectedVoucher.maximumReductionValue) {
+
+            if ($scope.valueVoucher >= $scope.selectedVoucher.maximumReductionValue) {
               $scope.valueVoucher = $scope.selectedVoucher.maximumReductionValue;
             }
+
             $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
   
           } else if ($scope.selectedVoucher.discountType === 2) {
             // Fixed amount discount
             $scope.valueVoucher = $scope.selectedVoucher.value;
-            if ($scope.valueVoucher > $scope.selectedVoucher.maximumReductionValue) {
+            if ($scope.valueVoucher >= $scope.selectedVoucher.maximumReductionValue) {
               $scope.valueVoucher = $scope.selectedVoucher.maximumReductionValue;
             }
             $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
