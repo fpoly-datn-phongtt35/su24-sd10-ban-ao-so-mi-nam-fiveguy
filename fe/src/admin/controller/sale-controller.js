@@ -664,7 +664,6 @@ $scope.filterProductSale = function(page) {
                 return $scope.refreshDataProductSale(); // Recursive call to get the first page if the current page is empty
             } else {
                 $scope.productSales = response.data.content;
-                console.log($scope.productSales)
                 $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = page;
                 $scope.desiredPageProductSale = page + 1;
@@ -1096,7 +1095,6 @@ $scope.addAllProductSales = function() {
                     return $scope.filterProducts(0); // Recursive call to get the first page if the current page is empty
                 } else {
                     $scope.products = response.data.content;
-                    console.log($scope.products)
                     $scope.totalPagesProduct = response.data.totalPages;
                     $scope.currentPage = page;
                     $scope.desiredPageProduct = page + 1;
