@@ -56,7 +56,6 @@ public class NBillRestController {
                                @RequestParam(required = false) Integer status,
                                @RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "5") int size) {
-
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return billService
                 .searchBills(code, customerName, phoneNumber, typeBill, startDate, endDate, status,
@@ -125,6 +124,11 @@ public class NBillRestController {
 
     @GetMapping("/{billId}/paymentStatus")
     public ResponseEntity<?> getAllPaymentStatusByBillId(@PathVariable Long billId) {
+        return ResponseEntity.ok(paymentStatusService.getAllByBillId(billId));
+    }
+
+    @GetMapping("/{billId}/checkQuantity")
+    public ResponseEntity<?> checkQuantity(@PathVariable Long billId) {
         return ResponseEntity.ok(paymentStatusService.getAllByBillId(billId));
     }
 }

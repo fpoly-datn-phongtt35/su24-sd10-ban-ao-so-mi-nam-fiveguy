@@ -168,9 +168,16 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         console.log(data);
         $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
             $('#changeStatusModal').modal('hide');
+
             $scope.getBillById($scope.idBill);
             $scope.getBillHistoryByBillId();
         }).catch(function (error) {
+            $('#changeStatusModal').modal('hide');
+
+            if(response.data == null){
+                $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
+            }
+
             console.log("lỗi update status", error)
         });
 
@@ -604,13 +611,18 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.validateQuantityBd = function (bd, quantityNew) {
 
         //total quantity
-        if (quantityNew >= bd.productDetail.quantity + bd.quantity) {
-            bd.quantityNew = bd.productDetail.quantity + bd.quantity - 1;
+        // if (quantityNew >= bd.productDetail.quantity + bd.quantity) {
+        //     bd.quantityNew = bd.productDetail.quantity + bd.quantity - 1;
+        // }
+        if (quantityNew >= bd.productDetail.quantity) {
+            bd.quantityNew = bd.productDetail.quantity- 1;
         }
     };
 
     //update quantity in billDetail
     $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
+
+        if(newQuantity == null || newQuantity == undefined || newQuantity == "") return;
 
         // $scope.billDetails.forEach(function (bd) {
         //     if (bd == billDetail && newQuantity > bd.productDetail.quantity) {

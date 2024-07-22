@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 @Getter
-@ToString
+//@ToString
 @Builder
 @Entity
 @Table(name = "BrandSuppilers")

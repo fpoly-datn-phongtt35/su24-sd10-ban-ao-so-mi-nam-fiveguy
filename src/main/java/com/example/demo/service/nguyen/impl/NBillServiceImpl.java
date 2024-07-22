@@ -105,24 +105,24 @@ public class NBillServiceImpl implements NBillService {
             throw new EntityNotFoundException("Bill not found with id " + id);
         }
 
+        if (isQuantityExceedsProductDetail(id)) {
+            return null;
+        }
 
         Bill existingBill = optionalBill.get();
         existingBill.setReason(bill.getReason());
         existingBill.setStatus(bill.getStatus());
         existingBill.setCustomer(null);
-        System.out.println("aaaaaa" +existingBill);
+        System.out.println("aaaaaa" + existingBill);
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
                 billHistory.getDescription(), 1, billHistory.getReason(),
                 billHistory.getCreatedBy());
 
-        Bill returnBill = billRepository.save(existingBill);
+        updateQuantityProductDetail(existingBill.getId(), existingBill.getStatus());
 
-        if(returnBill.getStatus() == 2){
-            updateQuantityProductDetail(returnBill.getId(), returnBill.getStatus());
-        }
-
-        return returnBill;
+//        Bill returnBill = billRepository.save(existingBill);
+        return null;
     }
 
     @Override
@@ -171,10 +171,12 @@ public class NBillServiceImpl implements NBillService {
 
     @Transactional
     public void updateQuantityProductDetail1(Long billId, int newStatus) {
-        Bill bill = billRepository.findById(billId).orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
 
         if (newStatus == 2 && bill.getStatus() != 2) {
-            List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
+            List<BillDetail> billDetails = billDetailRepository
+                    .findAllByBillIdOrderByIdDesc(billId);
 
             for (BillDetail billDetail : billDetails) {
                 ProductDetail productDetail = billDetail.getProductDetail();
@@ -194,25 +196,23 @@ public class NBillServiceImpl implements NBillService {
     @Transactional
     public void updateQuantityProductDetail(Long billId, int newStatus) {
         System.out.println(billId + " " + newStatus);
-        Bill bill = billRepository.findById(billId).orElseThrow(() -> new IllegalArgumentException("Bill not found"));
-        System.out.println("idbill" +bill.getId());
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+        System.out.println("idbill" + bill.getId());
+        List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
         if (newStatus == 2) {
-            List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
-            System.out.println(billDetails);
 
-//            for (BillDetail billDetail : billDetails) {
-//                ProductDetail productDetail = billDetail.getProductDetail();
-//                int newQuantity = productDetail.getQuantity() - billDetail.getQuantity();
-//                if (newQuantity < 0) {
-//                    throw new IllegalArgumentException("Not enough product quantity");
-//                }
-//                productDetail.setQuantity(newQuantity);
-//                productDetailRepository.save(productDetail);
-//            }
+            for (BillDetail billDetail : billDetails) {
+                ProductDetail productDetail = billDetail.getProductDetail();
+                int newQuantity = productDetail.getQuantity() - billDetail.getQuantity();
+                if (newQuantity < 0) {
+                    throw new IllegalArgumentException("Not enough product quantity");
+                }
+                productDetail.setQuantity(newQuantity);
+                productDetailRepository.save(productDetail);
+            }
         } else if (newStatus == 5 || newStatus == 6) {
-            List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
-            System.out.println(billDetails);
-
+            System.out.println("aa");
             for (BillDetail billDetail : billDetails) {
                 ProductDetail productDetail = billDetail.getProductDetail();
                 int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
@@ -220,6 +220,24 @@ public class NBillServiceImpl implements NBillService {
                 productDetailRepository.save(productDetail);
             }
         }
+
+        bill.setStatus(newStatus);
+        billRepository.save(bill);
     }
 
+    @Transactional
+    public boolean isQuantityExceedsProductDetail(Long billId) {
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Bill not found with id " + billId));
+
+        List<BillDetail> billDetails = bill.getBillDetail();
+        for (BillDetail billDetail : billDetails) {
+            ProductDetail productDetail = billDetail.getProductDetail();
+            if (billDetail.getQuantity() > productDetail.getQuantity()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

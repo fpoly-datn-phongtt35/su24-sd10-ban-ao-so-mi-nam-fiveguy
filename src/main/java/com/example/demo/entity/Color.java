@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@ToString
+//@ToString
 @Entity
 @Table(name = "Colors")
 public class Color implements Serializable {
