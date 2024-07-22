@@ -767,6 +767,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     implementer: null,
     time: null,
   };
+  // $scope.filterAuditlog.time = $scope.filterAuditlog.time ? $scope.filterAuditlog.time.toISOString().split('T')[0] : null;
 
   $scope.getAllAuditLog = function (pageNumber) {
     let params = angular.extend({ pageNumber: pageNumber, size: $scope.size }, $scope.filterAuditlog);
@@ -783,6 +784,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   };
 
   $scope.applyFiltersAuditlog = function () {
+    // $scope.filterAuditlog.time = $scope.filterAuditlog.time ? $scope.filterAuditlog.time.toISOString().split('T')[0] : null;
     $scope.getAllAuditLog(0);
 
   };
