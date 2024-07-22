@@ -95,7 +95,7 @@ public class MoMoPaymentController {
             bill.setStatus(1);
             olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2);
 
-            bill.setTransId(transId);
+//            bill.setTransId(transId);
             olBillService.save(bill);
             response.sendRedirect(Config.fe_liveServer_Success);
 
