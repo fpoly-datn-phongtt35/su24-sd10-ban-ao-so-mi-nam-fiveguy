@@ -53,8 +53,8 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
     }
     $scope.getAll = function () {
         $http.get(apiCustomer).then(function (resp) {
-            $scope.employee = resp.data;
-            //   $scope.employee = angular.copy($scope.originalEmployee);
+            $scope.customer = resp.data;
+            //   $scope.customer = angular.copy($scope.originalCustomer);
         });
     };
     $scope.getAll();
@@ -324,20 +324,20 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
         }
     };
 
-    $scope.edit = function (employee) {
-        $scope.emailAccount = employee.account.email;
+    $scope.edit = function (customer) {
+        $scope.emailAccount = customer.account.email;
         // console.log($scope.emailAccount);
-        const birthDateNew = $scope.formatDate(employee.birthDate);
+        const birthDateNew = $scope.formatDate(customer.birthDate);
         if ($scope.formUpdate.updatedAt) {
-            $scope.formUpdate = angular.copy(employee);
+            $scope.formUpdate = angular.copy(customer);
         } else {
-            $scope.formUpdate = angular.copy(employee);
+            $scope.formUpdate = angular.copy(customer);
 
             $scope.formUpdate.updatedAt = new Date();
-            $scope.formInputAccount = angular.copy(employee.account);
+            $scope.formInputAccount = angular.copy(customer.account);
         }
         $scope.formUpdate.birthDate = new Date(birthDateNew);
-        $scope.formUpdate.avatar = angular.copy(employee.avatar);
+        $scope.formUpdate.avatar = angular.copy(customer.avatar);
     };
 
     $scope.formatDate = function (inputDate) {
@@ -389,8 +389,8 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
         imagePreview.src = "/src/admin/common/img/no-img.png";
         fileInput.value = "";
         fileInput.type = "file";
-        $scope.formCreateEmployee.$setPristine();
-        $scope.formCreateEmployee.$setUntouched();
+        $scope.formCreateCustomer.$setPristine();
+        $scope.formCreateCustomer.$setUntouched();
     };
 
     $scope.xuatFile = function () {
@@ -413,6 +413,7 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
     $scope.totalPages = 0;
     $scope.currentPage = 0;
     $scope.desiredPage = 1;
+    $scope.pageSize = 5;
     $scope.filters = {
         name: null,
         code: null,
@@ -424,7 +425,7 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
     };
 
     $scope.getCustomer = function (pageNumber) {
-        let params = angular.extend({ pageNumber: pageNumber }, $scope.filters);
+        let params = angular.extend({ pageNumber: pageNumber, size: $scope.pageSize }, $scope.filters);
         $http
             .get("http://localhost:8080/api/admin/customer/page", {
                 params: params,
@@ -682,8 +683,8 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
                     address: $scope.formInput.address,
                     avatar: $scope.uploadedImageData, // Add the image data here
                 };
-                const addEmployeesData = await $scope.addCustom(dataObject);
-                console.log("addEmployeesData = ", addEmployeesData);
+                const addCustomersData = await $scope.addCustom(dataObject);
+                console.log("addCustomersData = ", addCustomersData);
                 $scope.showSuccessNotification("Thêm thông tin thành công");
                 $scope.getCustomer(0);
                 $scope.resetFormInput();
@@ -692,7 +693,7 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
         } else {
             // Hiển thị lỗi
             $scope.showErrorNotification("Không thành công");
-            $scope.formCreateEmployee.$submitted = true;
+            $scope.formCreateCustomer.$submitted = true;
         }
     };
     // END thêm Khách hàng
@@ -729,11 +730,11 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
                         status: $scope.formUpdate.status,
                     };
                     console.log(dataObject);
-                    const updateEmployeesData = await $scope.updateCustomer(dataObject);
+                    const updateCustomersData = await $scope.updateCustomer(dataObject);
                     $scope.showSuccessNotification("Sửa thông tin thành công");
                     $scope.getCustomer(0);
                     $scope.resetFormUpdate();
-                    console.log("updateEmployeesData = ", updateEmployeesData);
+                    console.log("updateCustomersData = ", updateCustomersData);
                     $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
                 }
                 // $uibModalInstance.close(); // Đóng modal
@@ -765,7 +766,7 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
     };
 
     $scope.updateAccount = async (objectAccount) => {
-        // let email = $scope.edit(employee.account.email);
+        // let email = $scope.edit(customer.account.email);
 
         console.log($scope.emailAccount);
         try {
@@ -849,11 +850,11 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
                     status: $scope.formUpdate.status,
                 };
                 console.log(dataObject);
-                const updateEmployeesData = await $scope.updateCustomer(dataObject);
+                const updateCustomersData = await $scope.updateCustomer(dataObject);
                 $scope.getCustomer(0);
                 $scope.resetFormUpdate();
                 $scope.showSuccessNotification("Sửa thông tin thành công");
-                console.log("updateEmployeesData = ", updateEmployeesData);
+                console.log("updateCustomersData = ", updateCustomersData);
                 $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
             }
             // $uibModalInstance.close(); // Đóng modal
