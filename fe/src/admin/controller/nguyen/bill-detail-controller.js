@@ -182,6 +182,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         console.log(data);
         $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
+            
             $('#changeStatusModal').modal('hide');
 
             $scope.getBillById($scope.idBill);
@@ -192,7 +193,6 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             if(response.data == null){
                 $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
             }
-
             console.log("lỗi update status", error)
         });
 

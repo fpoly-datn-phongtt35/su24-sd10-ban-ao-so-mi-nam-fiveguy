@@ -105,9 +105,9 @@ public class NBillServiceImpl implements NBillService {
             throw new EntityNotFoundException("Bill not found with id " + id);
         }
 
-        if (isQuantityExceedsProductDetail(id) == 1 && optionalBill.get().getStatus() == 2) {
-            return null;
-        }
+//        if (isQuantityExceedsProductDetail(id) == 1 && optionalBill.get().getStatus() == 2) {
+//            return null;
+//        }
 
         Bill existingBill = optionalBill.get();
         existingBill.setReason(bill.getReason());
