@@ -1,10 +1,12 @@
 <link rel="stylesheet" href="/src/admin/pages/bill-nguyen/bill-detail.css">
 <div class="container mt-5">
     <h1 class="mb-4">Chi tiết hóa đơn</h1>
+
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
         Launch demo modal
-    </button>
+    </button> -->
+    
     <!-- TRẠNG THÁI ĐƠN HÀNG -->
     <div class="row  border rounded shadow mb-5 pt-3 bg-body">
         <div class="row">
@@ -183,9 +185,6 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
             </div>
         </div>
     </div>
@@ -193,7 +192,13 @@
     <!-- Bảng thông tin giao dịch -->
     <div class="row mt-4 rounded border p-3 shadow mb-5 bg-body">
         <div class="col">
-            <h5>Thông tin giao dịch</h5>
+            <div class="d-flex justify-content-between mb-3">
+                <h5 class="ms-3">Thông tin giao dịch</h5>
+                <div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentStatusModal">
+                        Chi tiết</button>
+                </div>
+            </div>
             <hr>
             <table class="table table-bordered table-striped table-hover">
                 <thead>
@@ -295,6 +300,46 @@
                             <label for="address" class="form-label">Địa chỉ cụ thể</label>
                             <input type="text" class="form-control" id="address" ng-model="updateBill.address">
                         </div>
+                        
+                        <!-- Tỉnh/Thành phố -->
+                        <div class="mb-3">
+                            <p class="mb-0">Tỉnh/Thành phố:</p>
+                            <div class="form-outline custom-bg">
+                                <select ng-model="dataCity" id="city" class="form-control"
+                                    ng-options="city as city.ProvinceName for city in cities"
+                                    ng-change="getDistrictsByProvince(dataCity.ProvinceID)">
+                                    <option value="">Chọn Tỉnh/Thành Phố:</option>
+                                </select>
+                            </div>
+                            <p style="color: red;" class="error-message" ng-if="isBillAddressCityInvalid">Vui lòng nhập
+                                thông tin này.</p>
+                        </div>
+                        <!-- Quận/Huyện -->
+                        <div class="mb-3">
+                            <p class="mb-0">Quận/Huyện:</p>
+                            <div class="form-outline custom-bg">
+                                <select ng-model="dataDistrict" id="district" class="form-control"
+                                    ng-options="district as district.DistrictName for district in districts"
+                                    ng-change="getWardsByDistrict(dataDistrict.DistrictID)">
+                                    <option value="">Chọn Quận/Huyện:</option>
+                                </select>
+                            </div>
+                            <p style="color: red;" class="error-message" ng-if="isBillAddressDistrictInvalid">Vui lòng
+                                nhập thông tin này.</p>
+                        </div>
+                        <!-- Phường/Xã -->
+                        <div class="mb-3">
+                            <p class="mb-0">Phường/Xã:</p>
+                            <div class="form-outline custom-bg">
+                                <select ng-model="dataWard" id="ward" class="form-control"
+                                    ng-options="ward as ward.WardName for ward in wards"
+                                    ng-change="calculateShippingFee(dataDistrict.DistrictID, dataWard.WardCode.toString())">
+                                    <option value="">Chọn Phường/Xã:</option>
+                                </select>
+                            </div>
+                            <p style="color: red;" class="error-message" ng-if="isBillAddressWardInvalid">Vui lòng nhập
+                                thông tin này.</p>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -340,7 +385,7 @@
                                 ng-change="updateBillDetailQuantity(bd.quantityNew, bd)"> -->
 
                             <input type="number" class="form-control" ng-value="bd.quantity" ng-model="bd.quantityNew"
-                                min="1"
+                                min="1" ng-disabled="![1, 2].includes(status)"
                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                 ng-change="validateQuantityBd(bd, bd.quantityNew)"
                                 ng-blur="updateBillDetailQuantity(bd.quantityNew, bd)">
@@ -558,20 +603,33 @@
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="addQuantityModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- Modal Lịch sử giao dịch-->
+    <div class="modal fade" id="paymentStatusModal" data-bs-backdrop="none" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Lịch sử giao dịch</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <table class="table text-center">
+                        <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Mã GD</th>
+                                <th scope="col">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="ps in listPaymentStatus">
+                                <td class="col-1">{{$index + 1}}</td>
+                                <td class="col-7">
+                                    {{ps.code}}
+                                </td>
+                                <td class="col-4"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -621,7 +679,6 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>

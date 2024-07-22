@@ -85,7 +85,13 @@
                             </span>
                         </td>
                         <td ng-if="currentTab == null" ng-switch="bill.status" style="font-size: 20px;">
-                            <span ng-switch-when="1">
+                            <span ng-repeat="s in status">
+                                <div class="badge text-wrap" ng-show="s.status == bill.status"
+                                    style="width: 65%;" ng-style="{'background-color': s.color}">
+                                    {{s.title}}
+                                </div>
+                            </span>
+                            <!-- <span ng-switch-when="1">
                                 <div class="badge bg-warning text-wrap" style="width: 65%;">
                                     Chờ xác nhận
                                 </div>
@@ -114,7 +120,7 @@
                                 <div class="badge bg-danger text-wrap" style="width: 65%;">
                                     Đã hủy
                                 </div>
-                            </span>
+                            </span> -->
                         </td>
                         <td>
                             <a type="button" class="edit" href="#/admin/bill/{{bill.id}}">

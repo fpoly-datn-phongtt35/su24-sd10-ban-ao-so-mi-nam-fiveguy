@@ -67,10 +67,6 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/voucher/voucher2.html",
       controller: "nguyen-voucher2-ctrl"
     })
-    .when("/admin/voucher/chart", {
-      templateUrl: "pages/voucher/voucher-chart.html",
-      controller: "nguyen-voucher-chart-ctrl"
-    })
     .when("/admin/bill", {
       templateUrl: "pages/bill-nguyen/bill.html",
       controller: "nguyen-bill-ctrl"
@@ -86,6 +82,14 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/billtest/:idBill", {
       templateUrl: "pages/bill-nguyen/testbill.html",
       controller: "test-bill-detail-ctrl"
+    })
+    .when("/admin/return-order", {
+      templateUrl: "pages/return-order-nguyen/return-order.html",
+      controller: "nguyen-return-order-ctrl"
+    })
+    .when("/admin/return-order/:idBill", {
+      templateUrl: "pages/return-order-nguyen/return-order-detail.html",
+      controller: "nguyen-return-order-detail-ctrl"
     })
     
     // <!-- Hải -->

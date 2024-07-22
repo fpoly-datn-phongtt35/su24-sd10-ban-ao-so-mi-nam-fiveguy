@@ -1,11 +1,14 @@
 package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.BillHistory;
+import com.example.demo.entity.ProductDetail;
 import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
 import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.BillSpecification;
+import com.example.demo.repository.nguyen.product.NProductDetailRepository;
 import com.example.demo.service.nguyen.NBillService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -29,6 +33,9 @@ public class NBillServiceImpl implements NBillService {
 
     @Autowired
     NBillDetailRepository billDetailRepository;
+
+    @Autowired
+    NProductDetailRepository productDetailRepository;
 
 
     @Override
@@ -106,7 +113,13 @@ public class NBillServiceImpl implements NBillService {
                 billHistory.getDescription(), 1, billHistory.getReason(),
                 billHistory.getCreatedBy());
 
-        return billRepository.save(existingBill);
+        Bill returnBill = billRepository.save(existingBill);
+
+        if(returnBill.getStatus() == 2){
+            updateQuantityProductDetail(returnBill.getId(), returnBill.getStatus());
+        }
+
+        return returnBill;
     }
 
     @Override
@@ -151,6 +164,57 @@ public class NBillServiceImpl implements NBillService {
         newHistory.setCreatedAt(new Date());
 
         billHistoryRepository.save(newHistory);
+    }
+
+    @Transactional
+    public void updateQuantityProductDetail1(Long billId, int newStatus) {
+        Bill bill = billRepository.findById(billId).orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+
+        if (newStatus == 2 && bill.getStatus() != 2) {
+            List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
+
+            for (BillDetail billDetail : billDetails) {
+                ProductDetail productDetail = billDetail.getProductDetail();
+                int newQuantity = productDetail.getQuantity() - billDetail.getQuantity();
+                if (newQuantity < 0) {
+                    throw new IllegalArgumentException("Not enough product quantity");
+                }
+                productDetail.setQuantity(newQuantity);
+                productDetailRepository.save(productDetail);
+            }
+        }
+
+//        bill.setStatus(newStatus);
+//        billRepository.save(bill);
+    }
+
+    @Transactional
+    public void updateQuantityProductDetail(Long billId, int newStatus) {
+        Bill bill = billRepository.findById(billId).orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+
+        if (newStatus == 2 && bill.getStatus() != 2) {
+            List<BillDetail> billDetails = bill.getBillDetail();
+            for (BillDetail billDetail : billDetails) {
+                ProductDetail productDetail = billDetail.getProductDetail();
+                int newQuantity = productDetail.getQuantity() - billDetail.getQuantity();
+                if (newQuantity < 0) {
+                    throw new IllegalArgumentException("Not enough product quantity");
+                }
+                productDetail.setQuantity(newQuantity);
+                productDetailRepository.save(productDetail);
+            }
+        } else if ((newStatus == 5 || newStatus == 6) && (bill.getStatus() != 5 && bill.getStatus() != 6)) {
+            List<BillDetail> billDetails = bill.getBillDetail();
+            for (BillDetail billDetail : billDetails) {
+                ProductDetail productDetail = billDetail.getProductDetail();
+                int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
+                productDetail.setQuantity(newQuantity);
+                productDetailRepository.save(productDetail);
+            }
+        }
+
+//        bill.setStatus(newStatus);
+//        billRepository.save(bill);
     }
 
 }

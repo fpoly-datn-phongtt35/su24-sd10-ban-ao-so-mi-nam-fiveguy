@@ -16,12 +16,12 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http) {
 
     $scope.tabs = [
         { label: 'Tất cả', status: null, count: 0 },
-        { label: 'Chờ xác nhận', status: 1, count: 0 },
-        { label: 'Đã xác nhận', status: 2, count: 0 },
-        { label: 'Chờ giao hàng', status: 3, count: 0 },
-        { label: 'Đang giao hàng', status: 4, count: 0 },
-        { label: 'Hoàn thành', status: 5, count: 0 },
-        { label: 'Đã hủy', status: 6, count: 0 }
+        // { label: 'Chờ xác nhận', status: 1, count: 0 },
+        // { label: 'Đã xác nhận', status: 2, count: 0 },
+        // { label: 'Chờ giao hàng', status: 3, count: 0 },
+        // { label: 'Đang giao hàng', status: 4, count: 0 },
+        // { label: 'Hoàn thành', status: 5, count: 0 },
+        // { label: 'Đã hủy', status: 6, count: 0 }
     ];
 
     $scope.bills = [];
@@ -132,4 +132,19 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http) {
     // Initialize
     $scope.countBillsByStatus();
     $scope.setTab(null);
+
+    $scope.status = {
+        1: { title: "Chờ xác nhận", icon: "schedule", status: 1, color: "#007bff" },
+        2: { title: "Chờ vận chuyển", icon: "local_shipping", status: 2, color: "#ffc107" },
+        3: { title: "Đang giao", icon: "directions_car", status: 3, color: "#17a2b8" },
+        4: { title: "Thành công", icon: "check_circle", status: 4, color: "#4dd100" },
+        5: { title: "Đã hủy", icon: "person_cancel", status: 5, color: "#dc3545" },
+        6: { title: "Đã hủy", icon: "block", status: 6, color: "#dc3545" },
+        7: { title: "Thất bại", icon: "cancel", status: 7, color: "#828282" },
+        8: { title: "Thất bại", icon: "cancel", status: 8, color: "#828282" },
+        81: { title: "Thất bại", icon: "cancel", status: 81, color: "#828282" },
+        9: { title: "Chờ giao lại", icon: "autorenew", status: 9, color: "#ffc107" },
+        10: { title: "Đang giao lại", icon: "directions_car", status: 10, color: "#17a2b8" },
+        11: { title: "Hoàn hàng", icon: "warehouse", status: 11, color: "#ed79ff" }
+    };
 });

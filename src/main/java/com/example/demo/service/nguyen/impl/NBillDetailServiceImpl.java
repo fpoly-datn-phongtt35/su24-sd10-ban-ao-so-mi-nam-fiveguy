@@ -94,8 +94,8 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             billRepository.save(bill);
 
             // Update the ProductDetail quantity
-            productDetail.setQuantity(productDetail.getQuantity() - quantity);
-            productDetailRepository.save(productDetail);
+//            productDetail.setQuantity(productDetail.getQuantity() - quantity);
+//            productDetailRepository.save(productDetail);
 
             return existingBillDetail;
         } else {
@@ -118,8 +118,8 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             billRepository.save(bill);
 
             // Update the ProductDetail quantity
-            productDetail.setQuantity(productDetail.getQuantity() - quantity);
-            productDetailRepository.save(productDetail);
+//            productDetail.setQuantity(productDetail.getQuantity() - quantity);
+//            productDetailRepository.save(productDetail);
 
             return billDetail;
         }
@@ -142,8 +142,8 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 
         // Update the ProductDetail quantity
         ProductDetail productDetail = billDetail.getProductDetail();
-        productDetail.setQuantity(productDetail.getQuantity() + billDetail.getQuantity());
-        productDetailRepository.save(productDetail);
+//        productDetail.setQuantity(productDetail.getQuantity() + billDetail.getQuantity());
+//        productDetailRepository.save(productDetail);
 
         // Save the updated Bill
         billRepository.save(bill);
@@ -170,8 +170,8 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         billDetail.setQuantity(newQuantity);
 
         // Update the ProductDetail quantity
-        productDetail.setQuantity(productDetail.getQuantity() - quantityDifference);
-        productDetailRepository.save(productDetail);
+//        productDetail.setQuantity(productDetail.getQuantity() - quantityDifference);
+//        productDetailRepository.save(productDetail);
 
         // Update the Bill's total amount
         BigDecimal amountDifference = billDetail.getPrice()
