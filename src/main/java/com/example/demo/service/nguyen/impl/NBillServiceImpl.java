@@ -105,7 +105,7 @@ public class NBillServiceImpl implements NBillService {
             throw new EntityNotFoundException("Bill not found with id " + id);
         }
 
-        if (isQuantityExceedsProductDetail(id) == 1) {
+        if (isQuantityExceedsProductDetail(id) == 1 && optionalBill.get().getStatus() == 2) {
             return null;
         }
 
@@ -113,7 +113,6 @@ public class NBillServiceImpl implements NBillService {
         existingBill.setReason(bill.getReason());
         existingBill.setStatus(bill.getStatus());
         existingBill.setCustomer(null);
-        System.out.println("aaaaaa" + existingBill);
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
                 billHistory.getDescription(), 1, billHistory.getReason(),
@@ -121,8 +120,8 @@ public class NBillServiceImpl implements NBillService {
 
         updateQuantityProductDetail(existingBill.getId(), existingBill.getStatus());
 
-//        Bill returnBill = billRepository.save(existingBill);
-        return null;
+        Bill returnBill = billRepository.save(existingBill);
+        return returnBill;
     }
 
     @Override
@@ -221,8 +220,8 @@ public class NBillServiceImpl implements NBillService {
             }
         }
 
-        bill.setStatus(newStatus);
-        billRepository.save(bill);
+//        bill.setStatus(newStatus);
+//        billRepository.save(bill);
     }
 
     @Override
