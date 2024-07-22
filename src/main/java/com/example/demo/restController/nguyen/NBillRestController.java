@@ -129,6 +129,6 @@ public class NBillRestController {
 
     @GetMapping("/{billId}/checkQuantity")
     public ResponseEntity<?> checkQuantity(@PathVariable Long billId) {
-        return ResponseEntity.ok(paymentStatusService.getAllByBillId(billId));
+        return ResponseEntity.ok(billService.isQuantityExceedsProductDetail(billId));
     }
 }

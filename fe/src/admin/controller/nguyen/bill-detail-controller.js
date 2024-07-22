@@ -151,6 +151,21 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             }
         }
 
+        if(statusUpdate == 2){
+            $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
+                $('#changeStatusModal').modal('hide');
+                if(response.data == 1){
+                    $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
+                    return;
+                }
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
+            }).catch(function (error) {
+    
+                console.log("lỗi update status check quantity", error)
+            });
+        }
+
         let bill = angular.copy($scope.billResponse);
         bill.reason = reasonUpdate.value
         bill.status = statusUpdate;

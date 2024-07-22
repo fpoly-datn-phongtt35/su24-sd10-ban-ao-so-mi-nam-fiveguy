@@ -26,4 +26,6 @@ public interface NBillService {
 
     Bill updateShipmentDetail(Bill bill, Long id, String fullName);
 
+    Integer isQuantityExceedsProductDetail(Long idBill);
+
 }

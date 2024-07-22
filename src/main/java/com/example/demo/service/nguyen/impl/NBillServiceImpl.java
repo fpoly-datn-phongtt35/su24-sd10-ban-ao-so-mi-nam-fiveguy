@@ -105,7 +105,7 @@ public class NBillServiceImpl implements NBillService {
             throw new EntityNotFoundException("Bill not found with id " + id);
         }
 
-        if (isQuantityExceedsProductDetail(id)) {
+        if (isQuantityExceedsProductDetail(id) == 1) {
             return null;
         }
 
@@ -225,8 +225,9 @@ public class NBillServiceImpl implements NBillService {
         billRepository.save(bill);
     }
 
+    @Override
     @Transactional
-    public boolean isQuantityExceedsProductDetail(Long billId) {
+    public Integer isQuantityExceedsProductDetail(Long billId) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(
                         () -> new IllegalArgumentException("Bill not found with id " + billId));
@@ -235,9 +236,9 @@ public class NBillServiceImpl implements NBillService {
         for (BillDetail billDetail : billDetails) {
             ProductDetail productDetail = billDetail.getProductDetail();
             if (billDetail.getQuantity() > productDetail.getQuantity()) {
-                return true;
+                return 1;
             }
         }
-        return false;
+        return 0;
     }
 }
