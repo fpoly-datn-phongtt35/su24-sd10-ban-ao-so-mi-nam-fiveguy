@@ -30,8 +30,8 @@ public class Bill {
 //        @Column(name = "CreatedAt")
 //    private Date createdAt;
 
-//    @Column(name = "PaymentDate")
-//    private Date paymentDate;
+    @Column(name = "PaymentDate")
+    private Date paymentDate;
 
     @Column(name = "ReciverName", columnDefinition = "nvarchar(300)")
     private String reciverName;
@@ -41,6 +41,9 @@ public class Bill {
 
     @Column(name = "ShippingFee")
     private BigDecimal shippingFee;
+
+    @Column(name = "TransId")
+    private String transId;
 
     @Column(name = "AddressId")
     private String addressId;

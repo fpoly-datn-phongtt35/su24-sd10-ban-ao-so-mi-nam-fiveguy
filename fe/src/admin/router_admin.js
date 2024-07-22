@@ -20,13 +20,20 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/employee/employee.html",
       controller: "tinh-employee-controller",
     })
+
     .when("/admin/bil-tinh/create", {
       templateUrl: "pages/bill-tinh/bill-tinh-create.html",
       controller: "tinh-bill-controller",
     })
+
     .when("/admin/bil-history-tinh", {
       templateUrl: "pages/bill-tinh/bill-history-tinh.html",
       controller: "tinh-bill-history-controller",
+    })
+
+    .when("/admin/dashboard", {
+      templateUrl: "pages/dashboard.html",
+      controller: "DashboardController",
     })
     // end Tinh
     // <!-- Thưởng -->
