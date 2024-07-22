@@ -1,10 +1,12 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -44,7 +46,8 @@ public class BillDetail {
     @JoinColumn(name = "IdProductDetail", referencedColumnName = "Id")
     private ProductDetail productDetail;
 
-    @OneToOne(mappedBy = "billDetail", cascade = CascadeType.ALL)
-    private ReturnOrder returnOrder;
+    @JsonIgnore
+    @OneToMany(mappedBy = "billDetail",cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<ReturnOrder> returnOrder;
 
 }

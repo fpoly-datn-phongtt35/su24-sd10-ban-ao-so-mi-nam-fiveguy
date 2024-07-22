@@ -1,9 +1,12 @@
 package com.example.demo.repository.Customer;
 
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CustomerRepositoryH extends JpaRepository<Customer, Long> {
+public interface CustomerRepositoryH extends JpaRepository<Customer, Long>, JpaSpecificationExecutor<Customer> {
     // gen Code Tăng dần
     @Query("SELECT code FROM Customer code")
     List<Customer> genCode();
@@ -35,7 +38,13 @@ public interface CustomerRepositoryH extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByAccount_Id(Long accountId);
 
+    @Query("SELECT m FROM Customer m WHERE m.account.account = :status")
+    Customer getByAccount(String status);
+
+
     //Tịnh
     @Query("SELECT m FROM Customer m WHERE m.fullName = :fullName")
     Optional<Customer> findByFullName(String fullName);
+
+
 }

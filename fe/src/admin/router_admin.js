@@ -8,11 +8,12 @@ app.config(function ($routeProvider, $locationProvider) {
       controller: 'dashboardController'
     })
 
-    // <!-- Hiếu -->
-    .when("/admin/staff", {
-      templateUrl: "pages/staff/staff.html",
-      controller: "dashboardController",
-    })
+   // <!-- Hiếu -->
+   .when("/admin/customer", {
+    templateUrl: "pages/customer/customer.html",
+    controller: 'customerCtrl'
+
+  })
 
     // <!-- Tịnh -->
     .when("/admin/employee", {

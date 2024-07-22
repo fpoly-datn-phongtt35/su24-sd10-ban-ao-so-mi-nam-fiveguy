@@ -1,7 +1,7 @@
 package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Bill;
-import com.example.demo.service.Customer.BillService;
+//import com.example.demo.service.Customer.BillServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +23,7 @@ import java.util.List;
 
 public class BillRestControllerH {
 
+//<<<<<<< HEAD
 //    @Autowired
 //    BillService billService;
 //
@@ -82,4 +83,65 @@ public class BillRestControllerH {
 //        return ResponseEntity.ok(billService.getAllExportExcel());
 //    }
 
+//=======
+//    @Autowired
+//    BillServiceH billServiceH;
+//
+//    @GetMapping("")
+//    public ResponseEntity<List<Bill>> getAllBill(){
+//        List<Bill> bills = billServiceH.getAllBill();
+//        return ResponseEntity.ok(bills);
+//    }
+//    @PostMapping("")
+//    public ResponseEntity<?> createBill(@RequestBody Bill bill) {
+//        try {
+//            Bill createBill = billServiceH.createBill(bill);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(createBill);
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+//
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Bill> updateCustomer(@RequestBody Bill bill, @PathVariable Long id) {
+//        Bill bill1 = billServiceH.updateBill(bill, id);
+//        if (bill1 != null) {
+//            return ResponseEntity.ok(bill);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+//    @PutMapping("/status/{id}")
+//    public ResponseEntity<Bill> updateCustomer(@RequestBody Integer status, @PathVariable Long id) {
+//        Bill bill1 = billServiceH.updateStatus(status, id);
+//        if (bill1 != null) {
+//            return ResponseEntity.ok(bill1);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
+//        try {
+//            billServiceH.deleteBill(id);
+//            return ResponseEntity.noContent().build();
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+////    @GetMapping("/{id}/billDetail")
+////    public ResponseEntity<?> getProductDetail(@PathVariable("id") Long id){
+////        List<BillDetail> billDetails = billDetailService.getAllByBillId(id);
+////        return ResponseEntity.ok(billDetails);
+////    }
+//
+//    @GetMapping("/getAllExportExcel")
+//    public ResponseEntity<?> getAllExportExcel(){
+//        return ResponseEntity.ok(billServiceH.getAllExportExcel());
+//    }
+//
+//>>>>>>> 5b29be08974a2dd475d98b7b2e204919a591aa0e
 }

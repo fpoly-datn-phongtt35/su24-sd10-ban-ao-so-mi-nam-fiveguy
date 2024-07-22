@@ -3,8 +3,10 @@ package com.example.demo.service.Customer.ServiceImpl;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.ProductDetail;
 import com.example.demo.repository.Customer.BillRepositoryH;
-import com.example.demo.service.Customer.BillService;
-import com.example.demo.service.Customer.RatingService;
+//import com.example.demo.service.Customer.BillService;
+//import com.example.demo.service.Customer.BillServiceH;
+import com.example.demo.service.Customer.BillServiceH;
+import com.example.demo.service.Customer.RatingServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,12 +19,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BillServiceImpl implements BillService {
+public class BillServiceHImpl implements BillServiceH {
 
-//    @Autowired
-//    private BillRepositoryH billRepositoryH;
-//
 ////    @Autowired
+//<<<<<<< HEAD:src/main/java/com/example/demo/service/Customer/ServiceImpl/BillServiceImpl.java
+////    private BillRepositoryH billRepositoryH;
+//=======
 ////    ProductDetailService productDetailService;
 //
 ////    @Autowired
@@ -37,6 +39,175 @@ public class BillServiceImpl implements BillService {
 //    }
 //
 //    @Override
+//    public Bill getBillById(Long id) {
+//        return billRepositoryH.findById(id).orElse(null);
+//    }
+//
+//    @Override
+//    public Page<Bill> getAllBillPage(Integer page) {
+//        Pageable pageable = PageRequest.of(page, 1);
+//        return billRepositoryH.findAll(pageable);
+//    }
+//
+//    @Override
+//    public Bill createBill(Bill bill) {
+//        return billRepositoryH.save(bill);
+//    }
+//
+//    @Override
+//    public Bill updateBill(Bill bill, Long id) {
+//        Optional<Bill> existingBill = billRepositoryH.findById(id);
+//        if (existingBill.isPresent()){
+//            Bill bill1 = existingBill.get();
+//            bill1.setCode(bill.getCode());
+//            bill1.setCreatedAt(bill.getCreatedAt());
+////            bill1.setPaymentDate(bill.getPaymentDate());
+//            bill1.setTotalAmount(bill.getTotalAmount());
+//            bill1.setTotalAmountAfterDiscount(bill.getTotalAmountAfterDiscount());
+//            bill1.setReciverName(bill.getReciverName());
+//            bill1.setDeliveryDate(bill.getDeliveryDate());
+//            bill1.setShippingFee(bill.getShippingFee());
+//            bill1.setAddress(bill.getAddress());
+//            bill1.setPhoneNumber(bill.getPhoneNumber());
+////            bill1.setNote(bill.getNote());
+////            bill1.setCustomerEntity(bill.getCustomerEntity());
+//            bill1.setEmployee(bill.getEmployee());
+//            bill1.setPaymentMethod(bill.getPaymentMethod());
+//            bill1.setVoucher(bill.getVoucher());
+//            bill1.setStatus(bill.getStatus());
+//            return billRepositoryH.save(bill1);
+//        }else{
+//            throw new IllegalArgumentException("Không tìm thấy bill với Id "+ id);
+//        }
+//    }
+//
+//    @Override
+//    public void deleteBill(Long id) {
+//        if (billRepositoryH.existsById(id)){
+//            billRepositoryH.deleteById(id);
+//        }else{
+//            throw new IllegalArgumentException("Không tìm thấy bill với Id "+ id);
+//        }
+//    }
+//
+//    @Override
+//    public Bill updateStatus(Integer status, Long id) {
+//        Optional<Bill> existingBill = billRepositoryH.findById(id);
+//        if (existingBill.isPresent()){
+//            Bill bill1 = existingBill.get();
+//            bill1.setStatus(status);
+//            if(bill1.getPaymentMethod().getName().equals("COD") && status == 3){
+////                bill1.setPaymentDate(new Date());
+//            }
+//            if(status == 2){
+//                bill1.setDeliveryDate(new Date());
+//            }
+////            if(status == 4){
+////                List<BillDetail> billDetails = billDetailRepository.findAllByBillId(bill1.getId());
+////                for (BillDetail bd: billDetails) {
+////                    int quantity = bd.getQuantity();
+////                    ProductDetail pd = productDetailService.getById(bd.getProductDetail().getId());
+////                    pd.setStatus(1);
+////                    pd.setQuantity(pd.getQuantity() + quantity);
+////                    productDetailService.update(pd, pd.getId());
+////                    Product p = productService.getById(pd.getProduct().getId());
+////                    p.setStatus(1);
+////                    productService.update(p, p.getId());
+////                    productDetailService.updateStatus(1, pd.getId());
+////                }
+////            }
+//            return billRepositoryH.save(bill1);
+//        }else{
+//            throw new IllegalArgumentException("Không tìm thấy bill với Id "+ id);
+//        }
+//    }
+//
+//    @Override
+//    public List<Bill> getAllExportExcel() {
+//        return billRepositoryH.findAll();
+//    }
+//
+////OL
+//
+//    @Autowired
+//    private BillRepositoryH olProductDetailRepository;
+//
+////    @Autowired
+////    private BillDetailRepository olBillDetailRepository;
+//
+////    @Autowired
+////    private BillDetailService olBillDetailService;
+//
+////    @Autowired
+////    private ProductDetailService olProductDetailService;
+//
+////    @Autowired
+////    private VouchersRepository olVouchersRepository;
+//
+//    @Autowired
+//    private BillRepositoryH olBillRepositoryH;
+//
+//    @Autowired
+//    private RatingServiceH olRatingServiceH;
+//
+////    @Autowired
+////    private ProductService olProductService;
+//
+//
+////    public BillDetailResponse convertToOlBillDetailResponse(BillDetail billDetail) {
+////        BillDetailResponse response = new BillDetailResponse();
+////        response.setId(billDetail.getId());
+////        response.setQuantity(billDetail.getQuantity());
+////        response.setPrice(billDetail.getPrice());
+////        response.setBill(billDetail.getBill());
+////        response.setProductDetail(billDetail.getProductDetail());
+////        response.setStatus(billDetail.getStatus());
+////        List<RatingEntity> list = olRatingServiceH.findByBillDetail_Id(billDetail.getId());
+//>>>>>>> 5b29be08974a2dd475d98b7b2e204919a591aa0e:src/main/java/com/example/demo/service/Customer/ServiceImpl/BillServiceHImpl.java
+////
+//////    @Autowired
+//////    ProductDetailService productDetailService;
+////
+//////    @Autowired
+//////    ProductService productService;
+////
+//////    @Autowired
+//////    BillDetailRepository billDetailRepository;
+////
+////    @Override
+////    public List<Bill> getAllBill() {
+////        return billRepositoryH.findAllByOrderByCreatedAtDesc();
+////    }
+////
+//<<<<<<< HEAD:src/main/java/com/example/demo/service/Customer/ServiceImpl/BillServiceImpl.java
+//=======
+////
+////
+////        List<BillDetail> billDetails = BillDetailService.findByBill_IdAndStatus(bill.getId());
+////        List<BillDetailResponse> responses = new ArrayList<>();
+////
+////        for (BillDetail billDetail : billDetails) {
+////            BillDetailResponse response = convertToOlBillDetailResponse(billDetail);
+////            List<Rating> list = olRatingServiceH.findByBillDetail_Id(billDetail.getId());
+////
+////            if (list.isEmpty() || (!list.get(0).isRated())) {
+////                response.setRated(false); // Thiết lập thuộc tính 'rated' dựa trên điều kiện
+////            } else {
+////                response.setRated(true);
+////            }
+////
+////            responses.add(response);
+////        }
+////        olBillResponse.setBillDetail(responses);
+////
+////
+////// responses là danh sách đã được chuyển đổi và thiết lập 'rated' tương ứng
+////
+////        return olBillResponse;
+////    }
+//
+//>>>>>>> 5b29be08974a2dd475d98b7b2e204919a591aa0e:src/main/java/com/example/demo/service/Customer/ServiceImpl/BillServiceHImpl.java
+////    @Override
 //    public Bill getBillById(Long id) {
 //        return billRepositoryH.findById(id).orElse(null);
 //    }

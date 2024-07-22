@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public interface RatingService {
+public interface RatingServiceH {
     List<Rating> getAllRating();
 
 //    Page<Rating> getAll(Integer page);

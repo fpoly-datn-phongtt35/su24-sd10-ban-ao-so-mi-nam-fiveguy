@@ -22,11 +22,14 @@ public class ReturnOrder {
     @Column(name = "Quantity")
     private Integer quantity;
 
+    @Column(name = "Type")
+    private int type;
+
     @ManyToOne
     @JoinColumn(name = "IdBill", referencedColumnName = "Id")
     private Bill bill;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "IdBillDetail", referencedColumnName = "Id")
     private BillDetail billDetail;
 

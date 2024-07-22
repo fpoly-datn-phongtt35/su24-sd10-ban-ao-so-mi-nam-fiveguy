@@ -2,11 +2,14 @@ package com.example.demo.service.Customer;
 
 import com.example.demo.entity.Customer;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface CustomerService {
+public interface CustomerServiceH {
+    // get all
     // get all
     List<Customer> getAll();
 
@@ -27,6 +30,9 @@ public interface CustomerService {
 
     //     List<Employees> searchMa(@PathVariable String ma);
     Page<Customer> searchMa(String ma, Integer page, Integer size);
-
+    Customer getByAccount(String account);
     List<Customer> getAllStatus(Integer status);
+
+    Page<Customer> findCustomer(String fullName, String code, String avatar, Date birthDate, Boolean gender, String address, String account, String email, String phoneNumber, Long id, Integer status, Pageable pageable);
+
 }

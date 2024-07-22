@@ -2,7 +2,7 @@ package com.example.demo.service.Customer.ServiceImpl;
 
 import com.example.demo.entity.CustomerType;
 import com.example.demo.repository.Customer.CustomerTypeRepositoryH;
-import com.example.demo.service.Customer.CustomerTypeService;
+import com.example.demo.service.Customer.CustomerTypeServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 @Service
-public class CustomerTypeServiceImpl implements CustomerTypeService {
+public class CustomerTypeServiceHImpl implements CustomerTypeServiceH {
     @Autowired
     CustomerTypeRepositoryH customerTypeRepositoryH;
 
