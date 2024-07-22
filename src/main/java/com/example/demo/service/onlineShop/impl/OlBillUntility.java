@@ -253,6 +253,7 @@ public static String encodeId(long id) {
         BillHistory billHistory = new BillHistory();
         billHistory.setStatus(statusBillHistory);
         billHistory.setCreatedBy(customer.getFullName());
+        billHistory.setType(1);
         billHistory.setBill(bill);
         olBillHistoryService2.save(billHistory);
             PaymentStatus paymentStatus = new PaymentStatus();
