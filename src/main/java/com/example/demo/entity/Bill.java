@@ -42,8 +42,8 @@ public class Bill {
     @Column(name = "ShippingFee")
     private BigDecimal shippingFee;
 
-    @Column(name = "TransId")
-    private String transId;  // Mã giao dịch Momo dùng để hoàn tiền
+    @Column(name = "AddressId")
+    private String addressId;
 
     @Column(name = "Address", columnDefinition = "nvarchar(300)")
     private String address;

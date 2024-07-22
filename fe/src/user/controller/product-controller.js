@@ -838,6 +838,15 @@ $scope.dataWard.WardName +
 $scope.dataDistrict.DistrictName +
 ', ' +
 $scope.dataCity.ProvinceName;
+
+var idFullAddress =
+$scope.dataWard.WardCode +
+', ' +
+$scope.dataDistrict.DistrictID +
+', ' +
+$scope.dataCity.ProvinceID;
+
+
 // $scope.selectedVoucher
         // Nếu thông tin đã đầy đủ, tiến hành gửi dữ liệu lên server
         var bill = angular.copy(this);
@@ -845,6 +854,7 @@ $scope.dataCity.ProvinceName;
         bill.totalAmountAfterDiscount = $scope.totalAmountAfterDiscount + $scope.shippingFee;
         bill.address = fullAddress;
         bill.paymentMethod = $scope.selectedPayment;
+        bill.addressId = idFullAddress;
 
         if ($scope.selectedVoucher != null) {
           delete $scope.selectedVoucher.selected;
