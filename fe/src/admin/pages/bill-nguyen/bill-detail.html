@@ -6,7 +6,7 @@
     <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
         Launch demo modal
     </button> -->
-    
+
     <!-- TRẠNG THÁI ĐƠN HÀNG -->
     <div class="row  border rounded shadow mb-5 pt-3 bg-body">
         <div class="row">
@@ -356,7 +356,7 @@
             <div class="d-flex justify-content-between mb-3">
                 <h5>Sản phẩm trong đơn hàng</h5>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBillDetail"
-                    ng-click="resetFilters()" ng-show="[1, 2].includes(status)">Thêm sản phẩm</button>
+                    ng-click="resetFilters()" ng-show="[1].includes(status)">Thêm sản phẩm</button>
             </div>
             <hr>
             <table class="table text-center">
@@ -385,7 +385,7 @@
                                 ng-change="updateBillDetailQuantity(bd.quantityNew, bd)"> -->
 
                             <input type="number" class="form-control" ng-value="bd.quantity" ng-model="bd.quantityNew"
-                                min="1" ng-disabled="![1, 2].includes(status)"
+                                min="1" ng-disabled="![1].includes(status)"
                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                 ng-change="validateQuantityBd(bd, bd.quantityNew)"
                                 ng-blur="updateBillDetailQuantity(bd.quantityNew, bd)">

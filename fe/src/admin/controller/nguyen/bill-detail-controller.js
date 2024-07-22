@@ -171,7 +171,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getBillById($scope.idBill);
             $scope.getBillHistoryByBillId();
         }).catch(function (error) {
-            console.log("lỗi update status")
+            console.log("lỗi update status", error)
         });
 
         // Xóa nội dung ghi chú sau khi xác nhận
