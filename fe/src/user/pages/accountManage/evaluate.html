@@ -1,0 +1,115 @@
+
+
+
+<section style="margin-top: 82px;" class="container-fluid" ng-init="listRatesFuc()">
+
+    
+      
+    <div style="margin-bottom: 40px;padding: 46px 64px;" class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+
+            <div class="account-page-title">
+                <span>Tài khoản của bạn</span>
+            </div>
+
+
+            <div class="collapsible-account-content">
+                <div class="block-title">
+                    <strong class="customer-name">{{userData.fullName}}</strong>
+                </div>
+                <div class="block-content block-collapsible-nav-content">
+     
+    
+                      
+                    <ul class="nav items">
+                        <li class="nav item current"><a href="#/home/account-info"><strong>Thông tin tài khoản</strong></a></li>
+                    </ul>
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-history">Lịch sử mua hàng</a></li>
+                    </ul>
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-address">Sổ địa chỉ</a></li>
+                    </ul>
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-favorite">Sản phẩm yêu thích</a></li>
+                    </ul>
+                    <ul  class="nav items"><li class="nav item current"><a href="#/home/account-evaluate">Đánh giá</a></li>
+                    </ul>
+                <hr>
+    
+                <ul class="nav items">
+                    <li class="nav item current"><a href=""   ng-click="logout()">Đăng xuất</a></li>
+                </ul>
+                </div>
+            </div>
+      
+        </div>
+        <div class="col-lg-9 col-md-6 col-sm-6 mb-4">
+           <div class="column-main">
+            <div class="page-title-wrapper">
+                <h1 class="page-title">
+                    <span class="base">Đánh giá</span>
+                </h1>
+            </div>
+            <div class="row">
+                
+                <div class="col-md-6 " ng-repeat="rate in listRates.content">
+                    <div class="rate-item">
+                        <div style="display: inline-block;">
+                            <div class="star-container" style="display: inline-block;">
+                                <span style="margin-right: 8px;" class="fa fa-star checked" ng-repeat="i in getNumber(rate.rate) track by $index"></span>
+                            </div>
+                        </div>
+                        <p><strong>Sản phẩm:</strong> 
+                            {{ rate.billDetail.productDetail.product.name }}
+                            {{ rate.billDetail.productDetail.product.category.name }}
+                            {{ rate.billDetail.productDetail.product.material.name }}
+                            {{ rate.billDetail.productDetail.product.code }}
+                        </p>
+                        <p><strong>Nội dung:</strong> {{ rate.content }}</p>
+                        <div style="display: flex;justify-content: space-between;    align-items: center;">
+                            <p>{{ rate.createdAt | date:'dd/MM/yyyy' }}</p>
+                            <div style="margin: 10px;">
+                                <!-- <button ng-click="deleteDataRate(rate.id)"  class="btn btn-outline-primary w-30">Xóa</button> -->
+                                <a href="#!product-detail/{{rate.billDetail.productDetail.product.id}}"  class="btn btn-primary">Xem sản phẩm</a>
+                            </div>
+         
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-12" ng-if="listRates && (listRates.totalPages !== 1)">
+                    <ul class="pagination">
+                        <li ng-class="{disabled: listRates.first}">
+                            <a href="#!/account-evaluate" ng-click="setCurrentPageRate(0)">
+                                <i class="fa fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li ng-class="{disabled: listRates.first}">
+                            <a href="#!/account-evaluate" ng-click="setCurrentPageRate(listRates.number - 1)">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        </li>
+                
+                        {{ listRates.number + 1 }}
+                        <li ng-class="{disabled: listRates.last}">
+                            <a href="#!/account-evaluate" ng-click="setCurrentPageRate(listRates.number + 1)">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li ng-class="{disabled: listRates.last}">
+                            <a href="#!/account-evaluate" ng-click="setCurrentPageRate(listRates.totalPages - 1)">
+                                <i class="fa fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+             
+            </div>
+            
+            
+           </div>
+        </div>
+    </div>
+</section>

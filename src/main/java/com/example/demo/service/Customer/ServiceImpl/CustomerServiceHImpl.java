@@ -1,10 +1,13 @@
 package com.example.demo.service.Customer.ServiceImpl;
 
 
+import com.example.demo.entity.Account;
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerType;
+import com.example.demo.entity.Role;
 import com.example.demo.repository.Customer.CustomerRepositoryH;
 import com.example.demo.repository.Customer.CustomerSpecificationH;
+import com.example.demo.repository.Customer.RoleCustomerRepositoryH;
 import com.example.demo.service.Customer.CustomerServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,8 @@ import java.util.Random;
 public class CustomerServiceHImpl implements CustomerServiceH {
     @Autowired
     CustomerRepositoryH customerRepositoryH;
+    @Autowired
+    RoleCustomerRepositoryH roleRepository;
 
     // get all Customer
     @Override
@@ -58,6 +63,12 @@ public class CustomerServiceHImpl implements CustomerServiceH {
     @Override
     public Customer create(Customer customers){
         Customer customers1 = new Customer();
+        Account account = new Account();
+        Role customerRole = roleRepository.findByFullName("CUSTOMER");
+        if (customerRole == null) {
+            // Xử lý trường hợp vai trò không tồn tại
+            throw new RuntimeException("Vai trò 'CUSTOMER' không tồn tại");
+        }
         CustomerType customerType = new CustomerType();
         customerType.setId(1L);
 

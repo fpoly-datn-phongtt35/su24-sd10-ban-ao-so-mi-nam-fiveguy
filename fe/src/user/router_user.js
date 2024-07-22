@@ -9,10 +9,15 @@ app.config(function ($routeProvider, $locationProvider) {
     
   })
     // <!-- Hiếu -->
-    .when("/home/customer", {
-      templateUrl: "pages/accountManage/customer.html",
+    .when("/home/customerProfile", {
+      templateUrl: "pages/accountManage/customerProfile.html",
       
-      controller: 'thongKeController'
+      controller: 'accountManage'
+    })
+    .when("/home/account-address", {
+      templateUrl: "pages/accountManage/address.html",
+      
+      controller: 'accountManage'
     })
     // <!-- Thưởng -->
  

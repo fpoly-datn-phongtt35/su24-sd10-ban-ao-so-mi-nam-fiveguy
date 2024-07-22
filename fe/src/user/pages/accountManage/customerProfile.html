@@ -1,0 +1,308 @@
+<style>
+    /* styles.css */
+
+    /* Đặt một số kiểu cơ bản cho toàn bộ trang */
+    body {
+        font-family: 'Roboto', sans-serif;
+        color: #333;
+        line-height: 1.6;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Container chính */
+    .container-fluid {
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tiêu đề tài khoản */
+    .account-page-title {
+        margin-bottom: 20px;
+    }
+
+    .account-page-title span {
+        font-size: 28px;
+        font-weight: 700;
+        color: #444;
+    }
+
+    /* Danh sách điều hướng */
+    .nav.items {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav.item {
+        margin-bottom: 10px;
+    }
+
+    .nav.item a {
+        text-decoration: none;
+        color: #007bff;
+        display: block;
+        padding: 12px 20px;
+        border-radius: 8px;
+        background-color: #f1f1f1;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .nav.item a:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    /* Nút đăng xuất */
+    .nav.item a.ng-click {
+        color: #dc3545;
+    }
+
+    .nav.item a.ng-click:hover {
+        background-color: #f8d7da;
+    }
+
+    /* Hình ảnh đại diện */
+    img.rounded-4.fit {
+        display: block;
+        margin: 0 auto;
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 3px solid #007bff;
+    }
+
+    /* Form cập nhật thông tin */
+    .form-edit-account {
+        margin-top: 30px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-edit-account .form-label {
+        font-weight: 500;
+        color: #444;
+    }
+
+    .form-edit-account .form-control {
+        border-radius: 6px;
+        padding: 12px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        transition: border-color 0.3s;
+    }
+
+    .form-edit-account .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    /* Thông báo lỗi */
+    .form-edit-account .error-message {
+        font-size: 14px;
+        color: #dc3545;
+        margin-top: -10px;
+    }
+
+    /* Button */
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Đáp ứng (Responsive) */
+    @media (max-width: 768px) {
+
+        .col-lg-3,
+        .col-lg-6,
+        .col-lg-9 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .btn-primary {
+            padding: 10px 20px;
+        }
+
+        img.rounded-4.fit {
+            width: 120px;
+            height: 120px;
+        }
+    }
+</style>
+<section style="margin-top: 82px;" class="container-fluid">
+
+
+
+    <div style="margin-bottom: 40px;padding: 46px 64px;" class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+
+            <div class="account-page-title">
+                <span>Tài khoản của bạn</span>
+            </div>
+
+
+            <div class="collapsible-account-content">
+                <div class="block-title">
+                    <strong class="customer-name">{{userData.fullName}}</strong>
+                </div>
+                <div class="block-content block-collapsible-nav-content">
+
+
+
+                    <ul class="nav items">
+                        <li class="nav item current"><a href="#/home/customerProfile"><strong>Thông tin tài
+                                    khoản</strong></a></li>
+                    </ul>
+                    <!-- <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-history">Lịch sử mua hàng</a></li>
+                    </ul> -->
+                    <ul class="nav items">
+                        <li class="nav item current"><a href="#/home/account-address">Sổ địa chỉ</a></li>
+                    </ul>
+                    <!-- <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-favorite">Sản phẩm yêu thích</a></li>
+                    </ul> -->
+                    <!-- <ul  class="nav items"><li class="nav item current"><a href="#/home/account-evaluate">Đánh giá</a></li>
+                    </ul> -->
+                    <hr>
+
+                    <ul class="nav items">
+                        <li class="nav item current"><a href="" ng-click="logout()">Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-9 col-md-6 col-sm-6 mb-4">
+    <div class="column-main">
+        <div class="page-title-wrapper">
+            <h1 class="page-title">
+                <span class="base">Thông tin tài khoản</span>
+            </h1>
+        </div>
+        <div class="row">
+            <!-- Form 1: Cập nhật ảnh và mật khẩu -->
+            <div class="block-account-information col-lg-6 col-md-6 col-sm-12 mb-4">
+                <!-- Hiển thị ảnh đại diện -->
+                <img style="width: 168px; height: 200px; margin: auto; margin-bottom: 30px;"
+                    class="rounded-4 fit" ng-src="{{ userData.avatar }}" />
+
+                <div class="row mb-3">
+                    <label for="image-update" class="col-sm-3 col-form-label">Hình Ảnh</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" name="path" type="file" id="image-update"
+                            ng-model="fileInput" ng-change="handleImageChange()" />
+                        <span ng-if="showError" class="error-message text-danger form-text">
+                            {{alertErrorImg}}
+                        </span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" ng-click="handleImageChange()">Cập nhật ảnh</button>
+
+                <form class="form-edit-account" style="margin-top: 40px;">
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">Mật khẩu mới:</label>
+                        <input ng-model="passwordData.newPassword" type="password" class="form-control"
+                            id="newPassword" placeholder="Nhập mật khẩu mới" required>
+                        <p style="color: red;"
+                            ng-if="!isPasswordValid() && passwordData.newPassword && passwordData.confirmNewPassword">
+                            Mật khẩu có độ dài tối thiểu 10 kí tự, viết Hoa, chứa kí tự số</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmNewPassword" class="form-label">Xác nhận mật khẩu mới:</label>
+                        <input ng-model="passwordData.confirmNewPassword" type="password" class="form-control"
+                            id="confirmNewPassword" placeholder="Nhập lại mật khẩu mới" required>
+                        <p ng-if="passwordData.newPassword !== passwordData.confirmNewPassword && passwordData.confirmNewPassword !== ''"
+                            style="color: red;">Mật khẩu không trùng khớp!</p>
+                    </div>
+
+                    <button ng-click="changePassword()" class="btn btn-primary">Đổi mật khẩu</button>
+                </form>
+            </div>
+
+            <!-- Form 2: Cập nhật thông tin cá nhân -->
+            <div class="personal-information col-lg-6 col-md-6 col-sm-12 mb-4">
+                <form class="form-edit-account">
+                    <div class="form-group mb-3" ng-class="{ 'has-error': isFullNameInvalid }">
+                        <label for="fullName" class="form-label">Họ và tên:</label>
+                        <input ng-model="userData.fullName" type="text" class="form-control" id="fullName"
+                            placeholder="Họ và tên">
+                        <p style="color: red;" class="error-message" ng-if="isFullNameInvalid">Họ và tên không
+                            được để trống.</p>
+                    </div>
+
+                    <div class="form-group mb-3" ng-class="{ 'has-error': isEmailInvalid }">
+                        <label for="email" class="form-label">Email:</label>
+                        <input ng-model="userData.account.email" type="email" class="form-control" id="email"
+                            placeholder="Email">
+                        <p style="color: red;" class="error-message" ng-if="isEmailInvalid">Email không hợp lệ.
+                        </p>
+                    </div>
+
+                    <div class="form-group mb-3" ng-class="{ 'has-error': isPhoneNumberInvalid }">
+                        <label for="phoneNumber" class="form-label">Số điện thoại:</label>
+                        <input ng-model="userData.account.phoneNumber" type="tel" class="form-control"
+                            id="phoneNumber" placeholder="Số điện thoại">
+                        <p style="color: red;" class="error-message" ng-if="isPhoneNumberInvalid">Số điện thoại
+                            không hợp lệ.</p>
+                    </div>
+
+                    <div style="display: flex; margin: 14px 0px;" class="form-group"
+                        ng-class="{ 'has-error': isGenderInvalid }">
+                        <label style="margin-right: 16px;">Giới tính:</label>
+                        <div class="form-check" style="margin-right: 16px;">
+                            <input class="form-check-input" type="radio" id="male" ng-model="userData.gender"
+                                ng-value="true">
+                            <label class="form-check-label" for="male">Nam</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="female" ng-model="userData.gender"
+                                ng-value="false">
+                            <label class="form-check-label" for="female">Nữ</label>
+                        </div>
+                        <p style="color: red;" class="error-message" ng-if="isGenderInvalid">Vui lòng chọn giới
+                            tính.</p>
+                    </div>
+
+                    <button class="btn btn-primary" ng-click="updateAccount(userData)">Cập nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+</section>
+
+<!-- <div class="form-group mb-3">
+                        <label for="birthday">Ngày sinh:</label>
+                        <input type="date" class="form-control" id="birthday" ng-model="birthDate ">
+                    </div> -->
+<!-- <div>
+                        <label>Ngày sinh hiện tại: {{ userData.birthDate }}</label>
+                    </div>
+                    
+                    <div>
+                        <label>Ngày sinh hiện tại: {{ birthDate }}</label>
+                    </div>
+                     -->

@@ -89,7 +89,7 @@ public class CustomerRestControllerH {
     }
 
 
-    //Thêm Employee
+    //Thêm customer
 
     @PostMapping("/save")
     public ResponseEntity<?> create(@RequestBody Customer customers) {
@@ -102,14 +102,14 @@ public class CustomerRestControllerH {
 
     }
 
-    // delete Employee
+    // delete customer
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         customerService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    //update employee
+    //update customer
     @PutMapping("/{id}")
     public ResponseEntity<Customer> update(@PathVariable Long id, @RequestBody Customer customers) {
         customerService.update(id, customers);

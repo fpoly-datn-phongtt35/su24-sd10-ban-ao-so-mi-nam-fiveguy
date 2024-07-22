@@ -1,0 +1,290 @@
+
+<style>
+    /* styles.css */
+
+/* Đặt một số kiểu cơ bản cho toàn bộ trang */
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container chính */
+.container-fluid {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề tài khoản */
+.account-page-title {
+    margin-bottom: 20px;
+}
+
+.account-page-title span {
+    font-size: 28px;
+    font-weight: 700;
+    color: #444;
+}
+
+/* Danh sách điều hướng */
+.nav.items {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav.item {
+    margin-bottom: 10px;
+}
+
+.nav.item a {
+    text-decoration: none;
+    color: #007bff;
+    display: block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav.item a:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Nút đăng xuất */
+.nav.item a.ng-click {
+    color: #dc3545;
+}
+
+.nav.item a.ng-click:hover {
+    background-color: #f8d7da;
+}
+
+/* Hình ảnh đại diện */
+img.rounded-4.fit {
+    display: block;
+    margin: 0 auto;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #007bff;
+}
+
+/* Form cập nhật thông tin */
+.form-edit-account {
+    margin-top: 30px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-edit-account .form-label {
+    font-weight: 500;
+    color: #444;
+}
+
+.form-edit-account .form-control {
+    border-radius: 6px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+}
+
+.form-edit-account .form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Thông báo lỗi */
+.form-edit-account .error-message {
+    font-size: 14px;
+    color: #dc3545;
+    margin-top: -10px;
+}
+
+/* Button */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Đáp ứng (Responsive) */
+@media (max-width: 768px) {
+    .col-lg-3, .col-lg-6, .col-lg-9 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-primary {
+        padding: 10px 20px;
+    }
+
+    img.rounded-4.fit {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+</style>
+
+<section style="margin-top: 82px;" class="container-fluid" ng-init="getAddressList()">
+
+      
+    <div style="margin-bottom: 40px;padding: 46px 64px;" class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+
+            <div class="account-page-title">
+                <span>Tài khoản của bạn</span>
+            </div>
+
+
+            <div class="collapsible-account-content">
+                <div class="block-title">
+                    <strong class="customer-name">{{userData.fullName}}</strong>
+                </div>
+                <div class="block-content block-collapsible-nav-content">
+     
+    
+                      
+                    <ul class="nav items">
+                        <li class="nav item current"><a href="#/home/customerProfile"><strong>Thông tin tài khoản</strong></a></li>
+                    </ul>
+                    <!-- <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-history">Lịch sử mua hàng</a></li>
+                    </ul> -->
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-address">Sổ địa chỉ</a></li>
+                    </ul>
+                    <!-- <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-favorite">Sản phẩm yêu thích</a></li>
+                    </ul> -->
+                    <!-- <ul  class="nav items"><li class="nav item current"><a href="#/home/account-evaluate">Đánh giá</a></li>
+                    </ul> -->
+                <hr>
+    
+                <ul class="nav items">
+                    <li class="nav item current"><a href=""   ng-click="logout()">Đăng xuất</a></li>
+                </ul>
+                </div>
+            </div>
+      
+        </div>
+        <div class="col-lg-9 col-md-6 col-sm-6 mb-4">
+           <div class="column-main">
+            <div class="page-title-wrapper">
+                <h1 class="page-title">
+                    <span class="base">Địa chỉ của tôi</span>
+                </h1>
+            </div>
+         <div class="row">
+            
+            <!-- <div class="block-account-information col-lg-6 col-md-6 col-sm-6 mb-4" style="height: 580px; overflow-y: auto;">
+                <div ng-repeat="address in addressList" class="account-address__item">
+                    <div class="address-info">
+                        <span class="address-line">
+                            <div class="account-address__head"><strong>Họ và tên:</strong>  {{  address.name }}</div>
+                            <div class="actions">
+                                <button class="btn-update btn btn-primary" ng-click="fillDataToUpdate(address)">Cập nhật</button>
+                                <button class="btn-delete btn btn-primary" ng-click="deleteDataAddress(address.id)">Xóa</button>
+                            </div>
+                        </span>
+                        <div><strong>Số điện thoại:</strong> {{ address.phoneNumber }}</div>
+                        <div><strong>Địa chỉ:</strong> {{ address.address }}</div>
+                        <div ng-if="address.defaultAddress" class="default-address">Địa chỉ mặc định</div>
+                    </div>
+                </div>
+            </div> -->
+            
+            
+            
+            
+            
+                
+            <div class="personal-information col-lg-8 col-md-6 col-sm-6 mb-4">
+                <form class="form-edit-account">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Họ và tên:</label>
+                        <input type="text" class="form-control"  id="name" ng-model="addressData.name">
+                        <p style="color: red;" class="error-message" ng-if="isNameUserAddressInvalid">Vui lòng nhập thông tin này.</p>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Số điện thoại:</label>
+                        <input type="tel" class="form-control" id="phoneNumber" ng-model="addressData.phoneNumber">
+                        <p style="color: red;" class="error-message" ng-if="isPhoneNumberAddressInvalid">Số điện thoại không hợp lệ.</p>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Địa chỉ:</label>
+                        <input type="text" class="form-control" id="address" ng-model="addressData.addressDetail">
+                        <p style="color: red;" class="error-message" ng-if="isNameDetailAddressInvalid">Vui lòng nhập thông tin này.</p>
+                    </div>
+                
+             <!-- Tỉnh/Thành phố -->
+                  <div class="mb-3">
+                    <label for="city" class="form-label">Tỉnh/Thành phố:</label>
+                    <select ng-model="dataCity" class="form-control" ng-options="city as city.ProvinceName for city in cities" ng-change="getDistrictsByProvince(dataCity.ProvinceID)">
+                      <option value="">Chọn Tỉnh/Thành phố</option>
+                    </select>
+                    <p style="color: red;" class="error-message" ng-if="isCityAddressInvalid">Vui lòng nhập thông tin này.</p>
+                  </div>
+
+                  <!-- Quận/Huyện -->
+                  <div class="mb-3">
+                    <label for="district" class="form-label">Quận/Huyện:</label>
+                    <select ng-model="dataDistrict" class="form-control" ng-options="district as district.DistrictName for district in districts" ng-change="getWardsByDistrict(dataDistrict.DistrictID)">
+                      <option value="">Chọn Quận/Huyện</option>
+                    </select>
+                    <p style="color: red;" class="error-message" ng-if="isDistrictAddressInvalid">Vui lòng nhập thông tin này.</p>
+                  </div>
+
+
+                  <div class="mb-3">
+                    <label for="district" class="form-label">Phường/Xã:</label>
+                    <select ng-model="dataWard" class="form-control" ng-options="ward as ward.WardName for ward in wards" ng-change="calculateShippingFee(dataDistrict.DistrictID, dataWard.WardCode.toString())">
+                      <option value="">Chọn Phường/Xã</option>
+                    </select>
+                    <p style="color: red;" class="error-message" ng-if="isWardAddressInvalid">Vui lòng nhập thông tin này.</p>
+                  </div>
+
+                
+                    <div class="mb-3 form-check">   
+                        <input type="checkbox" class="form-check-input" id="defaultAddress" ng-model="addressData.defaultAddress" >
+                        <label class="form-check-label" for="defaultAddress">Đặt làm địa chỉ mặc định</label>
+                    </div>
+                    <button ng-click="updateAddress()" class="btn btn-primary">Cập nhật</button>
+                    <button ng-click="addAddress()" class="btn btn-primary">
+                        Thêm địa chỉ mới
+                      </button>
+                </form>
+                
+            </div>
+
+
+
+            
+         </div>
+           </div>
+        </div>
+    </div>
+</section>
