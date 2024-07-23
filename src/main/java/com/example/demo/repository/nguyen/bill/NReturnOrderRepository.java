@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface NReturnOrderRepository extends JpaRepository<ReturnOrder, Long> {
 
-    List<ReturnOrder> findAllReturnOrdersByBillId(Long billId);
+    //              find all returnOrder by bill id - orderBy createAt desc
+    List<ReturnOrder> findAllReturnOrdersByBillIdOrderByCreatedAtDesc(Long billId);
 }

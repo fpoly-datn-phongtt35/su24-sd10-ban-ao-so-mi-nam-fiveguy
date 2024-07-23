@@ -201,3 +201,20 @@ body {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
+
+
+.table-scroll-bill {
+    height: 520px; /* Adjust the height to show 3 rows */
+    overflow-y: auto;
+}
+
+.table-scroll-return {
+    height: 400px; /* Adjust the height to show 3 rows */
+    overflow-y: auto;
+}
+
+
+input.largerCheckbox {
+    width: 15px;
+    height: 15px;
+}

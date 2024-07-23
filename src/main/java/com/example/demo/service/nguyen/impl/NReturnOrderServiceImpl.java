@@ -16,6 +16,6 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
 
     @Override
     public List<ReturnOrder> findAllReturnOrdersByBillId(Long billId) {
-        return returnOrderRepository.findAllReturnOrdersByBillId(billId);
+        return returnOrderRepository.findAllReturnOrdersByBillIdOrderByCreatedAtDesc(billId);
     }
 }
