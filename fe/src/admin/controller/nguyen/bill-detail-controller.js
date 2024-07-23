@@ -65,6 +65,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             //updateBill sử dụng để cập nhật thông tin giao hàng - sử dụng angularcopy để tránh nó binding
             $scope.updateBill = angular.copy($scope.billResponse)
+            $scope.getAllBillDetailByBillId($scope.idBill)
         })
     }
     $scope.getBillById($scope.idBill)
@@ -357,6 +358,25 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     // Update thông tin giao hàng
     $scope.updateShipmentDetail = function () {
+        var fullAddress =
+            $scope.addressDetail +
+            ', ' +
+            $scope.dataWard.WardName +
+            ', ' +
+            $scope.dataDistrict.DistrictName +
+            ', ' +
+            $scope.dataCity.ProvinceName;
+
+        var idFullAddress =
+            $scope.dataWard.WardCode +
+            ', ' +
+            $scope.dataDistrict.DistrictID +
+            ', ' +
+            $scope.dataCity.ProvinceID;
+        $scope.updateBill.address = fullAddress;
+        $scope.updateBill.addressId = idFullAddress;
+        // $scope.updateBill.shippingFee = $scope.shippingFee;
+
         let data = angular.copy($scope.updateBill)
         $http.put(apiBill + "/shipUpdate/" + $scope.idBill, data).then(function (res) {
             $scope.getBillById($scope.idBill)
@@ -497,19 +517,6 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 // Initialize inputQuantity for each productDetail
                 $scope.productDetails.forEach(function (pd) {
                     pd.inputQuantity = 1; // Set default value to 1
-
-                    console.log(pd.product);
-                    // var url = apiProduct + "/" + pd.product.id + "/getImagePath";
-                    // console.log('Fetching image path from:', url);
-
-                    // $http.get(url)
-                    //     .then(function (response) {
-                    //         pd.product.imagePath = response.data.path; // Ensure this is the base64 string
-                    //     })
-                    //     .catch(function (error) {
-                    //         console.error('Error fetching image path:', error);
-                    //         pd.imagePath = null;
-                    //     });
                 });
 
             }, function (error) {
@@ -565,9 +572,6 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
 
-
-    // $scope.getImagePath(21)
-
     // #endregion
 
     //XỬ LÝ BILL DETAIL
@@ -585,9 +589,10 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $http.get(apiBillDetail + "/" + billId + "/summary").then(function (res) {
             $scope.billDetailSummary = res.data
             // console.log(res.data);
+
+            $scope.showAddress($scope.billResponse)
         })
     }
-    $scope.getAllBillDetailByBillId($scope.idBill)
 
     $scope.formBillDetail = {}
 
@@ -1063,9 +1068,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     $scope.shippingFee = 0;
-
     $scope.calculateShippingFee = function (toDistrictId, toWardCode) {
-        if (toDistrictId && toWardCode && token != null && token && $rootScope.countProduct > 0) {
+        if (toDistrictId && toWardCode && $scope.billDetailSummary.totalPromotionalPrice > 0 && $scope.billDetailSummary.totalQuantity > 0) {
+
             let blows = (toWardCode || "").toString().replace(/\D/g, "");
             let numericDistrictId = Number(toDistrictId);
 
@@ -1079,14 +1084,14 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             // Body data for the POST request
             var requestData = {
                 "service_id": 53321,
-                "insurance_value": $scope.totalAmountAfterDiscount,
+                "insurance_value": $scope.billDetailSummary.totalPromotionalPrice,
                 "coupon": null,
-                "from_district_id": 3440,
+                "from_district_id": 1482,
                 "to_district_id": numericDistrictId,
                 "to_ward_code": blows,  // Convert to string
                 "height": 15,
                 "length": 15,
-                "weight": 700 * $rootScope.countProduct,
+                "weight": 700 * $scope.billDetailSummary.totalQuantity,
                 "width": 15
             };
 
@@ -1094,6 +1099,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $http.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', requestData, config)
                 .then(function (response) {
                     $scope.shippingFee = response.data.data.total;
+                    console.log($scope.shippingFee)
                 })
                 .catch(function (error) {
                     // Xử lý lỗi nếu có
@@ -1106,16 +1112,27 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         }
     };
 
-    // var addressComponentsId = $scope.defaultAddress.addressId.split(',');
-    // if (addressComponentsId.length >= 1) {
-    //     $scope.dataCity = addressComponentsId[2].trim();
-    //     $scope.dataDistrict = addressComponentsId[1].trim();
-    //     $scope.dataWard = addressComponentsId[0].trim();
-    // }
-    // $scope.getNameProvince($scope.dataCity)
-    // $scope.getNameDistrict($scope.dataCity, $scope.dataDistrict)
-    // $scope.getNameWard($scope.dataDistrict, $scope.dataWard)
+    $scope.showAddress = function (bill) {
+        // load địa chỉ
+        $scope.addressDetail = '';
+        $scope.dataCity = '';
+        $scope.dataDistrict = '';
+        $scope.dataWard = '';
+        console.log(bill)
+        var addressComponentsId = $scope.billResponse.addressId.split(',');
+        if (addressComponentsId.length >= 1) {
+            $scope.dataCity = addressComponentsId[2].trim();
+            $scope.dataDistrict = addressComponentsId[1].trim();
+            $scope.dataWard = addressComponentsId[0].trim();
+        }
+        var addressComponents = $scope.billResponse.address.split(',');
+        if (addressComponents.length >= 1) {
+            $scope.addressDetail = addressComponents[0].trim();
+        }
+        $scope.getNameProvince($scope.dataCity);
+        $scope.getNameDistrict($scope.dataCity, $scope.dataDistrict);
+        $scope.getNameWard($scope.dataDistrict, $scope.dataWard);
 
-    // // count();
-    // $scope.calculateShippingFee($scope.dataDistrict, $scope.dataWard)
+        $scope.calculateShippingFee($scope.dataDistrict, $scope.dataWard)
+    };
 });

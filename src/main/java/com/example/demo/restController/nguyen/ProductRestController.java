@@ -29,8 +29,4 @@ public class ProductRestController {
         return productService.getMinPrice().doubleValue();
     }
 
-    @GetMapping("/{id}/getImagePath")
-    public Image getImagePathByProductId(@PathVariable Long id){
-        return productService.getImagePathByProductId(id);
-    }
 }

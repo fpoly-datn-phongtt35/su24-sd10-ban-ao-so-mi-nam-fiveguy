@@ -35,8 +35,8 @@ public class NProductServiceImpl implements NProductService {
     }
 
     @Override
-    public Image getImagePathByProductId(Long id) {
+    public String getImagePathByProductId(Long id) {
         List<Image> images = imageRepository.findImagesByProductIdOrderByCreatedAtAsc(id);
-        return images.isEmpty() ? null : images.get(0);
+        return images.isEmpty() ? null : images.get(0).getPath();
     }
 }

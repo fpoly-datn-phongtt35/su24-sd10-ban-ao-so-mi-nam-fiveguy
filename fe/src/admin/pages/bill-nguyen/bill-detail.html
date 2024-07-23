@@ -298,7 +298,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="address" class="form-label">Địa chỉ cụ thể</label>
-                            <input type="text" class="form-control" id="address" ng-model="updateBill.address">
+                            <input type="text" class="form-control" id="address" ng-model="addressDetail">
                         </div>
 
                         <!-- Tỉnh/Thành phố -->
@@ -375,7 +375,7 @@
                         <td>{{$index + 1}}</td>
                         <td class="col-5">
                             <div class="d-flex align-items-center">
-                                <img width="100px" height="100px" class="me-3">
+                                <img ng-src="{{bd.imagePath}}" width="100px" height="100px" class="me-3">
                                 <div class="d-flex flex-column fs-6 text-start">
                                     <div class="fw-bold" style="font-size: 1.2em;"
                                         ng-init="product = bd.productDetail.product">
@@ -444,7 +444,7 @@
             </div>
             <div class="row">
                 <div class="col-6" style="font-weight: bold;">Phí giao hàng:</div>
-                <div class="col-6 text-end fs-5">{{billResponse.shippingFee | number:0}} VND</div>
+                <div class="col-6 text-end fs-5">{{shippingFee | number:0}} VND</div>
             </div>
             <div class="row">
                 <div class="col-6" style="font-weight: bold;">Giảm giá:</div>
@@ -552,7 +552,7 @@
                         <tbody>
                             <tr ng-repeat="pd in productDetails">
                                 <th scope="row">{{$index + 1}}</th>
-                                <td><img ng-src="{{pd.product.imagePath.path}}" width="100px" height="100px" alt="Product Image">
+                                <td><img ng-src="{{pd.imagePath}}" width="100px" height="100px">
                                     {{pd.product.name + ' ' + pd.color.name + ' ' + pd.size.name}}</td>
                                 <td class="col-2">
                                     <p>{{pd.product.price | number:0}} VND</p>

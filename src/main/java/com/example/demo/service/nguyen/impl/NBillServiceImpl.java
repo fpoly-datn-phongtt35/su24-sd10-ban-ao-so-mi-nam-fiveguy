@@ -135,6 +135,7 @@ public class NBillServiceImpl implements NBillService {
         existingBill.setReciverName(bill.getReciverName());
         existingBill.setPhoneNumber(bill.getPhoneNumber());
         existingBill.setAddress(bill.getAddress());
+        existingBill.setAddressId(bill.getAddressId());
 
         BillHistory newHistory = new BillHistory();
         newHistory.setBill(existingBill);

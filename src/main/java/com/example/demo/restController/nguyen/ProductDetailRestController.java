@@ -1,15 +1,18 @@
 package com.example.demo.restController.nguyen;
 
 import com.example.demo.entity.ProductDetail;
+import com.example.demo.model.response.nguyen.ProductDetailResponse;
 import com.example.demo.service.nguyen.NProductDetailService;
-import org.hibernate.query.Page;
+import com.example.demo.service.nguyen.NProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -18,6 +21,9 @@ public class ProductDetailRestController {
 
     @Autowired
     private NProductDetailService productDetailService;
+
+    @Autowired
+    private NProductService productService;
 
     @GetMapping("/page")
     public ResponseEntity<?> searchProductDetails(
@@ -34,10 +40,34 @@ public class ProductDetailRestController {
             @RequestParam(defaultValue = "5") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-//        System.out.println(categoryId);
-        return ResponseEntity.ok(productDetailService
+        Page<ProductDetail> productDetails = productDetailService
                 .searchProductDetails(productName, categoryId, materialId, wristId, collarId,
-                        sizeId, colorId, minPrice == null ? null : BigDecimal.valueOf(minPrice), maxPrice== null ? null : BigDecimal.valueOf(maxPrice), pageable));
+                        sizeId, colorId, minPrice == null ? null : BigDecimal.valueOf(minPrice),
+                        maxPrice == null ? null : BigDecimal.valueOf(maxPrice), pageable);
+
+        Page<ProductDetailResponse> responsePage = productDetails.map(productDetail -> {
+            String imagePath = productService.getImagePathByProductId(productDetail.getProduct().getId());
+            return toResponse(productDetail, imagePath);
+        });
+
+        return ResponseEntity.ok(responsePage);
+    }
+
+    private ProductDetailResponse toResponse(ProductDetail productDetail, String imagePath) {
+        ProductDetailResponse response = new ProductDetailResponse();
+        response.setId(productDetail.getId());
+        response.setQuantity(productDetail.getQuantity());
+        response.setBarcode(productDetail.getBarcode());
+        response.setCreatedAt(productDetail.getCreatedAt());
+        response.setUpdatedAt(productDetail.getUpdatedAt());
+        response.setCreatedBy(productDetail.getCreatedBy());
+        response.setUpdatedBy(productDetail.getUpdatedBy());
+        response.setStatus(productDetail.getStatus());
+        response.setProduct(productDetail.getProduct());
+        response.setSize(productDetail.getSize());
+        response.setColor(productDetail.getColor());
+        response.setImagePath(imagePath);
+        return response;
     }
 
 }
