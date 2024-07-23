@@ -300,7 +300,7 @@
                             <label for="address" class="form-label">Địa chỉ cụ thể</label>
                             <input type="text" class="form-control" id="address" ng-model="updateBill.address">
                         </div>
-                        
+
                         <!-- Tỉnh/Thành phố -->
                         <div class="mb-3">
                             <p class="mb-0">Tỉnh/Thành phố:</p>
@@ -384,8 +384,8 @@
                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                 ng-change="updateBillDetailQuantity(bd.quantityNew, bd)"> -->
 
-                            <input type="number" class="form-control w-75" ng-value="bd.quantity" ng-model="bd.quantityNew"
-                                min="1" ng-disabled="![1].includes(status)"
+                            <input type="number" class="form-control w-75" ng-value="bd.quantity"
+                                ng-model="bd.quantityNew" min="1" ng-disabled="![1].includes(status)"
                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                 ng-change="validateQuantityBd(bd, bd.quantityNew)"
                                 ng-blur="updateBillDetailQuantity(bd.quantityNew, bd)">
@@ -534,7 +534,10 @@
                                 <th scope="row">{{$index + 1}}</th>
                                 <td><img src="" width="100px" height="100px">
                                     {{pd.product.name + ' ' + pd.color.name + ' ' + pd.size.name}}</td>
-                                <td class="col-2">{{pd.product.price | number:0}} VND</td>
+                                <td class="col-2">
+                                    <p>{{pd.product.price | number:0}} VND</p>
+                                    <p>{{pd.product}}</p>
+                                </td>
                                 <td class="col-2">
                                     <p><input type="number" class="form-control w-50" min="1"
                                             oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
