@@ -1,5 +1,6 @@
 package com.example.demo.restController.nguyen;
 
+import com.example.demo.entity.Image;
 import com.example.demo.service.nguyen.NProductDetailService;
 import com.example.demo.service.nguyen.NProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +29,8 @@ public class ProductRestController {
         return productService.getMinPrice().doubleValue();
     }
 
+    @GetMapping("/{id}/getImagePath")
+    public Image getImagePathByProductId(@PathVariable Long id){
+        return productService.getImagePathByProductId(id);
+    }
 }

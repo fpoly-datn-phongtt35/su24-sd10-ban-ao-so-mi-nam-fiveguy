@@ -151,17 +151,17 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             }
         }
 
-        if(statusUpdate == 2){
+        if (statusUpdate == 2) {
             $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
                 $('#changeStatusModal').modal('hide');
-                if(response.data == 1){
+                if (response.data == 1) {
                     $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
                     return;
                 }
                 $scope.getBillById($scope.idBill);
                 $scope.getBillHistoryByBillId();
             }).catch(function (error) {
-    
+
                 console.log("lỗi update status check quantity", error)
             });
         }
@@ -182,7 +182,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         console.log(data);
         $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
-            
+
             $('#changeStatusModal').modal('hide');
 
             $scope.getBillById($scope.idBill);
@@ -190,7 +190,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         }).catch(function (error) {
             $('#changeStatusModal').modal('hide');
 
-            if(response.data == null){
+            if (response.data == null) {
                 $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
             }
             console.log("lỗi update status", error)
@@ -406,6 +406,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         });
     }
 
+
     //Range lọc giá
     $scope.initSlider = function () {
         var slider = document.getElementById('slider');
@@ -495,13 +496,26 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
                 // Initialize inputQuantity for each productDetail
                 $scope.productDetails.forEach(function (pd) {
-                    pd.inputQuantity = 1; // Set default value to 0
+                    pd.inputQuantity = 1; // Set default value to 1
+
+                    console.log(pd.product);
+                    // var url = apiProduct + "/" + pd.product.id + "/getImagePath";
+                    // console.log('Fetching image path from:', url);
+
+                    // $http.get(url)
+                    //     .then(function (response) {
+                    //         pd.product.imagePath = response.data.path; // Ensure this is the base64 string
+                    //     })
+                    //     .catch(function (error) {
+                    //         console.error('Error fetching image path:', error);
+                    //         pd.imagePath = null;
+                    //     });
                 });
+
             }, function (error) {
                 console.error('Error fetching products:', error);
             });
     };
-
 
     // Initial load
     $scope.getProductDetails(0);
@@ -549,6 +563,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         slider.noUiSlider.reset();
         $scope.getProductDetails(0);
     };
+
+
+
+    // $scope.getImagePath(21)
+
     // #endregion
 
     //XỬ LÝ BILL DETAIL
@@ -630,14 +649,14 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         //     bd.quantityNew = bd.productDetail.quantity + bd.quantity - 1;
         // }
         if (quantityNew >= bd.productDetail.quantity) {
-            bd.quantityNew = bd.productDetail.quantity- 1;
+            bd.quantityNew = bd.productDetail.quantity - 1;
         }
     };
 
     //update quantity in billDetail
     $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
 
-        if(newQuantity == null || newQuantity == undefined || newQuantity == "") return;
+        if (newQuantity == null || newQuantity == undefined || newQuantity == "") return;
 
         // $scope.billDetails.forEach(function (bd) {
         //     if (bd == billDetail && newQuantity > bd.productDetail.quantity) {

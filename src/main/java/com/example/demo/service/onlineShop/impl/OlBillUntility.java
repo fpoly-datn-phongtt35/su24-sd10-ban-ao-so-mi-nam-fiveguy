@@ -239,8 +239,10 @@ public static String encodeId(long id) {
 //                        if (bill.getVoucher() != null){
 //                            increaseVoucherQuantity(bill.getVoucher().getId());
 //                        }
-                        bill.setStatus(6);
+                        bill.setStatus(5);
 //                        huyPaymentStatus
+                        newPaymentStatusAndBillHistory( bill, bill.getCustomer(),5,3);
+
                         olBillService.save(bill);
                     }
                 }

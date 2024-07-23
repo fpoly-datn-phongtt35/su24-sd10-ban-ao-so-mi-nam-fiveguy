@@ -95,14 +95,21 @@ app.config(function ($routeProvider, $locationProvider) {
     // <!-- Hải -->
     .when("/admin/sale", {
       templateUrl: "pages/sale/sale.html",
-      controller: 'SaleController'
+      controller: 'SaleController',
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN2']);
+        }
+      }
     })
     .when("/admin/sale/update/:idSale", {
       templateUrl: "pages/sale/saleDetail.html",
       controller: "SaleController"
     })
 
-
+    .when("/unauthorized", {
+      templateUrl: "pages/unauthorized.html"
+    })
     .otherwise({
       templateUrl: "pages/dashboard.html",
       controller: 'dashboardController'
@@ -197,12 +204,35 @@ app.config(function ($httpProvider) {
   $httpProvider.useApplyAsync(true);
 });
 
-app.factory('AuthService', function ($http) {
+app.factory('AuthService', function ($http,$q) {
   var authService = {};
 
   authService.isAuthenticated = function () {
     var token = localStorage.getItem('token');
     return !!token;
+  };
+
+  authService.getUserRole = function () {
+    var token = localStorage.getItem('token');
+    if (token) {
+      var decodedToken = jwt_decode(token);
+      return decodedToken.role[0].authority;
+    }
+    return null;
+  };
+
+  authService.authorize = function (allowedRoles) {
+    var deferred = $q.defer();
+    var userRole = authService.getUserRole();
+
+    if (allowedRoles.indexOf(userRole) !== -1) {
+      deferred.resolve();
+    } else {
+      deferred.reject();
+      window.location.href = "http://127.0.0.1:5555/src/admin/pages/unauthorized.html";
+    }
+
+    return deferred.promise;
   };
 
   authService.refreshToken = function (refreshToken) {
