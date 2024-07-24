@@ -64,45 +64,44 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
 
 
     //Tổng số dơn  Huy
-    @Query("select b from Bill b JOIN b.paymentStatuses ps where ps.paymentDate = :day and b.status= 5 and ps.customerPaymentStatus = 2 or ps.paymentDate = :day and b.status= 6 and ps.customerPaymentStatus = 2")
+    @Query("select b from Bill b JOIN b.paymentStatuses ps where ps.paymentDate = :day and b.status= 5 and ps.customerPaymentStatus = 3 or ps.paymentDate = :day and b.status= 6 and ps.customerPaymentStatus = 3 or ps.paymentDate = :day and b.status= 5 and ps.customerPaymentStatus = 1 or ps.paymentDate = :day and b.status= 6 and ps.customerPaymentStatus = 1")
     List<Bill> tongBillHuyDay(Date day);
-    @Query("SELECT b FROM Bill b JOIN b.paymentStatuses ps WHERE DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :date) AND b.status=5 and ps.customerPaymentStatus = 2 or DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :date) AND b.status=6 and ps.customerPaymentStatus = 2")
+    @Query("SELECT b FROM Bill b JOIN b.paymentStatuses ps WHERE DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :date) AND b.status=5 and ps.customerPaymentStatus =3 or DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :date) AND b.status=6 and ps.customerPaymentStatus = 3 or DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :date) AND b.status=5 and ps.customerPaymentStatus = 1 or DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :date) AND b.status=6 and ps.customerPaymentStatus = 1 ")
     List<Bill> tongBillHuyWeek(Date date);
-    @Query("select b from Bill b JOIN b.paymentStatuses ps where DATEPART(MONTH, ps.paymentDate) =  Month(:date) and DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=5 and ps.customerPaymentStatus = 2 or DATEPART(MONTH, ps.paymentDate) =  Month(:date) and DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=6 and ps.customerPaymentStatus = 2")
+    @Query("select b from Bill b JOIN b.paymentStatuses ps where DATEPART(MONTH, ps.paymentDate) =  Month(:date) and DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=5 and ps.customerPaymentStatus = 1 or DATEPART(MONTH, ps.paymentDate) =  Month(:date) and DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=6 and ps.customerPaymentStatus = 1 or DATEPART(MONTH, ps.paymentDate) =  Month(:date) and DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status= 6 and ps.customerPaymentStatus = 3 or DATEPART(MONTH, ps.paymentDate) =  Month(:date) and DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=5 and ps.customerPaymentStatus = 3 ")
     List<Bill> tongBillHuyMonth(Date date);
-    @Query("select b from Bill b JOIN b.paymentStatuses ps where DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=5 and ps.customerPaymentStatus = 2 or DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=6 and ps.customerPaymentStatus = 2")
+    @Query("select b from Bill b JOIN b.paymentStatuses ps where DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=5 and ps.customerPaymentStatus = 1 or DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=6 and ps.customerPaymentStatus = 1 or DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status=5 and ps.customerPaymentStatus = 3 or DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and b.status= 6 and ps.customerPaymentStatus = 3")
     List<Bill> tongBillHuyYear(Date date);
     @Query("SELECT b FROM Bill b " +
             "JOIN b.paymentStatuses ps " +
             "WHERE ps.paymentDate BETWEEN :startDate AND :endDate " +
-            "AND b.status = 5 AND ps.customerPaymentStatus = 2 OR ps.paymentDate BETWEEN :startDate AND :endDate AND b.status = 6 " +
-            "AND ps.customerPaymentStatus = 2")
+            "AND b.status = 5 AND ps.customerPaymentStatus = 1 OR ps.paymentDate BETWEEN :startDate AND :endDate AND b.status = 6 " +
+            "AND ps.customerPaymentStatus = 1"+
+            "AND b.status = 5 AND ps.customerPaymentStatus = 3 OR ps.paymentDate BETWEEN :startDate AND :endDate AND b.status = 6 " +
+            "AND ps.customerPaymentStatus = 3")
     List<Bill> tongBillHuyOption(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     //Tỏng số lượng bill theo trang thai
-    @Query("select b from Bill b JOIN b.paymentStatuses ps where ps.paymentDate = :day and b.status = :status and ps.customerPaymentStatus = 2")
+    @Query("select b from Bill b JOIN b.paymentStatuses ps where ps.paymentDate = :day and b.status = :status")
     List<Bill> tongStatusBillDay(@Param("day") Date day, @Param("status") Integer status);
     @Query("SELECT b FROM Bill b JOIN b.paymentStatuses ps " +
             "WHERE DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :day) " +
             "AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :day) " +
-            "AND b.status = :status " +
-            "AND ps.customerPaymentStatus = 2")
+            "AND b.status = :status " )
     List<Bill> tongStatusBillWeek(@Param("day") Date day, @Param("status") Integer status);
     @Query("SELECT b FROM Bill b JOIN b.paymentStatuses ps " +
             "WHERE FUNCTION('MONTH', ps.paymentDate) = FUNCTION('MONTH', :day) " +
             "AND FUNCTION('YEAR', ps.paymentDate) = FUNCTION('YEAR', :day) " +
-            "AND b.status = :status " +
-            "AND ps.customerPaymentStatus = 2")
+            "AND b.status = :status " )
     List<Bill> tongStatusBillMonth(@Param("day") Date day, @Param("status") Integer status);
     @Query("SELECT b FROM Bill b JOIN b.paymentStatuses ps " +
             "WHERE FUNCTION('YEAR', ps.paymentDate) = FUNCTION('YEAR', :day) " +
-            "AND b.status = :status " +
-            "AND ps.customerPaymentStatus = 2")
+            "AND b.status = :status ")
     List<Bill> tongStatusBillYear(@Param("day") Date day, @Param("status") Integer status);
     @Query("SELECT b FROM Bill b JOIN b.paymentStatuses ps " +
             "WHERE ps.paymentDate BETWEEN :startDate AND :endDate " +
-            "AND b.status = :status " +
-            "AND ps.customerPaymentStatus = 2")
+            "AND b.status = :status "
+            )
     List<Bill> tongStatusBillOption(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("status") Integer status);
 
 
