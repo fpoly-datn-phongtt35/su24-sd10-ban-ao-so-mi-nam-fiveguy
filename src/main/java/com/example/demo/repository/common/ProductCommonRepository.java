@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 
-public interface ProductRepositoryCommon extends JpaRepository<Product, Long> {
+public interface ProductCommonRepository extends JpaRepository<Product, Long> {
 
 
     //    get  promotionalPrice  hiển thị

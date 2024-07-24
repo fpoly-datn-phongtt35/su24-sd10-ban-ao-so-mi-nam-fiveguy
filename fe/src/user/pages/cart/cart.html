@@ -220,31 +220,32 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h5 class="modal-title" id="voucherModalLabel">Mã ưu đãi</h5>
+                        <input type="text" class="form-control" ng-model="voucherSearch" ng-change="searchVoucher()" placeholder="Tìm kiếm mã ưu đãi" />
                       </div>
                       <div class="modal-body">
                         <div class="voucher-list mt-3 mb-4">
-                          <div class="voucher-item" ng-repeat="voucher in customerVouchers" ng-click="selectVoucher(voucher)" ng-class="{ 'selected-voucher': voucher.selected }">
+                          <div class="voucher-item" ng-repeat="voucher in customerVouchers" ng-click="voucher.show !== 2 && selectVoucher(voucher)" ng-class="{ 'selected-voucher': voucher.selected }">
                             <div class="voucher-content">
                               <div class="voucher-left">
                                 <h5>{{ voucher.code }}</h5>
+                                <h5>{{ voucher.name }}</h5>
                                 <p>Giảm {{ voucher.value | number}}{{ voucher.discountType === 2 ? ' đ' : ' %' }} cho đơn từ {{ voucher.minimumTotalAmount | number }} đ
                                   <br/>Tối đa {{ voucher.maximumReductionValue | number }} đ
                                 </p>
                                 <p>HSD: {{ voucher.endDate | date:'dd-MM-yyyy HH:mm' }}</p>
+                                <span ng-if="voucher.show === 2" class="limit-message">Bạn đã sử dụng hết lượt giảm giá</span>
                               </div>
                               <div class="voucher-right-contain">
-
-                              <div class="voucher-right">
-                                    <span ng-if="voucher.selected" class="checkmark">&#10003;</span>
-                               
-                                    <span ng-if="!voucher.selected" class="addmark">+</span>
-                    
+                                <div class="voucher-right">
+                              
+                                  <span ng-if="voucher.show !== 2 && voucher.selected" class="checkmark">&#10003;</span>
+                                  <span ng-if="voucher.show !== 2 && !voucher.selected" class="addmark">+</span>
+                                </div>
                               </div>
-                            </div>
-
                             </div>
                           </div>
                         </div>
+                        
                       </div>
                   
                     </div>

@@ -1,8 +1,7 @@
 package com.example.demo.service.onlineShop.impl;
 
 import com.example.demo.entity.*;
-import com.example.demo.model.response.onlineShop.OlBillDTO;
-import com.example.demo.repository.common.OLVoucherRepository2;
+import com.example.demo.repository.common.VoucherCommonRepository;
 import com.example.demo.repository.onlineShop.OLBillRepository2;
 import com.example.demo.service.onlineShop.OLBillDetailService2;
 import com.example.demo.service.onlineShop.OLBillService2;
@@ -12,8 +11,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +28,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
     private OLProductDetailService2 olProductDetailService;
 
     @Autowired
-    private OLVoucherRepository2 olVouchersRepository;
+    private VoucherCommonRepository olVouchersRepository;
 
     @Autowired
     private OLBillRepository2 olBillRepository;

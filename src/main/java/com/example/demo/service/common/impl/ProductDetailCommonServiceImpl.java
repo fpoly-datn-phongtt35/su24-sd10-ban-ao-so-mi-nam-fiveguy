@@ -2,10 +2,9 @@ package com.example.demo.service.common.impl;
 
 import com.example.demo.entity.ProductDetail;
 import com.example.demo.model.response.common.ProductDetailDTO;
-import com.example.demo.repository.common.CustomerRepositoryCommon;
-import com.example.demo.repository.common.ProductDetailRepositoryCommon;
-import com.example.demo.repository.common.ProductRepositoryCommon;
-import com.example.demo.service.common.ProductDetailServiceCommon;
+import com.example.demo.repository.common.ProductDetailCommonRepository;
+import com.example.demo.repository.common.ProductCommonRepository;
+import com.example.demo.service.common.ProductDetailCommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +13,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ProductDetailServiceCommonImpl implements ProductDetailServiceCommon {
+public class ProductDetailCommonServiceImpl implements ProductDetailCommonService {
 
 
 
     @Autowired
-    private ProductDetailRepositoryCommon productDetailRepository;
+    private ProductDetailCommonRepository productDetailRepository;
 
     @Autowired
-    private ProductRepositoryCommon productRepositoryCommon;
+    private ProductCommonRepository productCommonRepository;
 
 
 
@@ -42,7 +41,7 @@ public class ProductDetailServiceCommonImpl implements ProductDetailServiceCommo
                 productDetail.getQuantity(),
                 productDetail.getBarcode(),
                 productDetail.getProduct().getPrice(),
-                productRepositoryCommon.findPromotionalPriceByProductId((productDetail.getId())),
+                productCommonRepository.findPromotionalPriceByProductId((productDetail.getId())),
                 productDetail.getStatus(),
                 productDetail.getProduct().getName(),
                 productDetail.getProduct().getCategory().getName(),

@@ -859,6 +859,7 @@ $scope.dataCity.ProvinceID;
         if ($scope.selectedVoucher != null) {
           delete $scope.selectedVoucher.selected;
           delete $scope.selectedVoucher.valueVoucher;
+          delete $scope.selectedVoucher.show;
           bill.voucher = $scope.selectedVoucher; 
         }
         
@@ -1298,7 +1299,13 @@ $scope.dataCity.ProvinceID;
 
 
   $scope.getVouchersForCustomer = function() {
-    $http.get('http://localhost:8080/api/home/customer/vouchers')
+
+    var config = {
+      params: {
+        search: $scope.voucherSearch
+      }
+  };
+    $http.get('http://localhost:8080/api/home/customer/vouchers',config)
       .then(function(response) {
         if (response.data) {
           $scope.customerVouchers = response.data;
@@ -1321,7 +1328,9 @@ $scope.dataCity.ProvinceID;
       });
   };
   
-  
+  $scope.searchVoucher = function() {
+    $scope.getVouchersForCustomer();
+  };
 
   
   // $scope.getVouchersForCustomer();
