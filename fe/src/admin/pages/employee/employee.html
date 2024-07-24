@@ -180,7 +180,7 @@
                                             data-bs-target="#modalUpdate" ng-click="edit(employee)"><span
                                                 class="material-icons">
                                                 visibility
-                                            </span></i></button>
+                                            </span></button>
                                         <button class="button-submit action-btn" ng-click="delete(employee)"><span
                                                 class="material-icons">
                                                 delete
@@ -560,10 +560,11 @@
                         <div class="row mb-3">
                             <label for="inputFullName" class="col-sm-4 col-form-label">Họ Tên</label>
                             <div class="col-sm-8">
-                                <input name="fullName" id="inputFullName" type="text" class="form-control" ng-model="formUpdate.fullName"
-                                    required />
+                                <input name="fullName" id="inputFullName" type="text" class="form-control"
+                                    ng-model="formUpdate.fullName" required />
                                 <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.fullName.$invalid" class="error-message text-danger form-text">
+                                    <div ng-show="formUpdateEmployee.fullName.$invalid"
+                                        class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
                                 </span>

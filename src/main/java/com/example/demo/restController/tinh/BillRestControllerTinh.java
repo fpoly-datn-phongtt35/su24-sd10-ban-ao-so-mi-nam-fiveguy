@@ -2,10 +2,12 @@ package com.example.demo.restController.tinh;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.Employee;
+import com.example.demo.entity.ThongKe;
 import com.example.demo.repository.tinh.BillRepositoryTinh;
 import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.tinh.BillServiceTinh;
 import com.example.demo.untility.tinh.PaginationResponse;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -58,6 +61,15 @@ public class BillRestControllerTinh {
         BigDecimal customers = billRepositoryTinh.tongSoTienYear(sl);
         return ResponseEntity.ok(customers);
     }
+
+    @GetMapping("/tong-doanh-thu-tuy-chinh")
+    public ResponseEntity<BigDecimal> tongTienOption(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        BigDecimal totalAmount = billRepositoryTinh.tongSoTienOption(startDate, endDate);
+        return ResponseEntity.ok(totalAmount);
+    }
+
     // End Tổng doanh thu ================================================================
 
     //Tỏng dơne hàng Thanh Cong====================================================================
@@ -76,6 +88,13 @@ public class BillRestControllerTinh {
     @GetMapping("/tong-hoa-don-nam/{sl}")
     public int sumBillYear(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
         return billRepositoryTinh.tongBillThanhCongYear(sl).size();
+    }
+    @GetMapping("/tong-hoa-don-tuy-chinh")
+    public int sumBillOption(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return billRepositoryTinh.tongBillThanhCongOption(startDate, endDate).size();
+
     }
     //End Tổng dơne Hàng Thanh COng================================================================
 
@@ -96,6 +115,12 @@ public class BillRestControllerTinh {
     public int sumBillHuyYear(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
         return billRepositoryTinh.tongBillHuyYear(sl).size();
     }
+    @GetMapping("/tong-hoa-don-huy-tuy-chinh")
+    public int getCancelledBillsBetweenDates(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return billRepositoryTinh.tongBillHuyOption(startDate, endDate).size();
+    }
     //End Tổng dơne Hàng Huy================================================================
 
     //San phẩm bán chạy ==================================================================
@@ -115,9 +140,60 @@ public class BillRestControllerTinh {
     public ResponseEntity<?> topbanchayNam(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl){
         return ResponseEntity.ok().body(billServiceTinh.getSanPhamBanChayNam(sl));
     }
+    @GetMapping("/top-ban-chay-tuy-chinh")
+    public ResponseEntity<List<ThongKe>> getSanPhamBanChayTrongKhoangThoiGian(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        List<ThongKe> result = billServiceTinh.getSanPhamBanChayTrongKhoangThoiGian(startDate, endDate);
+        return ResponseEntity.ok(result);
+    }
+//    public ResponseEntity<Page<ThongKe>> getSanPhamBanChayTrongKhoangThoiGian(
+//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+//            @RequestParam int page,
+//            @RequestParam int size) {
+//
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<ThongKe> result = billServiceTinh.getSanPhamBanChayTrongKhoangThoiGian(startDate, endDate, pageable);
+//        return ResponseEntity.ok(result);
+//    }
     //End Sản phẩm bán chạy ==============================================================
 
+    //Tông bill theo status
+    @GetMapping("/tong-hoa-don-trang-thai-ngay")
+    public int tongHoaDonStatusNgay(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam Integer status) {
+        return billRepositoryTinh.tongStatusBillDay(startDate, status).size();
+    }
 
+    @GetMapping("/tong-hoa-don-trang-thai-tuan")
+    public int tongHoaDonStatusTuan(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam Integer status) {
+        return billRepositoryTinh.tongStatusBillWeek(startDate, status).size();
+    }
+
+    @GetMapping("/tong-hoa-don-trang-thai-thang")
+    public int tongHoaDonStatusThang(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam Integer status) {
+        return billRepositoryTinh.tongStatusBillMonth(startDate, status).size();
+    }
+
+    @GetMapping("/tong-hoa-don-trang-thai-nam")
+    public int tongHoaDonStatusNam(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam Integer status) {
+        return billRepositoryTinh.tongStatusBillYear(startDate, status).size();
+    }
+    @GetMapping("/tong-hoa-don-trang-thai-tuy-chinh")
+    public int tongHoaDonStatusTuyChinh(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            @RequestParam Integer status) {
+        return billRepositoryTinh.tongStatusBillOption(startDate,endDate, status).size();
+    }
 
 
     @PostMapping("/")
@@ -140,7 +216,7 @@ public class BillRestControllerTinh {
         bill1.setReciverName(bill.getReciverName());
         bill1.setDeliveryDate(bill.getDeliveryDate());
         bill1.setShippingFee(bill.getShippingFee());
-        bill1.setTransId(bill.getTransId());
+//        bill1.setTransId(bill.getTransId());
         bill1.setAddress(bill.getAddress());
         bill1.setPhoneNumber(bill.getPhoneNumber());
         bill1.setTotalAmount(bill.getTotalAmount());

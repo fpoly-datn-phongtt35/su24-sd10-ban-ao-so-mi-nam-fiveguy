@@ -30,8 +30,8 @@ public class Bill {
 //        @Column(name = "CreatedAt")
 //    private Date createdAt;
 
-    @Column(name = "PaymentDate")
-    private Date paymentDate;
+//    @Column(name = "PaymentDate")
+//    private Date paymentDate;
 
     @Column(name = "ReciverName", columnDefinition = "nvarchar(300)")
     private String reciverName;

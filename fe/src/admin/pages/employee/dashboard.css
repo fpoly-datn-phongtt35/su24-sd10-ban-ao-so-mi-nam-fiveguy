@@ -1,5 +1,6 @@
 .db-dashboard-main {
     width: 100%;
+    /* display: flex; */
 }
 
 .db-card-style {
@@ -33,8 +34,8 @@
 }
 
 .db-icon-img {
-    width: 30px;
-    height: 30px;
+    /* width: 50px;
+    height: 30px; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -96,7 +97,18 @@
 }
 
 .db-title {
-    font-size: 15px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+.db-title.p-1{
+    color: #080808;
+}
+.db-title .form-control {
+    width: auto; /* Đặt chiều rộng tự động để tránh tràn */
+    background-color: #0d6efd;
+    color: #fff;
+    margin-left: auto;
 }
 
 .filter-db-table {
@@ -116,6 +128,8 @@
     text-transform: uppercase;
     font-weight: 500;
     transition: all .3s ease;
+    margin-bottom: 10px;
+    /* background-color: #ffff00 */
 }
 
 .item-filter-db-table:hover {
@@ -124,7 +138,12 @@
     color: #fff;
 }
 
-
+.item-filter-db-table.selected{
+    background-color: #ff8b4c;
+    color: #fff;
+    border-color: #141414;
+}
+       
 .item-input-filter-db-table {
     display: flex;
     gap: 10px;
@@ -203,3 +222,83 @@ table, th, td {
 .hidden {
     display: none;
 }
+.container {
+    display: flex;
+    justify-content: space-between; /* Khoảng cách giữa các thẻ */
+    gap: 20px; /* cách giữa các thẻ (tùy chọn)*/
+    /* width: 100%;
+    border-radius: 10px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; */
+    
+}
+/* Phần 3  */
+.db-table-list.p-3 {
+    width: 65%;
+    border-radius: 10px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.db-title.p-3{
+    color: #080808;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+/* Phần 4  */
+.db-table-list-r {
+    width: 35%;
+    border-radius: 10px;
+    background-color: #454545;
+    padding: 10px;
+    box-shadow: rgba(198, 198, 243, 0.2) 0px 7px 29px 0px;
+}
+
+.db-title{
+    color: #ececec;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.table-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.list-information {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: #000;
+    color: #fff;
+    gap: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+}
+
+.list-information li {
+    font-size: 14px;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.d-flex.align-items-center.gap-2.color-red{
+    color: red;
+}
+.d-flex.align-items-center.gap-2.color-blue{
+    color: #0e9c6e;
+}
+.reload{
+    color: #0d6efd;
+    background: #454545;
+    size: 10px;
+    margin: 10px;
+}
+/* db-title p-4 */
+
+

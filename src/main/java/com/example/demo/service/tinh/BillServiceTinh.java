@@ -2,6 +2,8 @@ package com.example.demo.service.tinh;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.ThongKe;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
@@ -20,4 +22,7 @@ public interface BillServiceTinh {
     List<ThongKe> getSanPhamBanChayThang(Date date);
 
     List<ThongKe> getSanPhamBanChayNam(Date date);
+
+    List<ThongKe> getSanPhamBanChayTrongKhoangThoiGian(Date startDate, Date endDate);
+
 }

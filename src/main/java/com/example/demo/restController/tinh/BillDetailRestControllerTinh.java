@@ -45,6 +45,14 @@ public class BillDetailRestControllerTinh {
         Integer customers = billDetailRepositoryTinh.sanPhamBanDuocNam(sl);
         return ResponseEntity.ok(customers);
     }
+    @GetMapping("/san-pham-ban-ra-tuy-chinh")
+    public ResponseEntity<Integer> getSanPhamBanDuocTrongKhoangThoiGian(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        Integer totalQuantity = billDetailRepositoryTinh.sanPhamBanDuocTuyChinh(startDate, endDate);
+        return ResponseEntity.ok(totalQuantity);
+    }
+
 
 
     @GetMapping("")
