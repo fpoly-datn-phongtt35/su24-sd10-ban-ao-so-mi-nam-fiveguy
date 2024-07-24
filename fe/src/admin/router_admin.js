@@ -100,15 +100,21 @@ app.config(function ($routeProvider, $locationProvider) {
     })
     .when("/admin/sale/update/:idSale", {
       templateUrl: "pages/sale/saleDetail.html",
-      controller: "SaleController"
+      controller: "SaleController",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN']);
+        }
+      }
     })
 
     .when("/unauthorized", {
-      templateUrl: "pages/unauthorized.html"
+      templateUrl: "pages/Notification/unauthorized.html"
     })
+
     .otherwise({
-      templateUrl: "pages/dashboard.html",
-      controller: 'dashboardController'
+      templateUrl: "pages/Notification/notFound.html"
+
     })
 });
 
@@ -225,7 +231,7 @@ app.factory('AuthService', function ($http,$q) {
       deferred.resolve();
     } else {
       deferred.reject();
-      window.location.href = "http://127.0.0.1:5555/src/admin/pages/unauthorized.html";
+      window.location.href = "http://127.0.0.1:5555/src/admin/index.html#/unauthorized";
     }
 
     return deferred.promise;
