@@ -203,10 +203,10 @@ body {
 }
 
 
-.table-scroll-bill {
-    height: 520px; /* Adjust the height to show 3 rows */
+/* .table-scroll-bill {
+    height: 350px;
     overflow-y: auto;
-}
+} */
 
 .table-scroll-return {
     height: 400px; /* Adjust the height to show 3 rows */

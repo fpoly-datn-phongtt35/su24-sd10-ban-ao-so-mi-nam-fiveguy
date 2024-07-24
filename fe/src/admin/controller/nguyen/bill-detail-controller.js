@@ -1,8 +1,10 @@
-app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $routeParams, $timeout) {
+app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $routeParams, $timeout, $location) {
 
     const apiBill = "http://localhost:8080/api/admin/bill";
     const apiBillDetail = "http://localhost:8080/api/admin/billDetail";
     const apiBillHistory = "http://localhost:8080/api/admin/billHistory"
+    
+    const apiReturnOrder = "http://localhost:8080/api/admin/returnOrder";
 
     const apiProduct = "http://localhost:8080/api/admin/product"
     const apiProductDetail = "http://localhost:8080/api/admin/productDetail"
@@ -222,6 +224,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         //     $scope.otherReasonText = ""; // Clear other reason text
         // }
     };
+
+    //Chuyển sang trả hàng
+    $scope.goToReturnOrder = function (){
+        $location.path('/admin/return-order/' + $scope.idBill);
+    }
 
     $scope.reasonsList = {
         1: { text: "Khách yêu cầu hủy", value: 1, status: 0, shortenText: "" },
@@ -685,19 +692,13 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
 
+    //Hiển thị sản phẩm trả
+    $http.get(apiReturnOrder + "/" + $scope.idBill).then(function (response) {
+        $scope.returnOrders = response.data;
+        console.log($scope.returnOrders);
+    });
+
     // #endregion
-
-
-    $scope.steptest = [
-        { status: 1, title: "Chờ xác nhận", icon: "schedule", time: null },
-        { status: 2, title: "Đã xác nhận", icon: "check_circle", time: null },
-        { status: 3, title: "Chờ vận chuyển", icon: "local_shipping", time: null },
-        { status: 4, title: "Đang giao", icon: "directions_car", time: null },
-        { status: 5, title: "Thành công", icon: "home", time: null },
-        { status: 6, title: "Đã hủy", icon: "cancel", time: null },
-        { status: 7, title: "Giao thất bại", icon: "home", time: null },
-        { status: 8, title: "Đang giao lại", icon: "home", time: null }
-    ];
 
     // #region IN HÓA ĐƠN
 

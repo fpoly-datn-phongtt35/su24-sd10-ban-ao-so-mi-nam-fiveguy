@@ -2,6 +2,7 @@ package com.example.demo.restController.nguyen;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillDetail;
+import com.example.demo.entity.ReturnOrder;
 import com.example.demo.model.request.nguyen.BillRequest;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NBillDetailService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -130,5 +132,12 @@ public class NBillRestController {
     @GetMapping("/{billId}/checkQuantity")
     public ResponseEntity<?> checkQuantity(@PathVariable Long billId) {
         return ResponseEntity.ok(billService.isQuantityExceedsProductDetail(billId));
+    }
+
+    @PostMapping("/{billId}/addReturnOrder")
+    public ResponseEntity<?> addReturnOrderAndUpdateBill(
+            @RequestHeader("Authorization") String token,
+            @RequestBody List<ReturnOrder> returnOrdera) {
+        return ResponseEntity.ok(null);
     }
 }

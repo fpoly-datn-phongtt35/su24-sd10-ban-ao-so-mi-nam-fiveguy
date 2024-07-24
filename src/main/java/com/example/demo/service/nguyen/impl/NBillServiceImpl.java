@@ -1,9 +1,6 @@
 package com.example.demo.service.nguyen.impl;
 
-import com.example.demo.entity.Bill;
-import com.example.demo.entity.BillDetail;
-import com.example.demo.entity.BillHistory;
-import com.example.demo.entity.ProductDetail;
+import com.example.demo.entity.*;
 import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
 import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
@@ -99,15 +96,12 @@ public class NBillServiceImpl implements NBillService {
     }
 
     @Override
+    @Transactional
     public Bill updateStatusAndBillStatus(Bill bill, Long id, BillHistory billHistory) {
         Optional<Bill> optionalBill = billRepository.findById(id);
         if (!optionalBill.isPresent()) {
             throw new EntityNotFoundException("Bill not found with id " + id);
         }
-
-//        if (isQuantityExceedsProductDetail(id) == 1 && optionalBill.get().getStatus() == 2) {
-//            return null;
-//        }
 
         Bill existingBill = optionalBill.get();
         existingBill.setReason(bill.getReason());
@@ -125,6 +119,7 @@ public class NBillServiceImpl implements NBillService {
     }
 
     @Override
+    @Transactional
     public Bill updateShipmentDetail(Bill bill, Long id, String fullName) {
         Optional<Bill> optionalBill = billRepository.findById(id);
         if (!optionalBill.isPresent()) {
@@ -240,5 +235,18 @@ public class NBillServiceImpl implements NBillService {
             }
         }
         return 0;
+    }
+
+
+    @Transactional
+    //Hoàn lại số lượng trong productDetail khi hoàn trả
+    public void refundProductDetailsQuantities(List<ReturnOrder> returnOrders) {
+        for (ReturnOrder returnOrder : returnOrders) {
+            BillDetail billDetail = returnOrder.getBillDetail();
+            ProductDetail productDetail = billDetail.getProductDetail();
+            productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
+            productDetail.setUpdatedAt(new Date());
+            productDetailRepository.save(productDetail);
+        }
     }
 }
