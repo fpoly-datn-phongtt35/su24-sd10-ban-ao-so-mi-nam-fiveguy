@@ -27,7 +27,7 @@
                     <div class="d-flex">
                         <div ng-repeat="step in steps" class="d-flex align-items-center">
                             <div ng-if="step.time != null" class="step shadow"
-                                ng-class="{'active': step.status == status}">
+                                ng-class="{'active': step.status == steps[steps.length-1].status}">
                                 <div class="step-circle shadow">
                                     <span class="material-icons statuss-{{step.status}}">{{ step.icon }}</span>
                                 </div>
@@ -303,7 +303,7 @@
         <div class="d-flex justify-content-between mb-3">
             <h5>Thông tin đơn hàng</h5>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShipmentDetail"
-                ng-show="[1, 2].includes(status)">Cập nhật</button>
+                ng-show="[1].includes(status)">Cập nhật</button>
         </div>
         <hr>
         <div class="row">
@@ -371,7 +371,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="address" class="form-label">Địa chỉ cụ thể</label>
-                            <input type="text" class="form-control" id="address" ng-model="addressDetail">
+                            <input type="text" class="form-control" id="address" ng-model="addressDetail" autocomplete="off">
                         </div>
 
                         <!-- Tỉnh/Thành phố -->
