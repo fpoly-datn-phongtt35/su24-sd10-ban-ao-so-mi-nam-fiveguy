@@ -94,7 +94,7 @@ app.config(function ($routeProvider, $locationProvider) {
       controller: 'SaleController',
       resolve: {
         auth: function (AuthService) {
-          return AuthService.authorize(['ADMIN2']);
+          return AuthService.authorize(['ADMIN']);
         }
       }
     })
