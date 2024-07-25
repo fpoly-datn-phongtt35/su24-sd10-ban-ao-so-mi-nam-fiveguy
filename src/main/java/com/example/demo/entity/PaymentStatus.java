@@ -32,6 +32,9 @@ public class PaymentStatus {
     @Column(name = "PaymentDate")
     private Date paymentDate;
 
+    @Column(name = "PaymentMethod")
+    private Integer paymentMethod;
+
     @Column(name = "CustomerPaymentStatus")
     private int customerPaymentStatus;
 
