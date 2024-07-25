@@ -22,12 +22,13 @@ public interface OLProductRepository2 extends JpaRepository<Product, Long> {
         "FROM Product p " +
         "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
         "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
-        "LEFT JOIN p.images i ON i.product.id = p.id " +
+        "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1 " +  // Adding condition for image.status = 1
         "WHERE p.status = 1 " +
         "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (s.status = 1 OR s.status IS NULL))) " +
         "GROUP BY p.id, p.name, ps.discountPrice, s.value, s.discountType " +  // Grouping by all selected columns
         "ORDER BY p.id")
 List<Object[]> findProductsWithImages();
+
 
 
 
@@ -80,7 +81,7 @@ Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
             "FROM Product p " +
             "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
             "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
-            "LEFT JOIN p.images i ON i.product.id = p.id " +
+            "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1" +
             "WHERE p.status = 1 " +
             "GROUP BY p.id, p.name, p.price, ps.discountPrice, s.value, s.discountType, p.createdAt " +  // Including p.createdAt in the GROUP BY clause
             "ORDER BY p.createdAt DESC")
@@ -92,7 +93,7 @@ Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
             "FROM Product p " +
             "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
             "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
-            "LEFT JOIN p.images i ON i.product.id = p.id " +
+            "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1 " + // Adding condition for image.status = 1
             "LEFT JOIN p.productDetails pd " +
             "LEFT JOIN pd.color c " +
             "LEFT JOIN pd.size sz " +
@@ -112,6 +113,7 @@ Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
             "GROUP BY p.id, p.name, ps.discountPrice, s.value, s.discountType " +
             "ORDER BY p.id")
     List<Object[]> search(@Param("search") String search);
+
 
 
 

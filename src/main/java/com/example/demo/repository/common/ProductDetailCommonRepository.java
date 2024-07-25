@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface ProductDetailRepositoryCommon extends JpaRepository<ProductDetail, Long>, JpaSpecificationExecutor<ProductDetail> {
+public interface ProductDetailCommonRepository extends JpaRepository<ProductDetail, Long>, JpaSpecificationExecutor<ProductDetail> {
 
 
 

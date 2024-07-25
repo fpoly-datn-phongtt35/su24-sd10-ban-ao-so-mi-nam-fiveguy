@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OLCustomerTypeVouchersRepository2 extends JpaRepository<CustomerTypeVoucher, Long> {
+public interface CustomerTypeVouchersCommonRepository extends JpaRepository<CustomerTypeVoucher, Long> {
 
     @Query("SELECT ctv.voucher.id FROM CustomerTypeVoucher ctv WHERE ctv.customerType.id = :customerTypeId")
     List<Long> findVoucherIdsByCustomerTypeId(@Param("customerTypeId") Long customerTypeId);

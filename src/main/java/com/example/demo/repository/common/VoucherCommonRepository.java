@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 
-public interface OLVoucherRepository2 extends JpaRepository<Voucher, Long> {
+public interface VoucherCommonRepository extends JpaRepository<Voucher, Long> {
 
     @Query("SELECT v FROM Voucher v WHERE v.status IN (1, 3) AND v.applyfor = 0 ORDER BY v.minimumTotalAmount DESC")
     List<Voucher> findAllByStatusAndApplyFor();

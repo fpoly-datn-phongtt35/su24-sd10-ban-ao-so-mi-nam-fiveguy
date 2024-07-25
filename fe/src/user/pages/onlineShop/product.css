@@ -639,3 +639,10 @@ font-weight: 400;
   padding: 10px 0;
   font-size: 16px;
 }
+
+.limit-message {
+  color: red;
+  text-align: center;
+  margin-top: 0.5rem;
+  width: 100%;
+}
