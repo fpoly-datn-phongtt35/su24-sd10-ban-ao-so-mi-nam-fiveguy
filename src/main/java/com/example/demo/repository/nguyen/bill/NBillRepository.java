@@ -1,6 +1,7 @@
 package com.example.demo.repository.nguyen.bill;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.entity.Voucher;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,4 +48,9 @@ public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecifica
             "GROUP BY c.id, c.fullName, a.phoneNumber, a.email")
     Page<CustomerVoucherStatsDTO> findCustomerVoucherStatsByVoucherId(
             @Param("voucherId") Long voucherId, Pageable pageable);
+
+
+    long countByCustomerIdAndVoucherIdAndStatusNotIn(Long customerId, Long voucherId,
+                                                     List<Integer> excludedStatuses);
+
 }

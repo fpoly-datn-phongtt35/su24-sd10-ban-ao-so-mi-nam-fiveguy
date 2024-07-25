@@ -124,6 +124,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         let reasonUpdate = {
             value: 0
         };
+        
         // Add selected reasons to the description
         $scope.reasonSuggestions.forEach(function (reason) {
             if (reason.checked) {
@@ -251,26 +252,24 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     $scope.reasonsList = {
-        1: { text: "Khách yêu cầu hủy", value: 1, status: 5, shortenText: "KH hủy" },
-        2: { text: "Khách không phản hồi", value: 2, status: 7, shortenText: "KH không phản hồi" },
-        3: { text: "Sản phẩm hết hàng", value: 3, status: 6, shortenText: "Hết hàng" },
+        1: { text: "Khách yêu cầu hủy", value: 1, status: 0, shortenText: "KH hủy" },
+        2: { text: "Khách không phản hồi", value: 2, status: 0, shortenText: "KH không phản hồi" },
+        3: { text: "Sản phẩm hết hàng", value: 3, status: 0, shortenText: "Hết hàng" },
         4: { text: "Sản phẩm bị lỗi", value: 4, status: 6, shortenText: "Lỗi SP" },
-        5: { text: "Lỗi hệ thống", value: 5, status: 6, shortenText: "Lỗi HT" },
-        6: { text: "Không liên hệ được nhân viên giao hàng", value: 6, status: 7, shortenText: "Không LH NV" },
-        7: { text: "Đơn vị giao hàng báo hủy", value: 7, status: 6, shortenText: "ĐVGH hủy" },
-        8: { text: "Khách không nhận hàng", value: 8, status: 7, shortenText: "KH không nhận" },
-        9: { text: "Không liên hệ được khách", value: 9, status: 7, shortenText: "Không LH KH" },
-        10: { text: "Khách hẹn giao lại", value: 10, status: 9, shortenText: "Hẹn giao lại" },
-        11: { text: "Mất hàng", value: 11, status: 81, shortenText: "Mất hàng" },
-        12: { text: "Thiếu hàng", value: 12, status: 7, shortenText: "Thiếu hàng" },
-        13: { text: "Sai địa chỉ giao hàng", value: 13, status: 7, shortenText: "Sai địa chỉ" },
+        5: { text: "Lỗi hệ thống", value: 5, status: 0, shortenText: "Lỗi HT" },
+        6: { text: "Không liên hệ được nhân viên giao hàng", value: 6, status: 0, shortenText: "Không LH NV" },
+        7: { text: "Đơn vị giao hàng báo hủy", value: 7, status: 0, shortenText: "ĐVGH hủy" },
+        8: { text: "Khách không nhận hàng", value: 8, status: 1, shortenText: "KH không nhận" },
+        9: { text: "Không liên hệ được khách", value: 9, status: 2, shortenText: "Không LH KH" },
+        10: { text: "Khách hẹn giao lại", value: 10, status: 3, shortenText: "Hẹn giao lại" },
+        11: { text: "Mất hàng", value: 11, status: 4, shortenText: "Mất hàng" },
+        12: { text: "Thiếu hàng", value: 12, status: 5, shortenText: "Thiếu hàng" },
+        13: { text: "Sai địa chỉ giao hàng", value: 13, status: 0, shortenText: "Sai địa chỉ" },
+
         14: { text: "Khách trả hàng tại quầy", value: 14, status: 30, shortenText: "Trả tại quầy" },
         15: { text: "Khách yêu cầu trả hàng qua ship", value: 15, status: 31, shortenText: "Trả qua ship" },
-        16: { text: "Đơn hàng hoàn thành", value: 16, status: 21, shortenText: "Hoàn thành" },
-        17: { text: "Đã hoàn hàng", value: 17, status: 12, shortenText: "Đã hoàn hàng" },
-        18: { text: "Đã trả hàng", value: 18, status: 32, shortenText: "Đã trả hàng" },
 
-        51: { text: "Chưa thanh toán", value: 18, status: 32, shortenText: "Đã trả hàng" },
+        17: { text: "Chưa thanh toán", value: 18, status: 32, shortenText: "Đã trả hàng" },
         18: { text: "Đã thanh toán", value: 18, status: 32, shortenText: "Đã trả hàng" },
     };
 
@@ -289,6 +288,12 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         10: { // Đang giao lại
             8: [8, 9, 11, 12, 4]
         },
+        11:{ //Đang hoàn hàng
+            13: [4, 11, 12]
+        },
+        31:{ //Trả hàng thất bại
+            33: [4, 11, 12]
+        }
     };
 
     $scope.updateStatusSteps = function () {
@@ -318,47 +323,104 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             31: { title: "Trả hàng", icon: "warehouse", status: 31 },   //trả ship  
             32: { title: "Đã trả hàng", icon: "warehouse", status: 32 },
         };
+        
+        $scope.possibleSteps = {
+            20: { title: "Tạo đơn hàng", icon: "post_add", status: 20 },
+            1: { title: "Chờ xác nhận", icon: "hourglass_empty", status: 1 },
+            2: { title: "Chờ giao hàng", icon: "inventory", status: 2 },
+            3: { title: "Đang giao hàng", icon: "local_shipping", status: 3 },
+            4: { title: "Đã giao hàng", icon: "check_circle", status: 4 },
 
-        $scope.deliveryFlow = {
-            1: [2, 5, 6], // Chờ xác nhận -> Chờ vận chuyển hoặc khách hủy hoặc đã hủy
-            2: [3, 5, 6], // Chờ vận chuyển -> Đang giao hoặc khách hủy hoặc đã hủy
-            3: [4, 7, 81], // Đang giao -> Thành công hoặc Thất bại hoặc Thất bại (mất)
-            4: [], // Thành công (kết thúc)
-            5: [], // Khách hủy (kết thúc)
-            6: [], // Đã hủy (kết thúc)
-            7: [9, 11], // Thất bại -> Chờ giao lại hoặc Hoàn hàng hoặc Hủy(Mất hàng)
-            8: [11], // Thất bại (lại) -> Hoàn hàng
-            9: [10], // Chờ giao lại -> Đang giao lại
-            10: [4, 8, 81], // Đang giao lại -> Thành công hoặc Thất bại (lai) hoặc Thất bại (mất)
-            11: [6], // Hoàn hàng -> Đã hủy
-            81: [6], //Thất bại mất -> Đã hủy
+            5: { title: "Khách hủy", icon: "cancel", status: 5 },
+            6: { title: "Đã hủy", icon: "not_interested", status: 6 },
+
+            7: { title: "Thất bại", icon: "error", status: 7 },
+            8: { title: "Thất bại", icon: "error", status: 8 }, //Lại - thiếu
+            81: { title: "Thất bại", icon: "error", status: 81 }, //Mất hàng
+
+            9: { title: "Chờ giao lại", icon: "replay", status: 9 },
+            10: { title: "Đang giao lại", icon: "local_shipping", status: 10 },
+
+            11: { title: "Đang hoàn hàng", icon: "assignment_return", status: 11 },
+            12: { title: "Đã hoàn hàng", icon: "assignment_turned_in", status: 12 },
+            13: { title: "Hoàn hàng thất bại", icon: "assignment_return", status: 13 },
+
+            21: { title: "Hoàn thành", icon: "task_alt", status: 21 },
+
+            30: { title: "Trả hàng", icon: "store", status: 30 },  //tại quầy
+            31: { title: "Trả hàng", icon: "local_shipping", status: 31 },  //tận nơi
+            32: { title: "Đã trả hàng", icon: "inventory_2", status: 32 },
+            33: { title: "Trả hàng thất bại", icon: "assignment_late", status: 33 },
         };
+
+        // $scope.deliveryFlow = {
+        //     1: [2, 5, 6], // Chờ xác nhận -> Chờ vận chuyển hoặc khách hủy hoặc đã hủy
+        //     2: [3, 5, 6], // Chờ vận chuyển -> Đang giao hoặc khách hủy hoặc đã hủy
+        //     3: [4, 7, 81], // Đang giao -> Thành công hoặc Thất bại hoặc Thất bại (mất)
+        //     4: [], // Thành công (kết thúc)
+        //     5: [], // Khách hủy (kết thúc)
+        //     6: [], // Đã hủy (kết thúc)
+        //     7: [9, 11], // Thất bại -> Chờ giao lại hoặc Hoàn hàng hoặc Hủy(Mất hàng)
+        //     8: [11], // Thất bại (lại) -> Hoàn hàng
+        //     9: [10], // Chờ giao lại -> Đang giao lại
+        //     10: [4, 8, 81], // Đang giao lại -> Thành công hoặc Thất bại (lai) hoặc Thất bại (mất)
+        //     11: [6], // Hoàn hàng -> Đã hủy
+        //     81: [6], //Thất bại mất -> Đã hủy
+        // };
+
+        // $scope.deliveryFlow = {
+        //     20: [1],              // Tạo đơn hàng -> Chờ xác nhận
+        //     1: [2, 5, 6],         // Chờ xác nhận -> Chờ giao hàng hoặc Khách hủy hoặc Đã hủy
+        //     2: [3, 5, 6],         // Chờ giao hàng -> Đang giao hàng hoặc Khách hủy hoặc Đã hủy
+        //     3: [4, 7, 81],        // Đang giao hàng -> Đã giao hàng hoặc Thất bại hoặc Thất bại (mất hàng)
+        //     4: [21, 30, 31],      // Đã giao hàng -> Hoàn thành hoặc Trả hàng (tại quầy) hoặc Trả hàng (ship)
+
+        //     5: [],                // Khách hủy (kết thúc)
+        //     6: [],                // Đã hủy (kết thúc)
+
+        //     7: [9, 11],           // Thất bại -> Chờ giao lại hoặc Đang hoàn hàng
+        //     8: [11],              // Thất bại (giao lại) -> Đang hoàn hàng
+        //     81: [11],             // Thất bại (mất hàng) -> Đang hoàn hàng
+
+        //     9: [10],              // Chờ giao lại -> Đang giao lại
+        //     10: [4, 8, 81],       // Đang giao lại -> Đã giao hàng hoặc Thất bại (giao lại) hoặc Thất bại (mất hàng)
+
+        //     11: [12],             // Đang hoàn hàng -> Đã hoàn hàng
+        //     12: [6],              // Đã hoàn hàng -> Đã hủy
+
+        //     21: [],               // Hoàn thành (kết thúc)
+
+        //     30: [32],             // Trả hàng (tại quầy) -> Đã trả hàng
+        //     31: [32],             // Trả hàng (ship) -> Đã trả hàng
+        //     32: []                // Đã trả hàng (kết thúc)
+        // };
 
         $scope.deliveryFlow = {
             20: [1],              // Tạo đơn hàng -> Chờ xác nhận
             1: [2, 5, 6],         // Chờ xác nhận -> Chờ giao hàng hoặc Khách hủy hoặc Đã hủy
             2: [3, 5, 6],         // Chờ giao hàng -> Đang giao hàng hoặc Khách hủy hoặc Đã hủy
             3: [4, 7, 81],        // Đang giao hàng -> Đã giao hàng hoặc Thất bại hoặc Thất bại (mất hàng)
-            4: [21, 30, 31],      // Đã giao hàng -> Hoàn thành hoặc Trả hàng (tại quầy) hoặc Trả hàng (ship)
+            4: [21],      // Đã giao hàng -> Hoàn thành hoặc Trả hàng (tại quầy) hoặc Trả hàng (ship)
 
             5: [],                // Khách hủy (kết thúc)
             6: [],                // Đã hủy (kết thúc)
 
             7: [9, 11],           // Thất bại -> Chờ giao lại hoặc Đang hoàn hàng
             8: [11],              // Thất bại (giao lại) -> Đang hoàn hàng
-            81: [11],             // Thất bại (mất hàng) -> Đang hoàn hàng
+            81: [6],              // Thất bại (mất hàng) -> Đã hủy
 
             9: [10],              // Chờ giao lại -> Đang giao lại
             10: [4, 8, 81],       // Đang giao lại -> Đã giao hàng hoặc Thất bại (giao lại) hoặc Thất bại (mất hàng)
-
-            11: [12],             // Đang hoàn hàng -> Đã hoàn hàng
+            11: [12, 13],         // Đang hoàn hàng -> Đã hoàn hàng hoặc Hoàn hàng thất bại
             12: [6],              // Đã hoàn hàng -> Đã hủy
+            13: [11],              // Hoàn hàng thất bại -> Đã hủy
 
-            21: [],               // Hoàn thành (kết thúc)
+            21: [30, 31],               // Hoàn thành (kết thúc)
 
-            30: [32],             // Trả hàng (tại quầy) -> Đã trả hàng
-            31: [32],             // Trả hàng (ship) -> Đã trả hàng
-            32: []                // Đã trả hàng (kết thúc)
+            30: [32, 33],         // Trả hàng (tại quầy) -> Đã trả hàng hoặc Trả hàng thất bại
+            31: [32, 33],         // Trả hàng (ship) -> Đã trả hàng hoặc Trả hàng thất bại
+            32: [],               // Đã trả hàng (kết thúc)
+            33: [6],              // Trả hàng thất bại
         };
 
         $scope.steps = [];
@@ -467,6 +529,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.getAllPaymentStatus = function (billId) {
         $http.get(apiBill + "/" + billId + "/paymentStatus").then(function (res) {
             $scope.listPaymentStatus = res.data
+
+            //Lấy status mới nhất
+            $scope.lastPaymentStatus = $scope.listPaymentStatus[$scope.listPaymentStatus - 1]
             console.log(res.data);
         })
     }

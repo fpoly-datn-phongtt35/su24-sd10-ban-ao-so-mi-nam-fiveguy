@@ -62,7 +62,7 @@
                     <tr ng-repeat="bill in bills">
                         <td>{{bill.id}}</td>
                         <td>{{bill.code}}</td>
-                        <td>{{bill.customer.fullName}}</td>
+                        <td>{{bill.customer.fullName ? bill.customer.fullName : 'Khách lẻ'}}</td>
                         <td>admin</td>
                         <td>{{bill.createdAt | date: 'dd/MM/yyyy HH:mm'}}</td>
                         <td>{{bill.totalAmountAfterDiscount| number:0}} đ</td>

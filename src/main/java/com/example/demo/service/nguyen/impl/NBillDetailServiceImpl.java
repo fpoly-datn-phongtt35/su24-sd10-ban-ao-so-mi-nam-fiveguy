@@ -47,20 +47,47 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         BigDecimal totalPrice = BigDecimal.ZERO;
         BigDecimal totalPromotionalPrice = BigDecimal.ZERO;
 
-        for (BillDetail billDetail : billDetails) {
-            totalQuantity += billDetail.getQuantity();
-            totalPrice = totalPrice.add(billDetail.getPrice()
-                    .multiply(BigDecimal.valueOf(billDetail.getQuantity())));
-            totalPromotionalPrice = totalPromotionalPrice.add(billDetail.getPromotionalPrice()
-                    .multiply(BigDecimal.valueOf(billDetail.getQuantity())));
+        for (BillDetail bd : billDetails) {
+            totalQuantity += bd.getQuantity();
+
+            BigDecimal pricePerItem = bd.getPrice();
+            BigDecimal totalPriceForItem = pricePerItem
+                    .multiply(BigDecimal.valueOf(bd.getQuantity()));
+            totalPrice = totalPrice.add(totalPriceForItem);
+
+            BigDecimal promotionalPricePerItem = bd.getPromotionalPrice();
+            BigDecimal totalPromotionalPriceForItem = promotionalPricePerItem
+                    .multiply(BigDecimal.valueOf(bd.getQuantity()));
+            totalPromotionalPrice = totalPromotionalPrice.add(totalPromotionalPriceForItem);
         }
 
-        BillDetailSummary summary = new BillDetailSummary();
-        summary.setTotalQuantity(totalQuantity);
-        summary.setTotalPrice(totalPrice);
-        summary.setTotalPromotionalPrice(totalPromotionalPrice);
+        return new BillDetailSummary(totalQuantity, totalPrice, totalPromotionalPrice);
+    }
 
-        return summary;
+    public BillDetailSummary getBillDetailSummaryByBillId1(Long billId) {
+        List<BillDetail> billDetails = billDetailRepository.findByBillId(billId);
+
+        int totalQuantity = 0;
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        BigDecimal totalPromotionalPrice = BigDecimal.ZERO;
+
+        for (BillDetail bd : billDetails) {
+            totalQuantity += bd.getQuantity();
+
+            BigDecimal pricePerItem = bd.getPromotionalPrice().compareTo(BigDecimal.ZERO) == 0
+                    ? bd.getPrice()
+                    : bd.getPromotionalPrice();
+
+            BigDecimal totalPriceForItem = pricePerItem
+                    .multiply(BigDecimal.valueOf(bd.getQuantity()));
+            totalPrice = totalPrice.add(totalPriceForItem);
+
+            if (bd.getPromotionalPrice().compareTo(BigDecimal.ZERO) != 0) {
+                totalPromotionalPrice = totalPromotionalPrice.add(totalPriceForItem);
+            }
+        }
+
+        return new BillDetailSummary(totalQuantity, totalPrice, totalPromotionalPrice);
     }
 
     @Transactional

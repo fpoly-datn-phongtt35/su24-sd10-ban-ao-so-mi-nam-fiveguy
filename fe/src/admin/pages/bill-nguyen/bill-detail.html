@@ -1,12 +1,5 @@
 <link rel="stylesheet" href="/src/admin/pages/bill-nguyen/bill-detail.css">
-<div class="container mt-5">
-    <h1 class="mb-4">Chi tiết hóa đơn</h1>
-
-    <!-- Button trigger modal -->
-    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Launch demo modal
-    </button> -->
-
+<div class="container mt-3">
     <!-- TRẠNG THÁI ĐƠN HÀNG -->
     <div class="row  border rounded shadow mb-3 pt-3 bg-body">
         <div class="row">
@@ -54,7 +47,7 @@
                 <div class="ms-3">
                 </div>
                 <div>
-                    <div>
+                    <!-- <div>
                         <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(2)"
                             ng-click="showModalStatus(2)">Xác nhận</button>
                         <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(3)"
@@ -73,6 +66,44 @@
                             ng-click="showModalStatus(10)">Đang giao lại</button>
                         <button class="btn btn-outline-primary" ng-if="deliveryFlow[status].includes(11)"
                             ng-click="showModalStatus(11)">Hoàn hàng</button>
+                    </div> -->
+                    <div>
+                        <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(2)"
+                            ng-click="showModalStatus(2)">Xác nhận đơn hàng</button>
+                        <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(3)"
+                            ng-click="showModalStatus(3)">Xác nhận giao hàng</button>
+                        <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(4)"
+                            ng-click="showModalStatus(4)">Xác nhận giao thành công</button>
+
+                        <button class="btn btn-outline-danger me-3" ng-if="deliveryFlow[status].includes(6)"
+                            ng-click="showModalStatus(6)">Hủy đơn hàng</button>
+                        <button class="btn btn-outline-warning me-3" ng-if="deliveryFlow[status].includes(7)"
+                            ng-click="showModalStatus(7)">Giao hàng thất bại</button>
+                        <button class="btn btn-outline-warning me-3" ng-if="deliveryFlow[status].includes(8)"
+                            ng-click="showModalStatus(8)">Giao hàng thất bại</button>
+
+                        <button class="btn btn-outline-info me-3" ng-if="deliveryFlow[status].includes(9)"
+                            ng-click="showModalStatus(9)">Lên lịch giao lại</button>
+                        <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(10)"
+                            ng-click="showModalStatus(10)">Xác nhận giao lại</button>
+                        <button class="btn btn-outline-info me-3" ng-if="deliveryFlow[status].includes(11)"
+                            ng-click="showModalStatus(11)">Hoàn hàng</button>
+                        <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(12)"
+                            ng-click="showModalStatus(12)">Xác nhận hoàn hàng</button>
+                        <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(13)"
+                            ng-click="showModalStatus(13)">Hoàn hàng thât bại</button>
+
+                        <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(21)"
+                            ng-click="showModalStatus(21)">Hoàn tất đơn hàng</button>
+
+                        <button class="btn btn-outline-warning me-3" ng-if="deliveryFlow[status].includes(30)"
+                            ng-click="showModalStatus(30)">Trả hàng</button>
+                        <button class="btn btn-outline-warning me-3" ng-if="deliveryFlow[status].includes(30)"
+                            ng-click="showModalStatus(31)">Trả hàng</button>
+                        <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(32)"
+                            ng-click="showModalStatus(32)">Xác nhận trả hàng</button>
+                        <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(33)"
+                            ng-click="showModalStatus(33)">Trả hàng thất bại</button>
                     </div>
                 </div>
             </div>
@@ -143,8 +174,6 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                                ng-click="resetCheckBoxes()">Đóng</button>
                             <button type="submit" class="btn btn-primary" ng-click="printSelectedValues()">Xác
                                 nhận</button>
                         </div>
@@ -196,10 +225,14 @@
             <div class="d-flex justify-content-between mb-3">
                 <h5 class="ms-3">Thông tin giao dịch</h5>
                 <div>
+                    <button class="btn btn-primary" ng-show="status == 4" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                        Khách thanh toán</button>
+                    <button class="btn btn-primary" ng-show="status == 4" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                        Ship thanh toán</button>
+                    <button class="btn btn-primary" ng-show="[12, 32].includes(status)" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                        Hoàn tiền</button>
                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#paymentStatusModal">
                         Chi tiết</button>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal">
-                        Thanh toán</button>
                 </div>
             </div>
             <hr>
@@ -217,7 +250,7 @@
                 <tbody>
                     <tr>
                         <td class="col-1">{{listPaymentStatus[0].code}}</td>
-                        <td class="col-3">{{billResponse.customer.fullName}}</td>
+                        <td class="col-3">{{billResponse.customer.fullName ? billResponse.customer.fullName : 'Khách lẻ'}}</td>
                         <td class="col-2">{{listPaymentStatus[0].paymentAmount | number:0}} VND</td>
                         <td class="col-2">{{billResponse.paymentMethod.name}}</td>
                         <td class="col-2">{{listPaymentStatus[0].customerPaymentStatus}}</td>
@@ -231,72 +264,77 @@
     <!-- Modal Xác nhận thanh toán-->
     <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="paymentModalLabel">Payment Details</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Khách hàng thanh toán</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form name="paymentForm" novalidate>
+                        <div class="mb-3 row">
+                            <label for="totalAmount" class="col-sm-4 col-form-label">Tổng tiền</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="totalAmount" ng-model="totalAmount"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="customerPayment" class="col-sm-4 col-form-label">Customer Payment</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="customerPayment" name="customerPayment"
+                                    ng-model="customerPayment" ng-change="calculateChange()" required
+                                    ng-class="{'is-invalid': (paymentForm.customerPayment.$touched || paymentForm.$submitted) && paymentForm.customerPayment.$invalid}">
+                                <div ng-show="paymentForm.$submitted || paymentForm.customerPayment.$touched">
+                                    <div ng-show="paymentForm.customerPayment.$error.required" class="invalid-feedback">
+                                        Customer payment is required
+                                    </div>
+                                    <div ng-show="paymentForm.customerPayment.$error.pattern" class="invalid-feedback">
+                                        Please enter a valid number
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="change" class="col-sm-4 col-form-label">Change</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="change" ng-model="change" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-sm-4 col-form-label">Payment Method</label>
+                            <div class="col-sm-8">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="transfer"
+                                        value="transfer" ng-model="paymentMethod" required>
+                                    <label class="form-check-label" for="transfer">Bank Transfer</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cash"
+                                        value="cash" ng-model="paymentMethod" required>
+                                    <label class="form-check-label" for="cash">Cash</label>
+                                </div>
+                                <div ng-show="paymentForm.$submitted && paymentForm.paymentMethod.$error.required"
+                                    class="text-danger">
+                                    Please select a payment method
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="notes" class="col-sm-4 col-form-label">Notes</label>
+                            <div class="col-sm-8">
+                                <textarea class="form-control" id="notes" name="notes" rows="3"
+                                    ng-model="notes"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="submitPayment()">Submit Payment</button>
+                </div>
             </div>
-            <div class="modal-body">
-              <form name="paymentForm" novalidate>
-                <div class="mb-3 row">
-                  <label for="totalAmount" class="col-sm-4 col-form-label">Total Amount</label>
-                  <div class="col-sm-8">
-                    <input type="text" class="form-control" id="totalAmount" ng-model="totalAmount" readonly>
-                  </div>
-                </div>
-                <div class="mb-3 row">
-                  <label for="customerPayment" class="col-sm-4 col-form-label">Customer Payment</label>
-                  <div class="col-sm-8">
-                    <input type="text" class="form-control" id="customerPayment" name="customerPayment"
-                           ng-model="customerPayment" ng-change="calculateChange()" required
-                           ng-class="{'is-invalid': (paymentForm.customerPayment.$touched || paymentForm.$submitted) && paymentForm.customerPayment.$invalid}">
-                    <div ng-show="paymentForm.$submitted || paymentForm.customerPayment.$touched">
-                      <div ng-show="paymentForm.customerPayment.$error.required" class="invalid-feedback">
-                        Customer payment is required
-                      </div>
-                      <div ng-show="paymentForm.customerPayment.$error.pattern" class="invalid-feedback">
-                        Please enter a valid number
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="mb-3 row">
-                  <label for="change" class="col-sm-4 col-form-label">Change</label>
-                  <div class="col-sm-8">
-                    <input type="text" class="form-control" id="change" ng-model="change" readonly>
-                  </div>
-                </div>
-                <div class="mb-3 row">
-                  <label class="col-sm-4 col-form-label">Payment Method</label>
-                  <div class="col-sm-8">
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="transfer" value="transfer" ng-model="paymentMethod" required>
-                      <label class="form-check-label" for="transfer">Bank Transfer</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" name="paymentMethod" id="cash" value="cash" ng-model="paymentMethod" required>
-                      <label class="form-check-label" for="cash">Cash</label>
-                    </div>
-                    <div ng-show="paymentForm.$submitted && paymentForm.paymentMethod.$error.required" class="text-danger">
-                      Please select a payment method
-                    </div>
-                  </div>
-                </div>
-                <div class="mb-3 row">
-                  <label for="notes" class="col-sm-4 col-form-label">Notes</label>
-                  <div class="col-sm-8">
-                    <textarea class="form-control" id="notes" name="notes" rows="3" ng-model="notes"></textarea>
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" ng-click="submitPayment()">Submit Payment</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 
     <!-- Thông tin đơn hàng -->
     <div class="row card mt-4 border rounded p-4 shadow mb-3 bg-body">
@@ -371,7 +409,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="address" class="form-label">Địa chỉ cụ thể</label>
-                            <input type="text" class="form-control" id="address" ng-model="addressDetail" autocomplete="off">
+                            <input type="text" class="form-control" id="address" ng-model="addressDetail"
+                                autocomplete="off">
                         </div>
 
                         <!-- Tỉnh/Thành phố -->
@@ -468,21 +507,22 @@
                             </div>
                         </td>
                         <td class="col-2">
-                            <input type="number" class="form-control w-75 mb-1" ng-value="bd.quantity"
+                            <input type="number" class="form-control w-75 mb-1" ng-value="bd.quantity" ng-class="{'is-invalid': ((bd.quantityNew > bd.productDetail.quantity) 
+                                || (bd.quantity > bd.productDetail.quantity)) && status == 1}"
                                 ng-model="bd.quantityNew" min="1" ng-disabled="![1].includes(status)"
                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                 ng-change="validateQuantityBd(bd, bd.quantityNew)"
                                 ng-blur="updateBillDetailQuantity(bd.quantityNew, bd)">
-                            <span class="text-muted">Còn lại: {{bd.productDetail.quantity}}</span>
+                            <span class="text-muted" ng-show="status == 1">Còn lại: {{bd.productDetail.quantity}}</span>
                         </td>
                         <td class="col-2 text-end">
-                            <p class="m-0" ng-if="bd.promotionalPrice > 0">
+                            <p class="m-0" ng-if="bd.promotionalPrice > bd.price">
                                 <span>{{bd.promotionalPrice | number:0}} VND</span>
                                 <br>
                                 <span class="text-decoration-line-through text-danger"
                                     style="font-size: 0.9em;">{{bd.price | number:0}} VND</span>
                             </p>
-                            <p class="m-0" ng-if="bd.promotionalPrice === 0">{{bd.price | number:0}} VND</p>
+                            <p class="m-0" ng-if="bd.promotionalPrice === bd.price">{{bd.price | number:0}} VND</p>
                         </td>
                         <td class="col-2 text-end">{{(bd.promotionalPrice > 0 ? bd.promotionalPrice : bd.price) *
                             bd.quantity | number:0}} VND</td>
@@ -508,7 +548,7 @@
         </div>
     </div>
 
-
+    <!-- Danh sách sản phẩm trả -->
     <div class="row mt-4 rounded border p-3 shadow mb-1 bg-body" ng-show="returnOrders.length > 0">
         <div class="d-flex align-items-center">
             <span class="material-icons fs-4 me-2">view_headline</span>
@@ -562,20 +602,27 @@
         <div class="row col-5 p-4 border rounded shadow bg-body">
             <div class="row">
                 <div class="col-6" style="font-weight: bold;">Tổng tiền hàng:</div>
-                <div class="col-6 text-end fs-5">{{billDetailSummary.totalPromotionalPrice | number:0}} VND</div>
+                <div class="col-6 text-end fs-5">{{billResponse.totalAmount | number:0}} VND</div>
             </div>
             <div class="row">
                 <div class="col-6" style="font-weight: bold;">Phí giao hàng:</div>
                 <div class="col-6 text-end fs-5">{{shippingFee | number:0}} VND</div>
             </div>
+
+            <div>
+                <p>Mã giảm : {{billResponse.voucher.id + ' '+billResponse.voucher.name}}</p>
+                <p>Giá trị : {{billResponse.voucher.value}}</p>
+                <p>Tối thiểu : {{billResponse.voucher.minimumTotalAmount}}</p>
+                <p>Tối đa : {{billResponse.voucher.maximumReductionValue}}</p>
+            </div>
             <div class="row">
                 <div class="col-6" style="font-weight: bold;">Giảm giá:</div>
-                <div class="col-6 text-end fs-5">{{billDetailSummary.totalPromotionalPrice | number:0}} VND</div>
+                <div class="col-6 text-end fs-5">{{billResponse.totalAmount - billResponse.totalAmountAfterDiscount | number:0}} VND</div>
             </div>
             <hr class="mt-3">
             <div class="row">
                 <div class="col-6" style="font-weight: bold;">Tổng tiền thanh toán:</div>
-                <div class="col-6 text-end fs-5">{{billDetailSummary.totalPromotionalPrice | number:0}} VND</div>
+                <div class="col-6 text-end fs-5">{{billResponse.totalAmountAfterDiscount | number:0}} VND</div>
             </div>
         </div>
     </div>

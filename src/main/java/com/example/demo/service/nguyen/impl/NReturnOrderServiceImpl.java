@@ -84,7 +84,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
     private void updateBill(Bill bill, ReturnOrderSummary summary) {
         bill.setTotalAmount(summary.getTongTienSauKhiTra());
         bill.setTotalAmountAfterDiscount(summary.getTongTienDaGiamSauKhiTra());
-        bill.setStatus(23);  // Đảm bảo 23 là trạng thái đúng
+        bill.setStatus(30);  // Đảm bảo 23 là trạng thái đúng
         billRepository.save(bill);
     }
 
@@ -95,7 +95,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         newBillHistory.setReason(0);
         newBillHistory.setType(1);
         newBillHistory.setCreatedBy(fullName);
-        newBillHistory.setStatus(23);  // Đảm bảo 23 là trạng thái đúng
+        newBillHistory.setStatus(30);  // Đảm bảo 23 là trạng thái đúng
         newBillHistory.setDescription("Trả hàng");
         return newBillHistory;
     }
@@ -133,7 +133,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         newBill.setTotalAmount(returnOrderSummary.getTongTienSauKhiTra());
         newBill.setTotalAmountAfterDiscount(returnOrderSummary.getTongTienDaGiamSauKhiTra());
 //        newBill.setVoucher();
-        newBill.setStatus(23);
+        newBill.setStatus(30);
 
         billRepository.save(newBill);
 
@@ -143,7 +143,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         newBillHistory.setReason(0);
         newBillHistory.setType(1);
         newBillHistory.setCreatedBy(fullName);
-        newBillHistory.setStatus(23);
+        newBillHistory.setStatus(30);
         newBillHistory.setDescription("Trả hàng");
 
         billHistoryRepository.save(newBillHistory);
