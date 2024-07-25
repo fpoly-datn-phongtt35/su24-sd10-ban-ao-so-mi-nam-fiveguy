@@ -172,7 +172,7 @@ public class VNPayRestController {
 //                }
 //                bill.setPaymentDate(new Date());
                 bill.setStatus(1);
-                olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2);
+                olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2,1);
 //                bill.setTransId(vnp_TransactionNo);
 
                 olBillService.save(bill);
