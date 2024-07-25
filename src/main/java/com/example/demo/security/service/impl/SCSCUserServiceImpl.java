@@ -62,6 +62,8 @@ public class SCSCUserServiceImpl implements SCUserService {
     @Autowired
     AuditLogServiceTinh auditLogServiceTinh;
     //tinh ------------------
+    @Autowired
+    private SCEmailService scEmailService;
 
     private final ModelMapper mapper;
     private final PasswordEncoder bcryptEncoder;
@@ -230,19 +232,62 @@ public class SCSCUserServiceImpl implements SCUserService {
     public ResponseObject reSendOTP(String email) {
         UserRequestDTO userRequestDTO = helper.getUserByEmail(email, accountService.getAllAccount());
         if (userRequestDTO == null) {
-            return new ResponseObject("400", "email này không tồn tại", null);
+            return new ResponseObject("400", "Email này không tồn tại", null);
         } else {
             String new_otp = helper.generateOTP();
-//            userRequestDTO.setOtp(new_otp);
             Account user1 = mapper.map(userRequestDTO, Account.class);
             user1.setConfirmationCode(new_otp);
 
             this.accountService.createAccount(user1);
-            sendSimpleEmail(userRequestDTO.getEmail(), new_otp, "Đây là OTP mới của bạn" + new_otp);
+
+            String htmlContent = generateOtpEmailContent( new_otp);
+            scEmailService.sendHtmlEmail(userRequestDTO.getEmail(), "Đây là OTP mới của bạn", htmlContent);
+
             return new ResponseObject("200", "Gửi lại OTP thành công", null);
         }
     }
 
+    private String generateOtpEmailContent( String otp) {
+        return "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "<style>" +
+                "  .email-content {" +
+                "    font-family: Arial, sans-serif;" +
+                "    text-align: center;" +
+                "    padding: 20px;" +
+                "    border: 1px solid #ddd;" +
+                "  }" +
+                "  .otp-code {" +
+                "    font-size: 24px;" +
+                "    font-weight: bold;" +
+                "    margin: 20px 0;" +
+                "    padding: 10px;" +
+                "    border: 2px dashed #00a651;" +
+                "    display: inline-block;" +
+                "    color: #00a651;" +
+                "  }" +
+                "  .footer {" +
+                "    margin-top: 30px;" +
+                "    font-size: 14px;" +
+                "    color: #777;" +
+                "  }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class='email-content'>" +
+                "  <p>Kính chào " + "bạn" + ",</p>" +
+                "  <p>Đây là mã OTP mới của bạn:</p>" +
+                "  <div class='otp-code'>" + otp + "</div>" +
+                "  <div class='footer'>" +
+                "    Đừng chia sẻ mã OTP này với bất kỳ ai.<br>" +
+                "    Trân trọng,<br>" +
+                "    YourCompany" +
+                "  </div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+    }
 
 
     @Override
