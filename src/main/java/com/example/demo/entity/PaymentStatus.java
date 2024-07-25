@@ -37,8 +37,8 @@ public class PaymentStatus {
     private Integer paymentMethod;
 
 //    1 khách hàng thanh toán 2 shipper thanh toán 3 shop hoàn tiền
-    @Column(name = "payment_type")
-    private String paymentType;
+    @Column(name = "PaymentType")
+    private Integer paymentType;
 
 //    1 chưa thanh toán 2 thành công 3 thành công(hoàn) 4 chờ hoàn tiền
     @Column(name = "CustomerPaymentStatus")
