@@ -60,7 +60,7 @@ public class BillRestControllerTinh {
         bill1.setReciverName(bill.getReciverName());
         bill1.setDeliveryDate(bill.getDeliveryDate());
         bill1.setShippingFee(bill.getShippingFee());
-        bill1.setTransId(bill.getTransId());
+//        bill1.setTransId(bill.getTransId());
         bill1.setAddress(bill.getAddress());
         bill1.setPhoneNumber(bill.getPhoneNumber());
         bill1.setTotalAmount(bill.getTotalAmount());
