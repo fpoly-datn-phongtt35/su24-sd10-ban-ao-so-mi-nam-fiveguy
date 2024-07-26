@@ -9,6 +9,7 @@ import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.product.NProductDetailRepository;
 import com.example.demo.service.nguyen.NBillDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -236,7 +237,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         if (billOptional.isEmpty()) return;
 
         Bill bill = billOptional.get();
-        BigDecimal totalAmountSale = calculateTotalAmountSale(bill.getId());
+        BigDecimal totalAmountSale = calculateTotalAmountSale(bill.getId()) ;
         BigDecimal currentTotalAmount = bill.getTotalAmount();
         Voucher currentVoucher = bill.getVoucher();
 
@@ -244,7 +245,6 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         // Tìm voucher tốt nhất cho tổng tiền mới
         Voucher bestVoucher = findBestVoucher(bill.getId());
 
-        System.out.println(billDetailRepository.findByBillId(billId).size());
 
         // Tính toán giá trị giảm giá
         BigDecimal currentDiscountValue = (currentVoucher != null) ? calculateDiscount(currentVoucher,
@@ -253,18 +253,17 @@ public class NBillDetailServiceImpl implements NBillDetailService {
                 bill.getTotalAmount()) : BigDecimal.ZERO;
 
 
-        System.out.println("1");
 
         // Quyết định voucher nào sẽ được áp dụng
         Voucher voucherToApply;
         BigDecimal discountToApply;
 
         if (bestVoucher == null ||
-                !isVoucherApplicable(bestVoucher, totalAmountSale, bill.getCustomer())) {
+                !isVoucherApplicable(bestVoucher, totalAmountSale, bill.getCustomer(), bill)) {
             voucherToApply = null;
             discountToApply = BigDecimal.ZERO;
         } else if (currentVoucher == null ||
-                !isVoucherApplicable(currentVoucher, totalAmountSale, bill.getCustomer()) ||
+                !isVoucherApplicable(currentVoucher, totalAmountSale, bill.getCustomer(), bill) ||
                 bestDiscountValue.compareTo(currentDiscountValue) > 0) {
             voucherToApply = bestVoucher;
             discountToApply = bestDiscountValue;
@@ -273,7 +272,6 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             discountToApply = currentDiscountValue;
         }
 
-        System.out.println("aaa1");
 
         // Cập nhật bill
 //        bill.setTotalAmount(totalAmountSale);
@@ -284,9 +282,9 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         billRepository.save(bill);
 
         // Cập nhật số lượng voucher nếu có thay đổi
-        if (!Objects.equals(voucherToApply, currentVoucher)) {
-            updateVoucherQuantities(currentVoucher, voucherToApply);
-        }
+//        if (!Objects.equals(voucherToApply, currentVoucher)) {
+//            updateVoucherQuantities(currentVoucher, voucherToApply);
+//        }
     }
 
     private void updateVoucherQuantities(Voucher oldVoucher, Voucher newVoucher) {
@@ -324,7 +322,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         BigDecimal bestDiscount = BigDecimal.ZERO;
 
         for (Voucher voucher : vouchers) {
-            if (isVoucherApplicable(voucher, totalAmount, bill.getCustomer())) {
+            if (isVoucherApplicable(voucher, totalAmount, bill.getCustomer(), bill)) {
                 BigDecimal discount = calculateDiscount(voucher, totalAmount);
                 if (discount.compareTo(bestDiscount) > 0) {
                     bestDiscount = discount;
@@ -336,7 +334,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
     }
 
     private boolean isVoucherApplicable(Voucher voucher, BigDecimal totalAmount,
-                                        Customer customer) {
+                                        Customer customer, Bill bill) {
         if (voucher.getStatus() != 1) {
             return false; // Voucher is not active
         }
@@ -363,10 +361,25 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
                             List.of(5, 6));
-            if (usedCount >= voucher.getNumberOfUses()) {
+
+            // Check if the voucher is already used in the current bill
+            boolean isCurrentBillUsingVoucher =
+                    bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
+
+            if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
                 return false; // Voucher usage limit reached
             }
         }
+
+        // Check the number of uses limit using repository
+//        if (voucher.getNumberOfUses() != null && customer != null) {
+//            long usedCount = billRepository
+//                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
+//                            List.of(5, 6));
+//            if (usedCount >= voucher.getNumberOfUses()) {
+//                return false; // Voucher usage limit reached
+//            }
+//        }
 
         return true; // Voucher is applicable
     }

@@ -3,6 +3,7 @@ package com.example.demo.service.nguyen;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.BillHistory;
+import com.example.demo.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,5 +28,7 @@ public interface NBillService {
     Bill updateShipmentDetail(Bill bill, Long id, String fullName);
 
     Integer isQuantityExceedsProductDetail(Long idBill);
+
+    Bill setVoucherToBill(Long id, Voucher voucher);
 
 }

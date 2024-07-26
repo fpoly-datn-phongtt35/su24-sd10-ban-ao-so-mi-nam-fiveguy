@@ -10,6 +10,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     const apiProductDetail = "http://localhost:8080/api/admin/productDetail"
     const apiProductProperty = "http://localhost:8080/api/admin/productProperty"
 
+    
+    const apiVoucher = "http://localhost:8080/api/admin/voucher"
+
     // Hàm hiển thị thông báo thành công
     $scope.showSuccess = function (message) {
         toastr["success"](message);
@@ -832,6 +835,23 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         });
     };
 
+
+    //#region list voucher có thể sử dụng
+    $scope.getAllVoucherCanUse = function () {
+        $http.get(apiVoucher + "/findAllVoucherCanUse/" + $scope.idBill).then(function (res) {
+            $scope.vouchers = res.data
+        })
+    }
+    $scope.getAllVoucherCanUse()
+
+    $scope.setVoucherToBill = function (voucher){
+        $http.put(apiBill + "/" + $scope.idBill + "/setVoucherToBill", voucher).then(function (res) {
+            $scope.getBillById($scope.idBill)
+            $scope.getAllVoucherCanUse()
+        })
+    }
+
+    //#endregion
 
     //Hiển thị sản phẩm trả
     $http.get(apiReturnOrder + "/" + $scope.idBill).then(function (response) {

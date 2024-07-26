@@ -3,6 +3,7 @@ package com.example.demo.restController.nguyen;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.ReturnOrder;
+import com.example.demo.entity.Voucher;
 import com.example.demo.model.request.nguyen.BillRequest;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NBillDetailService;
@@ -134,10 +135,16 @@ public class NBillRestController {
         return ResponseEntity.ok(billService.isQuantityExceedsProductDetail(billId));
     }
 
+    //khong su dung - chua check lai
     @PostMapping("/{billId}/addReturnOrder")
     public ResponseEntity<?> addReturnOrderAndUpdateBill(
             @RequestHeader("Authorization") String token,
             @RequestBody List<ReturnOrder> returnOrdera) {
         return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/{billId}/setVoucherToBill")
+    public ResponseEntity<?> setVoucherToBill(@PathVariable Long billId,@RequestBody Voucher voucher){
+        return ResponseEntity.ok(billService.setVoucherToBill(billId, voucher));
     }
 }

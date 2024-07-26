@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -26,19 +27,19 @@ import java.util.Optional;
 public class NVoucherRestController {
 
     @Autowired
-    NVoucherService NVoucherService;
+    NVoucherService voucherService;
 
     @Autowired
     private SCAccountService accountService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(NVoucherService.getAllVoucher());
+        return ResponseEntity.ok(voucherService.getAllVoucher());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(NVoucherService.getVoucherById(id));
+        return ResponseEntity.ok(voucherService.getVoucherById(id));
     }
 
     @PostMapping("/save")
@@ -74,7 +75,7 @@ public class NVoucherRestController {
 //        }
 
         Pageable pageable = PageRequest.of(pageNumber, 5);
-        Page<Voucher> page = NVoucherService.findVouchers(code, name, applyfor,
+        Page<Voucher> page = voucherService.findVouchers(code, name, applyfor,
                 discountType, startDate, endDate, status, pageable);
         return new PaginationResponse<>(page);
     }
@@ -90,7 +91,7 @@ public class NVoucherRestController {
 
         voucherRequest.getVoucher().setCreatedBy(fullName.get());
 
-        return ResponseEntity.ok(NVoucherService
+        return ResponseEntity.ok(voucherService
                 .createVoucher(voucherRequest.getVoucher(), voucherRequest.getCustomerTypeList()));
     }
 
@@ -106,14 +107,14 @@ public class NVoucherRestController {
 
         voucherRequest.getVoucher().setUpdatedBy(fullName.get());
 
-        return ResponseEntity.ok(NVoucherService
+        return ResponseEntity.ok(voucherService
                 .updateVoucher(id, voucherRequest.getVoucher(),
                         voucherRequest.getCustomerTypeList()));
     }
 
     @GetMapping("/{voucherId}/statistics")
     public VoucherStatistics getVoucherStatistics(@PathVariable Long voucherId) {
-        return NVoucherService.calculateVoucherStatistics(voucherId);
+        return voucherService.calculateVoucherStatistics(voucherId);
     }
 
     @GetMapping("/{voucherId}/stats")
@@ -122,6 +123,11 @@ public class NVoucherRestController {
             @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
 
         Pageable pageable = PageRequest.of(pageNumber, 5);
-        return NVoucherService.getCustomerVoucherStats(voucherId, pageable);
+        return voucherService.getCustomerVoucherStats(voucherId, pageable);
+    }
+
+    @GetMapping("/findAllVoucherCanUse/{billId}")
+    public List<Voucher> findAllVoucherCanUse(@PathVariable Long billId){
+        return voucherService.findAllVoucherCanUse(billId);
     }
 }

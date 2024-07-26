@@ -173,6 +173,55 @@ public class NBillServiceImpl implements NBillService {
         billHistoryRepository.save(newHistory);
     }
 
+
+    @Override
+    public Bill setVoucherToBill(Long id, Voucher voucherRequest) {
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+        Voucher voucher = voucherRepository.findById(voucherRequest.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+
+        if (bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId())) {
+            voucher = null;
+            bill.setTotalAmountAfterDiscount(bill.getTotalAmount());
+        } else {
+            BigDecimal discountValue = calculateDiscountVoucher(voucher, bill.getTotalAmount());
+            bill.setTotalAmountAfterDiscount(bill.getTotalAmount().subtract(discountValue));
+        }
+
+        bill.setVoucher(voucher);
+
+        return billRepository.save(bill);
+    }
+
+
+    private BigDecimal calculateDiscountVoucher(Voucher voucher, BigDecimal totalAmount) {
+        if (voucher == null || totalAmount == null) {
+            return BigDecimal.ZERO;
+        }
+
+        if (totalAmount.compareTo(BigDecimal.valueOf(voucher.getMinimumTotalAmount())) < 0) {
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal discountValue;
+        if (voucher.getDiscountType() == 1) { // Percentage discount
+            discountValue = totalAmount.multiply(BigDecimal.valueOf(voucher.getValue())
+                    .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+
+            if (voucher.getMaximumReductionValue() != null ||
+                    voucher.getMaximumReductionValue() != 0) {
+                return discountValue.min(BigDecimal.valueOf(voucher.getMaximumReductionValue()));
+            }
+            return discountValue;
+        } else if (voucher.getDiscountType() == 2) { // Fixed amount discount
+            discountValue = BigDecimal.valueOf(voucher.getValue());
+            return discountValue.min(totalAmount); // Ensure discount doesn't exceed total amount
+        }
+
+        return BigDecimal.ZERO;
+    }
+
     @Transactional
     public void updateQuantityProductDetail1(Long billId, int newStatus) {
         Bill bill = billRepository.findById(billId)
@@ -247,6 +296,7 @@ public class NBillServiceImpl implements NBillService {
         return 0;
     }
 
+
     @Transactional
     //Hoàn lại số lượng trong productDetail khi hoàn trả
     public void refundProductDetailsQuantities(List<ReturnOrder> returnOrders) {
@@ -262,30 +312,30 @@ public class NBillServiceImpl implements NBillService {
     @Transactional
     public void autoSetVoucher(Long billId) {
         Bill bill = billRepository.findById(billId).get();
-        if(bill != null) return;
+        if (bill != null) return;
 //        billRepository.findAll().forEach(bill -> {
-            BigDecimal totalAmount = calculateTotalAmount(bill.getId());
-            BigDecimal totalAmountSale = calculateTotalAmountSale(bill.getId());
+        BigDecimal totalAmount = calculateTotalAmount(bill.getId());
+        BigDecimal totalAmountSale = calculateTotalAmountSale(bill.getId());
 
-            BigDecimal discount = BigDecimal.ZERO;
-            bill.setTotalAmount(totalAmountSale);
+        BigDecimal discount = BigDecimal.ZERO;
+        bill.setTotalAmount(totalAmountSale);
 
-            //lấy voucher tốt nhất
-            Voucher bestVoucher = findBestVoucher(bill.getId());
+        //lấy voucher tốt nhất
+        Voucher bestVoucher = findBestVoucher(bill.getId());
 
-            //tính giá trị có thế giảm từ voucher tốt nhất
-            BigDecimal discountValue = calculateDiscount(bestVoucher, bill.getTotalAmount());
+        //tính giá trị có thế giảm từ voucher tốt nhất
+        BigDecimal discountValue = calculateDiscount(bestVoucher, bill.getTotalAmount());
 
-            Voucher oldVoucher = bill.getVoucher();
-            BigDecimal oldDiscountValue = calculateDiscount(oldVoucher, bill.getTotalAmount());
+        Voucher oldVoucher = bill.getVoucher();
+        BigDecimal oldDiscountValue = calculateDiscount(oldVoucher, bill.getTotalAmount());
 
 
-            if (oldDiscountValue.compareTo(discountValue) == 0) {
-                return;
-            }
-            if (discountValue.compareTo(oldDiscountValue) < 0) {
-                return;
-            }
+        if (oldDiscountValue.compareTo(discountValue) == 0) {
+            return;
+        }
+        if (discountValue.compareTo(oldDiscountValue) < 0) {
+            return;
+        }
 
 //            System.out.println("-----------------------");
 //            System.out.println(
@@ -304,29 +354,29 @@ public class NBillServiceImpl implements NBillService {
 //                            oldVoucher.getMinimumTotalAmount() + ", max: " +
 //                            oldVoucher.getMaximumReductionValue());
 
-            bill.setTotalAmountAfterDiscount(totalAmountSale.subtract(discount));
-            bill.setVoucher(bestVoucher);
-            Bill saveBill = billRepository.save(bill);
+        bill.setTotalAmountAfterDiscount(totalAmountSale.subtract(discount));
+        bill.setVoucher(bestVoucher);
+        Bill saveBill = billRepository.save(bill);
 
-            Voucher newVoucher = saveBill.getVoucher();
+        Voucher newVoucher = saveBill.getVoucher();
 
-            if (!Objects.equals(newVoucher, oldVoucher)) {
-                // Cập nhật chỉ khi voucher thực sự thay đổi
-                bill.setVoucher(newVoucher);
-                billRepository.save(bill);
+        if (!Objects.equals(newVoucher, oldVoucher)) {
+            // Cập nhật chỉ khi voucher thực sự thay đổi
+            bill.setVoucher(newVoucher);
+            billRepository.save(bill);
 
-                // Cập nhật số lượng voucher nếu oldVoucher không null
-                if (oldVoucher != null) {
-                    oldVoucher.setQuantity(oldVoucher.getQuantity() + 1);
-                    voucherRepository.save(oldVoucher);
-                }
-
-                // Cập nhật số lượng voucher nếu newVoucher không null
-                if (newVoucher != null) {
-                    newVoucher.setQuantity(newVoucher.getQuantity() - 1);
-                    voucherRepository.save(newVoucher);
-                }
+            // Cập nhật số lượng voucher nếu oldVoucher không null
+            if (oldVoucher != null) {
+                oldVoucher.setQuantity(oldVoucher.getQuantity() + 1);
+                voucherRepository.save(oldVoucher);
             }
+
+            // Cập nhật số lượng voucher nếu newVoucher không null
+            if (newVoucher != null) {
+                newVoucher.setQuantity(newVoucher.getQuantity() - 1);
+                voucherRepository.save(newVoucher);
+            }
+        }
 //        });
     }
 

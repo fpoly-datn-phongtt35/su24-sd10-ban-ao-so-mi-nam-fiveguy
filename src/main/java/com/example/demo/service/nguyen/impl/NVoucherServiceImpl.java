@@ -4,6 +4,7 @@ import com.example.demo.entity.*;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
 import com.example.demo.repository.nguyen.*;
+import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
 import com.example.demo.service.nguyen.EmailService;
 import com.example.demo.service.nguyen.NVoucherService;
 //import org.hibernate.query.Page;
@@ -17,10 +18,13 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +46,9 @@ public class NVoucherServiceImpl implements NVoucherService {
 
     @Autowired
     NCustomerRepository customerRepository;
+
+    @Autowired
+    NBillDetailRepository billDetailRepository;
 
     @Autowired
     private com.example.demo.repository.nguyen.bill.NBillRepository billRepository;
@@ -377,5 +384,132 @@ public class NVoucherServiceImpl implements NVoucherService {
     private String formatCurrency(double amount) {
         DecimalFormat formatter = new DecimalFormat("#,###");
         return formatter.format(amount) + " đồng";
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Voucher> findAllVoucherCanUse(Long billId) {
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
+
+        BigDecimal totalAmount = calculateTotalAmountSale(billId);
+        List<Voucher> vouchers = voucherRepository
+                .findAll(); // Assuming you have a method to fetch all vouchers
+
+        List<Voucher> listVoucher = new ArrayList<>();
+
+        for (Voucher voucher : vouchers) {
+            if (isVoucherApplicable(voucher, totalAmount, bill.getCustomer(), bill)) {
+                listVoucher.add(voucher);
+            }
+        }
+//
+//        int count = 0;
+//        for (Voucher voucher: listVoucher){
+//            if(voucher == bill.getVoucher()){
+//                count++;
+//            }
+//        }
+//        if(count == 0){
+//            listVoucher.add(bill.getVoucher());
+//        }
+
+        listVoucher.sort((v1, v2) -> calculateDiscount(v2, totalAmount)
+                .compareTo(calculateDiscount(v1, totalAmount)));
+
+        return listVoucher;
+    }
+
+    public BigDecimal calculateTotalAmountSale(Long billId) {
+        List<BillDetail> billDetails = billDetailRepository.findByBillId(billId);
+        BigDecimal totalAmountSale = BigDecimal.ZERO;
+        for (BillDetail billDetail : billDetails) {
+            BigDecimal detailTotalSale = billDetail.getPromotionalPrice()
+                    .multiply(BigDecimal.valueOf(billDetail.getQuantity()));
+            totalAmountSale = totalAmountSale.add(detailTotalSale);
+        }
+        return totalAmountSale;
+    }
+
+    private boolean isVoucherApplicable(Voucher voucher, BigDecimal totalAmount,
+                                        Customer customer, Bill bill) {
+        if (voucher.getStatus() != 1) {
+            return false; // Voucher is not active
+        }
+
+        if (voucher.getQuantity() <= 0) {
+            return false;
+        }
+
+        if (voucher.getStartDate().after(new Date()) || voucher.getEndDate().before(new Date())) {
+            return false; // Voucher is not within the valid date range
+        }
+
+        if (totalAmount.compareTo(BigDecimal.valueOf(voucher.getMinimumTotalAmount())) < 0) {
+            return false; // Bill amount is less than the minimum amount required
+        }
+
+        if (voucher.getApplyfor() == 1 && customer != null) {
+            if (customer.getCustomerType() == null ||
+                    !customerTypeVoucherRepository.findAllByVoucherId(voucher.getId()).stream()
+                            .anyMatch(ctv -> ctv.getCustomerType()
+                                    .equals(customer.getCustomerType()))) {
+                return false; // Customer type does not match
+            }
+        }
+
+        // Check the number of uses limit using repository
+        if (voucher.getNumberOfUses() != null && customer != null) {
+            long usedCount = billRepository
+                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
+                            List.of(5, 6));
+
+            // Check if the voucher is already used in the current bill
+            boolean isCurrentBillUsingVoucher =
+                    bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
+
+            if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
+                return false; // Voucher usage limit reached
+            }
+        }
+
+//        // Check the number of uses limit using repository
+//        if (voucher.getNumberOfUses() != null && customer != null) {
+//            long usedCount = billRepository
+//                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
+//                            List.of(5, 6));
+//            if (usedCount >= voucher.getNumberOfUses()) {
+//                return false; // Voucher usage limit reached
+//            }
+//        }
+
+        return true; // Voucher is applicable
+    }
+
+    private BigDecimal calculateDiscount(Voucher voucher, BigDecimal totalAmount) {
+        if (voucher == null || totalAmount == null) {
+            return BigDecimal.ZERO;
+        }
+
+        if (totalAmount.compareTo(BigDecimal.valueOf(voucher.getMinimumTotalAmount())) < 0) {
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal discountValue;
+        if (voucher.getDiscountType() == 1) { // Percentage discount
+            discountValue = totalAmount.multiply(BigDecimal.valueOf(voucher.getValue())
+                    .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+
+            if (voucher.getMaximumReductionValue() != null &&
+                    voucher.getMaximumReductionValue() != 0) {
+                return discountValue.min(BigDecimal.valueOf(voucher.getMaximumReductionValue()));
+            }
+            return discountValue;
+        } else if (voucher.getDiscountType() == 2) { // Fixed amount discount
+            discountValue = BigDecimal.valueOf(voucher.getValue());
+            return discountValue.min(totalAmount); // Ensure discount doesn't exceed total amount
+        }
+
+        return BigDecimal.ZERO;
     }
 }
