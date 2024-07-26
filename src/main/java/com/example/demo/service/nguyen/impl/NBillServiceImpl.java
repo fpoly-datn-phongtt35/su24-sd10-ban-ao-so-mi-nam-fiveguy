@@ -287,22 +287,22 @@ public class NBillServiceImpl implements NBillService {
                 return;
             }
 
-            System.out.println("-----------------------");
-            System.out.println(
-                    "Bill id: " + bill.getId() + " - tA: " + bill.getTotalAmount() + " - tAD: " +
-                            bill.getTotalAmountAfterDiscount());
-            System.out.println("best dis:" + discountValue);
-            System.out.println(
-                    "best vid: " + bestVoucher.getId() + ",value: " + bestVoucher.getValue() +
-                            " - " + bestVoucher.getDiscountType() + ",min : " +
-                            bestVoucher.getMinimumTotalAmount() + ", max: " +
-                            bestVoucher.getMaximumReductionValue());
-            System.out.println("old dis:" + oldDiscountValue);
-            System.out
-                    .println("old vid: " + oldVoucher.getId() + ",value: " + oldVoucher.getValue() +
-                            " - " + oldVoucher.getDiscountType() + ",min : " +
-                            oldVoucher.getMinimumTotalAmount() + ", max: " +
-                            oldVoucher.getMaximumReductionValue());
+//            System.out.println("-----------------------");
+//            System.out.println(
+//                    "Bill id: " + bill.getId() + " - tA: " + bill.getTotalAmount() + " - tAD: " +
+//                            bill.getTotalAmountAfterDiscount());
+//            System.out.println("best dis:" + discountValue);
+//            System.out.println(
+//                    "best vid: " + bestVoucher.getId() + ",value: " + bestVoucher.getValue() +
+//                            " - " + bestVoucher.getDiscountType() + ",min : " +
+//                            bestVoucher.getMinimumTotalAmount() + ", max: " +
+//                            bestVoucher.getMaximumReductionValue());
+//            System.out.println("old dis:" + oldDiscountValue);
+//            System.out
+//                    .println("old vid: " + oldVoucher.getId() + ",value: " + oldVoucher.getValue() +
+//                            " - " + oldVoucher.getDiscountType() + ",min : " +
+//                            oldVoucher.getMinimumTotalAmount() + ", max: " +
+//                            oldVoucher.getMaximumReductionValue());
 
             bill.setTotalAmountAfterDiscount(totalAmountSale.subtract(discount));
             bill.setVoucher(bestVoucher);

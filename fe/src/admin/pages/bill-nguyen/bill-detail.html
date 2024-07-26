@@ -610,8 +610,8 @@
             </div>
 
             <div>
-                <p>Mã giảm : {{billResponse.voucher.id + ' '+billResponse.voucher.name}}</p>
-                <p>Giá trị : {{billResponse.voucher.value}}</p>
+                <p>Mã giảm : {{billResponse.voucher.id + '-'+billResponse.voucher.name}}</p>
+                <p>Giá trị : {{billResponse.voucher.value}} {{billResponse.voucher.discountType == 1? '%' : 'vnd'}} </p>
                 <p>Tối thiểu : {{billResponse.voucher.minimumTotalAmount}}</p>
                 <p>Tối đa : {{billResponse.voucher.maximumReductionValue}}</p>
             </div>

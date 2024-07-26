@@ -93,7 +93,7 @@ public class MoMoPaymentController {
 //            }
 //            bill.setPaymentDate(new Date());
             bill.setStatus(1);
-            olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2);
+            olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2,1);
 
 //            bill.setTransId(transId);
             olBillService.save(bill);

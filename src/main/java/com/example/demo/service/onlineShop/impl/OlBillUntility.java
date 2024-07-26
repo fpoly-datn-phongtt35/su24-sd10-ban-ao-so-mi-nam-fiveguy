@@ -219,7 +219,7 @@ public static String encodeId(long id) {
                         if (bill.getPaymentMethod().getName().equals("MoMo")) {
                             if (authenticationCheckMoMo(encodeId(bill.getId()))) {
                                 bill.setStatus(1);
-                                 newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2);
+                                 newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
 
 
                                     olBillService.save(bill);
@@ -228,7 +228,7 @@ public static String encodeId(long id) {
                         } else if (bill.getPaymentMethod().getName().equals("VNPAY")) {
                             if (authenticationCheckVnPay(encodeId(bill.getId()),req)) {
                                 bill.setStatus(1);
-                                newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2);
+                                newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
 
 
                                 olBillService.save(bill);
@@ -241,7 +241,7 @@ public static String encodeId(long id) {
 //                        }
                         bill.setStatus(5);
 //                        huyPaymentStatus
-                        newPaymentStatusAndBillHistory( bill, bill.getCustomer(),5,3);
+                        newPaymentStatusAndBillHistory( bill, bill.getCustomer(),5,3,0);
 
                         olBillService.save(bill);
                     }
@@ -250,8 +250,14 @@ public static String encodeId(long id) {
         };
         timer.schedule(task, 960000); // 60000 1200000 milliseconds = 1 minute
     }
-    public void newPaymentStatusAndBillHistory(Bill bill, Customer customer,Integer statusBillHistory,Integer statusPaymentStatus){
+    public void newPaymentStatusAndBillHistory(Bill bill, Customer customer,Integer statusBillHistory,Integer statusPaymentStatus,Integer paymentType){
+        BillHistory billCreate = new BillHistory();
+        billCreate.setStatus(20);
+        billCreate.setCreatedBy(customer.getFullName());
+        billCreate.setBill(bill);
+        billCreate.setType(1);
 
+        olBillHistoryService2.save(billCreate);
         BillHistory billHistory = new BillHistory();
         billHistory.setStatus(statusBillHistory);
         billHistory.setCreatedBy(customer.getFullName());
@@ -261,7 +267,13 @@ public static String encodeId(long id) {
             PaymentStatus paymentStatus = new PaymentStatus();
             paymentStatus.setBill(bill);
             paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
-            olPaymentStatusService2.save(paymentStatus);
+            if (paymentType == 1){
+                paymentStatus.setPaymentMethod(2);
+                paymentStatus.setPaymentType(1);
+                paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+
+            }
+        olPaymentStatusService2.save(paymentStatus);
 
     }
 

@@ -3,7 +3,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     const apiBill = "http://localhost:8080/api/admin/bill";
     const apiBillDetail = "http://localhost:8080/api/admin/billDetail";
     const apiBillHistory = "http://localhost:8080/api/admin/billHistory"
-    
+
     const apiReturnOrder = "http://localhost:8080/api/admin/returnOrder";
 
     const apiProduct = "http://localhost:8080/api/admin/product"
@@ -124,7 +124,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         let reasonUpdate = {
             value: 0
         };
-        
+
         // Add selected reasons to the description
         $scope.reasonSuggestions.forEach(function (reason) {
             if (reason.checked) {
@@ -227,7 +227,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     //Chuyển sang trả hàng
-    $scope.goToReturnOrder = function (){
+    $scope.goToReturnOrder = function () {
         $location.path('/admin/return-order/' + $scope.idBill);
     }
 
@@ -246,7 +246,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         12: { text: "Thiếu hàng", value: 12, status: 5, shortenText: "Thiếu hàng" },
         13: { text: "Sai địa chỉ giao hàng", value: 13, status: 0, shortenText: "" },
 
-        
+
         21: { text: "Chưa thanh toán", value: 18, status: 32, shortenText: "Chưa thanh toán" },
         22: { text: "Đã thanh toán", value: 18, status: 32, shortenText: "Đã thanh toán" },
     };
@@ -288,10 +288,10 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         10: { // Đang giao lại
             8: [8, 9, 11, 12, 4]
         },
-        11:{ //Đang hoàn hàng
+        11: { //Đang hoàn hàng
             13: [4, 11, 12]
         },
-        31:{ //Trả hàng thất bại
+        31: { //Trả hàng thất bại
             33: [4, 11, 12]
         }
     };
@@ -312,7 +312,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             9: { title: "Chờ giao lại", icon: "autorenew", status: 9 },
             10: { title: "Đang giao lại", icon: "directions_car", status: 10 },
-            
+
             11: { title: "Đang hoàn hàng", icon: "warehouse", status: 11 },
             12: { title: "Đã hoàn hàng", icon: "warehouse", status: 12 },
 
@@ -323,7 +323,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             31: { title: "Trả hàng", icon: "warehouse", status: 31 },   //trả ship  
             32: { title: "Đã trả hàng", icon: "warehouse", status: 32 },
         };
-        
+
         $scope.possibleSteps = {
             20: { title: "Tạo đơn hàng", icon: "post_add", status: 20 },
             1: { title: "Chờ xác nhận", icon: "hourglass_empty", status: 1 },
@@ -760,6 +760,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.productDetails.forEach(function (pd) {
                 pd.inputQuantity = 1; // Set default value to 0
             });
+
+            //Lấy lại bill để hiển thị lại totalAmount
+            $scope.getBillById($scope.idBill)
         }, function (error) {
             console.error('Thêm sản phẩm thất bại:', error);
         });
@@ -780,6 +783,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
             $scope.showSuccess("Xóa thành công")
             $scope.getAllBillDetailByBillId($scope.idBill)
+
+            //Lấy lại bill để hiển thị lại totalAmount
+            $scope.getBillById($scope.idBill)
         }, function (error) {
             console.error('Xoá sản phẩm thất bại:', error);
         })
@@ -800,7 +806,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //update quantity in billDetail
     $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
 
-        if (newQuantity == null || newQuantity == undefined || newQuantity == "") return;
+        if (newQuantity == null || newQuantity == undefined || newQuantity == "" || newQuantity == billDetail.quantity) return;
 
         // $scope.billDetails.forEach(function (bd) {
         //     if (bd == billDetail && newQuantity > bd.productDetail.quantity) {
@@ -818,6 +824,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         }).then(function (res) {
             $scope.showSuccess("Sửa số lượng thành công");
             $scope.getAllBillDetailByBillId($scope.idBill);
+
+            //Lấy lại bill để hiển thị lại totalAmount
+            $scope.getBillById($scope.idBill)
         }, function (error) {
             console.error('Sửa số lượng thất bại:', error);
         });
