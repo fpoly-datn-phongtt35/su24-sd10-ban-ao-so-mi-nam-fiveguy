@@ -348,6 +348,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             12: { title: "Đã hoàn hàng", icon: "assignment_turned_in", status: 12 },
             13: { title: "Hoàn hàng thất bại", icon: "assignment_return", status: 13 },
 
+            20: { title: "Thành công", icon: "task_alt", status: 20 },
             21: { title: "Hoàn thành", icon: "task_alt", status: 21 },
 
             30: { title: "Trả hàng", icon: "store", status: 30 },  //tại quầy

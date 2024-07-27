@@ -65,7 +65,7 @@
                         <td>{{bill.customer.fullName ? bill.customer.fullName : 'Khách lẻ'}}</td>
                         <td>admin</td>
                         <td>{{bill.createdAt | date: 'dd/MM/yyyy HH:mm'}}</td>
-                        <td>{{bill.totalAmountAfterDiscount| number:0}} đ</td>
+                        <td>{{bill.totalAmount| number:0}} đ</td>
                         <!-- <td>{{bill.typeBill}}</td> -->
                         <td ng-switch="bill.typeBill" style="font-size: 20px;">
                             <span ng-switch-when="1">
@@ -86,7 +86,7 @@
                         </td>
                         <td ng-if="currentTab == null" ng-switch="bill.status" style="font-size: 20px;">
                             <span ng-repeat="s in status">
-                                <div class="badge text-wrap" ng-show="s.status == bill.status"
+                                <div class="badge text-wrap bg-info" ng-show="s.status == bill.status"
                                     style="width: 65%;" ng-style="{'background-color': s.color}">
                                     {{s.title}}
                                 </div>

@@ -223,7 +223,8 @@
     <div class="row mt-4 rounded border p-3 shadow mb-3 bg-body">
         <div class="col">
             <div class="d-flex justify-content-between mb-3">
-                <h5 class="ms-3">Thông tin giao dịch</h5>
+                <h5 class="ms-3">Thông tin giao dịch - {{billResponse.customer.fullName ? billResponse.customer.fullName : 'Khách
+                    lẻ'}}</h5>
                 <div>
                     <button class="btn btn-primary" ng-show="status == 4" data-bs-toggle="modal"
                         data-bs-target="#paymentModal">
@@ -243,22 +244,32 @@
                 <thead>
                     <tr>
                         <th scope="col">Mã GD</th>
-                        <th scope="col">Khách hàng</th>
-                        <th scope="col">Tổng tiền</th>
+                        <th scope="col">Thời gian</th>
+                        <th scope="col">Số tiền</th>
                         <th scope="col">Hình thức</th>
+                        <th scope="col">Loại</th>
                         <th scope="col">Trạng thái</th>
-                        <th scope="col">Ngày thanh toán</th>
+                        <th scope="col">Ghi chú</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="col-1">{{listPaymentStatus[0].code}}</td>
-                        <td class="col-3">{{billResponse.customer.fullName ? billResponse.customer.fullName : 'Khách
-                            lẻ'}}</td>
-                        <td class="col-2">{{listPaymentStatus[0].paymentAmount | number:0}} VND</td>
-                        <td class="col-2">{{billResponse.paymentMethod.name}}</td>
-                        <td class="col-2">{{listPaymentStatus[0].customerPaymentStatus}}</td>
-                        <td class="col-3 fs-6">{{listPaymentStatus[0].paymentDate | date:"dd-MM-yyyy HH:mm"}}</td>
+                    <tr ng-repeat="ps in listPaymentStatus">
+                        <td class="">{{ps.code}}</td>
+                        <td class="">{{ps.paymentDate | date:"dd-MM-yyyy HH:mm"}}</td>
+                        <td class="">{{ps.paymentAmount | number:0}} VND</td>
+                        <td class="">{{billResponse.paymentMethod.name}}</td>
+                        <td class="" ng-switch="ps.paymentType">
+                            <span ng-switch-when="1">Khách thanh toán</span>
+                            <span ng-switch-when="2">Vận chuyển thanh toán</span>
+                            <span ng-switch-when="3">Hoàn tiền</span>
+                        </td>
+                        <td class="" ng-switch="ps.customerPaymentStatus">
+                            <span ng-switch-when="1">Chưa thanh toán</span>
+                            <span ng-switch-when="2">Đã thanh toán</span>
+                            <span ng-switch-when="3">Thành công</span>
+                            <span ng-switch-when="4">Chờ hoàn</span>
+                        </td>
+                        <td class="col-3">{{ps.note}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -630,21 +641,21 @@
                                     | number}}{{ billResponse.voucher.discountType === 2 ? 'đ' : '%' }}</span></span>
                         </div>
                         <div class="voucher-conditions">
-                            <span>Giảm tối đa <span class="highlighted-value">{{
+                            <span ng-show="billResponse.voucher.discountType == 1" class="me-1">Giảm tối đa <span class="highlighted-value">{{
                                     billResponse.voucher.maximumReductionValue | number }}đ</span></span>
-                            <span class="ms-1">Đơn từ <span class="highlighted-value">{{
+                            <span>Đơn từ <span class="highlighted-value">{{
                                     billResponse.voucher.minimumTotalAmount | number }}đ</span></span>
                         </div>
                     </div>
                     <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucher"
-                        ng-click="getAllVoucherCanUse()">
+                        ng-click="getAllVoucherCanUse()" ng-show="[1].includes(status)">
                         <i class="material-icons">edit</i>
                     </button>
                 </div>
                 <div class="voucher-item" ng-show="billResponse.voucher === null">
                     <span>Chưa chọn mã giảm giá</span>
                     <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucher"
-                        ng-click="getAllVoucherCanUse()">
+                        ng-click="getAllVoucherCanUse()" ng-show="[1].includes(status)">
                         <i class="material-icons">add</i>
                     </button>
                 </div>
@@ -661,7 +672,7 @@
                 <div class="row align-items-center">
                     <div class="col-7 fw-bold fs-5">Tổng tiền thanh toán:</div>
                     <div class="col-5 text-end fs-4 fw-bold money highlight-total">
-                        {{billResponse.totalAmountAfterDiscount | number:0}}<span class="currency">đ</span></div>
+                        {{billResponse.totalAmountAfterDiscount + shippingFee | number:0}}<span class="currency">đ</span></div>
                 </div>
             </div>
         </div>
@@ -673,7 +684,7 @@
         <div class="modal-dialog modal-lg modal-dialog-scrollable" style="width: 40%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="voucherModalLabel">Voucher List</h5>
+                    <h5 class="modal-title" id="voucherModalLabel">Danh sách khuyến mãi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -688,9 +699,9 @@
                                                 | number}}{{ voucher.discountType === 2 ? 'đ' : '%' }}</span></span>
                                     </div>
                                     <div class="voucher-conditions">
-                                        <span>Giảm tối đa <span class="highlighted-value">{{
+                                        <span ng-show="voucher.discountType == 1" class="me-1">Giảm tối đa <span class="highlighted-value">{{
                                                 voucher.maximumReductionValue | number }}đ</span></span>
-                                        <span class="ms-1">Đơn từ <span class="highlighted-value">{{
+                                        <span>Đơn từ <span class="highlighted-value">{{
                                                 voucher.minimumTotalAmount | number }}đ</span></span>
                                     </div>
                                 </div>

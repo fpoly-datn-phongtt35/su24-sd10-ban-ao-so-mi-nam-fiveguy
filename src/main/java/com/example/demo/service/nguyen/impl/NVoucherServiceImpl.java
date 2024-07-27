@@ -436,8 +436,11 @@ public class NVoucherServiceImpl implements NVoucherService {
         if (voucher.getStatus() != 1) {
             return false; // Voucher is not active
         }
+        // Check if the voucher is already used in the current bill
+        boolean isCurrentBillUsingVoucher =
+                bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
 
-        if (voucher.getQuantity() <= 0) {
+        if (voucher.getQuantity() <= 0 && !isCurrentBillUsingVoucher) {
             return false;
         }
 
@@ -463,10 +466,6 @@ public class NVoucherServiceImpl implements NVoucherService {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
                             List.of(5, 6));
-
-            // Check if the voucher is already used in the current bill
-            boolean isCurrentBillUsingVoucher =
-                    bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
 
             if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
                 return false; // Voucher usage limit reached

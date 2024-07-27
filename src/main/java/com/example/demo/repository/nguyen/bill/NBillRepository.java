@@ -53,4 +53,5 @@ public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecifica
     long countByCustomerIdAndVoucherIdAndStatusNotIn(Long customerId, Long voucherId,
                                                      List<Integer> excludedStatuses);
 
+    List<Bill> findByVoucherIdAndStatus(Long id, Integer billStatus);
 }
