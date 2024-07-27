@@ -3,10 +3,7 @@ package com.example.demo.service.nguyen.impl;
 import com.example.demo.entity.*;
 import com.example.demo.repository.nguyen.NCustomerTypeVoucherRepository;
 import com.example.demo.repository.nguyen.NVoucherRepository;
-import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
-import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
-import com.example.demo.repository.nguyen.bill.NBillRepository;
-import com.example.demo.repository.nguyen.bill.BillSpecification;
+import com.example.demo.repository.nguyen.bill.*;
 import com.example.demo.repository.nguyen.product.NProductDetailRepository;
 import com.example.demo.service.nguyen.NBillService;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,6 +40,8 @@ public class NBillServiceImpl implements NBillService {
     @Autowired
     NCustomerTypeVoucherRepository customerTypeVoucherRepository;
 
+    @Autowired
+    NPaymentStatusRepository paymentStatusRepository;
 
     @Override
     public List<Bill> getAll() {
@@ -164,6 +163,16 @@ public class NBillServiceImpl implements NBillService {
         return billRepository.save(existingBill);
     }
 
+
+    @Override
+    public Bill updateShippingFee(Long id, BigDecimal shippingFee) {
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
+        bill.setShippingFee(shippingFee);
+
+        return billRepository.save(bill);
+    }
+
     private void addBillHistoryStatus(Long billId, int status, String description, int type,
                                       int reason,
                                       String createdBy) {
@@ -184,6 +193,7 @@ public class NBillServiceImpl implements NBillService {
 
 
     @Override
+    @Transactional
     public Bill setVoucherToBill(Long id, Voucher voucherRequest) {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
@@ -193,9 +203,13 @@ public class NBillServiceImpl implements NBillService {
         if (bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId())) {
             voucher = null;
             bill.setTotalAmountAfterDiscount(bill.getTotalAmount());
+
+            changePricePayment(bill, bill.getTotalAmount());
         } else {
             BigDecimal discountValue = calculateDiscountVoucher(voucher, bill.getTotalAmount());
             bill.setTotalAmountAfterDiscount(bill.getTotalAmount().subtract(discountValue));
+
+//            changePricePayment(bill, bill.getTotalAmount().subtract(discountValue));
         }
 
         bill.setVoucher(voucher);
@@ -507,5 +521,25 @@ public class NBillServiceImpl implements NBillService {
         }
 
         return BigDecimal.ZERO;
+    }
+
+
+    private void changePricePayment(Bill bill, BigDecimal totalAmount){
+
+        if(bill == null) return;
+
+        List<PaymentStatus> paymentStatuses = paymentStatusRepository.findAllByBillIdOrderByIdAsc(bill.getId());
+
+        PaymentStatus paymentStatus = null;
+        for (PaymentStatus ps : paymentStatuses){
+            if(ps.getPaymentType() == 1){
+                paymentStatus = ps;
+            }
+        }
+
+        if (paymentStatus != null){
+            paymentStatus.setPaymentAmount(totalAmount.add(bill.getShippingFee()));
+            paymentStatusRepository.save(paymentStatus);
+        }
     }
 }

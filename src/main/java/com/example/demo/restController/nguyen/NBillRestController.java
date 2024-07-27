@@ -74,6 +74,13 @@ public class NBillRestController {
         return billService.updateShipmentDetail(bill, id, fullName.get());
     }
 
+    @PutMapping("/shippingFeeUpdate/{id}")
+    public Bill updateShippingFee(@RequestHeader("Authorization") String token,
+                                  @PathVariable Long id, @RequestBody BigDecimal shippingFee) {
+
+        return billService.updateShippingFee(id, shippingFee);
+    }
+
     @PutMapping("/billStatusUpdate/{id}")
     public Bill updateBillStatusAndSaveBillHistory(
             @RequestHeader("Authorization") String token, @RequestBody BillRequest billRequest,
@@ -130,6 +137,12 @@ public class NBillRestController {
         return ResponseEntity.ok(paymentStatusService.getAllByBillId(billId));
     }
 
+    @PutMapping("/{billId}/updateStatusPayment")
+    public ResponseEntity<?> updateStatusPayment(@PathVariable Long billId,
+                                                 @RequestBody BigDecimal paymentAmount) {
+        return ResponseEntity.ok(paymentStatusService.updateStatusPayment(billId, paymentAmount));
+    }
+
     @GetMapping("/{billId}/checkQuantity")
     public ResponseEntity<?> checkQuantity(@PathVariable Long billId) {
         return ResponseEntity.ok(billService.isQuantityExceedsProductDetail(billId));
@@ -144,7 +157,8 @@ public class NBillRestController {
     }
 
     @PutMapping("/{billId}/setVoucherToBill")
-    public ResponseEntity<?> setVoucherToBill(@PathVariable Long billId,@RequestBody Voucher voucher){
+    public ResponseEntity<?> setVoucherToBill(@PathVariable Long billId,
+                                              @RequestBody Voucher voucher) {
         return ResponseEntity.ok(billService.setVoucherToBill(billId, voucher));
     }
 }

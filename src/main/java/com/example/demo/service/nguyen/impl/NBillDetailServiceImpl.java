@@ -6,6 +6,7 @@ import com.example.demo.repository.nguyen.NCustomerTypeVoucherRepository;
 import com.example.demo.repository.nguyen.NVoucherRepository;
 import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
+import com.example.demo.repository.nguyen.bill.NPaymentStatusRepository;
 import com.example.demo.repository.nguyen.product.NProductDetailRepository;
 import com.example.demo.service.nguyen.NBillDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 
     @Autowired
     NCustomerTypeVoucherRepository customerTypeVoucherRepository;
+
+    @Autowired
+    NPaymentStatusRepository paymentStatusRepository;
 
 
     @Override
@@ -237,7 +241,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         if (billOptional.isEmpty()) return;
 
         Bill bill = billOptional.get();
-        BigDecimal totalAmountSale = calculateTotalAmountSale(bill.getId()) ;
+        BigDecimal totalAmountSale = calculateTotalAmountSale(bill.getId());
         BigDecimal currentTotalAmount = bill.getTotalAmount();
         Voucher currentVoucher = bill.getVoucher();
 
@@ -247,11 +251,12 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 
 
         // Tính toán giá trị giảm giá
-        BigDecimal currentDiscountValue = (currentVoucher != null) ? calculateDiscount(currentVoucher,
-                bill.getTotalAmount()) : BigDecimal.ZERO;;
+        BigDecimal currentDiscountValue = (currentVoucher != null) ? calculateDiscount(
+                currentVoucher,
+                bill.getTotalAmount()) : BigDecimal.ZERO;
+        ;
         BigDecimal bestDiscountValue = (bestVoucher != null) ? calculateDiscount(bestVoucher,
                 bill.getTotalAmount()) : BigDecimal.ZERO;
-
 
 
         // Quyết định voucher nào sẽ được áp dụng
@@ -277,6 +282,8 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 //        bill.setTotalAmount(totalAmountSale);
         bill.setTotalAmountAfterDiscount(totalAmountSale.subtract(discountToApply));
         bill.setVoucher(voucherToApply);
+
+//        changePricePayment(bill, totalAmountSale.subtract(discountToApply));
 
         // Lưu bill
         billRepository.save(bill);
@@ -398,7 +405,8 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             discountValue = totalAmount.multiply(BigDecimal.valueOf(voucher.getValue())
                     .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
 
-            if (voucher.getMaximumReductionValue() != null || voucher.getMaximumReductionValue() != 0) {
+            if (voucher.getMaximumReductionValue() != null ||
+                    voucher.getMaximumReductionValue() != 0) {
 //                if(discountValue.compareTo(BigDecimal.valueOf(voucher.getMaximumReductionValue())) > 0 ){
 //                    return BigDecimal.valueOf(voucher.getMaximumReductionValue());
 //                }
@@ -411,5 +419,25 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         }
 
         return BigDecimal.ZERO;
+    }
+
+    private void changePricePayment(Bill bill, BigDecimal totalAmount) {
+
+        if (bill == null) return;
+
+        List<PaymentStatus> paymentStatuses = paymentStatusRepository
+                .findAllByBillIdOrderByIdAsc(bill.getId());
+
+        PaymentStatus paymentStatus = null;
+        for (PaymentStatus ps : paymentStatuses) {
+            if (ps.getPaymentType() == 1) {
+                paymentStatus = ps;
+            }
+        }
+
+        if (paymentStatus != null) {
+            paymentStatus.setPaymentAmount(totalAmount.add(bill.getShippingFee()));
+            paymentStatusRepository.save(paymentStatus);
+        }
     }
 }
