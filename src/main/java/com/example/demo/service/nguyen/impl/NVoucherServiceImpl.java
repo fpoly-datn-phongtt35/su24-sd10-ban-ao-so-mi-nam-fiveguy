@@ -465,7 +465,7 @@ public class NVoucherServiceImpl implements NVoucherService {
         if (voucher.getNumberOfUses() != null && customer != null) {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-                            List.of(5, 6));
+                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
 
             if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
                 return false; // Voucher usage limit reached

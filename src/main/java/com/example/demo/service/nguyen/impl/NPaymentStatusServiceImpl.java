@@ -6,6 +6,7 @@ import com.example.demo.repository.nguyen.bill.NPaymentStatusRepository;
 import com.example.demo.service.nguyen.NPaymentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -23,22 +24,41 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
     }
 
     @Override
-    public PaymentStatus updateStatusPayment(Long billId, BigDecimal paymentAmount){
+    @Transactional
+    public PaymentStatus updateStatusPayment(Long billId, String note) {
 
-        List<PaymentStatus> paymentStatuses = paymentStatusRepository.findAllByBillIdOrderByIdAsc(billId);
+        List<PaymentStatus> paymentStatuses = paymentStatusRepository
+                .findAllByBillIdAndCustomerPaymentStatusOrderByIdAsc(billId, 1);
 
-        PaymentStatus paymentStatus = null;
+        if (paymentStatuses.isEmpty()) return null;
+
         for (PaymentStatus ps : paymentStatuses){
-            if(ps.getPaymentType() == 1){
-                paymentStatus = ps;
+            if(ps.getCustomerPaymentStatus() == 1 && ps.getPaymentType() == 1){
+                ps.setPaymentDate(new Date());
+                ps.setCustomerPaymentStatus(2);
+
+                return paymentStatusRepository.save(ps);
             }
         }
+        return null;
+    }
 
-        if (paymentStatus != null){
-            paymentStatus.setPaymentDate(new Date());
-            paymentStatus.setCustomerPaymentStatus(2);
+    @Override
+    @Transactional
+    public PaymentStatus updateStatusPaymentRefund(Long billId, String note) {
 
-            return paymentStatusRepository.save(paymentStatus);
+        List<PaymentStatus> paymentStatuses = paymentStatusRepository
+                .findAllByBillIdAndCustomerPaymentStatusOrderByIdAsc(billId, 4);
+
+        if (paymentStatuses.isEmpty()) return null;
+
+        for (PaymentStatus ps : paymentStatuses){
+            if(ps.getCustomerPaymentStatus() == 4 && ps.getPaymentType() == 3){
+                ps.setPaymentDate(new Date());
+                ps.setCustomerPaymentStatus(3);
+
+                return paymentStatusRepository.save(ps);
+            }
         }
         return null;
     }

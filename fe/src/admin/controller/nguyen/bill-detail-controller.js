@@ -177,6 +177,10 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         bill.reason = reasonUpdate.value
         bill.status = statusUpdate;
 
+        if (statusUpdate == 2) {
+            bill.shippingFee = $scope.shippingFee
+        }
+
 
         let billHistory = {
             billId: $scope.idBill,
@@ -194,12 +198,13 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             $scope.getBillById($scope.idBill);
             $scope.getBillHistoryByBillId();
-        }).catch(function (error) {
-            $('#changeStatusModal').modal('hide');
-
+            
             if (response.data == null) {
                 $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
             }
+        }).catch(function (error) {
+            $('#changeStatusModal').modal('hide');
+
             console.log("lỗi update status", error)
         });
 
@@ -527,33 +532,80 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getBillHistoryByBillId()
 
             //gọi lại paymentStatus
-            $scope.getAllPaymentStatus($scope.idBill)
+            // $scope.getAllPaymentStatus($scope.idBill)
         })
     }
 
     $scope.listPaymentStatus = []
-
+    $scope.listPaymentStatusToShow = []
     //Hiển thị paymentStatus
     $scope.getAllPaymentStatus = function (billId) {
+        $scope.listPaymentStatusToShow = []
+
         $scope.getBillById($scope.idBill)
         $http.get(apiBill + "/" + billId + "/paymentStatus").then(function (res) {
             $scope.listPaymentStatus = res.data
+            console.log($scope.listPaymentStatus);
+
+            if ($scope.billResponse.status == 1) {
+                $scope.listPaymentStatus.forEach(function (ps) {
+                    if (ps.customerPaymentStatus !== 1) {
+                        $scope.listPaymentStatusToShow.push(ps)
+                        console.log("a");
+                    }
+                })
+            } else {
+                $scope.listPaymentStatusToShow = angular.copy($scope.listPaymentStatus)
+            }
         })
     }
-    $scope.getAllPaymentStatus($scope.idBill)
+    // $scope.getAllPaymentStatus($scope.idBill)
 
     //hiển thị xác nhận thanh toán
     $scope.showConfirmPayment = function () {
         $scope.getAllPaymentStatus($scope.idBill)
-        $scope.customerPayment = angular.copy($scope.listPaymentStatus[0])
-        $('#paymentModal').modal('show');
-    }
-
-    $scope.submitPayment = function () {
-        $http.put(apiBill + "/" + billId + "/updateStatusPayment").then(function (res) {
-            $scope.showSuccess("Xác nhận thanh toán thành công")
+        $scope.listPaymentStatus.forEach(function (ps) {
+            if (ps.customerPaymentStatus == 1 && ps.paymentType == 1) {
+                $scope.customerPayment = angular.copy(ps)
+                $('#paymentAmountModal').modal('show');
+            }
         })
     }
+
+    $scope.submitPaymentAmount = function () {
+        let note = $scope.customerPayment.note
+        $http.put(apiBill + "/" + $scope.idBill + "/updateStatusPayment", note).then(function (res) {
+            $scope.showSuccess("Xác nhận thanh toán thành công")
+            $scope.getAllPaymentStatus($scope.idBill)
+        })
+    }
+
+    //hiển thị xác nhận hoàn tiền
+    $scope.showConfirmRefund = function () {
+        $scope.getAllPaymentStatus($scope.idBill)
+        $scope.listPaymentStatus.forEach(function (ps) {
+            if (ps.customerPaymentStatus == 4 && ps.paymentType == 3) {
+                $scope.customerPayment = angular.copy(ps)
+                $('#refundAmountModal').modal('show');
+            }
+        })
+    }
+
+    $scope.submitRefundAmount = function () {
+        let note = $scope.customerPayment.note
+        $http.put(apiBill + "/" + $scope.idBill + "/updateRefundAmount", paymentAmount).then(function (res) {
+            $scope.showSuccess("Xác nhận hoàn tiền thành công")
+            $scope.getAllPaymentStatus($scope.idBill)
+        })
+    }
+
+    //theo dõi billResponse
+    $scope.$watch('billResponse', function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+            $scope.listPaymentStatusToShow = []
+            $scope.getAllPaymentStatus($scope.idBill)
+        }
+    }, true);
 
 
     // #endregion
@@ -784,7 +836,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getBillById($scope.idBill)
 
             //gọi lại paymentStatus
-            $scope.getAllPaymentStatus($scope.idBill)
+            // $scope.getAllPaymentStatus($scope.idBill)
         }, function (error) {
             console.error('Thêm sản phẩm thất bại:', error);
         });
@@ -810,7 +862,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getBillById($scope.idBill)
 
             //gọi lại paymentStatus
-            $scope.getAllPaymentStatus($scope.idBill)
+            // $scope.getAllPaymentStatus($scope.idBill)
         }, function (error) {
             console.error('Xoá sản phẩm thất bại:', error);
         })
@@ -854,7 +906,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getBillById($scope.idBill)
 
             //gọi lại paymentStatus
-            $scope.getAllPaymentStatus($scope.idBill)
+            // $scope.getAllPaymentStatus($scope.idBill)
         }, function (error) {
             console.error('Sửa số lượng thất bại:', error);
         });
@@ -875,7 +927,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getAllVoucherCanUse()
 
             //gọi lại paymentStatus
-            $scope.getAllPaymentStatus($scope.idBill)
+            // $scope.getAllPaymentStatus($scope.idBill)
         })
     }
 

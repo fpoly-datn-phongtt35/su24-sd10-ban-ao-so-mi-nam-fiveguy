@@ -114,6 +114,10 @@ public class NBillServiceImpl implements NBillService {
         Bill existingBill = optionalBill.get();
         existingBill.setReason(bill.getReason());
         existingBill.setStatus(bill.getStatus());
+
+        if (bill.getStatus() == 2) {
+            existingBill.setShippingFee(bill.getShippingFee());
+        }
 //        existingBill.setCustomer(null);
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
@@ -125,10 +129,12 @@ public class NBillServiceImpl implements NBillService {
         Bill returnBill = billRepository.save(existingBill);
 
 
-        if(returnBill.getStatus() == 2){
+        if (returnBill.getStatus() == 2) {
+//            changePricePayment(returnBill, returnBill.getTotalAmountAfterDiscount());
+            processAndSavePaymentStatuses(returnBill);
             confirmBillAndUpdateVoucher(returnBill.getId());
         }
-        if(returnBill.getStatus() == 5 || returnBill.getStatus() == 6){
+        if (returnBill.getStatus() == 5 || returnBill.getStatus() == 6) {
             updateVoucherOnBillCancellation(returnBill.getId());
         }
 
@@ -192,6 +198,7 @@ public class NBillServiceImpl implements NBillService {
     }
 
 
+    //region Chọn voucher từ trong list Voucher có thể dùng
     @Override
     @Transactional
     public Bill setVoucherToBill(Long id, Voucher voucherRequest) {
@@ -204,7 +211,7 @@ public class NBillServiceImpl implements NBillService {
             voucher = null;
             bill.setTotalAmountAfterDiscount(bill.getTotalAmount());
 
-            changePricePayment(bill, bill.getTotalAmount());
+//            changePricePayment(bill, bill.getTotalAmount());
         } else {
             BigDecimal discountValue = calculateDiscountVoucher(voucher, bill.getTotalAmount());
             bill.setTotalAmountAfterDiscount(bill.getTotalAmount().subtract(discountValue));
@@ -244,6 +251,7 @@ public class NBillServiceImpl implements NBillService {
 
         return BigDecimal.ZERO;
     }
+    //endregion
 
     @Transactional
     public void updateQuantityProductDetail1(Long billId, int newStatus) {
@@ -333,6 +341,7 @@ public class NBillServiceImpl implements NBillService {
     }
 
 
+    //region Update voucher khi trạng thái sang 2 hoặc 5,6
     @Transactional
     public void confirmBillAndUpdateVoucher(Long billId) {
         Bill bill = billRepository.findById(billId)
@@ -474,7 +483,7 @@ public class NBillServiceImpl implements NBillService {
         if (voucher.getNumberOfUses() != null && customer != null) {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-                            List.of(5, 6));
+                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
 
             // Check if the voucher is already used in the current bill
             boolean isCurrentBillUsingVoucher =
@@ -494,7 +503,7 @@ public class NBillServiceImpl implements NBillService {
         }
 
         //Update phần này nếu trừ số lượng lúc tạo đơn ***
-        if (voucher.getQuantity() <= 0){
+        if (voucher.getQuantity() <= 0) {
             return BigDecimal.ZERO;
         }
 
@@ -522,24 +531,114 @@ public class NBillServiceImpl implements NBillService {
 
         return BigDecimal.ZERO;
     }
+    //endregion
 
 
-    private void changePricePayment(Bill bill, BigDecimal totalAmount){
+    private void changePricePayment(Bill bill, BigDecimal totalAmount) {
 
-        if(bill == null) return;
+        if (bill == null) return;
 
-        List<PaymentStatus> paymentStatuses = paymentStatusRepository.findAllByBillIdOrderByIdAsc(bill.getId());
+        List<PaymentStatus> paymentStatuses = paymentStatusRepository
+                .findAllByBillIdAndCustomerPaymentStatusOrderByIdAsc(bill.getId(), 1);
 
-        PaymentStatus paymentStatus = null;
-        for (PaymentStatus ps : paymentStatuses){
-            if(ps.getPaymentType() == 1){
-                paymentStatus = ps;
-            }
-        }
+        if (paymentStatuses.isEmpty()) return;
 
-        if (paymentStatus != null){
+        PaymentStatus paymentStatus = paymentStatuses.get(0);
+//        for (PaymentStatus ps : paymentStatuses){
+//            if(ps.getPaymentType() == 1){
+//                paymentStatus = ps;
+//            }
+//        }
+
+        if (paymentStatus != null) {
             paymentStatus.setPaymentAmount(totalAmount.add(bill.getShippingFee()));
             paymentStatusRepository.save(paymentStatus);
         }
+    }
+
+    @Transactional
+    public void processAndSavePaymentStatuses(Bill bill) {
+        if (bill == null) return;
+
+        List<PaymentStatus> paymentStatuses = paymentStatusRepository
+                .findAllByBillIdOrderByIdAsc(bill.getId());
+
+        boolean hasCustomerPayment = false;
+        for (PaymentStatus ps : paymentStatuses) {
+            if (ps.getCustomerPaymentStatus() == 1 && ps.getPaymentType() == 1) {
+                hasCustomerPayment = true;
+                break;
+            }
+        }
+
+        if (hasCustomerPayment) {
+            for (PaymentStatus ps : paymentStatuses) {
+                if (ps.getCustomerPaymentStatus() == 1 && ps.getPaymentType() == 1) {
+                    ps.setPaymentAmount(
+                            bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+                    paymentStatusRepository.save(ps);
+                }
+            }
+        } else {
+            PaymentStatus customerPayment = null;
+            for (PaymentStatus ps : paymentStatuses) {
+                if (ps.getCustomerPaymentStatus() == 2 && ps.getPaymentType() == 1) {
+                    customerPayment = ps;
+                    break;
+                }
+            }
+
+            if (customerPayment != null) {
+                BigDecimal totalDue = bill.getTotalAmountAfterDiscount().add(bill.getShippingFee());
+                int comparisonResult = customerPayment.getPaymentAmount().compareTo(totalDue);
+
+                if (comparisonResult > 0) {
+                    PaymentStatus refundStatus = new PaymentStatus();
+                    refundStatus.setCode(generateCode(3));
+                    refundStatus.setPaymentDate(new Date());
+                    refundStatus.setPaymentType(3);
+                    refundStatus.setCustomerPaymentStatus(4);
+                    refundStatus.setPaymentAmount(
+                            customerPayment.getPaymentAmount().subtract(totalDue));
+                    refundStatus.setBill(bill);
+                    paymentStatusRepository.save(refundStatus);
+                } else if (comparisonResult < 0) {
+                    PaymentStatus remainingStatus = new PaymentStatus();
+                    remainingStatus.setCode(generateCode(1));
+                    remainingStatus.setPaymentDate(new Date());
+                    remainingStatus.setPaymentType(1);
+                    remainingStatus.setCustomerPaymentStatus(1);
+                    remainingStatus.setPaymentAmount(
+                            totalDue.subtract(customerPayment.getPaymentAmount()));
+                    remainingStatus.setBill(bill);
+                    paymentStatusRepository.save(remainingStatus);
+                }
+                // Nếu comparisonResult == 0, không làm gì cả
+            }
+        }
+
+        billRepository.save(bill);
+    }
+
+    private Set<String> generatedCodes = new HashSet<>();
+    private Random random = new Random();
+
+    public String generateCode(int input) {
+        String prefix;
+        if (input == 1) {
+            prefix = "TT";
+        } else if (input == 3) {
+            prefix = "HT";
+        } else {
+            throw new IllegalArgumentException("Invalid input, must be 1 or 3");
+        }
+
+        String code;
+        do {
+            code = prefix + String.format("%04d", random.nextInt(10000));
+        } while (generatedCodes.contains(code));
+
+        generatedCodes.add(code);
+        return code;
     }
 }

@@ -235,6 +235,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         return returnBill;
     }
 
+    //region Xử lý voucher tốt nhất nếu có sự thay đổi sửa số lượng, thêm, xoá sản phẩm
     @Transactional
     public void autoSetVoucher(Long billId) {
         Optional<Bill> billOptional = billRepository.findById(billId);
@@ -367,7 +368,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         if (voucher.getNumberOfUses() != null && customer != null) {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-                            List.of(5, 6));
+                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
 
             // Check if the voucher is already used in the current bill
             boolean isCurrentBillUsingVoucher =
@@ -420,6 +421,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 
         return BigDecimal.ZERO;
     }
+    //endregion
 
     private void changePricePayment(Bill bill, BigDecimal totalAmount) {
 

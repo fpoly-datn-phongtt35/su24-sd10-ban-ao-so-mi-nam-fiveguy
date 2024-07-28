@@ -229,8 +229,7 @@
                 <div>
                     <button class="btn btn-primary" ng-show="status == 4" ng-click="showConfirmPayment()">
                         Xác nhận thanh toán</button>
-                    <button class="btn btn-primary" ng-show="[12, 32].includes(status)" data-bs-toggle="modal"
-                        data-bs-target="#paymentModal">
+                    <button class="btn btn-primary" ng-show="[12, 32].includes(status)" ng-click="showRefundRefund()">
                         Hoàn tiền</button>
                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#paymentStatusModal">
                         Chi tiết</button>
@@ -250,11 +249,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="ps in listPaymentStatus">
+                    <tr style="height: 70px;" ng-repeat="ps in listPaymentStatusToShow">
                         <td class="">{{ps.code}}</td>
-                        <td class="">{{ps.paymentDate | date:"dd-MM-yyyy HH:mm"}}</td>
+                        <td class="">
+                            <p style="margin-top: -2px;">{{ps.paymentDate | date:"HH : mm"}}</p>
+                            <p style="margin-top: 1px;">{{ps.paymentDate | date:"dd-MM-yyyy"}}</p>
+                        </td>
                         <td class="">{{ps.paymentAmount | number:0}} VND</td>
-                        <td class="">{{billResponse.paymentMethod.name}}</td>
+                        <td class="" ng-switch="ps.paymentMethod">
+                            <span ng-switch-when="1">Tiền mặt</span>
+                            <span ng-switch-when="2">Chuyển khoản</span>
+                        </td>
                         <td class="" ng-switch="ps.paymentType">
                             <span ng-switch-when="1">Thanh toán</span>
                             <span ng-switch-when="2">Thanh toán</span>
@@ -274,7 +279,7 @@
     </div>
 
     <!-- Modal Xác nhận thanh toán-->
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal fade" id="paymentAmountModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -303,7 +308,44 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary" ng-click="submitPayment()">Xác nhận</button>
+                        <button type="submit" class="btn btn-primary" ng-click="submitPaymentAmount()">Xác nhận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Xác nhận thanh toán-->
+    <div class="modal fade" id="refundAmountModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Hoàn tiền cho khách hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form name="paymentForm">
+                    <div class="modal-body">
+                        <div class="mb-3 row">
+                            <label for="totalAmount" class="col-sm-4 col-form-label">Số tiền</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="totalAmount"
+                                        ng-model="customerPayment.paymentAmount" readonly>
+                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="notes" class="col-sm-4 col-form-label">Ghi chú</label>
+                            <div class="col-sm-8">
+                                <textarea class="form-control" id="notes" name="notes" rows="3"
+                                    ng-model="customerPayment.note" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary" ng-click="submitRefundPayment()">Xác nhận</button>
                     </div>
                 </form>
             </div>

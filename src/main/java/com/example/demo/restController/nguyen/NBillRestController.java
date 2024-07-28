@@ -81,6 +81,8 @@ public class NBillRestController {
         return billService.updateShippingFee(id, shippingFee);
     }
 
+
+    //main function
     @PutMapping("/billStatusUpdate/{id}")
     public Bill updateBillStatusAndSaveBillHistory(
             @RequestHeader("Authorization") String token, @RequestBody BillRequest billRequest,
@@ -139,8 +141,14 @@ public class NBillRestController {
 
     @PutMapping("/{billId}/updateStatusPayment")
     public ResponseEntity<?> updateStatusPayment(@PathVariable Long billId,
-                                                 @RequestBody BigDecimal paymentAmount) {
-        return ResponseEntity.ok(paymentStatusService.updateStatusPayment(billId, paymentAmount));
+                                                 @RequestBody String note) {
+        return ResponseEntity.ok(paymentStatusService.updateStatusPayment(billId, note));
+    }
+
+    @PutMapping("/{billId}/updateRefundAmount")
+    public ResponseEntity<?> updateRefundAmount(@PathVariable Long billId,
+                                                 @RequestBody String note) {
+        return ResponseEntity.ok(paymentStatusService.updateStatusPaymentRefund(billId, note));
     }
 
     @GetMapping("/{billId}/checkQuantity")

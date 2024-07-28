@@ -9,5 +9,7 @@ public interface NPaymentStatusService {
 
     List<PaymentStatus> getAllByBillId(Long billId);
 
-    PaymentStatus updateStatusPayment(Long billId, BigDecimal paymentAmount);
+    PaymentStatus updateStatusPayment(Long billId, String note);
+
+    PaymentStatus updateStatusPaymentRefund(Long billId, String note);
 }
