@@ -233,14 +233,24 @@
                         Xác nhận thanh toán</button>
                     <button class="btn btn-primary" ng-show="[12, 32].includes(status)" ng-click="showRefundRefund()">
                         Hoàn tiền</button> -->
-                    <button class="btn btn-primary"
-                        ng-show="status == 4 && billResponse.paidAmount < billResponse.totalAmountAfterDiscount"
+                    <button class="btn btn-primary" ng-show="status == 4 && calculatePaymentDetails().totalAmount > 0"
                         ng-click="showConfirmPayment()">
                         Xác nhận thanh toán</button>
                     <button class="btn btn-primary"
-                        ng-show="[12, 32].includes(status) && billResponse.paidAmount > billResponse.totalAmountAfterDiscount"
+                        ng-show="[12, 32].includes(status) && calculatePaymentDetails().isRefund"
                         ng-click="showConfirmRefund()">
                         Hoàn tiền</button>
+
+
+
+                        <button class="btn btn-primary"
+                            ng-click="showConfirmPayment()">
+                            TT tét</button>
+                        <button class="btn btn-primary"
+                            ng-click="showConfirmRefund()">
+                            HT test</button>
+
+
                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#paymentStatusModal">
                         Chi tiết</button>
                 </div>
@@ -300,6 +310,26 @@
                 <form name="paymentForm">
                     <div class="modal-body">
                         <div class="mb-3 row">
+                            <label for="totalAmount" class="col-sm-4 col-form-label">Tiền hàng</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="totalAmount"
+                                        ng-model="customerPayment.billAmount" readonly>
+                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="totalAmount" class="col-sm-4 col-form-label">Tiền ship</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="totalAmount"
+                                        ng-model="customerPayment.shippingFeeAmount" readonly>
+                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
                             <label for="totalAmount" class="col-sm-4 col-form-label">Tổng tiền</label>
                             <div class="col-sm-8">
                                 <div class="input-group">
@@ -336,6 +366,26 @@
                 </div>
                 <form name="paymentForm">
                     <div class="modal-body">
+                        <div class="mb-3 row">
+                            <label for="totalAmount" class="col-sm-4 col-form-label">Tiền hàng</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="totalAmount"
+                                        ng-model="customerPayment.billAmount" readonly>
+                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="totalAmount" class="col-sm-4 col-form-label">Tiền ship</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="totalAmount"
+                                        ng-model="customerPayment.shippingFeeAmount" readonly>
+                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="mb-3 row">
                             <label for="totalAmount" class="col-sm-4 col-form-label">Số tiền</label>
                             <div class="col-sm-8">
@@ -636,6 +686,48 @@
 
     <!-- Thông tin tiền hàng -->
     <div class="mb-5 d-flex justify-content-end">
+        <div class="col-5">
+            <div class="row mb-3 align-items-center">
+                <div class="col-7 fw-bold">Tổng tiền hàng sau giảm giá</div>
+                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.totalAmountAfterDiscount |
+                    number:0}}<span class="currency">đ</span></div>
+            </div>
+            <hr>
+            <div class="row mb-3 align-items-center">
+                <div class="col-7 fw-bold">Đã thanh toán</div>
+                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidAmount | number:0}}<span
+                        class="currency">đ</span></div>
+            </div>
+            <hr>
+            <div class="row mb-3 align-items-center">
+                <div class="col-7 fw-bold">Thanh toán hoặc hoàn</div>
+                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidAmount -
+                    billResponse.totalAmountAfterDiscount | number:0}}<span class="currency">đ</span></div>
+            </div>
+
+            <hr>
+            <hr>
+
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-7 fw-bold">Tổng tiền ship</div>
+                <div class="col-5 text-end fs-5 money highlight-discount">{{shippingFee | number:0}}<span
+                        class="currency">đ</span></div>
+            </div>
+            <hr>
+            <div class="row mb-3 align-items-center">
+                <div class="col-7 fw-bold">Đã thanh toán</div>
+                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidShippingFee |
+                    number:0}}<span class="currency">đ</span></div>
+            </div>
+            <hr>
+            <div class="row mb-3 align-items-center">
+                <div class="col-7 fw-bold">Thanh toán hoặc hoàn ship</div>
+                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidShippingFee - shippingFee |
+                    number:0}}<span class="currency">đ</span></div>
+            </div>
+
+        </div>
         <div class="col-5 p-0 border rounded shadow bg-body">
             <!-- Phần tổng tiền hàng và phí giao hàng -->
             <div class="p-4">
@@ -647,6 +739,12 @@
                 <div class="row align-items-center">
                     <div class="col-7 fw-bold">Phí giao hàng:</div>
                     <div class="col-5 text-end fs-5 money fw-bold">{{shippingFee | number:0}}<span
+                            class="currency">đ</span>
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-7 fw-bold">Phí giao hàng in bill:</div>
+                    <div class="col-5 text-end fs-5 money fw-bold">{{billResponse.shippingFee | number:0}}<span
                             class="currency">đ</span>
                     </div>
                 </div>

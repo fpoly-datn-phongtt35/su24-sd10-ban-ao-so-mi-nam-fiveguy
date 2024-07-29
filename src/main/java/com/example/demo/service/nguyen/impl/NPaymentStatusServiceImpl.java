@@ -2,6 +2,7 @@ package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.PaymentStatus;
+import com.example.demo.model.request.nguyen.PaymentStatusRequest;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.NPaymentStatusRepository;
 import com.example.demo.service.nguyen.NPaymentStatusService;
@@ -28,19 +29,32 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
     }
 
     @Override
-    public PaymentStatus createPaymentStatus(Long billId, PaymentStatus paymentStatus){
+    @Transactional
+    public PaymentStatus createPaymentStatus(Long billId,
+                                             PaymentStatusRequest paymentStatusRequest) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new RuntimeException("Bill not found"));
+
+        if(paymentStatusRequest.getPayOrRefund() == 1){
+            bill.setShippingFee(paymentStatusRequest.getBill().getShippingFee());
+            bill.setPaidAmount(paymentStatusRequest.getBill().getPaidAmount());
+            bill.setPaidShippingFee(paymentStatusRequest.getBill().getPaidShippingFee());
+
+            billRepository.save(bill);
+        }
+
+
 
         PaymentStatus ps = new PaymentStatus();
         ps.setCode("auto");
         ps.setPaymentDate(new Date());
         ps.setBill(bill);
-        ps.setPaymentAmount(paymentStatus.getPaymentAmount());
-        ps.setPaymentType(paymentStatus.getPaymentType());
-        ps.setPaymentMethod(paymentStatus.getPaymentMethod());
-        ps.setNote(paymentStatus.getNote());
-        ps.setCustomerPaymentStatus(paymentStatus.getCustomerPaymentStatus());
+        ps.setPaymentAmount(paymentStatusRequest.getPaymentStatus().getPaymentAmount());
+        ps.setPaymentType(paymentStatusRequest.getPaymentStatus().getPaymentType());
+        ps.setPaymentMethod(paymentStatusRequest.getPaymentStatus().getPaymentMethod());
+        ps.setNote(paymentStatusRequest.getPaymentStatus().getNote());
+        ps.setCustomerPaymentStatus(
+                paymentStatusRequest.getPaymentStatus().getCustomerPaymentStatus());
 
         return paymentStatusRepository.save(ps);
     }
@@ -55,8 +69,8 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
 
         if (paymentStatuses.isEmpty()) return null;
 
-        for (PaymentStatus ps : paymentStatuses){
-            if(ps.getCustomerPaymentStatus() == 1 && ps.getPaymentType() == 1){
+        for (PaymentStatus ps : paymentStatuses) {
+            if (ps.getCustomerPaymentStatus() == 1 && ps.getPaymentType() == 1) {
                 ps.setPaymentDate(new Date());
                 ps.setCustomerPaymentStatus(2);
 
@@ -75,8 +89,8 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
 
         if (paymentStatuses.isEmpty()) return null;
 
-        for (PaymentStatus ps : paymentStatuses){
-            if(ps.getCustomerPaymentStatus() == 4 && ps.getPaymentType() == 3){
+        for (PaymentStatus ps : paymentStatuses) {
+            if (ps.getCustomerPaymentStatus() == 4 && ps.getPaymentType() == 3) {
                 ps.setPaymentDate(new Date());
                 ps.setCustomerPaymentStatus(3);
 

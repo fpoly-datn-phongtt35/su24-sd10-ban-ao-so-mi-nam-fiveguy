@@ -20,10 +20,10 @@
 	border: 1px solid #999;
 	-moz-appearance: textfield;
   }
-  input[type="number"]::-webkit-outer-spin-button,
+  /* input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
 	-webkit-appearance: none;
-  }
+  } */
   .price-input .separator{
 	width: 130px;
 	display: flex;

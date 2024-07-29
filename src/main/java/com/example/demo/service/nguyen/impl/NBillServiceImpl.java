@@ -174,6 +174,7 @@ public class NBillServiceImpl implements NBillService {
     public Bill updateShippingFee(Long id, BigDecimal shippingFee) {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
+        System.out.println(shippingFee + " - " + bill.getShippingFee());
         bill.setShippingFee(shippingFee);
 
         return billRepository.save(bill);

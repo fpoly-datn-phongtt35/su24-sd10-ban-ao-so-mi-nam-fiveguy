@@ -2,6 +2,7 @@ package com.example.demo.restController.nguyen;
 
 import com.example.demo.entity.*;
 import com.example.demo.model.request.nguyen.BillRequest;
+import com.example.demo.model.request.nguyen.PaymentStatusRequest;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NBillDetailService;
 import com.example.demo.service.nguyen.NBillService;
@@ -138,8 +139,9 @@ public class NBillRestController {
 
     @PostMapping("/{billId}/savePaymentStatus")
     public ResponseEntity<?> savePaymentStatus(@PathVariable Long billId, @RequestBody
-                                               PaymentStatus paymentStatus){
-        return ResponseEntity.ok(paymentStatusService.createPaymentStatus(billId, paymentStatus));
+            PaymentStatusRequest paymentStatusRequest) {
+        return ResponseEntity
+                .ok(paymentStatusService.createPaymentStatus(billId, paymentStatusRequest));
     }
 
     @PutMapping("/{billId}/updateStatusPayment")
@@ -150,7 +152,7 @@ public class NBillRestController {
 
     @PutMapping("/{billId}/updateRefundAmount")
     public ResponseEntity<?> updateRefundAmount(@PathVariable Long billId,
-                                                 @RequestBody String note) {
+                                                @RequestBody String note) {
         return ResponseEntity.ok(paymentStatusService.updateStatusPaymentRefund(billId, note));
     }
 
