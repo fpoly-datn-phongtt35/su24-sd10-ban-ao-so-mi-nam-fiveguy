@@ -3,20 +3,21 @@ package com.example.demo.restController.tinh;
 import com.example.demo.entity.Employee;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductDetail;
+import com.example.demo.repository.tinh.ProductRepositoryTinh;
 import com.example.demo.service.tinh.ProductDetailServiceTinh;
 import com.example.demo.untility.tinh.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")
@@ -24,6 +25,9 @@ import java.util.List;
 public class ProductDetailRestControllerTinh {
     @Autowired
     ProductDetailServiceTinh productServiceTinh;
+
+    @Autowired
+    ProductRepositoryTinh productRepositoryTinh;
 
     @GetMapping("")
     public ResponseEntity<List<ProductDetail>> getAll(){
@@ -45,6 +49,58 @@ public class ProductDetailRestControllerTinh {
         Page<ProductDetail> page = productServiceTinh.findProductDetal(name, code, price, pageable);
         return new PaginationResponse<>(page);
     }
+
+    @GetMapping("/page-product")
+    public PaginationResponse<Map<String, Object>> getProduct(
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) Integer totalQuantity) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, size, sort);
+
+        // Truy xuất tất cả sản phẩm để tính tổng số lượng
+        List<Object[]> allResults = productRepositoryTinh.findAllProductAndDetails();
+        Map<Long, Integer> totalQuantityMap = new HashMap<>();
+        Map<Long, List<ProductDetail>> productDetailMap = new HashMap<>();
+        for (Object[] result : allResults) {
+            Product product = (Product) result[0];
+            ProductDetail productDetail = (ProductDetail) result[1];
+
+            totalQuantityMap.put(product.getId(), totalQuantityMap.getOrDefault(product.getId(), 0) + productDetail.getQuantity());
+            productDetailMap.computeIfAbsent(product.getId(), k -> new java.util.ArrayList<>()).add(productDetail);
+        }
+
+        // Truy xuất các sản phẩm phân trang
+        Page<Product> page = productRepositoryTinh.findDistinctProducts(PageRequest.of(0, Integer.MAX_VALUE));
+
+        // Kết hợp thông tin từ cả hai bước trên, lọc và sắp xếp theo totalQuantity
+        List<Map<String, Object>> productAndDetails = page.getContent().stream()
+                .map(product -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("product", product);
+                    map.put("productDetails", productDetailMap.get(product.getId()));
+                    map.put("totalQuantity", totalQuantityMap.getOrDefault(product.getId(), 0)); // Sử dụng giá trị mặc định là 0
+                    return map;
+                })
+                .filter(map -> totalQuantity == null || (Integer) map.get("totalQuantity") <= totalQuantity)
+                .sorted((m1, m2) -> ((Integer) m2.get("totalQuantity")).compareTo((Integer) m1.get("totalQuantity")))
+                .collect(Collectors.toList());
+
+        // Áp dụng phân trang cho danh sách đã sắp xếp và lọc
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), productAndDetails.size());
+        List<Map<String, Object>> pagedProductAndDetails = productAndDetails.subList(start, end);
+
+        Page<Map<String, Object>> resultPage = new PageImpl<>(pagedProductAndDetails, pageable, productAndDetails.size());
+
+        return new PaginationResponse<>(resultPage);
+    }
+
+
+
 
     @PutMapping("/update-quantity/{id}")
     public ResponseEntity<ProductDetail> update(@PathVariable Long id, @RequestBody ProductDetail employees) {
