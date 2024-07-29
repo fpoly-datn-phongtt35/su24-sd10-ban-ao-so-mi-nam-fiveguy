@@ -135,6 +135,7 @@ $scope.getSearch = function() {
 
 };
 
+$scope.selectedSortType = 0;
 
 $scope.filterProducts = function(page) {
   $scope.getSearch();
@@ -161,16 +162,14 @@ $scope.filterProducts = function(page) {
       }
   };
 
-  console.log(config);
+  // console.log(config);
 
   return $http.get('http://localhost:8080/api/home/products/filter', config)
       .then(function(response) {
           // console.log(response);
 
-          $scope.products = response.data.content.map(product => {
-              return product;
-          });
-          console.log($scope.products);
+          $scope.products = response.data.content;
+          // console.log($scope.products);
 
           $scope.totalPages = response.data.totalPages;
           $scope.currentPage = page;
@@ -783,7 +782,7 @@ $scope.checkPhoneNumber= true;
         return {
             productDetail: item.productDetail,
             price: item.price,
-            promotionalPrice: (item.promotionalPrice !== null && item.promotionalPrice !== undefined) ? item.promotionalPrice : 0,
+            promotionalPrice: (item.promotionalPrice !== null && item.promotionalPrice !== undefined) ? item.promotionalPrice : item.price,
             quantity: item.quantity,
             status: 1
         };
@@ -850,8 +849,8 @@ $scope.dataCity.ProvinceID;
 // $scope.selectedVoucher
         // Nếu thông tin đã đầy đủ, tiến hành gửi dữ liệu lên server
         var bill = angular.copy(this);
-        bill.totalAmount = $scope.totalAmount + $scope.shippingFee;
-        bill.totalAmountAfterDiscount = $scope.totalAmountAfterDiscount + $scope.shippingFee;
+        bill.totalAmount = $scope.totalAmount ;
+        bill.totalAmountAfterDiscount = $scope.totalAmountAfterDiscount ;
         bill.address = fullAddress;
         bill.paymentMethod = $scope.selectedPayment;
         bill.addressId = idFullAddress;
@@ -1240,10 +1239,9 @@ $scope.dataCity.ProvinceID;
       console.log("Không có vouchers để chọn.");
       return;
     }
-  
     // Bước 1: Lọc danh sách voucher còn số lượng và đủ điều kiện áp dụng
     var validVouchers = $scope.customerVouchers.filter(function(voucher) {
-      return voucher.quantity > 0 && $scope.totalAmount >= voucher.minimumTotalAmount;
+      return voucher.quantity > 0 && $scope.totalAmount >= voucher.minimumTotalAmount && voucher.show == 1;
     });
   
     if (validVouchers.length === 0) {

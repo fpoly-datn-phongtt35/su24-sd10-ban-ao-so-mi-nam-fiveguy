@@ -263,18 +263,29 @@ public static String encodeId(long id) {
         billHistory.setCreatedBy(customer.getFullName());
         billHistory.setBill(bill);
         olBillHistoryService2.save(billHistory);
+
+            if (paymentType == 1){
+                PaymentStatus paymentStatus = new PaymentStatus();
+                paymentStatus.setBill(bill);
+                paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
+                paymentStatus.setPaymentMethod(2);
+                paymentStatus.setPaymentType(1);
+               paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+                olPaymentStatusService2.save(paymentStatus);
+
+
+            }
+
+        if (paymentType == 3){
             PaymentStatus paymentStatus = new PaymentStatus();
             paymentStatus.setBill(bill);
             paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
-            if (paymentType == 1){
-                paymentStatus.setPaymentMethod(2);
-                paymentStatus.setPaymentType(1);
-                paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+            paymentStatus.setPaymentMethod(1);
+            paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+            olPaymentStatusService2.save(paymentStatus);
+        }
 
-            }
-        olPaymentStatusService2.save(paymentStatus);
-
-    }
+        }
 
 //    private final String EXCHANGE_RATE_API = "https://openexchangerates.org/api/latest.json?base=USD&symbols=VND&app_id=8bbe0880013e4460b9b81960a33980ed";
 //

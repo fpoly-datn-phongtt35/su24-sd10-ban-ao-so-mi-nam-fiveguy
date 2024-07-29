@@ -163,7 +163,7 @@ public class OLBillController2 {
                 billData.setStatus(1);
                  billData.setCustomer(customer.get());
                Bill bill = olBillService.save(billData);
-               olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,0);
+               olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,3);
                     Cart cart = olCartService.findByCustomerId(customer.get().getId());
                     if (cart != null) {
                         olCartDetailService.deleteAllByCart_Id(cart.getId());

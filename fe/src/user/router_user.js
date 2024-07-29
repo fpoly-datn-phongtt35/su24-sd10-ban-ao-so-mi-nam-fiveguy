@@ -41,6 +41,18 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/onlineShop/paymentFailed.html",
       controller: 'productController'
     })
+    .when("/home/order", {
+      templateUrl : "pages/accountManage/order.html",
+      controller : "orderController"
+    })
+    .when("/home/orderTrack", {
+      templateUrl : "pages/accountManage/orderTrack.html",
+      controller : "orderController"
+    })
+    .when("/home/orderDetail/:idBill", {
+      templateUrl : "pages/accountManage/orderDetail.html",
+      controller : "orderController"
+    })
 
 
     .otherwise({

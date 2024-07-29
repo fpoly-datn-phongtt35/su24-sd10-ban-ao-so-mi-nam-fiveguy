@@ -18,5 +18,9 @@ public interface OLBillDetailRepository2 extends JpaRepository<BillDetail, Long>
 
     List<BillDetail> findByProductDetail(ProductDetail productDetail);
 
+    @Query("SELECT bd FROM BillDetail bd WHERE bd.bill.id = :billId")
+    List<BillDetail> findByBillId(@Param("billId") Long billId);
+
+    List<BillDetail> findAllByBillIdOrderByIdDesc(Long billId);
 
 }
