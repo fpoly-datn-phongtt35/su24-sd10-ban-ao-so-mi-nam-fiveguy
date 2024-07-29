@@ -355,12 +355,13 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             return false; // Bill amount is less than the minimum amount required
         }
 
-        if (voucher.getApplyfor() == 1 && customer != null) {
-            if (customer.getCustomerType() == null ||
+        // New logic for applyfor
+        if (voucher.getApplyfor() == 1) {
+            if (customer == null || customer.getCustomerType() == null ||
                     !customerTypeVoucherRepository.findAllByVoucherId(voucher.getId()).stream()
                             .anyMatch(ctv -> ctv.getCustomerType()
                                     .equals(customer.getCustomerType()))) {
-                return false; // Customer type does not match
+                return false; // Customer type does not match for applyfor = 1
             }
         }
 
@@ -423,23 +424,4 @@ public class NBillDetailServiceImpl implements NBillDetailService {
     }
     //endregion
 
-    private void changePricePayment(Bill bill, BigDecimal totalAmount) {
-
-        if (bill == null) return;
-
-        List<PaymentStatus> paymentStatuses = paymentStatusRepository
-                .findAllByBillIdOrderByIdAsc(bill.getId());
-
-        PaymentStatus paymentStatus = null;
-        for (PaymentStatus ps : paymentStatuses) {
-            if (ps.getPaymentType() == 1) {
-                paymentStatus = ps;
-            }
-        }
-
-        if (paymentStatus != null) {
-            paymentStatus.setPaymentAmount(totalAmount.add(bill.getShippingFee()));
-            paymentStatusRepository.save(paymentStatus);
-        }
-    }
 }

@@ -198,7 +198,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             $scope.getBillById($scope.idBill);
             $scope.getBillHistoryByBillId();
-            
+
             if (response.data == null) {
                 $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
             }
@@ -535,69 +535,55 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             // $scope.getAllPaymentStatus($scope.idBill)
         })
     }
+    $scope.listPaymentStatus = [];
 
-    $scope.listPaymentStatus = []
-    $scope.listPaymentStatusToShow = []
-    //Hiển thị paymentStatus
     $scope.getAllPaymentStatus = function (billId) {
-        $scope.listPaymentStatusToShow = []
-
-        $scope.getBillById($scope.idBill)
+        $scope.getBillById($scope.idBill);
         $http.get(apiBill + "/" + billId + "/paymentStatus").then(function (res) {
-            $scope.listPaymentStatus = res.data
-            console.log($scope.listPaymentStatus);
+            $scope.listPaymentStatus = res.data;
+        });
+    };
 
-            if ($scope.billResponse.status == 1) {
-                $scope.listPaymentStatus.forEach(function (ps) {
-                    if (ps.customerPaymentStatus !== 1) {
-                        $scope.listPaymentStatusToShow.push(ps)
-                        console.log("a");
-                    }
-                })
-            } else {
-                $scope.listPaymentStatusToShow = angular.copy($scope.listPaymentStatus)
-            }
-        })
-    }
-    // $scope.getAllPaymentStatus($scope.idBill)
-
-    //hiển thị xác nhận thanh toán
     $scope.showConfirmPayment = function () {
-        $scope.getAllPaymentStatus($scope.idBill)
-        $scope.listPaymentStatus.forEach(function (ps) {
-            if (ps.customerPaymentStatus == 1 && ps.paymentType == 1) {
-                $scope.customerPayment = angular.copy(ps)
-                $('#paymentAmountModal').modal('show');
-            }
-        })
-    }
+        $scope.customerPayment = {
+            paymentAmount: ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee) - $scope.billResponse.paidAmount,
+            note: ""
+        };
+        $('#paymentAmountModal').modal('show');
+    };
 
     $scope.submitPaymentAmount = function () {
-        let note = $scope.customerPayment.note
-        $http.put(apiBill + "/" + $scope.idBill + "/updateStatusPayment", note).then(function (res) {
-            $scope.showSuccess("Xác nhận thanh toán thành công")
-            $scope.getAllPaymentStatus($scope.idBill)
-        })
-    }
+        let paymentStatus = {
+            paymentAmount: $scope.customerPayment.paymentAmount,
+            note: $scope.customerPayment.note
+        };
+        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", paymentStatus).then(function (res) {
+            $scope.showSuccess("Xác nhận thanh toán thành công");
+            $scope.getAllPaymentStatus($scope.idBill);
+            $('#paymentAmountModal').modal('hide');
+        });
+    };
 
-    //hiển thị xác nhận hoàn tiền
     $scope.showConfirmRefund = function () {
-        $scope.getAllPaymentStatus($scope.idBill)
-        $scope.listPaymentStatus.forEach(function (ps) {
-            if (ps.customerPaymentStatus == 4 && ps.paymentType == 3) {
-                $scope.customerPayment = angular.copy(ps)
-                $('#refundAmountModal').modal('show');
-            }
-        })
-    }
+        $scope.customerPayment = {
+            paymentAmount: $scope.billResponse.paidAmount -
+                ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee),
+            note: ""
+        };
+        $('#refundAmountModal').modal('show');
+    };
 
-    $scope.submitRefundAmount = function () {
-        let note = $scope.customerPayment.note
-        $http.put(apiBill + "/" + $scope.idBill + "/updateRefundAmount", paymentAmount).then(function (res) {
-            $scope.showSuccess("Xác nhận hoàn tiền thành công")
-            $scope.getAllPaymentStatus($scope.idBill)
-        })
-    }
+    $scope.submitRefundPayment = function () {
+        let paymentStatus = {
+            paymentAmount: $scope.customerPayment.paymentAmount,
+            note: $scope.customerPayment.note
+        };
+        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", paymentStatus).then(function (res) {
+            $scope.showSuccess("Xác nhận hoàn tiền thành công");
+            $scope.getAllPaymentStatus($scope.idBill);
+            $('#refundAmountModal').modal('hide');
+        });
+    };
 
     //theo dõi billResponse
     $scope.$watch('billResponse', function (newValue, oldValue) {

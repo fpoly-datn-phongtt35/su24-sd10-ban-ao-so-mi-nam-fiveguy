@@ -1,9 +1,6 @@
 package com.example.demo.restController.nguyen;
 
-import com.example.demo.entity.Bill;
-import com.example.demo.entity.BillDetail;
-import com.example.demo.entity.ReturnOrder;
-import com.example.demo.entity.Voucher;
+import com.example.demo.entity.*;
 import com.example.demo.model.request.nguyen.BillRequest;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NBillDetailService;
@@ -137,6 +134,12 @@ public class NBillRestController {
     @GetMapping("/{billId}/paymentStatus")
     public ResponseEntity<?> getAllPaymentStatusByBillId(@PathVariable Long billId) {
         return ResponseEntity.ok(paymentStatusService.getAllByBillId(billId));
+    }
+
+    @PostMapping("/{billId}/savePaymentStatus")
+    public ResponseEntity<?> savePaymentStatus(@PathVariable Long billId, @RequestBody
+                                               PaymentStatus paymentStatus){
+        return ResponseEntity.ok(paymentStatusService.createPaymentStatus(billId, paymentStatus));
     }
 
     @PutMapping("/{billId}/updateStatusPayment")

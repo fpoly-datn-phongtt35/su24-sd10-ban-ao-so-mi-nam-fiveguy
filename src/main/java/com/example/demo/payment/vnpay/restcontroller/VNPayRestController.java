@@ -11,6 +11,7 @@ import com.example.demo.payment.vnpay.DTO.PaymentRestDTO;
 import com.example.demo.payment.vnpay.config.ConfigVNPay;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -174,12 +175,15 @@ public class VNPayRestController {
                 bill.setStatus(1);
                 olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2,1);
 //                bill.setTransId(vnp_TransactionNo);
+                bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
 
                 olBillService.save(bill);
 
                 response.sendRedirect(Config.fe_liveServer_Success);
             } else {
-                bill.setStatus(6);
+                bill.setStatus(5);
+                bill.setPaidAmount(new BigDecimal(0));
+
 //                olBillUntility.restoreProductQuantity(bill.getBillDetail());
 //                if (bill.getVoucher() != null){
 //                    olBillUntility.increaseVoucherQuantity(bill.getVoucher().getId());

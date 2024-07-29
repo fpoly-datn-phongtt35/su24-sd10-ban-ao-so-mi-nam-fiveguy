@@ -452,12 +452,13 @@ public class NVoucherServiceImpl implements NVoucherService {
             return false; // Bill amount is less than the minimum amount required
         }
 
-        if (voucher.getApplyfor() == 1 && customer != null) {
-            if (customer.getCustomerType() == null ||
+        // New logic for applyfor
+        if (voucher.getApplyfor() == 1) {
+            if (customer == null || customer.getCustomerType() == null ||
                     !customerTypeVoucherRepository.findAllByVoucherId(voucher.getId()).stream()
                             .anyMatch(ctv -> ctv.getCustomerType()
                                     .equals(customer.getCustomerType()))) {
-                return false; // Customer type does not match
+                return false; // Customer type does not match for applyfor = 1
             }
         }
 

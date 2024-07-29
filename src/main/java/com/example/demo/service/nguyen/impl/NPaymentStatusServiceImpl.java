@@ -2,6 +2,7 @@ package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.PaymentStatus;
+import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.NPaymentStatusRepository;
 import com.example.demo.service.nguyen.NPaymentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,32 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
     @Autowired
     NPaymentStatusRepository paymentStatusRepository;
 
+    @Autowired
+    NBillRepository billRepository;
+
     @Override
     public List<PaymentStatus> getAllByBillId(Long billId) {
         return paymentStatusRepository.findAllByBillIdOrderByIdAsc(billId);
     }
+
+    @Override
+    public PaymentStatus createPaymentStatus(Long billId, PaymentStatus paymentStatus){
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
+
+        PaymentStatus ps = new PaymentStatus();
+        ps.setCode("auto");
+        ps.setPaymentDate(new Date());
+        ps.setBill(bill);
+        ps.setPaymentAmount(paymentStatus.getPaymentAmount());
+        ps.setPaymentType(paymentStatus.getPaymentType());
+        ps.setPaymentMethod(paymentStatus.getPaymentMethod());
+        ps.setNote(paymentStatus.getNote());
+        ps.setCustomerPaymentStatus(paymentStatus.getCustomerPaymentStatus());
+
+        return paymentStatusRepository.save(ps);
+    }
+
 
     @Override
     @Transactional
