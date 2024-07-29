@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface SupplierServiceTH {
-    Page<Supplier> getSuppliers(int page, int size, String name, String sortField, String sortDirection);
+    Page<Supplier> getSuppliers(int page, int size, String name, String sortField, String sortDirection, Integer status);
     List<Supplier> findAllByStatus(Integer status);
     Supplier findById(Long id);
     Supplier create(SupplierRequestTH request);

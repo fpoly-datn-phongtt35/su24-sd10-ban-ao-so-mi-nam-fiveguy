@@ -21,10 +21,12 @@ public class SupplierControllerTH {
                                       @RequestParam(defaultValue = "5") int size,
                                       @RequestParam(required = false) String keyword,
                                       @RequestParam String sortField,
-                                      @RequestParam String sortDirection
+                                      @RequestParam String sortDirection,
+                                          @RequestParam(required = false) Integer status
+
     ) {
 
-        return ResponseEntity.ok(supplierServiceTH.getSuppliers(page, size, keyword, sortField, sortDirection));
+        return ResponseEntity.ok(supplierServiceTH.getSuppliers(page, size, keyword, sortField, sortDirection, status));
     }
 
 

@@ -4,9 +4,12 @@ import com.example.demo.model.request.thuong.CategoryRequestTH;
 import com.example.demo.service.thuong.CategoryServiceTH;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @CrossOrigin("*")
 @RestController
@@ -20,10 +23,10 @@ public class CategoryControllerTH {
                                            @RequestParam(defaultValue = "5") int size,
                                            @RequestParam(required = false) String name,
                                            @RequestParam String sortField,
-                                           @RequestParam String sortDirection
+                                           @RequestParam String sortDirection,
+                                           @RequestParam(required = false) Integer status
     ) {
-
-        return ResponseEntity.ok(categoryServiceTH.getCategories(page, size, name, sortField, sortDirection));
+        return ResponseEntity.ok(categoryServiceTH.getCategories(page, size, name, sortField, sortDirection, status));
     }
 
     @GetMapping("/all")

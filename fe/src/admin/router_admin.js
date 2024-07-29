@@ -61,6 +61,9 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/supplier", {
       templateUrl: "pages/product/supplier.html",
     })
+    .when("/admin/sell-quickly", {
+      templateUrl: "pages/sell-quickly.html",
+    })
     // <!-- Nguyên -->
     .when("/admin/v1", {
       templateUrl: "pages/voucher/voucher.html",

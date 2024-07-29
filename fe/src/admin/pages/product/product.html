@@ -1,4 +1,4 @@
-<div class="main-content" ng-controller="ProductController">
+<div class="main-content position-relative" ng-controller="ProductController">
     <div class="row">
         <div class="col-md-12">
             <div class="table-wrapper">
@@ -16,81 +16,109 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mx-0 mt-3 mb-3 align-items-end">
-                    <div class="col-sm-4">                        
-                        <input type="text" id="name" ng-model="filter.keyword" class="form-control" placeholder="Tìm kiếm...">
+                <div class="row mx-0 mt-3 mb-2">
+                    <div class="col-sm-3 d-flex flex-column">   
+                        <label for="search">Tìm kiếm</label>                     
+                        <input type="text" id="search" ng-model="filter.keyword" class="form-control" placeholder="Tìm kiếm...">
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 d-flex flex-column">
                         <label for="sortField">Sắp xếp theo</label>
                         <select ng-model="filter.sortField" class="form-select" id="sortField">
-                          <option value="createdAt">Thời gian tạo</option>
-                          <option value="updatedAt">Thời gian cập nhật</option>
-                        </select>
+                            <option value="createdAt">Thời gian tạo</option>
+                            <option value="updatedAt">Thời gian cập nhật</option>
+                          </select>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 d-flex flex-column">
                         <label for="sortDirection">Thứ tự</label>
                         <select ng-model="filter.sortDirection" class="form-select" id="sortDirection">
-                          <option value="ASC">Tăng dần</option>
-                          <option value="DESC">Giảm dần</option>
-                        </select>
+                            <option value="ASC">Tăng dần</option>
+                            <option value="DESC">Giảm dần</option>
+                          </select>
                     </div>
-                    <div class="col-sm-2">
-                            <button ng-click="searchProducts()" class="btn btn-primary" type="submit" id="button-addon2">
-                                Tìm kiếm
-                            </button>
+                    <div class="col-sm-3 d-flex flex-column">   
+                        <label>Trạng thái</label>                     
+                        <select ng-model="filter.status" class="form-select">
+                            <option value="">Tất cả</option>
+                            <option value="1">Kinh doanh</option>
+                            <option value="0">Ngừng kinh doanh</option>
+                          </select>
                     </div>
                 </div>
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Mã</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Đơn giá</th>
-                            <th>Thời gian tạo</th>
-                            <th>Thời gian cập nhật</th>
-                            <th>Trạng thái</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr class="text-center" ng-if="products.content.length === 0">
-                            <th colspan="8">Không có dữ liệu</th>
-                        </tr>
-                        <tr ng-repeat="product in products.content">
-                            <th>{{product.id}}</th>
-                            <th>{{product.code}}</th>
-                            <th>{{product.name}}</th>
-                            <th>{{product.price | vndCurrency}}</th>
-                            <th>{{product.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
-                            <th>{{product.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
-                            <th>
-                                <span class="badge rounded-pill" ng-class="{'bg-success': product.status === 1, 'bg-danger': product.status === 0}">
-                                    {{ product.status === 1 ? 'Hiển thị' : 'Không hiển thị' }}
-                                </span>
-                            </th>   
-                            <th>
-                                <a ng-click="editProduct(product.id)" data-bs-target="#editProductModel" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
-                                    <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
-                                </a>
-                                <a ng-click="handleDelete(product)" ng-if="product.status === 1" data-bs-target="#deleteProductModel" class="delete" data-bs-toggle="modal">
-                                    <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
-                                </a>
-                                <a ng-click="handleStatus(product)" ng-if="product.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
-                                    <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
-                                </a>
-                            </th>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="clearfix">
-                    <div class="hint-text">Trang hiện tại <b>{{currentPage + 1}}</b> / <b>{{totalPages}}</b></div>
-                    <div class="ms-4 me-3 hint-text">Số lượng hiển thị: 
+                <div class="w-50 m-auto">
+                    <span style="margin-left: 12px;">Giá</span>
+                    <div class="price-input">
+                        <div class="field">                      
+                            <input type="number" class="form-control input-min" ng-model="filter.min" ng-change="updateRange('min')">
+                        </div>
+                        <div class="separator">-</div>
+                        <div class="field">                          
+                            <input type="number" class="form-control input-max" ng-model="filter.max" ng-change="updateRange('max')">
+                        </div>
+                    </div>
+                    <div class="slider">
+                        <div class="progress" ng-style="progressStyle"></div>
+                    </div>
+                    <div class="range-input">
+                        <input type="range" class="range-min" min="500" max="10000000" ng-model="filter.min" ng-change="updateInput('min')">
+                        <input type="range" class="range-max" min="500" max="10000000" ng-model="filter.max" ng-change="updateInput('max')">
+                    </div>
+                </div>
+                <div class="row mt-2 mx-0 justify-content-end px-3 mb-4">
+                    <button ng-click="searchProducts()" style="width: 150px;" class="btn btn-primary d-flex justify-content-center" type="submit" id="button-addon2">
+                        <span class="material-icons">
+                            search
+                        </span>Tìm kiếm
+                    </button>
+                </div>
+                <div class="position-relative">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã</th>
+                                <th style="width: 100px; text-align: center;">Ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th class="text-center">Thời gian</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            <tr class="text-center" ng-if="products.content.length === 0">
+                                <th colspan="7">Không có dữ liệu</th>
+                            </tr>
+                            <tr ng-repeat="(index, product) in products.content">
+                                <th>{{index + 1}}</th>
+                                <th>{{product.code}}</th>
+                                <th> <img class="img-fluid" ng-src="{{product.images[0].path ? product.images[0].path : 'common/img/no-image.png'}}" /> </th>
+                                <th>{{product.name}}</th>
+                                <th>{{product.price | vndCurrency}}</th>
+                                <th>
+                                    <div class="d-flex align-items-center flex-column">
+                                        <button type="button" class="btn btn-sm" ng-class="{'btn-success': product.status === 1, 'btn-danger': product.status === 0}">{{ product.status === 1 ? 'Kinh doanh' : 'Ngừng kinh doanh' }}</button>
+                                        <span>{{product.createdAt | date : "hh:mm dd-MM-yyyy" : 0}} - {{product.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span>
+                                    </div>
+                                   
+                                </th>            
+                               <th>
+                                    <a ng-click="editProduct(product.id)" data-bs-target="#editProductModel" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
+                                    </a>
+                                    <a ng-click="handleDelete(product)" ng-if="product.status === 1" data-bs-target="#deleteProductModel" class="delete" data-bs-toggle="modal">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                    </a>
+                                    <a ng-click="handleStatus(product)" ng-if="product.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
+                                    </a>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="d-flex align-items-center pb-2"><div class="hint-text m-0 me-2">Số lượng hiển thị: 
                     </div>
                     <input id="size" ng-model="size" ng-change="getAllProducts()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
-                    <ul class="pagination">
+                    <ul class="pagination m-0 ms-auto">
                         <li class="page-item" ng-class="{disabled: currentPage === 0}">
                             <a class="page-link" ng-click="changePage(0)">Trang đầu</a>
                         </li>
@@ -108,7 +136,11 @@
                         </li>
                     </ul>
                 </div>
-
+                    <div id="loading" class="overlay-loading">
+                        <div class="loader"></div>
+                      </div>
+                </div>
+                
                 <!----add-modal start--------->
                 <div class="modal fade" tabindex="-1" id="addProductModel" role="dialog">
                     <div class="modal-dialog modal-lg" role="document">
@@ -133,20 +165,10 @@
                                                 <input type="text" ng-model="product.code" class="form-control" placeholder="Mã tự động">
                                                 <p class="text-danger" ng-if="errors.code">{{errors.code}}</p>
                                             </div>
-                                            <div class="row mt-3 p-0">
-                                                <div class="col-sm-6">
+                                            <div class="form-group mt-3">
                                                     <label>Tên sản phẩm <span ng-if="!product.name" class="text-danger">*</span></label>
                                                     <input type="text" ng-model="product.name" class="form-control" required>
                                                     <p class="text-danger" ng-if="errors.name">{{errors.name}}</p>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <label>Đơn giá <span ng-if="!product.price" class="text-danger">*</span></label>
-                                                    <div class="input-group">
-                                                        <input type="number" ng-model="product.price" class="form-control" required>
-                                                        <span class="input-group-text" id="basic-addon2">VNĐ</span>
-                                                    </div>
-                                                    <p class="text-danger" ng-if="errors.price">{{errors.price}}</p>
-                                                </div>
                                             </div>
                                             <div class="form-group mt-3">
                                                 <label for="description" class="form-label">Mô tả</label>
@@ -206,13 +228,31 @@
                                                     <label for="id-label-supplier">Trạng thái</label>
                                                     <div class="mt-2 d-flex">
                                                         <select class="form-select" ng-model="product.status">
-                                                            <option ng-value="1">Hiển thị</option>
-                                                            <option ng-value="0">Không hiển thị</option>
+                                                            <option ng-value="1">Kinh doanh</option>
+                                                            <option ng-value="0">Ngừng kinh doanh</option>
                                                           </select>
                                                     </div>
                                                 </div>
                                             </div>
-                                          
+                                            <div class="row mt-3 p-0">
+                                                <div class="col-sm-6">
+                                                    <label>Giá nhập <span ng-if="!product.importPrice" class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input type="number" ng-model="product.importPrice" class="form-control" required>
+                                                        <span class="input-group-text">VND</span>
+                                                    </div>
+                                                    <p class="text-danger" ng-if="errors.importPrice">{{errors.importPrice}}</p>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label>Giá bán <span ng-if="!product.price" class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input type="number" ng-model="product.price" class="form-control" required>
+                                                        <span class="input-group-text">VND</span>
+                                                    </div>
+                                                    <p class="text-danger" ng-if="errors.price">{{errors.price}}</p>
+                                                </div>
+                                                
+                                            </div>
                                         </div>
                                         <div class="tab-pane fade" id="product-detail" role="tabpanel" aria-labelledby="product-detail-tab">
                                             <div class="row m-0">
@@ -246,20 +286,14 @@
                                                       <tr>
                                                         <th scope="col">Size</th>
                                                         <th scope="col">Số lượng</th>
-                                                        <th scope="col">Trạng thái</th>
+                
                                                         <th scope="col"></th>
                                                       </tr>
                                                     </thead>
                                                     <tbody>
                                                       <tr ng-repeat="item in color.productDetails">
                                                         <td>{{item.size.name}}</td>
-                                                        <td class="w-25"> <input type="number" ng-model="item.quantity" ng-change="updateQuantity(item)" class="form-control w-50" ng-value="item.quantity" /> </td>
-                                                        <td class="w-50">
-                                                            <select class="form-select w-75" ng-model="item.status">
-                                                                <option ng-value="1">Hoạt động</option>
-                                                                <option ng-value="0">Ngừng hoạt động</option>
-                                                            </select>
-                                                        </td>
+                                                        <td class="w-50"> <input type="number" ng-model="item.quantity" ng-change="updateQuantity(item)" class="form-control w-50" ng-value="item.quantity" /> </td>
                                                         <td class="w-25">
                                                             <a style="cursor: pointer; color: #F44336;" ng-click="deleteSize(item, color)">
                                                                 <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
@@ -283,7 +317,11 @@
                                
                                 <div class="modal-footer">
                                     <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                    <button type="submit" ng-disabled="productForm.$invalid" class="btn btn-success">Thêm</button>
+                                    <button id="addProduct" type="submit" ng-disabled="productForm.$invalid" class="btn btn-success">Thêm</button>
+                                    <button id="loadingAdd" class="btn btn-success" style="display: none;" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        Loading...
+                                    </button>                                
                                 </div>
                             </form>
                         </div>
@@ -316,20 +354,10 @@
                                                 <input type="text" ng-model="productUpdate.code" class="form-control" placeholder="Mã tự động">
                                                 <p class="text-danger" ng-if="errorsUpdate.code">{{errorsUpdate.code}}</p>
                                             </div>
-                                            <div class="row mt-3 p-0">
-                                                <div class="col-sm-6">
+                                            <div class="form-group mt-3">
                                                     <label>Tên sản phẩm <span ng-if="!productUpdate.name" class="text-danger">*</span></label>
                                                     <input type="text" ng-model="productUpdate.name" class="form-control" required>
-                                                    <p class="text-danger" ng-if="errorsUpdate.name">{{errorsUpdate.name}}</p>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <label>Đơn giá <span ng-if="!productUpdate.price" class="text-danger">*</span></label>
-                                                    <div class="input-group">
-                                                        <input type="number" ng-model="productUpdate.price" class="form-control" required>
-                                                        <span class="input-group-text" id="basic-addon2">VNĐ</span>
-                                                    </div>
-                                                    <p class="text-danger" ng-if="errorsUpdate.price">{{errorsUpdate.price}}</p>
-                                                </div>
+                                                    <p class="text-danger" ng-if="errorsUpdate.name">{{errorsUpdate.name}}</p> 
                                             </div>
                                             <div class="form-group mt-3">
                                                 <label for="description" class="form-label">Mô tả</label>
@@ -389,13 +417,30 @@
                                                     <label for="id-label-supplier">Trạng thái</label>
                                                     <div class="mt-2 d-flex">
                                                         <select class="form-select" ng-model="productUpdate.status">
-                                                            <option ng-value="1">Hiển thị</option>
-                                                            <option ng-value="0">Không hiển thị</option>
+                                                            <option ng-value="1">Kinh doanh</option>
+                                                            <option ng-value="0">Ngừng kinh doanh</option>
                                                           </select>
                                                     </div>
                                                 </div>
                                             </div>
-                                          
+                                            <div class="row mt-3 p-0">
+                                                <div class="col-sm-6">
+                                                    <label>Giá nhập <span ng-if="!productUpdate.importPrice" class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input type="number" ng-model="productUpdate.importPrice" class="form-control" required>
+                                                        <span class="input-group-text" id="basic-addon2">VND</span>
+                                                    </div>
+                                                    <p class="text-danger" ng-if="errorsUpdate.importPrice">{{errorsUpdate.importPrice}}</p>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label>Giá bán <span ng-if="!productUpdate.price" class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <input type="number" ng-model="productUpdate.price" class="form-control" required>
+                                                        <span class="input-group-text" id="basic-addon2">VND</span>
+                                                    </div>
+                                                    <p class="text-danger" ng-if="errorsUpdate.price">{{errorsUpdate.price}}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="tab-pane fade" id="edt-product-detail" role="tabpanel" aria-labelledby="product-detail-tab">
                                             <div class="row m-0">
@@ -451,8 +496,8 @@
                                                         </td>
                                                         <td class="w-50">
                                                             <select class="form-select w-100" ng-model="item.status">
-                                                                <option ng-value="1">Hoạt động</option>
-                                                                <option ng-value="0">Ngừng hoạt động</option>
+                                                                <option ng-value="1">Kinh doanh</option>
+                                                                <option ng-value="0">Ngừng kinh doanh</option>
                                                             </select>
                                                         </td>
                                                         <td class="w-25">
@@ -483,7 +528,11 @@
                                
                                 <div class="modal-footer">
                                     <button ng-click="resetFormUpdate()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                    <button type="submit" ng-disabled="productFormUpdate.$invalid" class="btn btn-success">Cập nhật</button>
+                                    <button id="updateProduct" type="submit" ng-disabled="productFormUpdate.$invalid" class="btn btn-success">Cập nhật</button>
+                                    <button id="loadingUpdate" class="btn btn-success" style="display: none;" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        Loading...
+                                      </button>
                                 </div>
                             </form>
                         </div>
@@ -496,15 +545,19 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Xóa</h5>
+                                <h5 class="modal-title">Ngừng kinh doanh</h5>
                                 <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Bạn có chắc muốn xóa {{product.name}} không?</p>
+                                <p>Bạn có chắc muốn ngừng kinh doanh {{product.name}} không?</p>
                             </div>
                             <div class="modal-footer">
                                 <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                <button ng-click="delete()" type="button" class="btn btn-success">Xóa</button>
+                                <button id="deleteProduct" ng-click="delete()" type="button" class="btn btn-success">Xác nhận</button>
+                                <button id="loadingDelete" class="btn btn-success" style="display: none;" type="button" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                  </button>
                             </div>
                         </div>
                     </div>
@@ -519,11 +572,15 @@
                                 <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Bạn có chắc muốn khôi phục trạng thái {{product.name}} không?</p>
+                                <p>Bạn có chắc muốn khôi phục lại {{product.name}} không?</p>
                             </div>
                             <div class="modal-footer">
                                 <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                <button ng-click="updateStatus()" type="button" class="btn btn-success">Khôi phục</button>
+                                <button id="updateStatus" ng-click="updateStatus()" type="button" class="btn btn-success">Khôi phục</button>
+                                <button id="loadingStatus" class="btn btn-success" style="display: none;" type="button" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                  </button>
                             </div>
                         </div>
                     </div>
@@ -533,3 +590,4 @@
         </div>
     </div>
 </div>
+

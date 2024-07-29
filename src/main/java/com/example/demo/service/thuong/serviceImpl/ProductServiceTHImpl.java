@@ -5,9 +5,11 @@ import com.example.demo.entity.Image;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductDetail;
 import com.example.demo.model.request.thuong.ProductRequestTH;
+import com.example.demo.model.response.thuong.ProductResponse;
 import com.example.demo.repository.thuong.ImageRepositoryTH;
 import com.example.demo.repository.thuong.ProductDetailRepositoryTH;
 import com.example.demo.repository.thuong.ProductRepositoryTH;
+import com.example.demo.repository.thuong.ProductResponseRepositoryTH;
 import com.example.demo.service.thuong.ProductServiceTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,11 +35,23 @@ public class ProductServiceTHImpl implements ProductServiceTH {
     @Autowired
     private ImageRepositoryTH imageRepository;
 
+    @Autowired
+    private ProductResponseRepositoryTH productResponseRepository;
+
     @Override
     public Product create(ProductRequestTH productRequest) {
+        Product exProductByName = productRepository.findByName(productRequest.getName());
+        if (exProductByName != null) {
+            throw new DuplicateException("Trùng tên sản phẩm", "name");
+        }
+        Product exProductByCode = productRepository.findByCode(productRequest.getCode());
+        if (exProductByCode != null) {
+            throw new DuplicateException("Trùng mã sản phẩm", "code");
+        }
         Product product = new Product();
         product.setCode(productRequest.getCode());
         product.setName(productRequest.getName());
+        product.setImportPrice(productRequest.getImportPrice());
         product.setPrice(productRequest.getPrice());
         product.setDescribe(productRequest.getDescribe());
         product.setCreatedAt(new Date());
@@ -48,7 +63,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
         product.setCollar(productRequest.getCollar());
         product.setStatus(productRequest.getStatus());
         Product saveProduct = productRepository.save(product);
-        if (productRequest.getProductDetails().size() > 0 && productRequest.getImages().size() > 0) {
+        if (productRequest.getProductDetails() != null && productRequest.getImages() != null) {
             List<ProductDetail> productDetails = new ArrayList<>();
             for (ProductDetail dt : productRequest.getProductDetails()) {
                 ProductDetail productDetail = new ProductDetail();
@@ -100,6 +115,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             Product product = productOptional.get();
             product.setCode(productRequestTH.getCode());
             product.setName(productRequestTH.getName());
+            product.setImportPrice(productRequestTH.getImportPrice());
             product.setPrice(productRequestTH.getPrice());
             product.setDescribe(productRequestTH.getDescribe());
             product.setUpdatedAt(new Date());
@@ -109,7 +125,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             product.setWrist(productRequestTH.getWrist());
             product.setCollar(productRequestTH.getCollar());
             product.setStatus(productRequestTH.getStatus());
-            if (productRequestTH.getProductDetails().size() > 0) {
+            if (productRequestTH.getProductDetails() != null) {
                 product.getProductDetails().clear();
                 productRequestTH.getProductDetails().forEach(dt -> {
                     if(dt.getQuantity() == 0) {
@@ -121,7 +137,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
                     product.getProductDetails().add(dt);
                 });
             }
-            if (productRequestTH.getImages().size() > 0) {
+            if (productRequestTH.getImages() != null) {
                 product.getImages().clear();
                 productRequestTH.getImages().forEach(img -> {
                     img.setProduct(product);
@@ -158,7 +174,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
     }
 
     @Override
-    public Page<Product> getProducts(int page, int size, String keyword, String sortField, String sortDirection) {
+    public Page<ProductResponse> getProducts(int page, int size, String keyword, String sortField, String sortDirection, BigDecimal minPrice,BigDecimal maxPrice, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
@@ -166,9 +182,10 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             sort = sort.ascending();
         }
         Pageable pageable = PageRequest.of(page, size, sort);
+
         if (keyword == null || keyword.isEmpty())
-            return productRepository.findAll(pageable);
-        else return productRepository.findByNameOrCode(keyword,pageable);
+            return productResponseRepository.findAllAndStatus( minPrice, maxPrice, status,pageable);
+        else return productResponseRepository.findByNameOrCode(minPrice, maxPrice, keyword, status,pageable);
     }
 
     @Override

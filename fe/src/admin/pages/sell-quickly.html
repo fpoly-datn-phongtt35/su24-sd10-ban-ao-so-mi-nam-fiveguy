@@ -1,0 +1,23 @@
+<div class="main-content" ng-controller="SellQuicklyController">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-wrapper">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button ng-repeat="(index, bill) in bills track by $index" class="nav-link d-flex align-items-center" ng-class="{'active': index == 0}" type="button" role="tab">{{bill.code}}
+                            <span type="button" class="btn-close icon-bill" aria-label="Close"></span>
+                        </button>
+                        <button ng-click="addBill()" type="button" class="btn p-0 ms-2 d-flex align-items-center"><i class="icon-add material-icons">add_circle</i></button>
+                    </div>
+                </nav>
+                <div class="row mx-0 mt-3 mb-2">
+                    <div class="tab-content">
+                        <div ng-repeat="tab in tabs" class="tab-pane fade" ng-class="{in: tab.active, active: tab.active}" style="color: #000;">
+                            {{ tab.content }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

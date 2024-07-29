@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface SizeServiceTH {
-    Page<Size> getSizes(int page, int size, String name, String sortField, String sortDirection);
+    Page<Size> getSizes(int page, int size, String name, String sortField, String sortDirection, Integer status);
     List<Size> findAllByStatus(Integer status);
     Size findById(Long id);
     Size create(SizeRequestTH request);

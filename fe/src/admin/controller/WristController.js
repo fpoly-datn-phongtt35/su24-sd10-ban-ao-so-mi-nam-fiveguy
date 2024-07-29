@@ -15,16 +15,20 @@ app.controller("WristController", function($scope, $http){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
+        $('#loading').css('display', 'flex');
         $http.get(`${config.host}/wrist`, 
                 {params: {page: $scope.page, size: $scope.size, name: $scope.filter.name,
                 sortField: $scope.filter.sortField,
-                sortDirection: $scope.filter.sortDirection
+                sortDirection: $scope.filter.sortDirection,
+                status: $scope.filter.status
                 }})
             .then((response) => {
+                $('#loading').css('display', 'none');
                 $scope.wrists = response.data;
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage = response.data.pageable.pageNumber;
             }).catch(error => {
+                $('#loading').css('display', 'none');
                 console.log("Error", error)
             })
     }
@@ -70,24 +74,36 @@ app.controller("WristController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
+        $('#updateStatus').css('display', 'none');
+        $('#loadingStatus').css('display', 'inline-block');
         $http.put(`${config.host}/wrist/status/${$scope.wrist.id}`).then(response => {
+            $('#updateStatus').css('display', 'inline-block');
+            $('#loadingStatus').css('display', 'none');
+            $('#updateStatusModel').modal('hide');
             $scope.getAllWrists();
             $scope.wrist = {};
-            $('#updateStatusModel').modal('hide');
             toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
         }).catch(error => {
+            $('#updateStatus').css('display', 'inline-block');
+            $('#loadingStatus').css('display', 'none');
             console.log("Error", error);
         })
     }
 
     $scope.createWrist = () => {
         if ($scope.wristForm.$valid) {
+            $('#addWrist').css('display', 'none');
+            $('#loadingAdd').css('display', 'inline-block');
            $http.post(`${config.host}/wrist`, $scope.wrist).then((response) => {
+                $('#addWrist').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
+                $('#addWristModel').modal('hide');
                 $scope.getAllWrists();
                 $scope.resetForm();
-                $('#addWristModel').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
            }).catch(error => {
+                $('#addWrist').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
                 if (error.status === 400) $scope.errors = error.data
                 else toastr["error"](error);
            })
@@ -96,12 +112,18 @@ app.controller("WristController", function($scope, $http){
 
     $scope.updateWrist = () => {
         if ($scope.wristFormUpdate.$valid) {
+            $('#updateWrist').css('display', 'none');
+            $('#loadingUpdate').css('display', 'inline-block');
             $http.put(`${config.host}/wrist/${$scope.wristUpdate.id}`, $scope.wristUpdate).then(response => {
+                $('#updateWrist').css('display', 'inline-block');
+                $('#loadingUpdate').css('display', 'none');
+                $('#editWristModal').modal('hide');
                 $scope.getAllWrists();
                 $scope.resetFormUpdate();
-                $('#editWristModal').modal('hide');
                 toastr["success"]("Cập nhật " + response.data.name + " thành công");
             }). catch(error => {
+                $('#updateWrist').css('display', 'inline-block');
+                $('#loadingUpdate').css('display', 'none');
                 if (error.status === 400) $scope.errorsUpdate = error.data;
                 else toastr["error"](error);
             })
@@ -109,12 +131,18 @@ app.controller("WristController", function($scope, $http){
     }
 
     $scope.delete = () => {
+        $('#deleteWrist').css('display', 'none');
+        $('#loadingDelete').css('display', 'inline-block');
         $http.delete(`${config.host}/wrist/${$scope.wrist.id}`).then(response => {
+            $('#deleteWrist').css('display', 'inline-block');
+            $('#loadingDelete').css('display', 'none');
+            $('#deleteWristModel').modal('hide');
             $scope.getAllWrists();
             $scope.wrist = {};
-            $('#deleteWristModel').modal('hide');
-            toastr["success"]("Xóa " + response.data.name + " thành công");
+            toastr["success"]("Ngừng hoạt động " + response.data.name + " thành công");
         }).catch(error => {
+            $('#deleteWrist').css('display', 'inline-block');
+            $('#loadingDelete').css('display', 'none');
             toastr["error"](error);
         })
     }
