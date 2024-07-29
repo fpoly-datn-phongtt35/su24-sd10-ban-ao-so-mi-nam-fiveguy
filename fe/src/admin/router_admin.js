@@ -37,6 +37,9 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/supplier", {
       templateUrl: "pages/product/supplier.html",
     })
+    .when("/admin/sell-quickly", {
+      templateUrl: "pages/sell-quickly.html",
+    })
     // <!-- Tịnh -->
     .when("/admin/customer", {
       templateUrl: "pages/customer/customer.html",

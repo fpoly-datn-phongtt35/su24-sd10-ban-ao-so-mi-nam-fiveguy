@@ -1,4 +1,4 @@
-app.controller("SuppilerController", function($scope, $http){
+app.controller("SupplierController", function($scope, $http){
     $scope.page = 0;
     $scope.pageBrand = 0;
     $scope.size = 5;
@@ -43,7 +43,8 @@ app.controller("SuppilerController", function($scope, $http){
         $http.get(`${config.host}/brand`, {
             params: {page: $scope.pageBrand, size: $scope.sizeBrand, keyword: $scope.filterBrand.keyword,
                             sortField: $scope.filterBrand.sortField,
-                            sortDirection: $scope.filterBrand.sortDirection
+                            sortDirection: $scope.filterBrand.sortDirection,
+                            status: $scope.filterBrand.status
                             }
         }).then(response => {
             $scope.brands = response.data;
@@ -161,21 +162,25 @@ app.controller("SuppilerController", function($scope, $http){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
+        $('#loading').css('display', 'flex');
         $http.get(`${config.host}/supplier`, 
                 {params: {page: $scope.page, size: $scope.size, keyword: $scope.filter.keyword,
                 sortField: $scope.filter.sortField,
-                sortDirection: $scope.filter.sortDirection
+                sortDirection: $scope.filter.sortDirection,
+                status: $scope.filter.status
                 }})
             .then((response) => {
+                $('#loading').css('display', 'none');
                 $scope.suppliers = response.data;
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage = response.data.pageable.pageNumber;
             }).catch(error => {
+                $('#loading').css('display', 'none');
                 console.log("Error", error)
             })
     }
 
-    $scope.searchSuppilers = () => {
+    $scope.searchSuppliers = () => {
         $scope.page = 0;
         $scope.getAllSuppilers();
     }
@@ -212,23 +217,35 @@ app.controller("SuppilerController", function($scope, $http){
 
     
     $scope.delete = () => {
+        $('#deleteSupplier').css('display', 'none');
+        $('#loadingDelete').css('display', 'inline-block');
         $http.delete(`${config.host}/supplier/${$scope.supplier.id}`).then(response => {
+            $('#deleteSupplier').css('display', 'inline-block');
+            $('#loadingDelete').css('display', 'none');
+            $('#deleteSupplierModel').modal('hide');
             $scope.getAllSuppilers();
             $scope.supplier = {};
-            $('#deleteSupplierModel').modal('hide');
-            toastr["success"]("Xóa " + response.data.name + " thành công");
+            toastr["success"]("Ngừng hoạt động " + response.data.name + " thành công");
         }).catch(error => {
+            $('#deleteSupplier').css('display', 'inline-block');
+            $('#loadingDelete').css('display', 'none');
             toastr["error"](error);
         })
     }
 
     $scope.updateStatus = () => {
+        $('#updateStatus').css('display', 'none');
+        $('#loadingStatus').css('display', 'inline-block');
         $http.put(`${config.host}/supplier/status/${$scope.supplier.id}`).then(response => {
+            $('#updateStatus').css('display', 'none');
+            $('#loadingStatus').css('display', 'inline-block');
+            $('#updateStatusModel').modal('hide');
             $scope.getAllSuppilers();
             $scope.supplier = {};
-            $('#updateStatusModel').modal('hide');
             toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
         }).catch(error => {
+            $('#updateStatus').css('display', 'none');
+            $('#loadingStatus').css('display', 'inline-block');
             console.log("Error", error);
         })
     }
@@ -253,12 +270,18 @@ app.controller("SuppilerController", function($scope, $http){
         if ($scope.supplierForm.$valid && $scope.isAddress($scope.provinceValue, $scope.districtValue, $scope.wardValue)) {
             $scope.supplier.brands = $scope.selected;
             $scope.supplier.address = `${$scope.provinceValue}, ${$scope.districtValue}, ${$scope.wardValue}`;
+            $('#addSupplier').css('display', 'none');
+            $('#loadingAdd').css('display', 'inline-block');
            $http.post(`${config.host}/supplier`, $scope.supplier).then((response) => {
+                $('#addSupplier').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
+                $('#addSupplierModel').modal('hide');
                 $scope.getAllSuppilers();
                 $scope.resetForm();
-                $('#addSupplierModel').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
            }).catch(error => {
+                $('#addSupplier').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
                 if (error.status === 400) $scope.errors = error.data
                 else console.log(error);
            })
@@ -269,12 +292,18 @@ app.controller("SuppilerController", function($scope, $http){
         if ($scope.supplierUpdateForm.$valid && $scope.isAddress($scope.provinceName, $scope.districtName, $scope.wardName)) {
             $scope.supplierUpdate.brandSuppilers = $scope.selectedUpdate;
             $scope.supplierUpdate.address = `${$scope.provinceName}, ${$scope.districtName}, ${$scope.wardName}`;
+            $('#updateSupplier').css('display', 'none');
+            $('#loadingUpdate').css('display', 'inline-block');
             $http.put(`${config.host}/supplier/${$scope.supplierUpdate.id}`, $scope.supplierUpdate).then((response) => {
+                $('#updateSupplier').css('display', 'inline-block');
+                $('#loadingUpdate').css('display', 'none');
+                $('#editSupplierModal').modal('hide');
                 $scope.getAllSuppilers();
                 $scope.resetFormUpdate();
-                $('#editSupplierModal').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
             }).catch(error => {
+                $('#updateSupplier').css('display', 'inline-block');
+                $('#loadingUpdate').css('display', 'none');
                 if (error.status === 400) $scope.errorsUpdate = error.data;
                 else console.log(error);
             })

@@ -20,10 +20,11 @@ public class WristControllerTH {
                                         @RequestParam(defaultValue = "5") int size,
                                         @RequestParam(required = false) String name,
                                         @RequestParam String sortField,
-                                        @RequestParam String sortDirection
+                                        @RequestParam String sortDirection,
+                                       @RequestParam(required = false) Integer status
     ) {
 
-        return ResponseEntity.ok(wristServiceTH.getWrists(page, size, name, sortField, sortDirection));
+        return ResponseEntity.ok(wristServiceTH.getWrists(page, size, name, sortField, sortDirection, status));
     }
 
     @GetMapping("/{id}")

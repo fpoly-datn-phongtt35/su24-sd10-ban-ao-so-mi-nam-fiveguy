@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface WristServiceTH {
-    Page<Wrist> getWrists(int page, int size, String name, String sortField, String sortDirection);
+    Page<Wrist> getWrists(int page, int size, String name, String sortField, String sortDirection, Integer status);
     List<Wrist> findAllByStatus(Integer status);
     Wrist findById(Long id);
     Wrist create(WristRequestTH request);

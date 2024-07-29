@@ -20,7 +20,7 @@ public class BrandServiceTHImpl implements BrandServiceTH {
     @Autowired
     private BrandRepositoryTH repository;
     @Override
-    public Page<Brand> getBrands(int page, int size, String name, String sortField, String sortDirection) {
+    public Page<Brand> getBrands(int page, int size, String name, String sortField, String sortDirection, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
@@ -29,8 +29,8 @@ public class BrandServiceTHImpl implements BrandServiceTH {
         }
         Pageable pageable = PageRequest.of(page, size, sort);
         if (name == null || name.isEmpty())
-            return repository.findAll(pageable);
-        else return repository.findByNameContainingIgnoreCase(name,pageable);
+            return repository.findAllAndStatus(status, pageable);
+        else return repository.findByNameContainingIgnoreCaseAndStatus(name, status, pageable);
     }
 
 
@@ -63,7 +63,6 @@ public class BrandServiceTHImpl implements BrandServiceTH {
             Brand brand = brandOptional.get();
             brand.setName(request.getName());
             brand.setUpdatedAt(new Date());
-            brand.setStatus(1);
             return repository.save(brand);
         }
         return null;

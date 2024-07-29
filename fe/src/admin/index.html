@@ -38,7 +38,7 @@
 
 	<!-- Thưởng -->
 	<link rel="stylesheet" href="common/static/css/thuong.css" />
-	<link rel="stylesheet" href="common/static/css/toastr.min.css" />
+
 	<!-- Tịnh -->
 
 	<!-- Nguyên -->
@@ -60,6 +60,10 @@
 				</h3>
 			</div>
 			<ul class="list-unstyled component m-0">
+				<li>
+					<a href="#/admin/sell-quickly" class="dashboard"><i class="material-icons">shopping_cart</i>Bán tại quầy
+					</a>
+				</li>
 				<li ui-sref-active="active">
 					<a href="#/admin/dashboard" ui-sref="dashboard" class="dashboard"><i class="material-icons">dashboard</i>Thống Kê
 					</a>
@@ -224,6 +228,7 @@
 			<!------main-content-start----------->
 
 			<!-- View -->
+			 
 			<div style="margin: 30px;" ng-view></div>
 			<!-- View -->
 			<!------main-content-end----------->
@@ -276,6 +281,7 @@
   			host : "http://localhost:8080/api/admin"
 		}
 	</script>
+		<script src="/src/admin/controller/SellQuicklyController.js"></script>
 	<script src="/src/admin/controller/ProductController.js"></script>
 	<script src="/src/admin/controller/CategoryController.js"></script>
 	<script src="/src/admin/controller/CollarController.js"></script>

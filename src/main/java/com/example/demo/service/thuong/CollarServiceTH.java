@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface CollarServiceTH {
-    Page<Collar> getCollars(int page, int size, String name, String sortField, String sortDirection);
+    Page<Collar> getCollars(int page, int size, String name, String sortField, String sortDirection, Integer status);
     List<Collar> findAllByStatus(Integer status);
     Collar findById(Long id);
     Collar create(CollarRequestTH request);
