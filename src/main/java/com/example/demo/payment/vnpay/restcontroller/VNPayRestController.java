@@ -158,7 +158,7 @@ public class VNPayRestController {
 
         String vnp_ResponseCode = queryParams.get("vnp_ResponseCode");
         String vnp_TransactionNo = queryParams.get("vnp_TransactionNo");
-        System.out.println(vnp_TransactionNo);
+//        System.out.println(vnp_TransactionNo);
             if ("00".equals(vnp_ResponseCode)) {
                 if (bill.getCustomer() != null){
                     Cart cart = olCartService.findByCustomerId(bill.getCustomer().getId());

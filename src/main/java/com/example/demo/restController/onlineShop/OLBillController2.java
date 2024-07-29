@@ -170,6 +170,18 @@ public class OLBillController2 {
                     }
                 return ResponseEntity.ok(333);
             }
+//                test thanh toán ol
+            else if (codePayment.equals(100)) {
+                billData.setStatus(1);
+                billData.setCustomer(customer.get());
+                billData.setPaidAmount(billData.getTotalAmountAfterDiscount().add(billData.getShippingFee()));
+                Bill bill = olBillService.save(billData);
+                olBillUntility.newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
+                bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
+                bill.setPaidShippingFee((bill.getShippingFee()));
+                olBillService.save(billData);
+
+            }
 
         } else if (body instanceof Integer) {
             int intValue = (int) body;
