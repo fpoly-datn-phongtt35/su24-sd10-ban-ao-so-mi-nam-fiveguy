@@ -276,14 +276,14 @@ public static String encodeId(long id) {
 
             }
 
-        if (paymentType == 3){
-            PaymentStatus paymentStatus = new PaymentStatus();
-            paymentStatus.setBill(bill);
-            paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
-            paymentStatus.setPaymentMethod(1);
-            paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
-            olPaymentStatusService2.save(paymentStatus);
-        }
+//        if (paymentType == 3){
+//            PaymentStatus paymentStatus = new PaymentStatus();
+//            paymentStatus.setBill(bill);
+//            paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
+//            paymentStatus.setPaymentMethod(1);
+//            paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+//            olPaymentStatusService2.save(paymentStatus);
+//        }
 
         }
 
