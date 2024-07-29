@@ -35,15 +35,20 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new RuntimeException("Bill not found"));
 
-        if(paymentStatusRequest.getPayOrRefund() == 1){
-            bill.setShippingFee(paymentStatusRequest.getBill().getShippingFee());
-            bill.setPaidAmount(paymentStatusRequest.getBill().getPaidAmount());
-            bill.setPaidShippingFee(paymentStatusRequest.getBill().getPaidShippingFee());
+        if (paymentStatusRequest.getPayOrRefund() == 1) {
+            bill.setPaidAmount(paymentStatusRequest.getBill().getTotalAmountAfterDiscount());
+            bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
+
+            billRepository.save(bill);
+        } else if (paymentStatusRequest.getPayOrRefund() == 2) {
+            bill.setPaidAmount(
+                    bill.getPaidAmount().subtract(
+                            paymentStatusRequest.getBill().getTotalAmountAfterDiscount()));
+            bill.setPaidShippingFee(bill.getPaidShippingFee()
+                    .subtract(paymentStatusRequest.getBill().getShippingFee()));
 
             billRepository.save(bill);
         }
-
-
 
         PaymentStatus ps = new PaymentStatus();
         ps.setCode("auto");

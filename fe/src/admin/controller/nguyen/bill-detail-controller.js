@@ -590,12 +590,19 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     $scope.submitPaymentAmount = function () {
         let paymentStatus = {
-            paymentAmount: $scope.customerPayment.totalAmount,
+            paymentAmount: $scope.customerPayment.paymentAmount,
             customerPaymentStatus: 2,
             paymentMethod: 1,
             paymentType: 1,
             note: $scope.customerPayment.note
         };
+
+        let data = {
+            bill: $scope.billResponse,
+            paymentStatus: paymentStatus,
+            payOrRefund: 2
+        }
+        
         $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", paymentStatus).then(function (res) {
             $scope.showSuccess("Xác nhận thanh toán thành công");
             $scope.getAllPaymentStatus($scope.idBill);
@@ -604,12 +611,24 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     $scope.showConfirmRefund = function () {
+        $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
+            if (response.data == 1) {
+                $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
+                return;
+            }
+            $scope.getBillById($scope.idBill);
+            $scope.getBillHistoryByBillId();
+        }).catch(function (error) {
+            console.log("lỗi update status check quantity", error)
+        });
+
         let paymentDetails = $scope.calculatePaymentDetails();
         if (paymentDetails.isRefund) {
             $scope.customerPayment = {
                 shippingFeeAmount: Math.abs(paymentDetails.shippingFeeAmount),
                 billAmount: Math.abs(paymentDetails.billAmount),
                 paymentAmount: Math.abs(paymentDetails.totalAmount),
+                paymentMethod: 1,
                 note: ""
             };
             $('#refundAmountModal').modal('show');
@@ -619,18 +638,61 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     $scope.submitRefundPayment = function () {
+
+        console.log($scope.customerPayment.paymentMethod);
         let paymentStatus = {
-            paymentAmount: $scope.customerPayment.totalAmount,
+            paymentAmount: $scope.customerPayment.paymentAmount,
             customerPaymentStatus: 3,
-            paymentMethod: 1,
+            paymentMethod: $scope.customerPayment.paymentMethod,
             paymentType: 3,
             note: $scope.customerPayment.note
         };
-        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", paymentStatus).then(function (res) {
+
+        let data = {
+            bill: $scope.billResponse,
+            paymentStatus: paymentStatus,
+            payOrRefund: 2
+        }
+
+        console.log(data);
+
+        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
             $scope.showSuccess("Xác nhận hoàn tiền thành công");
             $scope.getAllPaymentStatus($scope.idBill);
             $('#refundAmountModal').modal('hide');
+            $scope.confirmChangeStatusRefund()
         });
+    };
+
+    $scope.confirmChangeStatusRefund = function () {
+        let description = $scope.billHistoryUpdate.description || "";
+        $scope.billHistoryUpdate.description = description.trim();
+
+        let bill = angular.copy($scope.billResponse);
+        bill.reason = 0
+        bill.status = 2;
+
+        let billHistory = {
+            billId: $scope.idBill,
+            reason: 0,
+            status: 2,
+            description: $scope.billHistoryUpdate.description,
+        };
+
+        let data = { bill: bill, billHistory: billHistory };
+
+        console.log(data);
+        $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
+
+            $scope.getBillById($scope.idBill);
+            $scope.getBillHistoryByBillId();
+
+        }).catch(function (error) {
+            console.log("lỗi update status", error)
+        });
+
+        // Xóa nội dung ghi chú sau khi xác nhận
+        $scope.billHistoryUpdate.description = null;
     };
 
     //theo dõi billResponse
@@ -861,7 +923,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             params: params
         }).then(function (res) {
             $scope.showSuccess("Thêm thành công");
-            $scope.getAllBillDetailByBillId($scope.idBill);
+            // $scope.getAllBillDetailByBillId($scope.idBill);
             $scope.getProductDetails(0);
             $scope.productDetails.forEach(function (pd) {
                 pd.inputQuantity = 1; // Set default value to 0
@@ -891,7 +953,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.removeBillDetail = function (billDetailId) {
         $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
             $scope.showSuccess("Xóa thành công")
-            $scope.getAllBillDetailByBillId($scope.idBill)
+            // $scope.getAllBillDetailByBillId($scope.idBill)
 
             //Lấy lại bill để hiển thị lại totalAmount
             $scope.getBillById($scope.idBill)
@@ -935,7 +997,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             params: params
         }).then(function (res) {
             $scope.showSuccess("Sửa số lượng thành công");
-            $scope.getAllBillDetailByBillId($scope.idBill);
+            // $scope.getAllBillDetailByBillId($scope.idBill);
 
             //Lấy lại bill để hiển thị lại totalAmount
             $scope.getBillById($scope.idBill)
@@ -975,7 +1037,6 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     });
 
     // #endregion
-
 
 
     // #region IN HÓA ĐƠN
@@ -1381,7 +1442,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 .then(function (response) {
                     $scope.shippingFee = response.data.data.total;
                     console.log($scope.shippingFee)
-                    $scope.updateShippingFeeToBill($scope.shippingFe)
+                    $scope.updateShippingFeeToBill($scope.shippingFee)
                 })
                 .catch(function (error) {
                     // Xử lý lỗi nếu có
@@ -1389,7 +1450,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
 
                     $scope.shippingFee = 100000;
-                    $scope.updateShippingFeeToBill($scope.shippingFe)
+                    $scope.updateShippingFeeToBill($scope.shippingFee)
 
                 });
         }
@@ -1400,9 +1461,15 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.updateShippingFeeToBill = function (){
         
         let data = $scope.shippingFee
+
+        if(data == $scope.billResponse.shippingFee) return;
         $http.put(apiBill + "/shippingFeeUpdate/" + $scope.idBill, data).then(function (res) {
             console.log("sửa phí ship thành công");
             console.log(res.data);
+            $http.get(apiBill + "/" + $scope.idBill).then(function (res) {
+                console.log(res.data)
+                $scope.billResponse = res.data
+            })
         }, function (error) {
             console.error('update shippingfee error', error);
         });

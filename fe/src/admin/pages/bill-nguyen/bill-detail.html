@@ -148,6 +148,17 @@
                                 <textarea class="form-control" id="description" ng-model="billHistoryUpdate.description"
                                     ng-required="reasonSuggestions.length <= 0" rows="3"></textarea>
                             </div>
+                            <div class="row"
+                                ng-show="reasonSuggestions.length <= 0 && [1].includes(status) && calculatePaymentDetails().isRefund">
+                                <label for="description" class="form-label">Chú ý</label>
+                                <i style="margin-top: -5px;" class="text-danger">Hoàn tiền thừa cho khách trước khi xác nhận</i>
+                            </div>
+                            <div class="row"
+                                ng-show="reasonSuggestions.length <= 0 && [1,4].includes(status) 
+                                && !calculatePaymentDetails().isRefund && calculatePaymentDetails().totalAmount !== 0">
+                                <label for="description" class="form-label">Chú ý</label>
+                                <i style="margin-top: -5px;" class="text-danger">Số tiền còn thiếu sẽ thanh toán khi nhận hàng</i>
+                            </div>
                             <div ng-if="reasonSuggestions.length > 0">
                                 <label for="suggestions" class="form-label">Lý do</label>
                                 <div ng-repeat="reason in reasonSuggestions">
@@ -174,7 +185,12 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" ng-click="printSelectedValues()">Xác
+                            <button class="btn btn-primary" type="button"
+                                ng-show="[1].includes(status) && calculatePaymentDetails().isRefund"
+                                ng-click="showConfirmRefund();billHistoryUpdate.description = null" data-bs-dismiss="modal">
+                                Xác nhận hoàn tiền test</button>
+
+                            <button ng-show="!calculatePaymentDetails().isRefund" type="submit" class="btn btn-primary" ng-click="printSelectedValues()">Xác
                                 nhận</button>
                         </div>
                     </form>
@@ -243,12 +259,17 @@
 
 
 
-                        <button class="btn btn-primary"
-                            ng-click="showConfirmPayment()">
-                            TT tét</button>
-                        <button class="btn btn-primary"
-                            ng-click="showConfirmRefund()">
-                            HT test</button>
+                    <button class="btn btn-primary" ng-show="[1,4].includes(status) && !calculatePaymentDetails().isRefund"
+                        ng-click="showConfirmPayment()">
+                        Xác nhận thanh toán test</button>
+                    <button class="btn btn-primary"
+                        ng-show="[1, 2, 3, 4, 5, 6].includes(status) && calculatePaymentDetails().isRefund"
+                        ng-click="showConfirmRefund()">
+                        Xác nhận hoàn tiền test</button>
+                    <button class="btn btn-primary"
+                        ng-show="[12, 32].includes(status) && calculatePaymentDetails().isRefund"
+                        ng-click="showConfirmRefund()">
+                        Hoàn tiền trả hàng</button>
 
 
                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#paymentStatusModal">
@@ -288,7 +309,7 @@
                         <td class="" ng-switch="ps.customerPaymentStatus">
                             <span ng-switch-when="1">Chưa thanh toán</span>
                             <span ng-switch-when="2">Đã thanh toán</span>
-                            <span ng-switch-when="3">Thành công</span>
+                            <span ng-switch-when="3">Đã hoàn tiền</span>
                             <span ng-switch-when="4">Chờ hoàn</span>
                         </td>
                         <td class="col-3">{{ps.note}}</td>
@@ -387,7 +408,7 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="totalAmount" class="col-sm-4 col-form-label">Số tiền</label>
+                            <label for="totalAmount" class="col-sm-4 col-form-label">Số tiền hoàn trả</label>
                             <div class="col-sm-8">
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="totalAmount"
@@ -396,6 +417,23 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-sm-4 col-form-label">Phương thức thanh toán</label>
+                            <div class="form-group col-sm-8">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="radioType1" id="radioType1"
+                                        ng-value="1" ng-model="customerPayment.paymentMethod">
+                                    <label class="form-check-label" for="radioType1">Chuyển khoản</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="radioType2" id="radioType2"
+                                        ng-value="2" ng-model="customerPayment.paymentMethod">
+                                    <label class="form-check-label" for="radioType2">Tiền mặt</label>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3 row">
                             <label for="notes" class="col-sm-4 col-form-label">Ghi chú</label>
                             <div class="col-sm-8">
