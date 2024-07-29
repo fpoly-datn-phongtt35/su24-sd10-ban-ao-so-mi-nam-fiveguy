@@ -1,0 +1,87 @@
+<div class="container" ng-init="loadBillsForCustomer();">
+
+    <div class="col-lg-12 col-md-6 col-sm-6 mb-4" >
+        <div class="column-main">
+            <div class="page-title-wrapper">
+                <h1 class="page-title">
+                    <span class="base">Lịch sử mua hàng</span>
+                </h1>
+            </div>
+            <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText" >
+            <div class="row justify-content-end">
+                <div class="col-auto d-flex align-items-center">
+                    <button class="button-submit btn btn-primary" ng-click="loadBillsForCustomer()">
+                        <span class="material-icons align-middle">search</span> Tìm kiếm
+                    </button>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    <button class="button-submit btn btn-secondary" ng-click="refreshData(0)">
+                        <span class="material-icons align-middle">refresh</span> Làm mới
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mã hóa đơn</th>
+                            <th>Ngày thanh toán</th>
+                            <th>Ngày giao hàng</th>
+                            <th>Trạng thái thanh toán</th>
+                            <th>Giá tiền</th>
+                            <th>Xem chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="bill in bill">
+                            <td>{{ bill.code }}</td>
+                            <td>{{ bill.paymentDate | date:'dd/MM/yyyy' }}</td>
+                            <td>{{ bill.deliveryDate | date:'dd/MM/yyyy' }}</td>
+                            <td><strong>{{getStatusText(bill.status) }}</strong></td>
+                            <td>{{ bill.totalAmountAfterDiscount + bill.shippingFee | number}} đ</td>
+
+                    <td>
+                        <a ng-href="#home/orderDetail/{{bill.id}}" class="button-submit action-btn">
+                            <i class="fa-regular fa-eye"></i>
+
+                    </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row text-center">
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <ul class="pagination">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPageBill(0)">
+                                <span class="material-icons align-middle">first_page</span>
+                            </button>
+                            <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPageBill(currentPage - 1)">
+                                <span class="material-icons align-middle">chevron_left</span>
+                            </button>
+                            <div class="d-flex align-items-center mx-1">
+                                <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
+                                    style="width: 40px;" ng-model="desiredPage" min="1" max="{{totalPages}}"
+                                    ng-change="goToPage()">
+                                <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages}}</span>
+                            </div>
+                            <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1" ng-click="setCurrentPageBill(currentPage + 1)">
+                                <span class="material-icons align-middle">chevron_right</span>
+                            </button>
+                            <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1" ng-click="setCurrentPageBill(totalPages - 1)">
+                                <span class="material-icons align-middle">last_page</span>
+                            </button>
+                        </div>
+                    </ul>
+                </div>
+                
+                
+                
+            </div>
+            
+        </div>
+    </div>
+</div>
