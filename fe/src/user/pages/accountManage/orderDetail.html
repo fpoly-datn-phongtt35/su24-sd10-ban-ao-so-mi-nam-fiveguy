@@ -1,0 +1,233 @@
+<div class="container">
+        <!-- TRẠNG THÁI ĐƠN HÀNG -->
+        <div class="row  border rounded shadow mb-3 pt-3 bg-body">
+            <div class="row">
+                <hr class="mx-4" style="width: 98%;">
+                <div class="progress-container-wrapper position-relative ms-2">
+                    <button class="scroll-button left" ng-if="scrollbarVisible" ng-click="scrollLeft()">&#9664;</button>
+                    <div class="progress-container overflow-auto col-10" style="margin-left: 50px;" id="ccc">
+                        <div class="d-flex">
+                            <div ng-repeat="step in steps" class="d-flex align-items-center">
+                                <div ng-if="step.time != null" class="step shadow"
+                                    ng-class="{'active': step.status == status}">
+                                    <div class="step-circle shadow">
+                                        <span class="material-icons statuss-{{step.status}}">{{ step.icon }}</span>
+                                    </div>
+                                    <div class="step-title">{{ step.title }}</div>
+                                    <div class="step-title" style="margin-top: -5px; font-size: 15px;">{{ step.reason == 0 ?
+                                        "-"
+                                        : reasonsList[step.reason].shortenText }}</div>
+                                    <div class="step-desc" style="margin-bottom: -7px;">{{ step.time | date:'HH : mm : ss'
+                                        }}
+                                    </div>
+                                    <div class="step-desc">{{ step.time | date:'dd - MM - yyyy' }}</div>
+                                </div>
+                                <div ng-if="!$last && steps[$index + 1].time != null" class="arrow active">&gt;</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="scroll-button right" ng-if="scrollbarVisible" ng-click="scrollRight()">&#9654;</button>
+                </div>
+            </div>
+    
+            <div class="row mt-2 mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="ms-3">
+                    </div>
+                    <div>
+                        <div>
+                            <button class="btn btn-outline-danger me-3" ng-if="deliveryFlow[status].includes(5)"
+                            ng-click="showModalStatus(5)">Hủy</button>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-danger me-3" ng-if="deliveryFlow[status].includes(50)"
+                            ng-click="showModalStatus(50)">Yêu cầu hủy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Modal để nhập lý do chuyển trạng thái -->
+        <div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="changeStatusModalLabel"
+            aria-hidden="true" ng-init="resetCheckBoxes()">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changeStatusModalLabel">Chuyển trạng thái</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            ng-click="resetCheckBoxes()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form ng-submit="confirmChangeStatus()">
+                            <div class="modal-body">
+                                <div class="text-center mb-3">
+                                    <div class="d-flex align-items-center justify-content-evenly">
+                                        <div class="text-center" style="width: 50%;">
+                                            <i class="material-icons statuss-{{currentStatus}}">{{
+                                                possibleSteps[currentStatus].icon }}</i>
+                                            <div>{{ possibleSteps[currentStatus].title }}</div>
+                                        </div>
+                                        <i class="material-icons mx-3">arrow_forward</i>
+                                        <div class="text-center" style="width: 50%;">
+                                            <i class="material-icons statuss-{{nextStatus}}">{{
+                                                possibleSteps[nextStatus].icon }}</i>
+                                            <div>{{ possibleSteps[nextStatus].title }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="mb-3" ng-if="[1, 2, 3, 4, 10, 11].includes(nextStatus)">
+                                <label for="description" class="form-label">Ghi chú</label>
+                                <textarea class="form-control" id="description" ng-model="billHistoryUpdate.description"
+                                    rows="3"></textarea>
+                            </div> -->
+                                <div class="mb-3" ng-if="reasonSuggestions.length <= 0">
+                                    <label for="description" class="form-label">Ghi chú</label>
+                                    <textarea class="form-control" id="description" ng-model="description"
+                                        ng-required="reasonSuggestions.length <= 0" rows="3"></textarea>
+                                </div>
+                                <div ng-if="reasonSuggestions.length > 0">
+                                    <label for="suggestions" class="form-label">Lý do</label>
+                                    <div ng-repeat="reason in reasonSuggestions">
+                                        <div class="form-check">
+                                            <input class="form-check-input custom-radio-checkbox" type="checkbox"
+                                                id="reason-{{reason.value}}" ng-model="reason.checked"
+                                                ng-click="toggleReason(reason)">
+                                            <label class="form-check-label" for="reason-{{reason.value}}">
+                                                {{ reason.text }} - {{reason.value}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-check" ng-show="reasonSuggestions.length > 0">
+                                    <input class="form-check-input" type="checkbox" id="reason-other"
+                                        ng-model="otherReasonChecked">
+                                    <label class="form-check-label" for="reason-other">
+                                        Khác
+                                    </label>
+                                </div>
+                                <div class="mt-2" ng-show="otherReasonChecked">
+                                    <textarea class="form-control" placeholder="Nhập lý do khác" ng-model="otherReasonText"
+                                        ng-required="otherReasonChecked" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                    ng-click="resetCheckBoxes()">Đóng</button>
+                                <button type="submit" class="btn btn-primary" ng-click="printSelectedValues()">Xác
+                                    nhận</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- Thông tin đơn hàng -->
+    <div class="row card mt-4 border rounded p-4 shadow mb-3 bg-body">
+        <div class="d-flex justify-content-between mb-3">
+            <h5>Thông tin đơn hàng</h5>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShipmentDetail"
+                ng-show="[1].includes(status)">Cập nhật</button>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="info-item">
+                    <dt>Mã Hóa Đơn:</dt>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.code}}</span></dd>
+                </div>
+                <div class="info-item">
+                    <dt>Ngày đặt hàng:</dt>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.createdAt | date: "dd/MM/yyyy HH:mm"}}</span>
+                    </dd>
+                </div>
+                <div class="info-item">
+                    <dt>Ngày nhận hàng dự kiến:</dt>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.deliveryDate | date: "dd/MM/yyyy HH:mm"}}</span></dd>
+                </div>
+                <div class="info-item">
+                    <dt>Phương thức thanh toán:</dt>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.paymentMethod.name}}</span></dd>
+                    
+                    <!-- <dd>
+                        <div class="badge text-wrap status-{{status}}" style="font-size: 15px;">
+                            {{possibleSteps[status].title}}
+                        </div>
+                    </dd> -->
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="info-item">
+                    <dt>Tên người nhận:</dt>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.reciverName}}</span></dd>
+                </div>
+                <div class="info-item">
+                    <dt>Số điện thoại:</dt>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.phoneNumber}}</span></dd>
+                </div>
+                <div class="info-item row">
+                    <div class="col-3">Địa chỉ:</div>
+                    <div class="col-9"><span class="fw-bold border-bottom">{{billResponse.address}}</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mã hàng</th>
+                            <th>Tên hàng</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <!-- <th>Giá bán</th> -->
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="detail in billDetail">
+                            <td>{{ detail.productDetail.product.code }}</td>
+                            <td>{{ detail.productDetail.product.name }}</td>
+                            <td>{{ detail.quantity }}</td>
+
+                            <td>{{ formatCurrency(detail.promotionalPrice) }}đ</td>
+
+                            <td>{{ formatCurrency(detail.quantity * detail.promotionalPrice)  }}đ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+         
+        </div>
+        <div class="row" style="    display: flex;
+        justify-content: flex-end;">
+            <div class="col-md-4">
+                <table class="table">
+                    <!-- Thêm một hàng mới hiển thị các thông tin tổng hợp -->
+                    <footer>
+                        <tr>
+                            <td><strong>Tổng tiền hàng:</strong></td>
+                            <td class="text-right">{{ formatCurrency(billResponse.totalAmount) }}đ</td>
+                        </tr> 
+                        <tr>
+                            <td><strong>Giảm giá hóa đơn:</strong></td>
+                            <td class="text-right">{{ formatCurrency(billResponse.totalAmount - billResponse.totalAmountAfterDiscount)  }}đ</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Phí ship:</strong></td>
+                            <td class="text-right">{{ formatCurrency(billResponse.shippingFee) }}đ</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Khách phải trả:</strong></td>
+                            <td class="text-right">{{ formatCurrency(billResponse.totalAmountAfterDiscount + billResponse.shippingFee)  }} đ</td>
+                        </tr>
+                    </footer>
+                </table>
+            </div>
+        </div>
+</div>

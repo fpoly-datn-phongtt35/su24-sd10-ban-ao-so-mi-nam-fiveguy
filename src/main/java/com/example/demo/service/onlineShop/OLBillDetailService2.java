@@ -11,5 +11,9 @@ public interface OLBillDetailService2 {
 
     void saveAll(List<BillDetail> billDetails);
 
+    List<BillDetail> getBillDetailsByBillId(Long billId);
+
+    List<BillDetail> findAllByBillIdOrderByIdDesc(Long billId);
+
 
 }

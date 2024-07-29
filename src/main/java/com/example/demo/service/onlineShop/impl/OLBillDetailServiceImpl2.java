@@ -28,4 +28,14 @@ public class OLBillDetailServiceImpl2 implements OLBillDetailService2 {
     public void saveAll(List<BillDetail> billDetails) {
         olBillDetailRepository.saveAll(billDetails);
     }
+
+    @Override
+    public List<BillDetail> getBillDetailsByBillId(Long billId) {
+        return olBillDetailRepository.findByBillId(billId);
+    }
+
+    @Override
+    public List<BillDetail> findAllByBillIdOrderByIdDesc(Long billId) {
+        return olBillDetailRepository.findAllByBillIdOrderByIdDesc(billId);
+    }
 }

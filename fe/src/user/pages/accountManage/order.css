@@ -1,0 +1,289 @@
+.column-main{
+    margin-top: 90px;
+    padding-bottom: 100px;
+    padding-left: 40px;
+  }
+
+  .page-title-wrapper{
+    border-bottom: 1px solid #cacaca;
+    padding-bottom: 25px;
+    margin-bottom: 30px;
+    font-size: 15px;
+    line-height: 18px;
+  }
+  .page-title{
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 23px;
+    margin: 0;
+  }
+  .base{
+    font-style: normal;
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 23px;
+  }
+
+  .progress-container-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.progress-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px;
+    overflow-x: auto; /* Ensure horizontal scrolling */
+    white-space: nowrap; /* Prevent line breaks */
+    width: 91%; /* Ensure the container takes the full width */
+    box-sizing: border-box; /* Include padding and border in the element's total width */
+    position: relative; /* Ensure relative positioning for the scroll buttons */
+}
+
+.scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.scroll-button.left {
+    left: 0;
+}
+
+.scroll-button.right {
+    right: 0;
+}
+
+.scroll-button:hover {
+    background: #0056b3;
+}
+
+h5 {
+    font-weight: bold;
+    color: #555;
+}
+
+.step {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    background-color: #ccc;
+    border-radius: 8px;
+    margin: 0 10px;
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+    flex-shrink: 0; /* Prevent the step from shrinking */
+}
+
+.step.active {
+    background-color: #1e90ff;
+    color: white;
+}
+
+.step.cancelled {
+    background-color: red;
+    color: white;
+}
+
+.step.inactive {
+    background-color: #eee;
+}
+
+.step .step-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: white;
+    color: black;
+    margin: -65px auto 10px;
+    font-size: 24px;
+    font-weight: bold;
+    border: #828282 1px solid;
+}
+
+.step .material-icons {
+    font-size: 70px;
+    /* color: #1e90ff; */
+}
+
+.step-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.step-desc {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.arrow.inactive {
+    font-size: 36px;
+    margin: 0 10px;
+    color: #c0c2c2;
+}
+
+.arrow.active {
+    font-size: 36px;
+    margin: 0 10px;
+    color: #1e90ff;
+}
+
+/* Color classes for each status */
+.status-1 { background-color: #007bff; } /* Chờ xác nhận */
+.status-2 { background-color: #ffc107; } /* Chờ vận chuyển */
+.status-3 { background-color: #17a2b8; } /* Đang giao */
+.status-4 { background-color: #00ff40; } /* Thành công */
+.status-5 { background-color: #dc3545; } /* Đã hủy */
+.status-6 { background-color: #dc3545; } /* Đã hủy */
+.status-7 { background-color: #828282; } /* Thất bại */
+.status-8 { background-color: #828282; } /* Giao lại */
+.status-81 { background-color: #828282; } /* Thất bại */
+.status-9 { background-color: #ffc107; } /* Đang giao lại */    
+.status-10 { background-color: #17a2b8; } /* Đang chuyển hàng về kho */
+.status-11 { background-color: #ed79ff; } /* Đã chuyển hàng về kho */
+
+.statuss-1 { color: #007bff; } /* Chờ xác nhận */
+.statuss-2 { color: #28a745; } /* Đã xác nhận */
+.statuss-2 { color: #ffc107; } /* Chờ vận chuyển */
+.statuss-3 { color: #17a2b8; } /* Đang giao */
+.statuss-4 { color: #4dd100; } /* Thành công */
+.statuss-5 { color: #dc3545; } /* Đã hủy */
+.statuss-6 { color: #dc3545; } /* Thất bại */
+.statuss-7 { color: #828282; } /* Thất bại */
+.statuss-8 { color: #828282; } /* Thất bại */
+.statuss-81 { color: #828282; } /* Thất bại */
+.statuss-9 { color: #ffc107; } /* Giao lại */
+.statuss-10 { color: #17a2b8; } /* Đang giao lại */
+.statuss-11 { color: #ed79ff; } /* Đang chuyển hàng về kho */
+
+
+dl {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+dt {
+    flex-basis: 150px;
+    margin-right: 10px;
+    align-self: flex-start;
+    font-weight: normal;
+}
+
+dd {
+    flex-grow: 1;
+    margin-left: 0;
+}
+
+.info-item {
+    display: flex;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.info-item dd {
+    flex-grow: 1;
+    margin-left: 0;
+}
+
+
+
+/* Optional custom styles */
+.slider {
+    margin-top: 20px;
+}
+
+.noUi-connect {
+    background: linear-gradient(to right, #007bff, #007bff);
+    /* Màu sắc của dải kết nối */
+}
+
+.noUi-handle {
+    cursor: pointer;
+    /* Con trỏ chuột thành hình bàn tay khi di chuột vào cần kéo */
+}
+
+.noUi-tooltip {
+    display: block;
+    background: rgba(0, 0, 0, 0.8);
+    /* Màu nền của tooltip */
+    color: #fff;
+    /* Màu chữ của tooltip */
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #333;
+    /* Viền của tooltip */
+    text-align: center;
+}
+
+.labels-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.label {
+    flex: 1;
+    text-align: center;
+}
+
+/* .noUi-marker.noUi-marker-horizontal.noUi-marker-sub{
+    display: none;
+} */
+.noUi-value.noUi-value-horizontal.noUi-value-sub {
+    display: none;
+}
+
+.button-submit {
+    padding: 10px 16px !important;
+}
+
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px 0;
+}
+
+.search-bar input {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+    font-size: 15px;
+}
+
+
+/* Add styles for select dropdown */
+.search-bar select {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
+    background-color: white;
+    flex: 1;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.search-bar select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
