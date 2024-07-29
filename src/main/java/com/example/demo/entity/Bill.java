@@ -60,6 +60,9 @@ public class Bill {
     @Column(name = "TotalAmountAfterDiscount")
     private BigDecimal totalAmountAfterDiscount;
 
+    @Column(name = "PaidAmount")
+    private BigDecimal paidAmount;
+
     @Column(name = "CreatedAt")
     private Date createdAt;
 
@@ -81,9 +84,6 @@ public class Bill {
 
     @Column(name = "TypeBill")
     private int typeBill;
-
-    @Column(name = "Paid")
-    private int paid;
 
     @Column(name = "Reason")
     private int reason;
