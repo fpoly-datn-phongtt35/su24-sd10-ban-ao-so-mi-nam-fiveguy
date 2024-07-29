@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @CrossOrigin("*")
@@ -94,13 +95,16 @@ public class MoMoPaymentController {
 //            bill.setPaymentDate(new Date());
             bill.setStatus(1);
             olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2,1);
+            bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+
 
 //            bill.setTransId(transId);
             olBillService.save(bill);
             response.sendRedirect(Config.fe_liveServer_Success);
 
         }else {
-            bill.setStatus(6);
+            bill.setStatus(5);
+            bill.setPaidAmount(new BigDecimal(0));
 
 //            olBillUntility.restoreProductQuantity(bill.getBillDetail());
 //            if (bill.getVoucher() != null){

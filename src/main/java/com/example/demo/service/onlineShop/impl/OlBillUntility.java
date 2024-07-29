@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.DataOutputStream;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -221,14 +222,18 @@ public static String encodeId(long id) {
                                 bill.setStatus(1);
                                  newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
 
+                                bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
 
-                                    olBillService.save(bill);
+
+                                olBillService.save(bill);
                                 return;
                             }
                         } else if (bill.getPaymentMethod().getName().equals("VNPAY")) {
                             if (authenticationCheckVnPay(encodeId(bill.getId()),req)) {
                                 bill.setStatus(1);
                                 newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
+                                bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+
 
 
                                 olBillService.save(bill);
@@ -242,13 +247,15 @@ public static String encodeId(long id) {
                         bill.setStatus(5);
 //                        huyPaymentStatus
                         newPaymentStatusAndBillHistory( bill, bill.getCustomer(),5,3,0);
+                        bill.setPaidAmount(new BigDecimal(0));
+
 
                         olBillService.save(bill);
                     }
                 }
             }
         };
-        timer.schedule(task, 960000); // 60000 1200000 milliseconds = 1 minute
+        timer.schedule(task, 960000); // 60000  milliseconds = 1 minute --- test 2p 1200000
     }
     public void newPaymentStatusAndBillHistory(Bill bill, Customer customer,Integer statusBillHistory,Integer statusPaymentStatus,Integer paymentType){
         BillHistory billCreate = new BillHistory();

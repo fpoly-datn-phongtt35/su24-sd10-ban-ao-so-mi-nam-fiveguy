@@ -59,7 +59,6 @@ public class OLBillController2 {
         Optional<Customer> customer = SCCustomerService.getCustomerByToken(token);
         if (customer.isPresent()) {
 
-//            System.out.println(orderData);
 
         ResponseEntity<?> newBill = olBillService.creatBill(orderData,customer.get());
         Object body = newBill.getBody();
@@ -161,7 +160,8 @@ public class OLBillController2 {
 //            COD
              else if (codePayment.equals(10)) {
                 billData.setStatus(1);
-                 billData.setCustomer(customer.get());
+                billData.setCustomer(customer.get());
+                billData.setPaidAmount(new BigDecimal(0));
                Bill bill = olBillService.save(billData);
                olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,3);
                     Cart cart = olCartService.findByCustomerId(customer.get().getId());
