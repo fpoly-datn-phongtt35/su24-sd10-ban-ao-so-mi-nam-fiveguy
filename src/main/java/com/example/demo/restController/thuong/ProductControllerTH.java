@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 
 @CrossOrigin("*")
 @RestController
@@ -22,10 +24,13 @@ public class ProductControllerTH {
                                        @RequestParam(defaultValue = "5") int size,
                                        @RequestParam(required = false) String keyword,
                                        @RequestParam String sortField,
-                                       @RequestParam String sortDirection
-    ) {
+                                       @RequestParam String sortDirection,
+                                         @RequestParam(required = false) BigDecimal minPrice,
+                                         @RequestParam(required = false) BigDecimal maxPrice,
+                                         @RequestParam(required = false) Integer status
 
-        return ResponseEntity.ok(productService.getProducts(page, size, keyword, sortField, sortDirection));
+    ) {
+        return ResponseEntity.ok(productService.getProducts(page, size, keyword, sortField, sortDirection, minPrice, maxPrice,status));
     }
 
     @GetMapping("/{id}")

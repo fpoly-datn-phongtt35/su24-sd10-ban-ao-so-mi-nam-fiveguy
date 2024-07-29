@@ -22,7 +22,7 @@ public class MaterialServiceTHImpl implements MaterialServiceTH {
     private MaterialRepositoryTH repository;
 
     @Override
-    public Page<Material> getMaterials(int page, int size, String name, String sortField, String sortDirection) {
+    public Page<Material> getMaterials(int page, int size, String name, String sortField, String sortDirection, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
@@ -31,8 +31,8 @@ public class MaterialServiceTHImpl implements MaterialServiceTH {
         }
         Pageable pageable = PageRequest.of(page, size, sort);
         if (name == null || name.isEmpty())
-            return repository.findAll(pageable);
-        else return repository.findByNameContainingIgnoreCase(name,pageable);
+            return repository.findAllAndStatus(status, pageable);
+        else return repository.findByNameContainingIgnoreCaseAndStatus(name, status, pageable);
     }
 
     @Override
@@ -69,7 +69,6 @@ public class MaterialServiceTHImpl implements MaterialServiceTH {
             Material material = materialOptional.get();
             material.setName(request.getName());
             material.setUpdatedAt(new Date());
-            material.setStatus(1);
             return repository.save(material);
         }
         return null;

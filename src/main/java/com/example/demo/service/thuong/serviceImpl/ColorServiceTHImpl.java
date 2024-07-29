@@ -22,7 +22,7 @@ public class ColorServiceTHImpl implements ColorServiceTH {
     private ColorRepositoryTH repository;
 
     @Override
-    public Page<Color> getColor(int page, int size, String keyword, String sortField, String sortDirection) {
+    public Page<Color> getColor(int page, int size, String keyword, String sortField, String sortDirection, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
@@ -31,8 +31,8 @@ public class ColorServiceTHImpl implements ColorServiceTH {
         }
         Pageable pageable = PageRequest.of(page, size, sort);
         if (keyword == null || keyword.isEmpty())
-            return repository.findAll(pageable);
-        else return repository.findByNameOrColorCode(keyword,pageable);
+            return repository.findAllAndStatus(status, pageable);
+        else return repository.findByNameOrColorCodeAndStatus(keyword, status, pageable);
     }
 
     @Override
@@ -79,7 +79,6 @@ public class ColorServiceTHImpl implements ColorServiceTH {
             color.setName(request.getName());
             color.setColorCode(request.getColorCode());
             color.setUpdatedAt(new Date());
-            color.setStatus(1);
             return repository.save(color);
         }
         return null;

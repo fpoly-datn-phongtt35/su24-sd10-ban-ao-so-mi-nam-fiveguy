@@ -12,8 +12,10 @@ import java.util.List;
 
 @Repository
 public interface ColorRepositoryTH extends JpaRepository<Color, Long> {
-    @Query(value = "SELECT c from Color c WHERE c.name LIKE %:keyword% OR c.colorCode LIKE %:keyword%")
-    Page<Color> findByNameOrColorCode(@Param("keyword") String keyword, Pageable pageable);
+    @Query(value = "SELECT c from Color c WHERE c.name LIKE %:keyword% OR c.colorCode LIKE %:keyword% AND (:status IS NULL OR c.status = :status)")
+    Page<Color> findByNameOrColorCodeAndStatus(@Param("keyword") String keyword, @Param("status") Integer status, Pageable pageable);
+    @Query("SELECT w FROM Color w WHERE :status IS NULL OR w.status = :status")
+    Page<Color> findAllAndStatus(@Param("status") Integer status, Pageable pageable);
     List<Color> findAllByStatus(Integer status);
     Color findByName(String name);
     Color findByColorCode(String colorCode);

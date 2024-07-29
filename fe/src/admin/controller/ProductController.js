@@ -1,12 +1,48 @@
+
 app.controller("ProductController", function($scope, $http, $timeout){
-    $scope.page = 0;
-    $scope.size = 5;
-    
     $scope.filter = {
         keyword: '',
         sortField: 'createdAt',
-        sortDirection: 'ASC'
+        sortDirection: 'ASC',
+        min: 500,
+        max: 10000000
     };
+
+    $scope.priceGap = 1000;
+
+    $scope.updateRange = function(type) {
+        if (type === 'min' && ($scope.filter.max - $scope.filter.min) < $scope.priceGap) {
+            $scope.filter.min = $scope.filter.max - $scope.priceGap;
+        } else if (type === 'max' && ($scope.filter.max - $scope.filter.min) < $scope.priceGap) {
+            $scope.filter.max = $scope.filter.min + $scope.priceGap;
+        }
+        $scope.updateProgressStyle();
+    };
+
+    $scope.updateInput = function(type) {
+        if (type === 'min' && ($scope.filter.max - $scope.filter.min) < $scope.priceGap) {
+            $scope.filter.min = $scope.filter.max - $scope.priceGap;
+        } else if (type === 'max' && ($scope.filter.max - $scope.filter.min) < $scope.priceGap) {
+            $scope.filter.max = $scope.filter.min + $scope.priceGap;
+        }
+        $scope.updateProgressStyle();
+    };
+
+    $scope.updateProgressStyle = function() {
+        var minPercentage = (($scope.filter.min - 500) / (10000000 - 500)) * 100;
+        var maxPercentage = 100 - (($scope.filter.max - 500) / (10000000 - 500)) * 100;
+        $scope.progressStyle = {
+            left: minPercentage + '%',
+            right: maxPercentage + '%'
+        };
+    };
+
+    // Initialize progress style
+    $scope.updateProgressStyle();
+
+    $scope.page = 0;
+    $scope.size = 5;
+    
     $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
     $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
     $scope.products = [];
@@ -34,16 +70,22 @@ app.controller("ProductController", function($scope, $http, $timeout){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
+        $('#loading').css('display', 'flex');
         $http.get(`${config.host}/product`, 
                 {params: {page: $scope.page, size: $scope.size, keyword: $scope.filter.keyword,
                 sortField: $scope.filter.sortField,
-                sortDirection: $scope.filter.sortDirection
+                sortDirection: $scope.filter.sortDirection,
+                minPrice: $scope.filter.min,
+                maxPrice: $scope.filter.max,
+                status: $scope.filter.status
                 }})
             .then((response) => {
+                $('#loading').css('display', 'none');
                 $scope.products = response.data;
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage = response.data.pageable.pageNumber;
             }).catch(error => {
+                $('#loading').css('display', 'none');
                 console.log("Error", error)
             })
     }
@@ -699,12 +741,18 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.updateStatus = () => {
+        $('#updateStatus').css('display', 'none');
+        $('#loadingStatus').css('display', 'inline-block');
         $http.put(`${config.host}/product/status/${$scope.product.id}`).then(response => {
+            $('#updateStatus').css('display', 'inline-block');
+            $('#loadingStatus').css('display', 'none');
+            $('#updateStatusModel').modal('hide');
             $scope.getAllProducts();
             $scope.product = {};
-            $('#updateStatusModel').modal('hide');
             toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
         }).catch(error => {
+            $('#updateStatus').css('display', 'none');
+            $('#loadingStatus').css('display', 'inline-block');
             console.log("Error", error);
         })
     }
@@ -753,6 +801,10 @@ app.controller("ProductController", function($scope, $http, $timeout){
             toastr["warning"]("Vui lòng chọn màu sắc");
             return false;
         } 
+        else if ($scope.product.importPrice >= $scope.product.price) {
+            toastr["warning"]("Giá nhập phải nhỏ hơn giá bán");
+            return false;
+        } 
         return true;
     }
 
@@ -778,7 +830,10 @@ app.controller("ProductController", function($scope, $http, $timeout){
         } else if ($scope.colorSelect.length == 0 && $scope.sizeSelect.length > 0) {
             toastr["warning"]("Vui lòng chọn màu sắc");
             return false;
-        } 
+        } else if ($scope.productUpdate.importPrice >= $scope.productUpdate.price) {
+            toastr["warning"]("Giá nhập phải nhỏ hơn giá bán");
+            return false;
+        }
         return true;
     }
 
@@ -847,13 +902,18 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 if (!$scope.checkListImage()) return;
                
             }
+            $('#addProduct').css('display', 'none');
+            $('#loadingAdd').css('display', 'inline-block');
            $http.post(`${config.host}/product`, $scope.product).then((response) => {
-
+                $('#addProduct').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
+                $('#addProductModel').modal('hide');
                 $scope.getAllProducts();
                 $scope.resetForm();
-                $('#addProductModel').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
            }).catch(error => {
+                $('#addProduct').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
                 if (error.status === 400) {
                     $scope.errors = error.data;
                     $scope.err(error.data);
@@ -891,12 +951,18 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 });
                 if (!$scope.checkListImageUpdate()) return;
             }
+            $('#updateProduct').css('display', 'none');
+            $('#loadingUpdate').css('display', 'inline-block');
             $http.put(`${config.host}/product/${$scope.productUpdate.id}`, $scope.productUpdate).then((response) => {
+                $('#updateProduct').css('display', 'inline-block');
+                $('#loadingUpdate').css('display', 'none');
+                $('#editProductModel').modal('hide');
                 $scope.getAllProducts();
                 $scope.resetFormUpdate();
-                $('#editProductModel').modal('hide');
                 toastr["success"]("Cập nhật " + response.data.name + " thành công");
            }).catch(error => {
+            $('#updateProduct').css('display', 'inline-block');
+            $('#loadingUpdate').css('display', 'none');
                 if (error.status === 400) {
                     $scope.errorsUpdate = error.data;
                     $scope.err(error.data);
@@ -907,12 +973,18 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.delete = () => {
+        $('#deleteProduct').css('display', 'none');
+        $('#loadingDelete').css('display', 'inline-block');
         $http.delete(`${config.host}/product/${$scope.product.id}`).then(response => {
+            $('#deleteProduct').css('display', 'inline-block');
+            $('#loadingDelete').css('display', 'none');
+            $('#deleteProductModel').modal('hide');
             $scope.getAllProducts();
             $scope.product = {};
-            $('#deleteProductModel').modal('hide');
-            toastr["success"]("Xóa " + response.data.name + " thành công");
+            toastr["success"]("Ngừng kinh doanh " + response.data.name + " thành công");
         }).catch(error => {
+            $('#deleteProduct').css('display', 'inline-block');
+            $('#loadingDelete').css('display', 'none');
             toastr["error"](error);
         })
     }
@@ -939,7 +1011,7 @@ app.directive('customOnChange', function() {
       if (isNaN(input)) {
         return input;
       }
-      return parseInt(input).toLocaleString('vi-VN') + '₫';
+      return parseInt(input).toLocaleString('vi-VN') + ' VND';
     };
   });
   

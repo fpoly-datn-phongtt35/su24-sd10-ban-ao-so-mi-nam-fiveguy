@@ -1,270 +1,535 @@
+<link rel="stylesheet" href="./pages/employee/dashboard.css" />
+
 <main class="content">
-    <div class="container-fluid p-0">
-
-        <h1 class="h3 mb-3"><strong>Analytics</strong> Dashboard</h1>
-
+    <div class="db-dashboard-main">
         <div class="row">
-            <div class="col-xl-6 col-xxl-5 d-flex">
-                <div class="w-100">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col mt-0">
-                                            <h5 class="card-title">Sales</h5>
-                                        </div>
-
-                                        <div class="col-auto">
-                                            <div class="stat text-primary">
-                                                <i class="align-middle" data-feather="truck"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h1 class="mt-1 mb-3">2.382</h1>
-                                    <div class="mb-0">
-                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> -3.65% </span>
-                                        <span class="text-muted">Since last week</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col mt-0">
-                                            <h5 class="card-title">Visitors</h5>
-                                        </div>
-
-                                        <div class="col-auto">
-                                            <div class="stat text-primary">
-                                                <i class="align-middle" data-feather="users"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h1 class="mt-1 mb-3">14.212</h1>
-                                    <div class="mb-0">
-                                        <span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> 5.25% </span>
-                                        <span class="text-muted">Since last week</span>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- Theo ngày -->
+            <div class="col-md-6">
+                <div class="db-card-style bg-db-card-day">
+                    <div class="db-icon-img">
+                        <span class="material-icons"> today </span>
+                    </div>
+                    <div class="db-date">Hôm nay</div>
+                    <div class="db-number-total">{{tongDoanhThuNgay}} đ</div>
+                    <div class="db-list-item-info">
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Sản phẩm</div>
+                            <div class="db-item-number">{{tongSanPhamNgay}}</div>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col mt-0">
-                                            <h5 class="card-title">Earnings</h5>
-                                        </div>
-
-                                        <div class="col-auto">
-                                            <div class="stat text-primary">
-                                                <i class="align-middle" data-feather="dollar-sign"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h1 class="mt-1 mb-3">$21.300</h1>
-                                    <div class="mb-0">
-                                        <span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> 6.65% </span>
-                                        <span class="text-muted">Since last week</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col mt-0">
-                                            <h5 class="card-title">Orders</h5>
-                                        </div>
-
-                                        <div class="col-auto">
-                                            <div class="stat text-primary">
-                                                <i class="align-middle" data-feather="shopping-cart"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h1 class="mt-1 mb-3">64</h1>
-                                    <div class="mb-0">
-                                        <span class="text-danger"> <i class="mdi mdi-arrow-bottom-right"></i> -2.25% </span>
-                                        <span class="text-muted">Since last week</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn thành công</div>
+                            <div class="db-item-number">{{tongDonHangNgay}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn hủy</div>
+                            <div class="db-item-number">{{tongDonHangHuyNgay}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn trả</div>
+                            <div class="db-item-number">10</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-xl-6 col-xxl-7">
-                <div class="card flex-fill w-100">
-                    <div class="card-header">
-
-                        <h5 class="card-title mb-0">Recent Movement</h5>
+            <!-- Theo tuần -->
+            <div class="col-md-6">
+                <div class="db-card-style bg-db-card-week">
+                    <div class="db-icon-img">
+                        <span class="material-icons">
+                            <span class="material-icons"> date_range </span>
+                        </span>
                     </div>
-                    <div class="card-body py-3">
-                        <div class="chart chart-sm">
-                            <canvas id="chartjs-dashboard-line"></canvas>
+                    <div class="db-date">Tuần này</div>
+                    <div class="db-number-total">{{tongDoanhThuTuan}} đ</div>
+                    <div class="db-list-item-info">
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Sản phẩm</div>
+                            <div class="db-item-number">{{tongSanPhamTuan}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn thành công</div>
+                            <div class="db-item-number">{{tongDonHangTuan}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn hủy</div>
+                            <div class="db-item-number">{{tongDonHangHuyTuan}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn trả</div>
+                            <div class="db-item-number">10</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
-                <div class="card flex-fill w-100">
-                    <div class="card-header">
-
-                        <h5 class="card-title mb-0">Browser Usage</h5>
+        <div class="row mt-3">
+            <!-- Theo tháng -->
+            <div class="col-md-6">
+                <div class="db-card-style bg-db-card-month">
+                    <div class="db-icon-img">
+                        <span class="material-icons"> calendar_month </span>
                     </div>
-                    <div class="card-body d-flex">
-                        <div class="align-self-center w-100">
-                            <div class="py-3">
-                                <div class="chart chart-xs">
-                                    <canvas id="chartjs-dashboard-pie"></canvas>
+                    <div class="db-date">Tháng này</div>
+                    <div class="db-number-total">{{tongDoanhThuThang}} đ</div>
+                    <div class="db-list-item-info">
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Sản phẩm</div>
+                            <div class="db-item-number">{{tongSanPhamThang}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn thành công</div>
+                            <div class="db-item-number">{{tongDonHangThang}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn hủy</div>
+                            <div class="db-item-number">{{tongDonHangHuyThang}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn trả</div>
+                            <div class="db-item-number">10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theo năm -->
+            <div class="col-md-6">
+                <div class="db-card-style bg-db-card-year">
+                    <div class="db-icon-img">
+                        <span class="material-icons"> event_note </span>
+                    </div>
+                    <div class="db-date">Năm này</div>
+                    <div class="db-number-total">{{tongDoanhThuNam}} đ</div>
+                    <div class="db-list-item-info">
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Sản phẩm</div>
+                            <div class="db-item-number">{{tongSanPhamNam}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn thành công</div>
+                            <div class="db-item-number">{{tongDonHangNam}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn hủy</div>
+                            <div class="db-item-number">{{tongDonHangHuyNam}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn trả</div>
+                            <div class="db-item-number">10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3" ng-class="{'hidden': !showDiv}">
+            <!-- Tuy chọn -->
+            <div class="">
+                <div class="db-card-style bg-db-card-option">
+                    <div class="db-icon-img">
+                        <span class="material-icons"> calendar_view_day </span>
+                    </div>
+                    <div class="db-date">Tùy chỉnh</div>
+                    <div class="db-number-total">{{tongDoanhThuTuyChinh}} đ</div>
+                    <div class="db-list-item-info">
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Sản phẩm</div>
+                            <div class="db-item-number">{{tongSanPhamTuyChinh}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn thành công</div>
+                            <div class="db-item-number">{{tongDonHangTuyChinh}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn hủy</div>
+                            <div class="db-item-number">{{tongDonHangHuyTuyChinh}}</div>
+                        </div>
+                        <div class="db-item-info">
+                            <div class="db-item-heading">Đơn trả</div>
+                            <div class="db-item-number">10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- start Phần 2 -->
+        <div class="db-table-list p-2 mt-3">
+            <div class="db-title p-1">Bộ lọc</div>
+            <div class="filter-db-table">
+                <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'ngay'}">
+                    <a href="" ng-click="submitNgay()">Ngày</a>
+                </div>
+                <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'tuan'}">
+                    <a href="" ng-click="submitTuan()">Tuần</a>
+                </div>
+                <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'thang'}">
+                    <a href="" ng-click="submitThang()">Tháng</a>
+                </div>
+                <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'nam'}">
+                    <a href="" ng-click="submitNam()">Năm</a>
+                </div>
+                <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'tuyChinh'}">
+                    <a href="" ng-click="toggleDiv()">Tùy chỉnh</a>
+                </div>
+                <div class="item-input-filter-db-table" ng-class="{'hidden': !showDiv}">
+                    Từ:
+                    <input type="date" id="startDate" ng-model="filterStartDate" ng-change="checkDates()" />
+                </div>
+                <div class="item-input-filter-db-table" ng-class="{'hidden': !showDiv}">
+                    Đến:
+                    <input type="date" id="endDate" ng-model="filterEndDate" ng-change="checkDates()" />
+                </div>
+                <div class="item-filter-db-table btn-export-excel">Xuất Excel</div>
+            </div>
+            <div class="row mt-3">
+                <!-- Danh sách bảng -->
+
+                <div class="col-md-8">
+                    <div class="db-table">
+                        <div class="heading-db-table">Danh sách sản phẩm bán chạy {{hihi}}</div>
+                        <table class="table">
+                            <thead class="heading-table">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Giá tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tbody-table">
+                                <tr ng-repeat="sanPhamBanChay in sanPhamBanChay">
+                                    <td class="text-center">{{$index + 1}}</td>
+                                    <td>
+                                        <div class="img-table-avatar">
+                                            <img ng-src="{{sanPhamBanChay.anh_mac_dinh}}" alt="Hình ảnh" />
+                                        </div>
+                                    </td>
+                                    <td class="text-left">{{sanPhamBanChay.ten_sanpham}}</td>
+                                    <td class="text-center">{{sanPhamBanChay.so_luong_ban}}</td>
+                                    <td class="text-right">
+                                        {{sanPhamBanChay.price | currency}}
+                                    </td>
+                                    <!-- <td class="text-right">{{sanPhamBanChay.doanh_thu | currency}}</td> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="d-flex align-items-center">
+                            <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
+                            <div>
+                                <input id="size" ng-model="size" ng-change="applyFilters()" value="1" type="number"
+                                    max="100" min="1" class="form-control" style="width: 5rem" required />
+                            </div>
+                        </div>
+                        <ul class="pagination">
+                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                                <a class="page-link" ng-click="getEmployee(0)">Trang đầu</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                                <a class="page-link" ng-click="getEmployee(currentPage - 1)">&lt;</a>
+                            </li>
+                            <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
+                                ng-class="{active: $index === currentPage}">
+                                <a class="page-link" ng-click="currentPage !== $index && getEmployee($index)">{{$index +
+                                    1}}</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a class="page-link" ng-click="getEmployee(currentPage + 1)">&gt;</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a class="page-link" ng-click="getEmployee(totalPages - 1)">Trang cuối</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sơ đồ -->
+
+                <div class="col-md-4">
+                    <div class="chart-db">
+                        <div class="heading-db-table">Biểu đồ đơn hàng {{hihi}}</div>
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- End Phần 2 -->
+        <div class="d-flex align-items-stretch gap-3">
+            <!-- start Phần 3 -->
+            <div class="db-table-list p-3 mt-3">
+                <div class="db-title p-3">
+                    <label for="">Sản phẩm sắp hết hàng</label>
+                    <input id="totalQuantity" ng-model="filters.totalQuantity" ng-change="applyFilters()" value="1"
+                        type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
+                </div>
+                <div class="row mt-3">
+                    <!-- Danh sách bảng -->
+                    <div class="db-table">
+                        <table class="table">
+                            <thead class="heading-table">
+                                <tr>
+                                    <th>Ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Giá tiền</th>
+                                    <th>Kích cỡ</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tbody-table">
+                                <tr ng-repeat="product in filterProductDetall">
+                                    <td>
+                                        <div class="img-table-avatar">
+                                            <img ng-src="{{product.product.anh_mac_dinh}}" alt="Hình ảnh" />
+                                        </div>
+                                    </td>
+                                    <td class="text-left">{{product.product.name}}</td>
+                                    <td class="text-center">{{getTotalQuantity(product)}}</td>
+                                    <td class="text-right">
+                                        {{product.product.price | currency}}
+                                    </td>
+                                    <td class="text-right">
+                                        {{getSizeNames(product.productDetails)}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="d-flex align-items-center">
+                            <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
+                            <div>
+                                <input id="size" ng-model="size" ng-change="applyFilters()" value="1" type="number"
+                                    max="100" min="1" class="form-control" style="width: 5rem" required />
+                            </div>
+                        </div>
+                        <ul class="pagination">
+                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                                <a class="page-link" ng-click="getProductDetall(0)">Trang đầu</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                                <a class="page-link" ng-click="getProductDetall(currentPage - 1)">&lt;</a>
+                            </li>
+                            <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
+                                ng-class="{active: $index === currentPage}">
+                                <a class="page-link"
+                                    ng-click="currentPage !== $index && getProductDetall($index)">{{$index + 1}}</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a class="page-link" ng-click="getProductDetall(currentPage + 1)">&gt;</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a class="page-link" ng-click="getProductDetall(totalPages - 1)">Trang cuối</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- End Phần 3 -->
+
+            <!-- start Phần 4  -->
+            <div class="db-table-list-r p-3 mt-3">
+                <div class="db-title p-2">
+                    <label for="">Tốc độ tăng trưởng của cửa hàng</label>
+                    <!-- <input id="totalQuantity" ng-model="filters.totalQuantity" ng-change="applyFilters()" value="1"
+                        type="number" max="100" min="1" class="form-control" style="width: 5rem;" required /> -->
+                        <a type="button" class="reload" ng-click=""><div class="d-flex align-items-center gap-2 reload">
+                            <span class="material-icons"> sync </span>
+                        </div></a>
+                </div>
+                <div>
+                    <div class="table-custom">
+                        <!-- Tong doanh thu -->
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Doanh thu ngày
                                 </div>
-                            </div>
-
-                            <table class="table mb-0">
-                                <tbody>
-                                    <tr>
-                                        <td>Chrome</td>
-                                        <td class="text-end">4306</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Firefox</td>
-                                        <td class="text-end">3801</td>
-                                    </tr>
-                                    <tr>
-                                        <td>IE</td>
-                                        <td class="text-end">1689</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-12 col-xxl-6 d-flex order-3 order-xxl-2">
-                <div class="card flex-fill w-100">
-                    <div class="card-header">
-
-                        <h5 class="card-title mb-0">Real-Time</h5>
-                    </div>
-                    <div class="card-body px-4">
-                        <div id="world_map" style="height:350px;"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
-                <div class="card flex-fill">
-                    <div class="card-header">
-
-                        <h5 class="card-title mb-0">Calendar</h5>
-                    </div>
-                    <div class="card-body d-flex">
-                        <div class="align-self-center w-100">
-                            <div class="chart">
-                                <div id="datetimepicker-dashboard"></div>
-                            </div>
-                        </div>
+                            </li>
+                            <li>{{tongDoanhThuNgay}} đ</li>
+                            <li>
+                                <div ng-if="tongDoanhThuNgay >= tongDoanhThuNgayTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up
+                                    </span>{{(tongDoanhThuNgay/tongDoanhThuNgayTruoc)*100}} %
+                                </div>
+                                <div ng-if="tongDoanhThuNgay < tongDoanhThuNgayTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down
+                                    </span>{{(tongDoanhThuNgay/tongDoanhThuNgayTruoc)*100}} %
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Doanh thu Thang
+                                </div>
+                            </li>
+                            <li>{{tongDoanhThuThang}} đ</li>
+                            <li>
+                                <div ng-if="tongDoanhThuThang >= tongDoanhThuThangTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up
+                                    </span>{{(tongDoanhThuThang/tongDoanhThuThangTruoc)*100}} %
+                                </div>
+                                <div ng-if="tongDoanhThuThang < tongDoanhThuThangTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down
+                                    </span>{{(tongDoanhThuThang/tongDoanhThuThangTruoc)*100}} %
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Doanh thu năm
+                                </div>
+                            </li>
+                            <li>{{tongDoanhThuNam}} đ</li>
+                            <li>
+                                <div ng-if="tongDoanhThuNam >= tongDoanhThuNamTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up
+                                    </span>{{(tongDoanhThuNam/tongDoanhThuNamTruoc)*100 || 0}} %
+                                </div>
+                                <div ng-if="tongDoanhThuNam < tongDoanhThuNamTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down
+                                    </span>{{(tongDoanhThuNam/tongDoanhThuNamTruoc)*100 || 0}} %
+                                </div>
+                            </li>
+                        </ul>
+                        <!-- Tỏng dơn hàng -->
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Đơn hàng ngày
+                                </div>
+                            </li>
+                            <li>{{tongDonHangNgay}}</li>
+                            <li>
+                                <div ng-if="tongDonHangNgay >= tongDonHangNgayTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up
+                                    </span>{{(tongDonHangNgay/tongDonHangNgayTruoc)*100 || 0}} %
+                                </div>
+                                <div ng-if="tongDonHangNgay < tongDonHangNgayTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down
+                                    </span>{{(tongDonHangNgay/tongDonHangNgayTruoc)*100 || 0}} %
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Đơn hàng tháng
+                                </div>
+                            </li>
+                            <li>{{tongDonHangThang}}</li>
+                            <li>
+                                <div ng-if="tongDonHangThang >= tongDonHangThangTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up
+                                    </span>{{(tongDonHangThang/tongDonHangThangTruoc)*100 || 0}} %
+                                </div>
+                                <div ng-if="tongDonHangThang < tongDonHangThangTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down
+                                    </span>{{(tongDonHangThang/tongDonHangThangTruoc)*100 || 0}} %
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Đơn hàng năm
+                                </div>
+                            </li>
+                            <li>{{tongDonHangNam}}</li>
+                            <li>
+                                <div ng-if="tongDonHangNam >= tongDonHangNamTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up
+                                    </span>{{(tongDonHangNam/tongDonHangNamTruoc)*100 || 0}} %
+                                </div>
+                                <div ng-if="tongDonHangNam < tongDonHangNamTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down
+                                    </span>{{(tongDonHangNam/tongDonHangNamTruoc)*100 || 0}} %
+                                </div>
+                            </li>
+                        </ul>
+                        <!-- Tổng sản phẩm -->
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Sản phẩm ngày
+                                </div>
+                            </li>
+                            <li>{{tongSanPhamNgay}}</li>
+                            <li>
+                                <div ng-if="tongSanPhamNgay >= tongSanPhamNgayTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up
+                                    </span>{{(tongSanPhamNgay/tongSanPhamNgayTruoc)*100 || 0}} %
+                                </div>
+                                <div ng-if="tongSanPhamNgay < tongSanPhamNgayTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down
+                                    </span>{{(tongSanPhamNgay/tongSanPhamNgayTruoc)*100 || 0}} %
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Sản phẩm tháng
+                                </div>
+                            </li>
+                            <li>{{tongSanPhamThang}}</li>
+                            <li>
+                                <div ng-if="tongSanPhamThang >= tongSanPhamThangTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up
+                                    </span>{{(tongSanPhamThang/tongSanPhamThangTruoc)*100 || 0}} %
+                                </div>
+                                <div ng-if="tongSanPhamThang < tongSanPhamThangTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down
+                                    </span>{{(tongSanPhamThang/tongSanPhamThangTruoc)*100 || 0}} %
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="list-information">
+                            <li>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="material-icons"> poll </span>Sản phẩm năm
+                                </div>
+                            </li>
+                            <li>{{tongSanPhamNam}}</li>
+                            <li>
+                                <div ng-if="tongSanPhamNam >= tongSanPhamNamTruoc"
+                                    class="d-flex align-items-center gap-2 color-blue">
+                                    <span class="material-icons"> trending_up </span>{{ (tongSanPhamNam /
+                                    tongSanPhamNamTruoc) * 100 || 0 }} %
+                                </div>
+                                <div ng-if="tongSanPhamNam < tongSanPhamNamTruoc"
+                                    class="d-flex align-items-center gap-2 color-red">
+                                    <span class="material-icons"> trending_down </span>{{ (tongSanPhamNam /
+                                    tongSanPhamNamTruoc) * 100 || 0 }} %
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-12 col-lg-8 col-xxl-9 d-flex">
-                <div class="card flex-fill">
-                    <div class="card-header">
-
-                        <h5 class="card-title mb-0">Latest Projects</h5>
-                    </div>
-                    <table class="table table-hover my-0">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th class="d-none d-xl-table-cell">Start Date</th>
-                                <th class="d-none d-xl-table-cell">End Date</th>
-                                <th>Status</th>
-                                <th class="d-none d-md-table-cell">Assignee</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Project Apollo</td>
-                                <td class="d-none d-xl-table-cell">01/01/2023</td>
-                                <td class="d-none d-xl-table-cell">31/06/2023</td>
-                                <td><span class="badge bg-success">Done</span></td>
-                                <td class="d-none d-md-table-cell">Vanessa Tucker</td>
-                            </tr>
-                            <tr>
-                                <td>Project Fireball</td>
-                                <td class="d-none d-xl-table-cell">01/01/2023</td>
-                                <td class="d-none d-xl-table-cell">31/06/2023</td>
-                                <td><span class="badge bg-danger">Cancelled</span></td>
-                                <td class="d-none d-md-table-cell">William Harris</td>
-                            </tr>
-                            <tr>
-                                <td>Project Hades</td>
-                                <td class="d-none d-xl-table-cell">01/01/2023</td>
-                                <td class="d-none d-xl-table-cell">31/06/2023</td>
-                                <td><span class="badge bg-success">Done</span></td>
-                                <td class="d-none d-md-table-cell">Sharon Lessman</td>
-                            </tr>
-                            <tr>
-                                <td>Project Nitro</td>
-                                <td class="d-none d-xl-table-cell">01/01/2023</td>
-                                <td class="d-none d-xl-table-cell">31/06/2023</td>
-                                <td><span class="badge bg-warning">In progress</span></td>
-                                <td class="d-none d-md-table-cell">Vanessa Tucker</td>
-                            </tr>
-                            <tr>
-                                <td>Project Phoenix</td>
-                                <td class="d-none d-xl-table-cell">01/01/2023</td>
-                                <td class="d-none d-xl-table-cell">31/06/2023</td>
-                                <td><span class="badge bg-success">Done</span></td>
-                                <td class="d-none d-md-table-cell">William Harris</td>
-                            </tr>
-                            <tr>
-                                <td>Project X</td>
-                                <td class="d-none d-xl-table-cell">01/01/2023</td>
-                                <td class="d-none d-xl-table-cell">31/06/2023</td>
-                                <td><span class="badge bg-success">Done</span></td>
-                                <td class="d-none d-md-table-cell">Sharon Lessman</td>
-                            </tr>
-                            <tr>
-                                <td>Project Romeo</td>
-                                <td class="d-none d-xl-table-cell">01/01/2023</td>
-                                <td class="d-none d-xl-table-cell">31/06/2023</td>
-                                <td><span class="badge bg-success">Done</span></td>
-                                <td class="d-none d-md-table-cell">Christina Mason</td>
-                            </tr>
-                            <tr>
-                                <td>Project Wombat</td>
-                                <td class="d-none d-xl-table-cell">01/01/2023</td>
-                                <td class="d-none d-xl-table-cell">31/06/2023</td>
-                                <td><span class="badge bg-warning">In progress</span></td>
-                                <td class="d-none d-md-table-cell">William Harris</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-12 col-lg-4 col-xxl-3 d-flex">
-                <div class="card flex-fill w-100">
-                    <div class="card-header">
-
-                        <h5 class="card-title mb-0">Monthly Sales</h5>
-                    </div>
-                    <div class="card-body d-flex w-100">
-                        <div class="align-self-center chart chart-lg">
-                            <canvas id="chartjs-dashboard-bar"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <!-- End Phần 4  -->
     </div>
 </main>

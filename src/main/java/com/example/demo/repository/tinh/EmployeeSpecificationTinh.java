@@ -71,10 +71,16 @@ public class EmployeeSpecificationTinh {
     }
     public static Specification<Employee> hasAccountByEmail(String email) {
         return (root, query, criteriaBuilder) -> {
-            if (email == null) {
+            if (email == null || email.isEmpty()) {
                 return criteriaBuilder.conjunction();
+            } else {
+                String formattedName = "%" + email + "%"; // Tìm kiếm đường dẫn chứa tên
+
+                return criteriaBuilder.or(
+                        criteriaBuilder.like(root.get("account").get("email"), formattedName), // Tìm kiếm tên chính xác
+                        criteriaBuilder.like(root.get("account").get("email"), "%" + email.replaceAll("\\s", "") + "%") // Kiếm tên kết hợp với các từ khác
+                );
             }
-            return criteriaBuilder.equal(root.get("account").get("email"), email);
         };
     }
     public static Specification<Employee> hasAccountByPhoneNumber(String phoneNumber) {

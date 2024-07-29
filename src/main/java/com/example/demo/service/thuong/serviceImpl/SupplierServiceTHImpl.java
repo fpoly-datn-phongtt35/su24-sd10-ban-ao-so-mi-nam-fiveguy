@@ -31,7 +31,7 @@ public class SupplierServiceTHImpl implements SupplierServiceTH {
     private BrandRepositoryTH brandRepositoryTH;
 
     @Override
-    public Page<Supplier> getSuppliers(int page, int size, String keyword, String sortField, String sortDirection) {
+    public Page<Supplier> getSuppliers(int page, int size, String keyword, String sortField, String sortDirection, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
@@ -40,8 +40,8 @@ public class SupplierServiceTHImpl implements SupplierServiceTH {
         }
         Pageable pageable = PageRequest.of(page, size, sort);
         if (keyword == null || keyword.isEmpty())
-            return repository.findAll(pageable);
-        else return repository.findByKeyword(keyword,pageable);
+            return repository.findAllAndStatus(status, pageable);
+        else return repository.findByKeyword(keyword, status, pageable);
     }
 
     @Override
@@ -93,7 +93,6 @@ public class SupplierServiceTHImpl implements SupplierServiceTH {
             supplier.setPhoneNumber(request.getPhoneNumber());
             supplier.setEmail(request.getEmail());
             supplier.setUpdatedAt(new Date());
-            supplier.setStatus(1);
             supplier.setBrandSuppilers(request.getBrandSuppilers());
             return repository.save(supplier);
         }
