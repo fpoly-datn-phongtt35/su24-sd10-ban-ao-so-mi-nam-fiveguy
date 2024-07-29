@@ -65,7 +65,7 @@ public class OlBillUntility {
             Environment environment = Environment.selectEnv("dev");
             QueryStatusTransactionResponse response = QueryTransactionStatus.process(environment, orderId, orderId);
             if (response != null) {
-                System.out.println(response.getResultCode());
+//                System.out.println(response.getResultCode());
                 return response.getResultCode() == 0;
             }
         } catch (Exception e) {

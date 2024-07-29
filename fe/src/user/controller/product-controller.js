@@ -1115,6 +1115,7 @@ $scope.dataCity.ProvinceID;
           console.error(error);
         });
   };
+  $scope.loadProductsByTotalQuantitySold();
   
   // Function to load products ordered by created date
   $scope.loadProductsByCreatedAt = function() {
@@ -1129,6 +1130,7 @@ $scope.dataCity.ProvinceID;
           console.error(error);
         });
   };
+  $scope.loadProductsByCreatedAt();
   
   
         // formatCurrency
