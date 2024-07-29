@@ -73,6 +73,9 @@ public class Bill {
     @Column(name = "TypeBill")
     private int typeBill;
 
+    @Column(name = "Paid")
+    private int paid;
+
     @Column(name = "Reason")
     private int reason;
 
