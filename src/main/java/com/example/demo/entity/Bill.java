@@ -54,6 +54,9 @@ public class Bill {
     @Column(name = "PaidAmount")
     private BigDecimal paidAmount;
 
+    @Column(name = "PaidShippingFee ")
+    private BigDecimal paidShippingFee ;
+
     @Column(name = "CreatedAt")
     private Date createdAt;
 
