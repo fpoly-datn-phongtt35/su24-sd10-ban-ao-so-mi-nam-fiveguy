@@ -26,22 +26,29 @@ $scope.totalPages = 0; // Biến để lưu trữ tổng số trang
 $scope.totalPagesB2 = 0; // Biến để lưu trữ tổng số trang
 $scope.totalPages = 0; // Biến để lưu trữ tổng số trang
 
+
+// check order by phoneNumber
+$scope.phoneNumberCheckOrder = ''; 
+$scope.isPhoneNumberCheckOrder = false;
+
+
 $scope.loadBillsByPhoneNumber = function(page) {
     if (page === undefined) {
         page = $scope.currentPage || 0;
     }
-
+    $scope.isPhoneNumberCheckOrder = !isValidPhoneNumber($scope.searchPhoneNumber);
+    if ( $scope.isPhoneNumberCheckOrder) {
+        return;
+      }
     var config = {
         params: {
             phoneNumber: $scope.searchPhoneNumber,
             search: $scope.searchText2,
             page: page,
-            size: 1
+            size: $scope.pageSize
         }
     };
 
-    console.log(config);
-    console.log($scope.searchText2);
 
     return $http.get('http://localhost:8080/api/home/order/phone', config)
         .then(function(response) {
@@ -113,8 +120,6 @@ $scope.loadBillsForCustomer = function(page) {
         if (response.data) {
             $scope.bill = response.data.content;
             $scope.totalPages = response.data.totalPages;
-
-            console.log( $scope.bill);
 
             $scope.currentPage = page;
             $scope.desiredPage3 = page + 1;
@@ -499,4 +504,55 @@ if ($scope.idBill != undefined) {
         if (!value) return '';
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function isValidPhoneNumber(phoneNumber) {
+        // Regular expression cho số điện thoại di động và cố định Việt Nam
+        const regexMobile = /(09|03|07|08|05)+([0-9]{8})\b/;
+        const regexLandline = /(02|024|028)+([0-9]{7})\b/;
+      
+        return regexMobile.test(phoneNumber) || regexLandline.test(phoneNumber);
+      }
+
+
+
+
+    // check order by phoneNumber
+// $scope.phoneNumberCheckOrder = ''; 
+// $scope.isPhoneNumberCheckOrder = false;
+
+// $scope.checkOrder = function() {
+//   $scope.isPhoneNumberCheckOrder = !isValidPhoneNumber($scope.phoneNumberCheckOrder);
+//   // Thêm kiểm tra cho các trường khác nếu cần
+//   console.log('Thông tin đơn hàng:');
+
+//   if ( $scope.isPhoneNumberCheckOrder) {
+//     return;
+//   }
+//   console.log('Thông tin đơn hàng:');
+
+//       $http.get('http://localhost:8080/api/ol/checkOrder/' + $scope.phoneNumberCheckOrder)
+//           .then(function(response) {
+//               // Xử lý dữ liệu khi API trả về thành công
+//               $scope.billInfo = response.data;
+//           })
+//           .catch(function(error) {
+//               // Xử lý lỗi khi gọi API không thành công
+//               console.error('Lỗi khi gọi API:', error);
+//               $scope.billInfo = null;
+//           });
+// };
 });
