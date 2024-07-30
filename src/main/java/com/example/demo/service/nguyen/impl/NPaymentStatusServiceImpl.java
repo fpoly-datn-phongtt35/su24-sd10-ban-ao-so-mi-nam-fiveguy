@@ -45,6 +45,16 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
 
             billRepository.save(bill);
+        } else if (paymentStatusRequest.getPayOrRefund() == 3) {
+            bill.setPaidAmount(BigDecimal.ZERO);
+            bill.setPaidShippingFee(BigDecimal.ZERO);
+
+            billRepository.save(bill);
+        } else if (paymentStatusRequest.getPayOrRefund() == 0) {
+            bill.setPaidAmount(paymentStatusRequest.getBill().getTotalAmountAfterDiscount());
+            bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
+
+            billRepository.save(bill);
         }
 
         PaymentStatus ps = new PaymentStatus();

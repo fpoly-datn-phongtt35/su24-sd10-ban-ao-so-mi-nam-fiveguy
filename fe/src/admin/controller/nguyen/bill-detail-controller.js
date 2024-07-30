@@ -71,7 +71,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             //updateBill sử dụng để cập nhật thông tin giao hàng - sử dụng angularcopy để tránh nó binding
             $scope.updateBill = angular.copy($scope.billResponse)
             $scope.getAllBillDetailByBillId($scope.idBill)
-        })
+
+        }).catch(function (error) {
+            console.error("Error:", error);
+            $location.path('/admin/bill/')
+        });
     }
     $scope.getBillById($scope.idBill)
 
@@ -559,7 +563,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             return {
                 shippingFeeAmount: shippingFeeDifference,
                 billAmount: amountDifference,
-                totalAmount: totalDifference ,
+                totalAmount: totalDifference,
                 isRefund: totalDifference < 0
             };
         } else {
@@ -603,7 +607,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             paymentStatus: paymentStatus,
             payOrRefund: 2
         }
-        
+
         $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
             $scope.showSuccess("Xác nhận thanh toán thành công");
             $scope.getAllPaymentStatus($scope.idBill);
@@ -657,12 +661,12 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         console.log(data);
 
-            $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
-                $scope.showSuccess("Xác nhận hoàn tiền thành công");
-                $scope.getAllPaymentStatus($scope.idBill);
-                $('#refundAmountModal').modal('hide');
-                $scope.confirmChangeStatusRefund()
-            });
+        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
+            $scope.showSuccess("Xác nhận hoàn tiền thành công");
+            $scope.getAllPaymentStatus($scope.idBill);
+            $('#refundAmountModal').modal('hide');
+            $scope.confirmChangeStatusRefund()
+        });
     };
 
     $scope.confirmChangeStatusRefund = function () {
@@ -696,14 +700,91 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $scope.billHistoryUpdate.description = null;
     };
 
+    $scope.calculatePaymentPaidOrRefund = function (bill) {
+        var totalPaid = bill.paidAmount + bill.paidShippingFee;
+        var totalDue = bill.totalAmountAfterDiscount + bill.shippingFee;
+        var difference = totalPaid - totalDue;
+
+        var result = {
+            amount: Math.abs(difference),
+            paidOrRefund: 3  // Mặc định là 3 (chưa thanh toán)
+        };
+
+        // Kiểm tra xem đã thanh toán chưa
+        if (bill.paidAmount != 0 || bill.paidShippingFee != 0 || totalPaid == totalDue) {
+            if (difference > 0) {
+                result.paidOrRefund = 2;  // Refund
+            } else if (difference < 0) {
+                result.paidOrRefund = 1;  // Paid
+            } else {
+                result.paidOrRefund = 0;  // Đã thanh toán đủ
+            }
+        }
+
+        // Kiểm tra trường hợp cả hai giá trị đều bằng 0
+        if (totalPaid == 0 && totalDue == 0) {
+            result.paidOrRefund = 3;
+            result.amount = 0;
+        }
+
+        return result;
+    };
+
+
+    $scope.showCancelBillRefund = function () {
+        let paymentDetails = $scope.calculatePaymentPaidOrRefund($scope.billResponse);
+        if (paymentDetails.paidOrRefund == 0) {
+            $scope.customerPayment = {
+                shippingFeeAmount: Math.abs(paymentDetails.shippingFeeAmount),
+                billAmount: Math.abs(paymentDetails.billAmount),
+                paymentAmount: $scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee,
+                paymentMethod: 1,
+                note: null
+            };
+            $('#refundAmountCancelBillModal').modal('show');
+        } else {
+            $scope.showError("Không có số tiền cần hoàn lại.");
+        }
+    };
+
+    $scope.submitCancelBillPayment = function () {
+
+        console.log($scope.customerPayment.paymentMethod);
+        let paymentStatus = {
+            paymentAmount: $scope.customerPayment.paymentAmount,
+            customerPaymentStatus: 3,
+            paymentMethod: $scope.customerPayment.paymentMethod,
+            paymentType: 3,
+            note: $scope.customerPayment.note
+        };
+
+        let data = {
+            bill: $scope.billResponse,
+            paymentStatus: paymentStatus,
+            payOrRefund: 3
+        }
+
+        console.log(data);
+
+        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
+            $scope.showSuccess("Xác nhận hoàn tiền thành công");
+            $scope.getAllPaymentStatus($scope.idBill);
+            $('#refundAmountCancelBillModal').modal('hide');
+            $scope.confirmChangeStatusRefund()
+        });
+    };
+
+
+
     //theo dõi billResponse
     $scope.$watch('billResponse', function (newValue, oldValue) {
         if (newValue !== oldValue) {
             $scope.listPaymentStatusToShow = []
             $scope.getAllPaymentStatus($scope.idBill)
+            $scope.paidOrRefundObject = $scope.calculatePaymentPaidOrRefund($scope.billResponse)
         }
     }, true);
-    
+
 
 
     // #endregion
@@ -1457,13 +1538,13 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         }
     };
 
-    
+
     //sửa phí giao hàng trong bill khi thay đổi billdetail
-    $scope.updateShippingFeeToBill = function (){
-        
+    $scope.updateShippingFeeToBill = function () {
+
         let data = $scope.shippingFee
 
-        if(data == $scope.billResponse.shippingFee) return;
+        if (data == $scope.billResponse.shippingFee) return;
         $http.put(apiBill + "/shippingFeeUpdate/" + $scope.idBill, data).then(function (res) {
             console.log("sửa phí ship thành công");
             console.log(res.data);
