@@ -41,11 +41,8 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
 
             billRepository.save(bill);
         } else if (paymentStatusRequest.getPayOrRefund() == 2) {
-            bill.setPaidAmount(
-                    bill.getPaidAmount().subtract(
-                            paymentStatusRequest.getBill().getTotalAmountAfterDiscount()));
-            bill.setPaidShippingFee(bill.getPaidShippingFee()
-                    .subtract(paymentStatusRequest.getBill().getShippingFee()));
+            bill.setPaidAmount(paymentStatusRequest.getBill().getTotalAmountAfterDiscount());
+            bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
 
             billRepository.save(bill);
         }

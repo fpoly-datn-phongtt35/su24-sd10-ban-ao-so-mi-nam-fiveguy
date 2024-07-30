@@ -131,7 +131,7 @@ public class NBillServiceImpl implements NBillService {
 
         if (returnBill.getStatus() == 2) {
 //            changePricePayment(returnBill, returnBill.getTotalAmountAfterDiscount());
-            processAndSavePaymentStatuses(returnBill);
+//            processAndSavePaymentStatuses(returnBill);
             confirmBillAndUpdateVoucher(returnBill.getId());
         }
         if (returnBill.getStatus() == 5 || returnBill.getStatus() == 6) {

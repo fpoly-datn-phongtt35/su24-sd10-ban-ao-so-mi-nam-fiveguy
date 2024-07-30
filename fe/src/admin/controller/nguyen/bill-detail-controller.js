@@ -580,7 +580,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 shippingFeeAmount: paymentDetails.shippingFeeAmount,
                 billAmount: paymentDetails.billAmount,
                 paymentAmount: paymentDetails.totalAmount,
-                note: ""
+                paymentMethod: 1,
+                note: null
             };
             $('#paymentAmountModal').modal('show');
         } else {
@@ -603,7 +604,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             payOrRefund: 2
         }
         
-        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", paymentStatus).then(function (res) {
+        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
             $scope.showSuccess("Xác nhận thanh toán thành công");
             $scope.getAllPaymentStatus($scope.idBill);
             $('#paymentAmountModal').modal('hide');
@@ -629,7 +630,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 billAmount: Math.abs(paymentDetails.billAmount),
                 paymentAmount: Math.abs(paymentDetails.totalAmount),
                 paymentMethod: 1,
-                note: ""
+                note: null
             };
             $('#refundAmountModal').modal('show');
         } else {
@@ -656,12 +657,12 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         console.log(data);
 
-        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
-            $scope.showSuccess("Xác nhận hoàn tiền thành công");
-            $scope.getAllPaymentStatus($scope.idBill);
-            $('#refundAmountModal').modal('hide');
-            $scope.confirmChangeStatusRefund()
-        });
+            $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
+                $scope.showSuccess("Xác nhận hoàn tiền thành công");
+                $scope.getAllPaymentStatus($scope.idBill);
+                $('#refundAmountModal').modal('hide');
+                $scope.confirmChangeStatusRefund()
+            });
     };
 
     $scope.confirmChangeStatusRefund = function () {

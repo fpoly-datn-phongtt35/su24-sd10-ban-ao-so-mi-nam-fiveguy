@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class NVoucherServiceImpl implements NVoucherService {
@@ -135,11 +136,81 @@ public class NVoucherServiceImpl implements NVoucherService {
                 voucherRepository.save(v);
             }
         }
+
+//            Voucher voucher = voucherRepository.findById(voucherRequest.getId())
+//                    .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+//
+//            if (bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId())) {
+//                voucher = null;
+//                bill.setTotalAmountAfterDiscount(bill.getTotalAmount());
+//
+//
+//            bill.setVoucher(voucher);
+//
+//            billRepository.save(bill);
     }
 
     @Scheduled(fixedRate = 60000)
     public void autoUpdateStatus() {
         updateStatus();
+        updateBillsWithNewVouchers();
+    }
+
+    @Transactional
+    public void updateBillsWithNewVouchers() {
+        List<Bill> billsToUpdate = findBillsWithInvalidVouchers();
+
+        for (Bill bill : billsToUpdate) {
+            Voucher bestVoucher = findBestVoucher(bill);
+            updateBillWithNewVoucher(bill, bestVoucher);
+        }
+    }
+
+    List<Bill> findBillsWithInvalidVouchers() {
+        Date currentDate = new Date();
+        return billRepository.findAll().stream()
+                .filter(bill -> bill.getVoucher() != null &&
+                        (bill.getVoucher().getStatus() == 2 ||
+                                bill.getVoucher().getEndDate().before(currentDate)))
+                .collect(Collectors.toList());
+    }
+
+    private void updateBillWithNewVoucher(Bill bill, Voucher newVoucher) {
+        bill.setVoucher(newVoucher);
+        if (newVoucher != null) {
+            BigDecimal newTotalAmountAfterDiscount = calculateNewTotalAmountAfterDiscount(bill,
+                    newVoucher);
+            bill.setTotalAmountAfterDiscount(newTotalAmountAfterDiscount);
+        } else {
+            bill.setTotalAmountAfterDiscount(bill.getTotalAmount());
+        }
+        billRepository.save(bill);
+    }
+
+    private BigDecimal calculateNewTotalAmountAfterDiscount(Bill bill, Voucher voucher) {
+        BigDecimal totalAmount = bill.getTotalAmount();
+        BigDecimal discount = calculateDiscount(voucher, totalAmount);
+        return totalAmount.subtract(discount);
+    }
+
+    @Transactional(readOnly = true)
+    public Voucher findBestVoucher(Bill bill) {
+        BigDecimal totalAmount = bill.getTotalAmount();
+        List<Voucher> vouchers = voucherRepository.findAll();
+
+        Voucher bestVoucher = null;
+        BigDecimal bestDiscount = BigDecimal.ZERO;
+
+        for (Voucher voucher : vouchers) {
+            if (isVoucherApplicable(voucher, totalAmount, bill.getCustomer(), bill)) {
+                BigDecimal discount = calculateDiscount(voucher, totalAmount);
+                if (discount.compareTo(bestDiscount) > 0) {
+                    bestDiscount = discount;
+                    bestVoucher = voucher;
+                }
+            }
+        }
+        return bestVoucher;
     }
 
     @Override
