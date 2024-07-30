@@ -3,6 +3,7 @@ package com.example.demo.service.onlineShop.impl;
 import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductDetail;
+import com.example.demo.model.response.onlineShop.BillDetailResponse2;
 import com.example.demo.model.response.onlineShop.ProductDetailsDTO;
 import com.example.demo.model.response.onlineShop.ProductInfoDTO;
 import com.example.demo.model.response.onlineShop.ProductSaleDetails;
