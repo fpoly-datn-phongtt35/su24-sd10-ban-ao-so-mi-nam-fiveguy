@@ -1,15 +1,37 @@
-<div class="container" >
+<div class="container-fluid bg-light" style="    margin-top: 82px;">
+
+    <div style="padding: 46px;" class="row m-4" >
 
 
 
+    <div class="p-4">
+        <h5 class="card-title mb-3">Kiểm tra đơn hàng của bạn</h5>
+
+        <hr />  
+            <h6  class="card-title mb-3 border:none">Kiểm tra bằng số điện thoại</h6>
+            <form class="form-edit-account ">
+                <div class="input-group mb-3 ">
+                    <input type="text" ng-model="searchPhoneNumber" class="form-control" placeholder="Nhập số điện thoại để kiểm tra" aria-label="Số điện thoại" aria-describedby="basic-addon2">
+                  
+                    <div class="input-group-append" >
+                        <button style="padding: 18px;" ng-click="loadBillsByPhoneNumber(0)" class="btn btn-primary" type="button">Kiểm tra</button>
+                    </div>
+                </div>
+         
+                <p style="color: red;" class="error-message" ng-if="isPhoneNumberCheckOrder">Số điện thoại không hợp lệ.</p>
+            </form>
+     
+        
+     
+      
+      </div>
 
 
-
-    <div>
+    <!-- <div>
         <label for="phoneNumber">Số điện thoại:</label>
         <input type="text" id="phoneNumber" ng-model="searchPhoneNumber">
         <button ng-click="loadBillsByPhoneNumber(0)">Tìm kiếm</button>
-    </div>
+    </div> -->
 
 
 
@@ -22,12 +44,14 @@
                 </h1>
             </div>
             <div class="search-bar">
-
-            <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText2" >
+                <div class="input-group">
+                    <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText2" >
+                </div>
+       
         </div>
 
             <div class="row justify-content-end">
-                <div class="col-auto d-flex align-items-center">
+                <div class="col-auto d-flex align-items-center ">
                     <button class="button-submit btn btn-primary" ng-click="loadBillsByPhoneNumber()">
                         <span class="material-icons align-middle">search</span> Tìm kiếm
                     </button>
@@ -43,7 +67,7 @@
                     <thead>
                         <tr>
                             <th>Mã hóa đơn</th>
-                            <th>Ngày thanh toán</th>
+                            <!-- <th>Ngày thanh toán</th> -->
                             <th>Ngày giao hàng</th>
                             <th>Trạng thái thanh toán</th>
                             <th>Giá tiền</th>
@@ -53,9 +77,9 @@
                     <tbody>
                         <tr ng-repeat="bill in billsByPhoneNumber">
                             <td>{{ bill.code }}</td>
-                            <td>{{ bill.createdAt | date:'dd/MM/yyyy' }}</td>
+                            <!-- <td>{{ bill.createdAt | date:'dd/MM/yyyy' }}</td> -->
                             <td>{{ bill.deliveryDate | date:'dd/MM/yyyy' }}</td>
-                            <td><strong>{{getStatusText(bill.status) }}</strong></td>
+                            <td><strong>{{(bill.status) }}</strong></td>
                             <td>{{ bill.totalAmountAfterDiscount + bill.shippingFee | number}} đ</td>
 
                     <td>
@@ -100,4 +124,5 @@
             
         </div>
     </div>
+</div>
 </div>
