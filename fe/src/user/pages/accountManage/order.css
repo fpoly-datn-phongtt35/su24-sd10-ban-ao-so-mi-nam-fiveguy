@@ -366,3 +366,12 @@ dd {
 .button-submit {
     padding: 10px 16px !important;
 }
+
+.title p{
+    font-size: 22px;
+}
+
+.title {
+    margin: 5px 0 40px 0;
+
+}

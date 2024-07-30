@@ -680,48 +680,43 @@ $scope.province1 = function () {
   
   $scope.calculateShippingFee = function (toDistrictId, toWardCode) {
     if (toDistrictId && toWardCode && token != null && token && $rootScope.countProduct > 0) {
-    let blows = (toWardCode || "").toString().replace(/\D/g, "");
-    let numericDistrictId = Number(toDistrictId);
-  
-    // Định nghĩa headers với token
-    var config = {
-        headers: {
-            'token': '499b0760-b3cf-11ee-a2c1-ca2feb4b63fa'
-        }
-    };
-  
-    // Body data for the POST request
-    var requestData = {
-      "service_id": 53321,
-      "insurance_value": $scope.totalAmountAfterDiscount,
-      "coupon": null,
-      "from_district_id": 3440,
-      "to_district_id": numericDistrictId,
-      "to_ward_code": blows,  // Convert to string
-      "height": 15,
-      "length": 15,
-      "weight": 700 * $rootScope.countProduct,
-      "width": 15
-  };
-  
-  
-    // Gọi API với phương thức POST và thân yêu cầu (body)
-    $http.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', requestData, config)
-        .then(function (response) {
-            $scope.shippingFee = response.data.data.total;
-        })
-        .catch(function (error) {
-            // Xử lý lỗi nếu có
-            console.error('Error calling API:', error);
-  
-           
-            $scope.shippingFee = 100000;
-            
-        });
-      }
-  
-  
-  };
+        let blows = (toWardCode || "").toString().replace(/\D/g, "");
+        let numericDistrictId = Number(toDistrictId);
+
+        // Định nghĩa headers với token
+        var config = {
+            headers: {
+                'token': '499b0760-b3cf-11ee-a2c1-ca2feb4b63fa'
+            }
+        };
+
+        // Body data for the POST request
+        var requestData = {
+            "service_id": 53321,
+            "insurance_value": $scope.totalAmountAfterDiscount,
+            "coupon": null,
+            "from_district_id": 3440,
+            "to_district_id": numericDistrictId,
+            "to_ward_code": blows,
+            "height": 15,
+            "length": 15,
+            "weight": 700 * $rootScope.countProduct, // Trọng lượng (700g mỗi sản phẩm)
+            "width": 15
+        };
+
+        // Gọi API với phương thức POST và thân yêu cầu (body)
+        $http.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', requestData, config)
+            .then(function (response) {
+                let totalFee = response.data.data.total;
+                $scope.shippingFee = Math.ceil(totalFee) - 10000; // Làm tròn lên và trừ 10,000
+            })
+            .catch(function (error) {
+                // Xử lý lỗi nếu có
+                console.error('Error calling API:', error);
+                $scope.shippingFee = 50000;
+            });
+    }
+};
 
 
     //PayMentMethod
