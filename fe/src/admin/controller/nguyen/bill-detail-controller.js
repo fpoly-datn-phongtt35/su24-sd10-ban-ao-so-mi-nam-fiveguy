@@ -1529,7 +1529,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 "to_ward_code": blows,  // Convert to string
                 "height": 15,
                 "length": 15,
-                "weight": 700 * $scope.billDetailSummary.totalQuantity,
+                "weight": 200 * $scope.billDetailSummary.totalQuantity,
                 "width": 15
             };
 

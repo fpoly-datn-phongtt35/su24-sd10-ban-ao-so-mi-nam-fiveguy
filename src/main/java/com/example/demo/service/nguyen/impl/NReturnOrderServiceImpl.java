@@ -59,8 +59,8 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
 
         updateBillDetailsQuantities(savedReturnOrders);
 
-        PaymentStatus newPaymentStatus = createNewPaymentStatus(bill, returnOrderSummary.getTongTienTra());
-        paymentStatusRepository.save(newPaymentStatus);
+//        PaymentStatus newPaymentStatus = createNewPaymentStatus(bill, returnOrderSummary.getTongTienTra());
+//        paymentStatusRepository.save(newPaymentStatus);
 
         updateBill(bill, returnOrderSummary);
 

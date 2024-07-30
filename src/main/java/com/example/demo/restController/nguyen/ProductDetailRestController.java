@@ -46,7 +46,9 @@ public class ProductDetailRestController {
                         maxPrice == null ? null : BigDecimal.valueOf(maxPrice), pageable);
 
         Page<ProductDetailResponse> responsePage = productDetails.map(productDetail -> {
-            String imagePath = productService.getImagePathByProductId(productDetail.getProduct().getId());
+            String imagePath = productService
+                    .getImagePathByProductId(productDetail.getProduct().getId(),
+                            productDetail.getColor().getId());
             return toResponse(productDetail, imagePath);
         });
 

@@ -39,7 +39,8 @@ public class NBillDetailRestController {
         List<BillDetailResponse> responseList = billDetails.stream()
                 .map(billDetail -> {
                     String imagePath = productService.getImagePathByProductId(
-                            billDetail.getProductDetail().getProduct().getId());
+                            billDetail.getProductDetail().getProduct().getId(),
+                            billDetail.getProductDetail().getColor().getId());
                     return toResponse(billDetail, imagePath);
                 })
                 .collect(Collectors.toList());

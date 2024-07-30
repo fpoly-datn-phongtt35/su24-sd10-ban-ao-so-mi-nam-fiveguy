@@ -1,6 +1,8 @@
 package com.example.demo.service.nguyen.impl;
 
+import com.example.demo.entity.Color;
 import com.example.demo.entity.Image;
+import com.example.demo.entity.Product;
 import com.example.demo.model.response.nguyen.ProductFilterResponse;
 import com.example.demo.repository.nguyen.product.NImageRepository;
 import com.example.demo.repository.nguyen.product.NProductDetailRepository;
@@ -34,9 +36,25 @@ public class NProductServiceImpl implements NProductService {
         return productRepository.findMinPrice();
     }
 
+//    @Override
+//    public String getImagePathByProductId(Long id) {
+//        List<Image> images = imageRepository.findImagesByProductIdOrderByCreatedAtAsc(id);
+//        return images.isEmpty() ? null : images.get(0).getPath();
+//    }
+
+    public List<Image> getImagesByProductAndColor(Long productId, Long colorId) {
+        Product product = new Product();
+        product.setId(productId);
+
+        Color color = new Color();
+        color.setId(colorId);
+
+        return imageRepository.findByProductAndColor(product, color);
+    }
+
     @Override
-    public String getImagePathByProductId(Long id) {
-        List<Image> images = imageRepository.findImagesByProductIdOrderByCreatedAtAsc(id);
+    public String getImagePathByProductId(Long id, Long colorId) {
+        List<Image> images = imageRepository.findAllByProductIdAndColorIdAndStatus(id, colorId, 1);
         return images.isEmpty() ? null : images.get(0).getPath();
     }
 }
