@@ -183,7 +183,16 @@ public class OLBillController2 {
                 olBillService.save(billData);
 
             }
+//            test thanh toán cod
+            else if (codePayment.equals(102)) {
+                billData.setStatus(1);
+                billData.setCustomer(customer.get());
+                billData.setPaidAmount(new BigDecimal(0));
+                billData.setPaidShippingFee(new BigDecimal(0));
+                Bill bill = olBillService.save(billData);
+                olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,3);
 
+            }
         } else if (body instanceof Integer) {
             int intValue = (int) body;
             if (intValue == 3) {
