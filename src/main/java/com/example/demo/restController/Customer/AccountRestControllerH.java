@@ -120,6 +120,17 @@ public class AccountRestControllerH {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/email-detail-employee/{email}")
+    public ResponseEntity<Account> updateEmailAccountDetailEmployee(@RequestBody Account accountEntity, @PathVariable String email) {
+        Account account = accountService.updateAccountEmailDetailEmployee(accountEntity, email);
+        if (account != null) {
+            return ResponseEntity.ok(account);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/check-email")
     public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
         boolean emailExists = accountService.checkEmailExists(email);

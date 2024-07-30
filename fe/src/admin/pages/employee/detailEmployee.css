@@ -1,0 +1,15 @@
+.de-detailemployee-main {
+    width: 100%;
+    /* display: flex; */
+}
+img {
+    
+    height: auto;
+    object-fit: cover;
+    border: 2px solid black;
+    border-radius: 200px;
+    cursor: pointer;
+}
+.de-fontsize{
+    font-size: 30px;
+}

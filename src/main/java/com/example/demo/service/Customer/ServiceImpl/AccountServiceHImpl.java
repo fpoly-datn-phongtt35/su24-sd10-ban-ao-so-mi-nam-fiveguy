@@ -318,7 +318,27 @@ public class AccountServiceHImpl implements AccountServiceH {
         if (existingAddress.isPresent()) {
             Account account = existingAddress.get();
             account.setAccount(accountEntity.getAccount());
-//            account.setPassword(accountEntity.getPassword());
+            account.setPassword(accountEntity.getPassword());
+            account.setEmail(accountEntity.getEmail());
+//            account.setPhoneNumber(accountEntity.getPhoneNumber());
+            account.setRole(accountEntity.getRole());
+            account.setStatus(1);
+
+            return accountRepositoryH.save(account); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
+        } else {
+            // Trả về null hoặc thông báo lỗi nếu không tìm thấy khách hàng với ID này
+            throw new IllegalArgumentException("Không tìm thấy Accout với ID " + email);
+//            return null;
+        }
+    }
+
+    @Override
+    public Account updateAccountEmailDetailEmployee(Account accountEntity, String email) {
+        Optional<Account> existingAddress = Optional.ofNullable(accountRepositoryH.getByEmailAccount(email));
+        if (existingAddress.isPresent()) {
+            Account account = existingAddress.get();
+            account.setAccount(accountEntity.getAccount());
+            account.setPassword(accountEntity.getPassword());
             account.setEmail(accountEntity.getEmail());
             account.setPhoneNumber(accountEntity.getPhoneNumber());
             account.setRole(accountEntity.getRole());

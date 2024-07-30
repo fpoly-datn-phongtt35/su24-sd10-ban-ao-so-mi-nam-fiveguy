@@ -857,4 +857,5 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     $scope.formDetailAuditLog.time = $scope.formatDateTime(employee.time);
   };
 
+ 
 });
