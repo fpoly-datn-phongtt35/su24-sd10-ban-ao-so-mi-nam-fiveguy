@@ -1,4 +1,4 @@
-<div class="container" ng-init="loadBillsForCustomer();">
+<div class="container" ng-init="loadBillsForCustomer(0);">
 
     <div class="col-lg-12 col-md-6 col-sm-6 mb-4" >
         <div class="column-main">
@@ -10,19 +10,19 @@
             <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText" >
             <div class="row justify-content-end">
                 <div class="col-auto d-flex align-items-center">
-                    <button class="button-submit btn btn-primary" ng-click="loadBillsForCustomer()">
+                    <button class="button-submit btn btn-primary" ng-click="loadBillsForCustomer(0)">
                         <span class="material-icons align-middle">search</span> Tìm kiếm
                     </button>
                 </div>
                 <div class="col-auto d-flex align-items-center">
-                    <button class="button-submit btn btn-secondary" ng-click="refreshData(0)">
+                    <button class="button-submit btn btn-secondary" ng-click="refreshDataBillCustomer(0)">
                         <span class="material-icons align-middle">refresh</span> Làm mới
                     </button>
                 </div>
             </div>
 
             <div class="row">
-                <table class="table">
+                <table class="table-container">
                     <thead>
                         <tr>
                             <th>Mã hóa đơn</th>
@@ -64,7 +64,7 @@
                             </button>
                             <div class="d-flex align-items-center mx-1">
                                 <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
-                                    style="width: 40px;" ng-model="desiredPage" min="1" max="{{totalPages}}"
+                                    style="width: 40px;" ng-model="desiredPage3" min="1" max="{{totalPages}}"
                                     ng-change="goToPage()">
                                 <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages}}</span>
                             </div>

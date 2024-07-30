@@ -162,6 +162,7 @@ public class OLBillController2 {
                 billData.setStatus(1);
                 billData.setCustomer(customer.get());
                 billData.setPaidAmount(new BigDecimal(0));
+                billData.setPaidShippingFee(new BigDecimal(0));
                Bill bill = olBillService.save(billData);
                olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,3);
                     Cart cart = olCartService.findByCustomerId(customer.get().getId());

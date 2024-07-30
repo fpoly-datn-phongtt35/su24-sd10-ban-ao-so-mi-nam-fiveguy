@@ -2,10 +2,13 @@ package com.example.demo.model.response.onlineShop;
 
 import com.example.demo.entity.Product;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
-@Data
+@Getter
+@Setter
 public class ProductSaleDetails {
     private Long productId;
     private String productName;

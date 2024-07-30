@@ -1166,17 +1166,15 @@ $scope.dataCity.ProvinceID;
           $scope.searchedProducts = null;
           return;
       }
-      $scope.searchTerm= search;
- 
-
+  
+      $scope.searchTerm = search;
+  
       $http.get('http://localhost:8080/api/home/product/search', {
           params: { name: search }
       })
       .then(function(response) {
           if (response.data) {
               $scope.searchedProducts = response.data;
-          console.log($scope.searchedProducts);
-
           }
       })
       .catch(function(error) {
@@ -1184,6 +1182,7 @@ $scope.dataCity.ProvinceID;
           console.error(error);
       });
   };
+  
   
   $scope.viewMore = function() {
     localStorage.setItem('searchTerm', $scope.searchTerm);

@@ -18,43 +18,44 @@ app.controller("orderController", function ($scope, $http, $window,$routeParams,
 // Lấy list bill
 
 $scope.searchPhoneNumber = null
-$scope.searchText = $scope.searchText || "";
+$scope.searchText =  "";
+// $scope.searchText2 =  "";
 $scope.currentPage = 0; // Biến để lưu trữ trang hiện tại
 $scope.pageSize = 10; // Biến để lưu trữ kích thước trang
 $scope.totalPages = 0; // Biến để lưu trữ tổng số trang
 $scope.totalPagesB2 = 0; // Biến để lưu trữ tổng số trang
 $scope.totalPages = 0; // Biến để lưu trữ tổng số trang
-$scope.bills = []; // Khởi tạo mảng bills để lưu trữ dữ liệu
 
 $scope.loadBillsByPhoneNumber = function(page) {
     if (page === undefined) {
-        page = $scope.currentPage;
+        page = $scope.currentPage || 0;
     }
 
     var config = {
         params: {
             phoneNumber: $scope.searchPhoneNumber,
-            search: $scope.searchText,
+            search: $scope.searchText2,
             page: page,
-            size: $scope.pageSize
+            size: 1
         }
     };
+
+    console.log(config);
+    console.log($scope.searchText2);
 
     return $http.get('http://localhost:8080/api/home/order/phone', config)
         .then(function(response) {
             if (response.data.content.length === 0 && page > 0) {
-                return $scope.loadBillsByPhoneNumber(0); // Recursive call to get the first page if the current page is empty
+                return $scope.loadBillsByPhoneNumber(0); // Gọi lại để lấy trang đầu tiên nếu trang hiện tại rỗng
             } else {
                 $scope.billsByPhoneNumber = response.data.content;
                 $scope.totalPagesB2 = response.data.totalPages;
                 $scope.currentPage = page;
                 $scope.desiredPage2 = page + 1;
-
-     
             }
         }).catch(function(error) {
             console.error('Error fetching bills:', error);
-            throw error; // Throw error to be caught by the caller
+            throw error; // Ném lỗi để caller bắt
         });
 };
 
@@ -65,17 +66,11 @@ $scope.setCurrentPageBillByPhoneNumber = function(page) {
         $scope.loadBillsByPhoneNumber(page);
     }
 };
-console.log($scope.desiredPage2)
 
 // Hàm để đi đến trang cụ thể
 $scope.goToPageByPhoneNumber = function() {
-    console.log("Current desiredPage2 value:", $scope.desiredPage2); // Log the current value of desiredPage2
 
     var page = $scope.desiredPage2 - 1; // Chuyển từ 1-based index sang 0-based index
-
-    console.log("Calculated Page:", page);
-    console.log("Total Pages:", $scope.totalPagesB2);
-
     if (page >= 0 && page < $scope.totalPagesB2) {
         $scope.loadBillsByPhoneNumber(page);
     } else {
@@ -84,8 +79,24 @@ $scope.goToPageByPhoneNumber = function() {
         console.log("Invalid Page. Resetting desiredPage2 to:", $scope.desiredPage2);
     }
 };
+$scope.refreshDataBillPhoneNumber = function() {
+    $scope.searchText =  "";
+    $scope.currentPage = 0; 
+    $scope.pageSize = 10; 
+    $scope.totalPagesB2 = 0; 
+    $scope.loadBillsByPhoneNumber(0);
 
+}
 
+$scope.refreshDataBillCustomer = function() {
+    $scope.searchText =  "";
+    $scope.currentPage = 0; // Biến để lưu trữ trang hiện tại
+    $scope.pageSize = 10; // Biến để lưu trữ kích thước trang
+    $scope.totalPages = 0; 
+    $scope.loadBillsForCustomer(0);
+}
+
+$scope.desiredPage3 = 1;
 
 $scope.loadBillsForCustomer = function(page) {
     var params = {
@@ -103,11 +114,10 @@ $scope.loadBillsForCustomer = function(page) {
             $scope.bill = response.data.content;
             $scope.totalPages = response.data.totalPages;
 
-            console.log("Current Page:", page);
-            console.log("Total Pages:", response.data.totalPages);
+            console.log( $scope.bill);
 
             $scope.currentPage = page;
-            $scope.desiredPage = page + 1;
+            $scope.desiredPage3 = page + 1;
         }
     }).catch(function(error) {
         alert("Có lỗi xảy ra khi gọi API!");
@@ -126,16 +136,14 @@ $scope.setCurrentPageBill = function(page) {
     }
 };
 
-// Hàm để đi đến trang cụ thể
-$scope.desiredPage = 1;
 $scope.goToPage = function() {
 
-    var page = $scope.desiredPage - 1; // Chuyển từ 1-based index sang 0-based index
+    var page = $scope.desiredPage3 - 1; 
     if (page >= 0 && page < $scope.totalPages) {
         $scope.loadBillsForCustomer(page);
     } else {
-        // Nếu trang không hợp lệ, đặt lại desiredPage về trang hiện tại
-        $scope.desiredPage = $scope.currentPage + 1;
+      
+        $scope.desiredPage3 = $scope.currentPage + 1;
     }
 
 

@@ -96,17 +96,13 @@
 </div>
 
 <div id="coolmatePromotionCarousel" class="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=100,format=auto/uploads/November2023/28BANNER_CARESHARE.png" loading="lazy" class="d-block w-100" alt="...">
+  <div id="carouselExample" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item" ng-repeat="path in salePaths" ng-class="{'active': $index === 0}">
+        <img ng-src="{{path}}" loading="lazy" class="d-block w-100" alt="...">
+      </div>
     </div>
-    <div class="carousel-item">
-      <img src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=90,format=auto/uploads/November2023/27FALL_WINTER_(1).png" loading="lazy" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=90,format=auto/uploads/November2023/28BANNER_CARESHARE.png" loading="lazy" class="d-block w-100" alt="...">
-    </div>
-
+    
     <!-- Button previous -->
     <button class="carousel-control-prev" ng-click="prevSlide()">
       <i style="font-size: 34px;" class="fa-solid fa-circle-chevron-left fa-lg"></i>
@@ -116,6 +112,7 @@
       <i style="font-size: 34px;" class="fa-solid fa-circle-chevron-right fa-lg"></i>
     </button>
   </div>
+  
 
   <!-- Category list positioned over the carousel -->
   <div class="category-data" id="categoryDataContainer">
@@ -198,7 +195,7 @@
   
   
   
-      <div style="padding: 46px 0;" class="row">
+      <!-- <div style="padding: 46px 0;" class="row">
         <div class="heading-bar__title">
           DANH MỤC SẢN PHẨM
         </div>
@@ -213,14 +210,13 @@
                 </div>
                 <div class="category-info">
                   <h5>{{category.name}}</h5>
-                  <!-- <p>Số lượng</p> -->
                 </div>
               </a>
             </div>
           </div>
   
         </div>
-      </div>
+      </div> -->
   
   
       <div style="padding: 46px;" class="row">
@@ -260,7 +256,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12 text-center" ng-if="!showAllVouchers">
+        <div class="col-md-12 text-center" ng-if="!showAllVouchers" style="margin-top: 22px;">
           <button class="btn btn-primary" ng-click="viewMoreVouchers()">Xem thêm</button>
         </div>
       </div>
@@ -358,7 +354,7 @@
   
   <div style="padding: 46px 0;" class="row">
         
-    <!-- <div id="salePromotionCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div id="salePromotionCarousel" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-indicators">
           <button type="button" data-bs-target="#salePromotionCarousel" data-bs-slide-to="{{$index}}" ng-class="{ 'active': $index === 0 }" ng-repeat="path in salePaths track by $index" aria-label="Slide {{$index + 1}}"></button>
       </div>
@@ -376,7 +372,7 @@
           <span class="visually-hidden">Next</span>
       </button>
   </div>
-   -->
+  
   
   
     

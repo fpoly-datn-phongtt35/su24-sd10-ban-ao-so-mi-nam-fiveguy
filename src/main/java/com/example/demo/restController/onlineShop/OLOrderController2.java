@@ -5,6 +5,7 @@ import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.BillHistory;
 import com.example.demo.entity.Customer;
 import com.example.demo.model.request.onlineShop.BillRequest2;
+import com.example.demo.model.response.onlineShop.BillDetailResponse2;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.security.service.SCCustomerService;
 import com.example.demo.service.onlineShop.OLBillDetailService2;
@@ -39,6 +40,8 @@ public class OLOrderController2 {
 
     @Autowired
     private SCAccountService accountService;
+
+
 
     @GetMapping("/order/customer")
     public Page<Bill> getBillsByCustomerId(@RequestHeader("Authorization") String token, @RequestParam(required = false, defaultValue = "") String search,
@@ -88,8 +91,11 @@ public class OLOrderController2 {
     }
 
     @GetMapping("/bill/billDetail/{billId}")
-    public List<BillDetail> getBillDetailByIdill(@PathVariable Long billId) {
-        return olBillDetailService2.getBillDetailsByBillId(billId);
+    public List<BillDetailResponse2> getBillDetailByIdill(@PathVariable Long billId) {
+
+
+        return  olBillDetailService2.gettBillDetailResponse2(billId);
+
     }
 
 }
