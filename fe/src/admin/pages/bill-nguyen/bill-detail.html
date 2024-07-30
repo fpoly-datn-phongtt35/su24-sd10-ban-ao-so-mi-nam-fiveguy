@@ -334,6 +334,7 @@
                         </td>
                         <td class="col-3">{{ps.note}}</td>
                     </tr>
+                    <td colspan="12" ng-show="listPaymentStatus.length <= 0">Không có dữ liệu</td>
                 </tbody>
             </table>
         </div>
@@ -350,7 +351,7 @@
                 </div>
                 <form name="paymentForm">
                     <div class="modal-body">
-                        <div class="mb-3 row">
+                        <!-- <div class="mb-3 row">
                             <label for="totalAmount" class="col-sm-4 col-form-label">Tiền hàng</label>
                             <div class="col-sm-8">
                                 <div class="input-group">
@@ -369,7 +370,7 @@
                                     <span class="input-group-text" id="basic-addon2">vnđ</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="mb-3 row">
                             <label for="totalAmount" class="col-sm-4 col-form-label">Tổng tiền</label>
                             <div class="col-sm-8">
@@ -422,7 +423,7 @@
                 </div>
                 <form name="paymentForm">
                     <div class="modal-body">
-                        <div class="mb-3 row">
+                        <!-- <div class="mb-3 row">
                             <label for="totalAmount" class="col-sm-4 col-form-label">Tiền hàng</label>
                             <div class="col-sm-8">
                                 <div class="input-group">
@@ -441,7 +442,7 @@
                                     <span class="input-group-text" id="basic-addon2">vnđ</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="mb-3 row">
                             <label for="totalAmount" class="col-sm-4 col-form-label">Số tiền hoàn trả</label>
                             <div class="col-sm-8">
@@ -499,7 +500,7 @@
                 </div>
                 <form name="refundForm">
                     <div class="modal-body">
-                        <div class="mb-3 row">
+                        <!-- <div class="mb-3 row">
                             <label for="totalAmount" class="col-sm-4 col-form-label">Tiền hàng</label>
                             <div class="col-sm-8">
                                 <div class="input-group">
@@ -518,7 +519,7 @@
                                     <span class="input-group-text" id="basic-addon2">vnđ</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="mb-3 row">
                             <label for="totalAmount" class="col-sm-4 col-form-label">Số tiền hoàn trả</label>
                             <div class="col-sm-8">
@@ -839,7 +840,7 @@
 
     <!-- Thông tin tiền hàng -->
     <div class="mb-5 d-flex justify-content-end">
-        <div class="col-5">
+        <!-- <div class="col-5">
             <div class="row mb-3 align-items-center">
                 <div class="col-7 fw-bold">Tổng tiền hàng sau giảm giá</div>
                 <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.totalAmountAfterDiscount |
@@ -880,7 +881,7 @@
                     number:0}}<span class="currency">đ</span></div>
             </div>
 
-        </div>
+        </div> -->
         <div class="col-5 p-0 border rounded shadow bg-body">
             <!-- Phần tổng tiền hàng và phí giao hàng -->
             <div class="p-4">
