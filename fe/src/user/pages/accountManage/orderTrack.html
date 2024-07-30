@@ -8,7 +8,7 @@
     <div>
         <label for="phoneNumber">Số điện thoại:</label>
         <input type="text" id="phoneNumber" ng-model="searchPhoneNumber">
-        <button ng-click="loadBillsByPhoneNumber()">Tìm kiếm</button>
+        <button ng-click="loadBillsByPhoneNumber(0)">Tìm kiếm</button>
     </div>
 
 
@@ -23,7 +23,7 @@
             </div>
             <div class="search-bar">
 
-            <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText" >
+            <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText2" >
         </div>
 
             <div class="row justify-content-end">
@@ -33,13 +33,13 @@
                     </button>
                 </div>
                 <div class="col-auto d-flex align-items-center">
-                    <button class="button-submit btn btn-secondary" ng-click="refreshData(0)">
+                    <button class="button-submit btn btn-secondary" ng-click="refreshDataBillPhoneNumber(0)">
                         <span class="material-icons align-middle">refresh</span> Làm mới
                     </button>
                 </div>
             </div>
             <div class="row">
-                <table class="table">
+                <table class="table-container">
                     <thead>
                         <tr>
                             <th>Mã hóa đơn</th>

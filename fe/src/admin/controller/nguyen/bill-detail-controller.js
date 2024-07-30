@@ -733,7 +733,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     $scope.showCancelBillRefund = function () {
         let paymentDetails = $scope.calculatePaymentPaidOrRefund($scope.billResponse);
-        if (paymentDetails.paidOrRefund == 0) {
+        if (paymentDetails.paidOrRefund != 3) {
             $scope.customerPayment = {
                 shippingFeeAmount: Math.abs(paymentDetails.shippingFeeAmount),
                 billAmount: Math.abs(paymentDetails.billAmount),
@@ -741,6 +741,19 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 paymentMethod: 1,
                 note: null
             };
+            var totalPaid = $scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee;
+            var totalDue = $scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee;
+            var difference = totalPaid - totalDue;
+
+            if (paymentDetails.paidOrRefund == 0) {
+                $scope.customerPayment.paymentAmount = totalPaid
+            }
+            if (paymentDetails.paidOrRefund == 1) {
+                $scope.customerPayment.paymentAmount = totalPaid
+            }
+            if (paymentDetails.paidOrRefund == 2) {
+                $scope.customerPayment.paymentAmount = totalPaid
+            }
             $('#refundAmountCancelBillModal').modal('show');
         } else {
             $scope.showError("Không có số tiền cần hoàn lại.");
@@ -768,9 +781,10 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
             $scope.showSuccess("Xác nhận hoàn tiền thành công");
-            $scope.getAllPaymentStatus($scope.idBill);
             $('#refundAmountCancelBillModal').modal('hide');
-            $scope.confirmChangeStatusRefund()
+            
+            $scope.getBillById($scope.idBill);
+            $scope.getBillHistoryByBillId();
         });
     };
 
@@ -1405,7 +1419,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                     return city.ProvinceID == cityId;
                 });
                 $scope.dataCity = selectedCity;
-                console.log($scope.dataCity)
+                // console.log($scope.dataCity)
                 // $scope.billAddressCity = cityId;
             }
         });
@@ -1443,7 +1457,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 });
                 // $scope.billAddressDistrict = districtId;
                 $scope.dataDistrict = selectedDistrict;
-                console.log($scope.dataDistrict)
+                // console.log($scope.dataDistrict)
             }
         });
     };
@@ -1482,7 +1496,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 if (selectedWard) {
                     // $scope.billAddressWard = selectedWard.WardCode;
                     $scope.dataWard = selectedWard;
-                    console.log($scope.dataWard)
+                    // console.log($scope.dataWard)
 
                 } else {
                     console.log("Không tìm thấy phường/xã với WardCode: " + wardId);
@@ -1523,7 +1537,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $http.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', requestData, config)
                 .then(function (response) {
                     $scope.shippingFee = response.data.data.total;
-                    console.log($scope.shippingFee)
+                    // console.log($scope.shippingFee)
                     $scope.updateShippingFeeToBill($scope.shippingFee)
                 })
                 .catch(function (error) {
@@ -1547,9 +1561,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         if (data == $scope.billResponse.shippingFee) return;
         $http.put(apiBill + "/shippingFeeUpdate/" + $scope.idBill, data).then(function (res) {
             console.log("sửa phí ship thành công");
-            console.log(res.data);
+            // console.log(res.data);
             $http.get(apiBill + "/" + $scope.idBill).then(function (res) {
-                console.log(res.data)
+                // console.log(res.data)
                 $scope.billResponse = res.data
             })
         }, function (error) {
@@ -1563,7 +1577,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $scope.dataCity = '';
         $scope.dataDistrict = '';
         $scope.dataWard = '';
-        console.log(bill)
+        // console.log(bill)
         var addressComponentsId = $scope.billResponse.addressId.split(',');
         if (addressComponentsId.length >= 1) {
             $scope.dataCity = addressComponentsId[2].trim();

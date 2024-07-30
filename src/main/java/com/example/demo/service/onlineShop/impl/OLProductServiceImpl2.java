@@ -3,6 +3,7 @@ package com.example.demo.service.onlineShop.impl;
 import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductDetail;
+import com.example.demo.model.response.onlineShop.BillDetailResponse2;
 import com.example.demo.model.response.onlineShop.ProductDetailsDTO;
 import com.example.demo.model.response.onlineShop.ProductInfoDTO;
 import com.example.demo.model.response.onlineShop.ProductSaleDetails;
@@ -285,22 +286,26 @@ public class OLProductServiceImpl2 implements OLProductService2 {
             Integer saleValue = (Integer) result[3];
             Integer discountType = (Integer) result[4];
             String imagePath = (String) result[5];
-
             Product product = productRepository.findById(productId).orElse(null);
+
+            // Chỉ thực hiện truy vấn bổ sung nếu cần
+            BigDecimal productPrice = getProductPriceById(productId); // Giả sử phương thức này là hiệu quả
+            Integer promotionalPrice = findPromotionalPriceByProductId(productId); // Giả sử phương thức này là hiệu quả
 
             return new ProductSaleDetails(
                     productId,
                     productName,
-                    getProductPriceById(productId),
+                    productPrice,
                     discountPrice,
-                    findPromotionalPriceByProductId(productId),
+                    promotionalPrice,
                     saleValue,
                     discountType,
                     imagePath,
-                    product // Pass the retrieved product object
+                    product
             );
         }).collect(Collectors.toList());
     }
+
 
 
 }

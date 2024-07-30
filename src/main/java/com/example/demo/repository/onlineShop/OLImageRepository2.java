@@ -18,4 +18,7 @@ public interface OLImageRepository2 extends JpaRepository<Image, Long> {
     List<String> findPathsByProductIdAndColorId(@Param("productId") Long productId,
                                                 @Param("colorId") Long colorId);
 
+
+    @Query("SELECT i FROM Image i WHERE i.product.id = :productId AND i.status = 1 ORDER BY i.createdAt ASC")
+    List<Image> findImagesByProductId(Long productId);
 }
