@@ -13,8 +13,9 @@
         <div class="search-bar">
     
     
-           
-                <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText" >
+            <div class="input-group">
+                <input style="width: 22%;" class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm hóa đơn..." ng-model="searchText" >
+            </div>
     
             </div>
             <div class="row justify-content-end">
@@ -39,9 +40,9 @@
                         <thead>
                             <tr>
                                 <th>Mã hóa đơn</th>
-                                <th>Ngày thanh toán</th>
-                                <th>Ngày giao hàng</th>
-                                <th>Trạng thái thanh toán</th>
+                                <!-- <th>Ngày thanh toán</th> -->
+                                <th>Ngày giao hàng dự kiến</th>
+                                <th>Trạng thái đơn hàng</th>
                                 <th>Giá tiền</th>
                                 <th>Xem chi tiết</th>
                             </tr>
@@ -49,9 +50,9 @@
                         <tbody>
                             <tr ng-repeat="bill in bill">
                                 <td>{{ bill.code }}</td>
-                                <td>{{ bill.paymentDate | date:'dd/MM/yyyy' }}</td>
+                                <!-- <td>{{ bill.paymentDate | date:'dd/MM/yyyy' }}</td> -->
                                 <td>{{ bill.deliveryDate | date:'dd/MM/yyyy' }}</td>
-                                <td><strong>{{getStatusText(bill.status) }}</strong></td>
+                                <td><strong>{{(bill.status) }}</strong></td>
                                 <td>{{ bill.totalAmountAfterDiscount + bill.shippingFee | number}} đ</td>
     
                         <td>

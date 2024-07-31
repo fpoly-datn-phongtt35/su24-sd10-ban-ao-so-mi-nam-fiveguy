@@ -695,20 +695,19 @@ $scope.province1 = function () {
             "service_id": 53321,
             "insurance_value": $scope.totalAmountAfterDiscount,
             "coupon": null,
-            "from_district_id": 3440,
+            "from_district_id": 1482,
             "to_district_id": numericDistrictId,
             "to_ward_code": blows,
             "height": 15,
             "length": 15,
-            "weight": 700 * $rootScope.countProduct, // Trọng lượng (700g mỗi sản phẩm)
+            "weight": 200 * $rootScope.countProduct, // Trọng lượng (700g mỗi sản phẩm)
             "width": 15
         };
 
         // Gọi API với phương thức POST và thân yêu cầu (body)
         $http.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', requestData, config)
             .then(function (response) {
-                let totalFee = response.data.data.total;
-                $scope.shippingFee = Math.ceil(totalFee) - 10000; // Làm tròn lên và trừ 10,000
+              $scope.shippingFee = response.data.data.total;
             })
             .catch(function (error) {
                 // Xử lý lỗi nếu có
@@ -717,6 +716,7 @@ $scope.province1 = function () {
             });
     }
 };
+
 
 
     //PayMentMethod
