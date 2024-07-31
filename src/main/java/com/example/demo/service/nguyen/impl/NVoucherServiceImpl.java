@@ -461,7 +461,7 @@ public class NVoucherServiceImpl implements NVoucherService {
     @Transactional(readOnly = true)
     public List<Voucher> findAllVoucherCanUse(Long billId) {
         Bill bill = billRepository.findById(billId)
-                .orElseThrow(() -> new RuntimeException("Bill not found"));
+                .orElseThrow(() ->  new RuntimeException("Bill not found"));
 
         BigDecimal totalAmount = calculateTotalAmountSale(billId);
         List<Voucher> vouchers = voucherRepository

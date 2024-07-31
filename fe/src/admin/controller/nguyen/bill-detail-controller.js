@@ -1545,7 +1545,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                     console.error('Error calling API:', error);
 
 
-                    $scope.shippingFee = 100000;
+                    $scope.shippingFee = 50000;
                     $scope.updateShippingFeeToBill($scope.shippingFee)
 
                 });
