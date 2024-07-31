@@ -29,6 +29,22 @@ public class NProductDetailServiceImpl implements NProductDetailService {
                                                     Pageable pageable) {
 
         return productDetailRepository
+                .searchProductDetailsQuantity1(productName, categoryId, materialId, wristId, collarId,
+                        sizeId, colorId, minPrice, maxPrice, 1, pageable);
+    }
+
+    public Page<ProductDetail> searchProductDetails1(String productName,
+                                                    Long categoryId,
+                                                    Long materialId,
+                                                    Long wristId,
+                                                    Long collarId,
+                                                    Long sizeId,
+                                                    Long colorId,
+                                                    BigDecimal minPrice,
+                                                    BigDecimal maxPrice,
+                                                    Pageable pageable) {
+
+        return productDetailRepository
                 .searchProductDetails(productName, categoryId, materialId, wristId, collarId,
                         sizeId, colorId, minPrice, maxPrice, 1, pageable);
     }
