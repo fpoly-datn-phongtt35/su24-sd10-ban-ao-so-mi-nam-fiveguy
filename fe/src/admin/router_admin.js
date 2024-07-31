@@ -101,7 +101,12 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/return-order-nguyen/return-order-detail.html",
       controller: "nguyen-return-order-detail-ctrl"
     })
-    
+    .when("/admin/sell", {
+      templateUrl: "pages/sell-nguyen/sell.html",
+      controller: "nguyen-sell-ctrl"
+    })
+
+
     // <!-- Hải -->
     .when("/admin/sale", {
       templateUrl: "pages/sale/sale.html",

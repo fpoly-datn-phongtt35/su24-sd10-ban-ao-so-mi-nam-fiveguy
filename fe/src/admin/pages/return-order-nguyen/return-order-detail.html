@@ -79,8 +79,7 @@
                                     <img ng-src="{{ro.billDetail.productDetail.imagePath}}" width="60px" height="60px"
                                         class="me-3">
                                     <div class="d-flex flex-column text-start">
-                                        <div class="fw-bold"
-                                            ng-init="product = ro.billDetail.productDetail.product">
+                                        <div class="fw-bold" ng-init="product = ro.billDetail.productDetail.product">
                                             {{product.name + ' ' + product.collar.name + ' ' + product.wrist.name}}
                                         </div>
                                         <div class="d-flex align-items-center">
@@ -107,9 +106,25 @@
         </div>
         <div class="col-4 rounded border p-3 shadow mb-5 bg-body">
             <h5 class="text-center fw-bold">Thông tin hoàn trả</h5>
-            <div class="row my-2 py-2 border rounded bg-body">
+            <div class="row my-2 py-2 border rounded bg-body" ng-show="bill.typeBill == 1">
                 <div class="row mb-1">
-                    <div class="">Người nhận: &emsp;<strong>{{bill.reciverName}}</strong></div>
+                    <div class="">Khách hàng: &emsp;<strong>{{bill.reciverName}}</strong></div>
+                </div>
+            </div>
+            <div class="row my-2 py-2 border rounded bg-body" ng-show="bill.typeBill == 2">
+                <div class="row mb-1">
+                    <div class="">Khách hàng: &emsp;<strong>{{bill.reciverName}}</strong></div>
+                </div>
+                <div class="row mb-1">
+                    <div class="">Số điện thoại: &emsp;<strong>{{bill.phoneNumber}}</strong></div>
+                </div>
+                <div class="row mb-1">
+                    <div class="">Địa chỉ: &emsp;<strong>{{bill.address}}</strong></div>
+                </div>
+            </div>
+            <div class="row my-2 py-2 border rounded bg-body" ng-show="bill.typeBill == 3">
+                <div class="row mb-1">
+                    <div class="">Khách hàng: &emsp;<strong>{{bill.reciverName}}</strong></div>
                 </div>
                 <div class="row mb-1">
                     <div class="">Số điện thoại: &emsp;<strong>{{bill.phoneNumber}}</strong></div>
@@ -120,18 +135,18 @@
             </div>
             <div class="row my-2 py-2 border rounded bg-body">
                 <div class="row">
-                    <div class="col-6">Tổng tiền:</div>
+                    <div class="col-6">Tổng tiền hoá đơn:</div>
                     <div class="col-6 text-end text-danger fw-bold fs-5">{{bill.totalAmount | number:0}} VND</div>
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-6">Giảm giá:</div>
                     <div class="col-6 text-end text-danger fw-bold fs-5">{{bill.totalAmount -
                         bill.totalAmountAfterDiscount | number:0}} VND</div>
-                </div>
+                </div> -->
                 <hr>
                 <div class="row">
                     <div class="col-6">Số tiền hoàn trả:</div>
-                    <div class="col-6 text-end text-danger fw-bold fs-5">{{bill.totalAmountAfterDiscount | number:0}}
+                    <div class="col-6 text-end text-danger fw-bold fs-5">{{returnOrdersSummary.tongTienTra | number:0}}
                         VND</div>
                 </div>
             </div>

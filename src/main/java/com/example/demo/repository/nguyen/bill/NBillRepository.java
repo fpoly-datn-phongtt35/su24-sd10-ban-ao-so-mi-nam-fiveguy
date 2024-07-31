@@ -54,4 +54,8 @@ public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecifica
                                                      List<Integer> excludedStatuses);
 
     List<Bill> findByVoucherIdAndStatus(Long id, Integer billStatus);
+
+
+    //SELL
+    List<Bill> findAllByTypeBillAndStatus(Integer typeBill, Integer status);
 }

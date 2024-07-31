@@ -112,7 +112,8 @@
                         <button class="btn btn-outline-warning me-3" ng-if="deliveryFlow[status].includes(30)"
                             ng-click="goToReturnOrder()">Trả hàng</button>
 
-                        <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(32)"
+                        <button class="btn btn-outline-success me-3"
+                            ng-if="deliveryFlow[status].includes(32) && paidOrRefundObject.paidOrRefund == 0"
                             ng-click="showModalStatus(32)">Xác nhận trả hàng</button>
                         <!-- <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(33)"
                             ng-click="showModalStatus(33)">Trả hàng thất bại</button> -->
@@ -215,7 +216,7 @@
 
     <!-- Modal BillHistory-->
     <div class="modal fade" id="billHistoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Lịch sử</h5>
@@ -279,7 +280,7 @@
                         ng-click="showConfirmPayment()">
                         Xác nhận thanh toán (test)</button>
                     <button class="btn btn-primary"
-                        ng-show="[5].includes(status)  && paidOrRefundObject.paidOrRefund == 2"
+                        ng-show="[5, 30].includes(status)  && paidOrRefundObject.paidOrRefund == 2"
                         ng-click="showConfirmRefund()">
                         Xác nhận hoàn tiền (test)</button>
                     <button class="btn btn-primary"
@@ -840,7 +841,7 @@
 
     <!-- Thông tin tiền hàng -->
     <div class="mb-5 d-flex justify-content-end">
-        <!-- <div class="col-5">
+        <div class="col-5">
             <div class="row mb-3 align-items-center">
                 <div class="col-7 fw-bold">Tổng tiền hàng sau giảm giá</div>
                 <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.totalAmountAfterDiscount |
@@ -881,7 +882,7 @@
                     number:0}}<span class="currency">đ</span></div>
             </div>
 
-        </div> -->
+        </div>
         <div class="col-5 p-0 border rounded shadow bg-body">
             <!-- Phần tổng tiền hàng và phí giao hàng -->
             <div class="p-4">
@@ -1106,8 +1107,8 @@
                                 </div>
                                 <div class="col-md-1"></div>
                                 <div class="col-md-6">
-                                    <label for="priceRange" class="form-label d-flex justify-content-center">Price
-                                        Range</label>
+                                    <label for="priceRange" class="form-label d-flex justify-content-center">Khoảng
+                                        giá</label>
                                     <div id="slider" class="slider"></div>
                                     <!-- <div class="labels-container">
                                             <div id="minLabel" class="label"></div>
