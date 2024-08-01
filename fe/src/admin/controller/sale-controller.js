@@ -1181,7 +1181,7 @@ $scope.addAllProductSales = function() {
         $http.get(baseUrl + '/summary/' + saleId)
             .then(function(response) {
                 $scope.summary = response.data;
-                $scope.summary.profitMargin = ($scope.summary.totalProfit / $scope.summary.totalRevenue) * 100;
+                // $scope.summary.profitMargin = ($scope.summary.totalProfit / $scope.summary.totalRevenue) * 100;
             })
             .catch(function(error) {
                 console.error('Error fetching sale summary:', error);

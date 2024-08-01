@@ -31,8 +31,8 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
     @Query("SELECT " +
             "    s.id AS saleId, " +
             "    SUM(bd.quantity) AS totalProductsSold, " +
-            "    SUM(bd.promotionalPrice * bd.quantity) AS totalRevenue, " +
-            "    SUM((bd.productDetail.product.importPrice - bd.promotionalPrice) * bd.quantity) AS totalProfit " +
+            "    SUM(bd.promotionalPrice * bd.quantity) AS totalRevenue " +
+//            "    SUM((bd.productDetail.product.importPrice - bd.promotionalPrice) * bd.quantity) AS totalProfit " +
             "FROM " +
             "    Sale s " +
             "    JOIN ProductSale ps ON s.id = ps.sale.id " +
