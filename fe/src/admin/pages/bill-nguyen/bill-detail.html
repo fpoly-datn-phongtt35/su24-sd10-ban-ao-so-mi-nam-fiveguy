@@ -386,14 +386,14 @@
                             <label class="col-sm-4 col-form-label">Phương thức thanh toán</label>
                             <div class="form-group col-sm-8">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="radioType1" id="radioType1"
+                                    <input class="form-check-input" type="radio" name="payradio2" id="payradio2"
                                         ng-value="1" ng-model="customerPayment.paymentMethod">
-                                    <label class="form-check-label" for="radioType1">Chuyển khoản</label>
+                                    <label class="form-check-label" for="payradio2">Tiền mặt</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="radioType2" id="radioType2"
+                                    <input class="form-check-input" type="radio" name="payradio1" id="payradio1"
                                         ng-value="2" ng-model="customerPayment.paymentMethod">
-                                    <label class="form-check-label" for="radioType2">Tiền mặt</label>
+                                    <label class="form-check-label" for="payradio1">Chuyển khoản</label>
                                 </div>
                             </div>
                         </div>
@@ -459,15 +459,14 @@
                             <label class="col-sm-4 col-form-label">Phương thức thanh toán</label>
                             <div class="form-group col-sm-8">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="radioType1" id="radioType1"
-                                        ng-value="1" ng-model="customerPayment.paymentMethod">
-                                    <label class="form-check-label" for="radioType1">Chuyển khoản</label>
-                                </div>
-                                <div class="form-check"
-                                    ng-show="!!status.includes(1) && calculatePaymentDetails().isRefund  && (billResponse.paidAmount != 0 || billResponse.paidShippingFee != 0)">
                                     <input class="form-check-input" type="radio" name="radioType2" id="radioType2"
-                                        ng-value="2" ng-model="customerPayment.paymentMethod">
+                                        ng-value="1" ng-model="customerPayment.paymentMethod">
                                     <label class="form-check-label" for="radioType2">Tiền mặt</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="radioType1" id="radioType1"
+                                        ng-value="2" ng-model="customerPayment.paymentMethod">
+                                    <label class="form-check-label" for="radioType1">Chuyển khoản</label>
                                 </div>
                             </div>
                         </div>
@@ -536,15 +535,14 @@
                             <label class="col-sm-4 col-form-label">Phương thức thanh toán</label>
                             <div class="form-group col-sm-8">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="radioType1" id="radioType1"
-                                        ng-value="1" ng-model="customerPayment.paymentMethod">
-                                    <label class="form-check-label" for="radioType1">Chuyển khoản</label>
-                                </div>
-                                <div class="form-check"
-                                    ng-show="!!status.includes(1) && calculatePaymentDetails().isRefund  && (billResponse.paidAmount != 0 || billResponse.paidShippingFee != 0)">
                                     <input class="form-check-input" type="radio" name="radioType2" id="radioType2"
-                                        ng-value="2" ng-model="customerPayment.paymentMethod">
+                                        ng-value="1" ng-model="customerPayment.paymentMethod">
                                     <label class="form-check-label" for="radioType2">Tiền mặt</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="radioType1" id="radioType1"
+                                        ng-value="2" ng-model="customerPayment.paymentMethod">
+                                    <label class="form-check-label" for="radioType1">Chuyển khoản</label>
                                 </div>
                             </div>
                         </div>

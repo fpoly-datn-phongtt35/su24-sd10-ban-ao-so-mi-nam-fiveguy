@@ -584,15 +584,15 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         }
     };
 
-    //region modal thanh toán hoàn tiền
+    //#region modal thanh toán hoàn tiền
 
     $scope.showConfirmPayment = function () {
         let paymentDetails = $scope.calculatePaymentDetails();
-        if (paymentDetails.totalAmount > 0) {
+        if ($scope.paidOrRefundObject.paidOrRefund !== 0) {
             $scope.customerPayment = {
                 shippingFeeAmount: paymentDetails.shippingFeeAmount,
                 billAmount: paymentDetails.billAmount,
-                paymentAmount: paymentDetails.totalAmount,
+                paymentAmount: $scope.paidOrRefundObject.amount,
                 paymentMethod: 1,
                 note: null
             };
@@ -617,6 +617,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             payOrRefund: 2
         }
 
+        console.log(data);
+
         $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
             $scope.showSuccess("Xác nhận thanh toán thành công");
             $scope.getAllPaymentStatus($scope.idBill);
@@ -639,11 +641,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         // });
 
         let paymentDetails = $scope.calculatePaymentDetails();
-        if (paymentDetails.isRefund) {
+        if ($scope.paidOrRefundObject.paidOrRefund == 2) {
             $scope.customerPayment = {
                 shippingFeeAmount: Math.abs(paymentDetails.shippingFeeAmount),
                 billAmount: Math.abs(paymentDetails.billAmount),
-                paymentAmount: Math.abs(paymentDetails.totalAmount),
+                paymentAmount: Math.abs($scope.paidOrRefundObject.amount),
                 paymentMethod: 1,
                 note: null
             };
@@ -800,6 +802,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getBillHistoryByBillId();
         });
     };
+
+    //#endregion
 
 
 
