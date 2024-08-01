@@ -100,56 +100,6 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         return newBillHistory;
     }
 
-    @Transactional
-    public List<ReturnOrder> addReturnOrderAndUpdateBill1(List<ReturnOrder> returnOrders,
-                                                   String fullName) {
-        if (returnOrders.isEmpty()) {
-            throw new IllegalArgumentException("Danh sách ReturnOrder không được rỗng");
-        }
-
-        Optional<Bill> bill = billRepository.findById(returnOrders.get(0).getBill().getId());
-
-        if (bill.isEmpty()) return null;
-
-        ReturnOrderSummary returnOrderSummary = calculateRefundSummary(bill.get(), returnOrders);
-
-        List<ReturnOrder> returnRO = returnOrderRepository.saveAll(returnOrders);
-
-        //Trừ số lượng trong billDetail
-        updateBillDetailsQuantities(returnRO);
-
-        PaymentStatus newPaymentStatus = new PaymentStatus();
-        newPaymentStatus.setBill(bill.get());
-        newPaymentStatus.setCustomerPaymentStatus(0);
-        //set tổng tiền trả cho khách
-        newPaymentStatus.setPaymentAmount(returnOrderSummary.getTongTienTra());
-        newPaymentStatus.setPaymentDate(new Date());
-        newPaymentStatus.setCode("auto");
-        newPaymentStatus.setNote("Hoàn tiền cho khách");
-
-        paymentStatusRepository.save(newPaymentStatus);
-
-        Bill newBill = new Bill();
-        newBill.setTotalAmount(returnOrderSummary.getTongTienSauKhiTra());
-        newBill.setTotalAmountAfterDiscount(returnOrderSummary.getTongTienDaGiamSauKhiTra());
-//        newBill.setVoucher();
-        newBill.setStatus(30);
-
-        billRepository.save(newBill);
-
-        BillHistory newBillHistory = new BillHistory();
-        newBillHistory.setBill(bill.get());
-        newBillHistory.setCreatedAt(new Date());
-        newBillHistory.setReason(0);
-        newBillHistory.setType(1);
-        newBillHistory.setCreatedBy(fullName);
-        newBillHistory.setStatus(30);
-        newBillHistory.setDescription("Trả hàng");
-
-        billHistoryRepository.save(newBillHistory);
-
-        return returnRO;
-    }
 
     @Override
     public ReturnOrderSummary calculateRefundSummary(Bill bill,
@@ -239,6 +189,8 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         return returnOrderRepository.save(returnOrder);
     }
 
+
+    //Hiển thị
     public ReturnOrderSummary calculateReturnOrderSummary(Long billId, List<ReturnOrder> returnOrders) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new RuntimeException("Bill not found"));
@@ -295,6 +247,8 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         return returnOrderRepository.save(returnOrder);
     }
 
+
+
     public BigDecimal calculateTotalRefundAmount(Long billId, List<ReturnOrder> returnOrders) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new RuntimeException("Bill not found"));
@@ -313,115 +267,4 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-
-
-    //Tính đúng nhưng dài
-//    @Transactional
-//    public ReturnOrder createReturnOrder(Long billId, Long billDetailId, int quantity, String reason) {
-//        Bill bill = billRepository.findById(billId)
-//                .orElseThrow(() -> new RuntimeException("Bill not found"));
-//
-//        BillDetail billDetail = bill.getBillDetail().stream()
-//                .filter(bd -> bd.getId().equals(billDetailId))
-//                .findFirst()
-//                .orElseThrow(() -> new RuntimeException("BillDetail not found"));
-//
-//        if (quantity > billDetail.getQuantity()) {
-//            throw new IllegalArgumentException("Return quantity exceeds original quantity");
-//        }
-//
-//        ReturnOrder returnOrder = new ReturnOrder();
-//        returnOrder.setBill(bill);
-//        returnOrder.setBillDetail(billDetail);
-//        returnOrder.setQuantity(quantity);
-//        returnOrder.setReturnReason(reason);
-//        returnOrder.setReturnStatus(0); // Assuming 0 is the initial status
-//        returnOrder.setCreatedAt(new Date());
-//
-//        return returnOrderRepository.save(returnOrder);
-//    }
-//
-//
-//    public ReturnOrderSummary calculateReturnOrderSummary(Long billId, List<ReturnOrder> returnOrders) {
-//        Bill bill = billRepository.findById(billId)
-//                .orElseThrow(() -> new RuntimeException("Bill not found"));
-//
-////        List<ReturnOrder> returnOrders = bill.getReturnOrders();
-//
-//        ReturnOrderSummary summary = new ReturnOrderSummary();
-//
-//        BigDecimal totalRefundAmount = BigDecimal.ZERO;
-//        int totalReturnQuantity = 0;
-//
-//        for (ReturnOrder returnOrder : returnOrders) {
-//            BillDetail billDetail = returnOrder.getBillDetail();
-//            BigDecimal refundAmount = calculateRefundAmount(bill, billDetail, returnOrder);
-//            totalRefundAmount = totalRefundAmount.add(refundAmount);
-//            totalReturnQuantity += returnOrder.getQuantity();
-//        }
-//
-//        summary.setTongTien(bill.getTotalAmount());
-//        summary.setTongTienDaGiam(bill.getTotalAmountAfterDiscount());
-//        summary.setTongTienSauKhiTra(bill.getTotalAmount().subtract(totalRefundAmount));
-//        summary.setTongTienDaGiamSauKhiTra(bill.getTotalAmountAfterDiscount().subtract(totalRefundAmount));
-//        summary.setTiLeGiam(BigDecimal.ONE.subtract(bill.getTotalAmountAfterDiscount().divide(bill.getTotalAmount(), 4, RoundingMode.HALF_UP)));
-//        summary.setTongSoLuong(bill.getBillDetail().stream().mapToInt(BillDetail::getQuantity).sum());
-//        summary.setTongSoLuongTraLai(totalReturnQuantity);
-//        summary.setGiaTrungBinhSanPham(bill.getTotalAmount().divide(BigDecimal.valueOf(summary.getTongSoLuong()), 2, RoundingMode.HALF_UP));
-//        summary.setGiaTrungBinhSanPhamDaGiam(bill.getTotalAmountAfterDiscount().divide(BigDecimal.valueOf(summary.getTongSoLuong()), 2, RoundingMode.HALF_UP));
-//        summary.setTongTienTra(totalRefundAmount);
-//
-//        return summary;
-//    }
-//
-//
-//    private BigDecimal calculateRefundAmount(Bill bill, BillDetail billDetail, ReturnOrder returnOrder) {
-//        BigDecimal totalBillAmount = bill.getTotalAmount();
-//        BigDecimal totalDiscountAmount = bill.getTotalAmount().subtract(bill.getTotalAmountAfterDiscount());
-//
-//        BigDecimal originalItemPrice = billDetail.getPromotionalPrice();
-//        int returnQuantity = returnOrder.getQuantity();
-//
-//        // Tính tỷ lệ giá trị của sản phẩm này so với tổng giá trị đơn hàng
-//        BigDecimal itemValueRatio = originalItemPrice.multiply(BigDecimal.valueOf(billDetail.getQuantity()))
-//                .divide(totalBillAmount, 4, RoundingMode.HALF_UP);
-//
-//        // Tính số tiền giảm giá cho sản phẩm này
-//        BigDecimal itemDiscountAmount = totalDiscountAmount.multiply(itemValueRatio);
-//
-//        // Tính giá sau giảm giá cho một sản phẩm
-//        BigDecimal discountedItemPrice = originalItemPrice.subtract(
-//                itemDiscountAmount.divide(BigDecimal.valueOf(billDetail.getQuantity()), 2, RoundingMode.HALF_UP));
-//
-//        // Tính tổng số tiền hoàn trả
-//        return discountedItemPrice.multiply(BigDecimal.valueOf(returnQuantity));
-//    }
-//
-//    public List<ReturnOrder> getReturnOrdersByBillId(Long billId) {
-//        return returnOrderRepository.findByBillId(billId);
-//    }
-//
-//    @Transactional
-//    public ReturnOrder updateReturnOrderStatus(Long returnOrderId, int newStatus) {
-//        ReturnOrder returnOrder = returnOrderRepository.findById(returnOrderId)
-//                .orElseThrow(() -> new RuntimeException("Return order not found"));
-//
-//        returnOrder.setReturnStatus(newStatus);
-//        returnOrder.setUpdatedAt(new Date());
-//
-//        return returnOrderRepository.save(returnOrder);
-//    }
-//
-//    public BigDecimal calculateTotalRefundAmount(Long billId) {
-//        List<ReturnOrder> returnOrders = getReturnOrdersByBillId(billId);
-//        Bill bill = billRepository.findById(billId)
-//                .orElseThrow(() -> new RuntimeException("Bill not found"));
-//
-//        BigDecimal totalDiscount = bill.getTotalAmountAfterDiscount().subtract(bill.getTotalAmount());
-//        BigDecimal discountRatio = totalDiscount.divide(bill.getTotalAmount(), 4, RoundingMode.HALF_UP);
-//
-//        return returnOrders.stream()
-//                .map(ro -> calculateRefundAmount(ro.getBill(), ro.getBillDetail(), ro))
-//                .reduce(BigDecimal.ZERO, BigDecimal::add);
-//    }
 }
