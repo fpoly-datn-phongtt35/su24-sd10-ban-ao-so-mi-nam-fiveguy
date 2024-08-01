@@ -47,4 +47,14 @@ public class PaymentStatus {
     @ManyToOne
     @JoinColumn(name = "BillId", referencedColumnName = "Id")
     private Bill bill;
+
+
+    //    1 đã giao dịch
+    //    10 chưa giao dịch thanh toán đơn chưa thanh toán
+    //    11 chưa giao dịch thanh toán đơn đã thanh toán thiếu thiền
+    //    12 chưa giao dịch hoàn tiền tiền thừa
+    //    13 chưa giao dịch hoàn tiền giao thất bại
+    //    20 chưa giao dịch hoàn tiền trả hàng
+//    @Column(name = "Type")
+//    private int type;
 }

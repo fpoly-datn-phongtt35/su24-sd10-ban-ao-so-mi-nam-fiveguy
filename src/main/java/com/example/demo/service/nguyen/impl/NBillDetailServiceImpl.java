@@ -246,6 +246,11 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         if (billOptional.isEmpty()) return;
 
         Bill bill = billOptional.get();
+
+        //bill khác 1 không sửa được
+        if(bill.getStatus() != 1) return;
+
+
         BigDecimal totalAmountSale = calculateTotalAmountSale(bill.getId());
         BigDecimal currentTotalAmount = bill.getTotalAmount();
         Voucher currentVoucher = bill.getVoucher();

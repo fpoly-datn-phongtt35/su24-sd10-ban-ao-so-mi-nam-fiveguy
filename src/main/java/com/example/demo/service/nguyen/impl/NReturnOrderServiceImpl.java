@@ -101,57 +101,6 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
     }
 
 
-    @Override
-    public ReturnOrderSummary calculateRefundSummary(Bill bill,
-                                                            List<ReturnOrder> returnOrders) {
-        ReturnOrderSummary summary = new ReturnOrderSummary();
-
-        // Tổng giá trị đơn hàng trước khi giảm giá
-        BigDecimal totalAmount = bill.getTotalAmount();
-        summary.setTongTien(totalAmount);
-
-        // Tổng giá trị đơn hàng sau khi giảm giá
-        BigDecimal totalAmountAfterDiscount = bill.getTotalAmountAfterDiscount();
-        summary.setTongTienDaGiam(totalAmountAfterDiscount);
-
-        // Tỷ lệ giảm giá
-        BigDecimal discountRate = totalAmountAfterDiscount
-                .divide(totalAmount, RoundingMode.HALF_UP);
-        summary.setTiLeGiam(discountRate);
-
-        // Tổng số lượng sản phẩm trong đơn hàng
-        int totalQuantity = bill.getBillDetail().stream().mapToInt(BillDetail::getQuantity).sum();
-        summary.setTongSoLuong(totalQuantity);
-
-        // Giá trị trung bình mỗi sản phẩm trước và sau khi giảm giá
-        BigDecimal averageProductPrice = totalAmount
-                .divide(BigDecimal.valueOf(totalQuantity), RoundingMode.HALF_UP);
-        summary.setGiaTrungBinhSanPham(averageProductPrice);
-
-        BigDecimal averageProductPriceAfterDiscount = totalAmountAfterDiscount
-                .divide(BigDecimal.valueOf(totalQuantity), RoundingMode.HALF_UP);
-        summary.setGiaTrungBinhSanPhamDaGiam(averageProductPriceAfterDiscount);
-
-        // Tổng số lượng sản phẩm trả hàng
-        int totalReturnQuantity = returnOrders.stream().mapToInt(ReturnOrder::getQuantity).sum();
-        summary.setTongSoLuongTraLai(totalReturnQuantity);
-
-        // Tổng số tiền phải trả lại
-        BigDecimal totalRefundAmount = averageProductPriceAfterDiscount
-                .multiply(BigDecimal.valueOf(totalReturnQuantity));
-        summary.setTongTienTra(totalRefundAmount);
-
-        // Tổng giá trị đơn hàng sau khi trả
-        BigDecimal totalAmountAfterRefund = totalAmount.subtract(totalRefundAmount);
-        summary.setTongTienSauKhiTra(totalAmountAfterRefund);
-
-        // Tổng giá trị đơn hàng đã giảm sau khi trả
-        BigDecimal totalAmountAfterDiscountAfterRefund = totalAmountAfterDiscount
-                .subtract(totalRefundAmount);
-        summary.setTongTienDaGiamSauKhiTra(totalAmountAfterDiscountAfterRefund);
-
-        return summary;
-    }
 
     //Trừ số lượng trong billDetail khi hoàn trả
     public void updateBillDetailsQuantities(List<ReturnOrder> returnOrders) {
@@ -236,6 +185,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         return returnOrderRepository.findByBillId(billId);
     }
 
+
     @Transactional
     public ReturnOrder updateReturnOrderStatus(Long returnOrderId, int newStatus) {
         ReturnOrder returnOrder = returnOrderRepository.findById(returnOrderId)
@@ -248,7 +198,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
     }
 
 
-
+    //Tính tiền hoàn
     public BigDecimal calculateTotalRefundAmount(Long billId, List<ReturnOrder> returnOrders) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new RuntimeException("Bill not found"));
@@ -265,6 +215,60 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
                             .multiply(BigDecimal.ONE.subtract(tiLeGiam));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+
+    //Cách tính theo tỉ lệ
+    @Override
+    public ReturnOrderSummary calculateRefundSummary(Bill bill,
+                                                     List<ReturnOrder> returnOrders) {
+        ReturnOrderSummary summary = new ReturnOrderSummary();
+
+        // Tổng giá trị đơn hàng trước khi giảm giá
+        BigDecimal totalAmount = bill.getTotalAmount();
+        summary.setTongTien(totalAmount);
+
+        // Tổng giá trị đơn hàng sau khi giảm giá
+        BigDecimal totalAmountAfterDiscount = bill.getTotalAmountAfterDiscount();
+        summary.setTongTienDaGiam(totalAmountAfterDiscount);
+
+        // Tỷ lệ giảm giá
+        BigDecimal discountRate = totalAmountAfterDiscount
+                .divide(totalAmount, RoundingMode.HALF_UP);
+        summary.setTiLeGiam(discountRate);
+
+        // Tổng số lượng sản phẩm trong đơn hàng
+        int totalQuantity = bill.getBillDetail().stream().mapToInt(BillDetail::getQuantity).sum();
+        summary.setTongSoLuong(totalQuantity);
+
+        // Giá trị trung bình mỗi sản phẩm trước và sau khi giảm giá
+        BigDecimal averageProductPrice = totalAmount
+                .divide(BigDecimal.valueOf(totalQuantity), RoundingMode.HALF_UP);
+        summary.setGiaTrungBinhSanPham(averageProductPrice);
+
+        BigDecimal averageProductPriceAfterDiscount = totalAmountAfterDiscount
+                .divide(BigDecimal.valueOf(totalQuantity), RoundingMode.HALF_UP);
+        summary.setGiaTrungBinhSanPhamDaGiam(averageProductPriceAfterDiscount);
+
+        // Tổng số lượng sản phẩm trả hàng
+        int totalReturnQuantity = returnOrders.stream().mapToInt(ReturnOrder::getQuantity).sum();
+        summary.setTongSoLuongTraLai(totalReturnQuantity);
+
+        // Tổng số tiền phải trả lại
+        BigDecimal totalRefundAmount = averageProductPriceAfterDiscount
+                .multiply(BigDecimal.valueOf(totalReturnQuantity));
+        summary.setTongTienTra(totalRefundAmount);
+
+        // Tổng giá trị đơn hàng sau khi trả
+        BigDecimal totalAmountAfterRefund = totalAmount.subtract(totalRefundAmount);
+        summary.setTongTienSauKhiTra(totalAmountAfterRefund);
+
+        // Tổng giá trị đơn hàng đã giảm sau khi trả
+        BigDecimal totalAmountAfterDiscountAfterRefund = totalAmountAfterDiscount
+                .subtract(totalRefundAmount);
+        summary.setTongTienDaGiamSauKhiTra(totalAmountAfterDiscountAfterRefund);
+
+        return summary;
     }
 
 }

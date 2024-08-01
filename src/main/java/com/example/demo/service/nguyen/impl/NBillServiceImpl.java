@@ -1,6 +1,7 @@
 package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.*;
+import com.example.demo.model.response.nguyen.BillResponse;
 import com.example.demo.repository.nguyen.NCustomerTypeVoucherRepository;
 import com.example.demo.repository.nguyen.NVoucherRepository;
 import com.example.demo.repository.nguyen.bill.*;
@@ -42,6 +43,9 @@ public class NBillServiceImpl implements NBillService {
 
     @Autowired
     NPaymentStatusRepository paymentStatusRepository;
+
+    @Autowired
+    NReturnOrderRepository returnOrderRepository;
 
     @Override
     public List<Bill> getAll() {
@@ -136,6 +140,9 @@ public class NBillServiceImpl implements NBillService {
         }
         if (returnBill.getStatus() == 5 || returnBill.getStatus() == 6) {
             updateVoucherOnBillCancellation(returnBill.getId());
+        }
+        if (returnBill.getStatus() == 32 || returnBill.getStatus() == 12) {
+            refundProductDetailsQuantities(returnBill);
         }
 
 
@@ -321,17 +328,22 @@ public class NBillServiceImpl implements NBillService {
         List<BillDetail> billDetails = bill.getBillDetail();
         for (BillDetail billDetail : billDetails) {
             ProductDetail productDetail = billDetail.getProductDetail();
-            if (billDetail.getQuantity() > productDetail.getQuantity()) {
+            if ((billDetail.getQuantity() > productDetail.getQuantity() ||
+                    billDetail.getQuantity() < 0) && productDetail.getQuantity() > 0) {
                 return 1;
+            } else if (productDetail.getQuantity() <= 0) {
+                return 2;
             }
         }
         return 0;
     }
 
 
-    @Transactional
     //Hoàn lại số lượng trong productDetail khi hoàn trả
-    public void refundProductDetailsQuantities(List<ReturnOrder> returnOrders) {
+    public void refundProductDetailsQuantities(Bill bill) {
+        List<ReturnOrder> returnOrders = returnOrderRepository
+                .findAllReturnOrdersByBillIdOrderByCreatedAtDesc(bill.getId());
+
         for (ReturnOrder returnOrder : returnOrders) {
             BillDetail billDetail = returnOrder.getBillDetail();
             ProductDetail productDetail = billDetail.getProductDetail();
@@ -622,6 +634,7 @@ public class NBillServiceImpl implements NBillService {
         billRepository.save(bill);
     }
 
+
     private Set<String> generatedCodes = new HashSet<>();
     private Random random = new Random();
 
@@ -643,4 +656,39 @@ public class NBillServiceImpl implements NBillService {
         generatedCodes.add(code);
         return code;
     }
+
+
+    //    Hải code
+    @Override
+    public Page<BillResponse> getBillsByFilters(List<Integer> statuses, String searchTerm,
+                                                Integer typeBill, Date fromDate, Date toDate,
+                                                Pageable pageable) {
+        Page<Bill> bills = billRepository
+                .findBillsByFilters(statuses, searchTerm, typeBill, fromDate, toDate, pageable);
+        return bills.map(this::toBillResponse);
+    }
+
+    private BillResponse toBillResponse(Bill bill) {
+        BillResponse response = new BillResponse();
+        response.setId(bill.getId());
+        response.setCode(bill.getCode());
+        response.setTotalAmount(bill.getTotalAmount());
+
+        // Set other fields as needed
+        response.setNameCustomer(
+                bill.getCustomer() != null && bill.getCustomer().getFullName() != null
+                        ? bill.getCustomer().getFullName()
+                        : "Khách lẻ");
+        response.setCreateAt(
+                new java.sql.Date(bill.getCreatedAt().getTime())); // Convert Date to SQL Date
+        response.setTypeBill(bill.getTypeBill());
+        response.setStatus(bill.getStatus());
+
+        // Sum quantity from BillDetail
+        Integer quantity = billDetailRepository.sumQuantityByBillId(bill.getId());
+        response.setQuantity(quantity != null ? quantity : 0);
+
+        return response;
+    }
+
 }

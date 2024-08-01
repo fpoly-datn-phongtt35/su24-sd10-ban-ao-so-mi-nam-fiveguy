@@ -61,6 +61,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         minPrice: null
     }
 
+
     //LẤY THÔNG TIN BILL ***************
     $scope.getBillById = function (id) {
         $http.get(apiBill + "/" + id).then(function (res) {
@@ -107,6 +108,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             //thiếu sản phẩm và trạng thái tiếp theo là chờ giao - 2
             if (response.data == 1 && nextStatus == 2) {
                 $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
+                return;
+            }else if( response.data == 2 && nextStatus == 2){
+                $scope.showWarning("Chờ nhập hàng");
                 return;
             }
 
@@ -366,6 +370,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             31: { title: "Trả hàng", icon: "local_shipping", status: 31 },  //tận nơi
             32: { title: "Đã trả hàng", icon: "inventory_2", status: 32 },
             33: { title: "Trả hàng thất bại", icon: "assignment_late", status: 33 },
+
+            60: { title: "Chờ nhập hàng", icon: "not_interested", status: 50 },
         };
 
         // $scope.deliveryFlow = {
@@ -578,6 +584,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         }
     };
 
+    //region modal thanh toán hoàn tiền
+
     $scope.showConfirmPayment = function () {
         let paymentDetails = $scope.calculatePaymentDetails();
         if (paymentDetails.totalAmount > 0) {
@@ -598,7 +606,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         let paymentStatus = {
             paymentAmount: $scope.customerPayment.paymentAmount,
             customerPaymentStatus: 2,
-            paymentMethod: 1,
+            paymentMethod: $scope.customerPayment.paymentMethod,
             paymentType: 1,
             note: $scope.customerPayment.note
         };
@@ -617,18 +625,18 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     $scope.showConfirmRefund = function () {
-        $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
-            if (response.data == 1) {
-                $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
-                return;
-            }
-            $scope.getBillById($scope.idBill);
-            $scope.getBillHistoryByBillId();
-            return;
-        }).catch(function (error) {
-            console.log("lỗi update status check quantity", error)
-            return;
-        });
+        // $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
+        //     if (response.data == 1) {
+        //         $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
+        //         return;
+        //     }
+        //     $scope.getBillById($scope.idBill);
+        //     $scope.getBillHistoryByBillId();
+        //     return;
+        // }).catch(function (error) {
+        //     console.log("lỗi update status check quantity", error)
+        //     return;
+        // });
 
         let paymentDetails = $scope.calculatePaymentDetails();
         if (paymentDetails.isRefund) {
@@ -668,7 +676,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.showSuccess("Xác nhận hoàn tiền thành công");
             $scope.getAllPaymentStatus($scope.idBill);
             $('#refundAmountModal').modal('hide');
-            if($scope.status == 1){
+            if ($scope.status == 1) {
                 $scope.confirmChangeStatusRefund()
             }
         });
@@ -800,6 +808,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         if (newValue !== oldValue) {
             $scope.listPaymentStatusToShow = []
             $scope.getAllPaymentStatus($scope.idBill)
+
+            //Tính toán hoàn trả hay thanh toán
             $scope.paidOrRefundObject = $scope.calculatePaymentPaidOrRefund($scope.billResponse)
         }
     }, true);
@@ -1584,6 +1594,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     }
 
     $scope.showAddress = function (bill) {
+
+        //nếu status khác 1 thì ko cập nhật
+        if(bill.status !== 1) return;
+
+
         // load địa chỉ
         $scope.addressDetail = '';
         $scope.dataCity = '';
@@ -1606,6 +1621,35 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         $scope.calculateShippingFee($scope.dataDistrict, $scope.dataWard)
     };
+
+    // $scope.$watch('billDetails', function (newValue, oldValue) {
+    //     if (newValue !== oldValue) {
+    //         $scope.billDetails.forEach(function(bd) {
+    //             if(bd.quantityNew <= 5){
+    //                 console.log(bd.quantity);
+    //                 bd.quantity = 0
+    //                 bd.quantityNew = 0
+    //                 $scope.updateBillDetailQuantity1(0, bd);
+    //             }
+    //             // if(bd.quantityNew > bd.productDetail.quantity){
+    //             //     bd.quantity = bd.productDetail.quantity
+    //             // }
+    //         })
+    //     }
+    // }, true);
+
+    // $scope.$watch('billResponse', function (newValue, oldValue) {
+    //     if ($scope.status == 1 && newValue !== oldValue) {
+    //         $scope.showAddress($scope.billResponse)
+    //     }
+    // }, true);
+    
+    // // Theo dõi billDetails
+    // $scope.$watch('billDetails', function (newValue, oldValue) {
+    //     if ($scope.status == 1 && newValue !== oldValue) {
+    //         $scope.showAddress($scope.billResponse)
+    //     }
+    // }, true);
 
     //#endregion
 

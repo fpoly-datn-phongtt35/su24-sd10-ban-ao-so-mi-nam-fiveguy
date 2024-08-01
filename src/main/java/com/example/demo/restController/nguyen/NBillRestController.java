@@ -3,6 +3,7 @@ package com.example.demo.restController.nguyen;
 import com.example.demo.entity.*;
 import com.example.demo.model.request.nguyen.BillRequest;
 import com.example.demo.model.request.nguyen.PaymentStatusRequest;
+import com.example.demo.model.response.nguyen.BillResponse;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NBillDetailService;
 import com.example.demo.service.nguyen.NBillService;
@@ -16,9 +17,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @RestController
 @CrossOrigin("*")
@@ -46,6 +50,35 @@ public class NBillRestController {
     public ResponseEntity<?> getById(@PathVariable Long id) {
         return ResponseEntity.ok(billService.getById(id));
     }
+
+    //Hải code
+    @GetMapping("/fill")
+    public Page<BillResponse> searchBills(@RequestParam(required = false) List<Integer> statuses,
+                                          @RequestParam(required = false) String searchTerm,
+                                          @RequestParam(required = false) Integer typeBill,
+                                          @RequestParam(required = false) String fromDate,
+                                          @RequestParam(required = false) String toDate,
+                                          @RequestParam int page,
+                                          @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Date parsedStartDate = null;
+        Date parsedEndDate = null;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        try {
+            if (fromDate != null) {
+                parsedStartDate = dateFormat.parse(fromDate);
+            }
+            if (toDate != null) {
+                parsedEndDate = dateFormat.parse(toDate);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return billService.getBillsByFilters(statuses, searchTerm, typeBill, parsedStartDate, parsedEndDate, pageable);
+    }
+
 
     @GetMapping("/page")
     public Page<Bill> getBills(@RequestParam(required = false) String code,

@@ -161,8 +161,11 @@ public class NVoucherServiceImpl implements NVoucherService {
         List<Bill> billsToUpdate = findBillsWithInvalidVouchers();
 
         for (Bill bill : billsToUpdate) {
-            Voucher bestVoucher = findBestVoucher(bill);
-            updateBillWithNewVoucher(bill, bestVoucher);
+            //neu status = 1 ms sua
+//            if(bill.getStatus() == 1){
+                Voucher bestVoucher = findBestVoucher(bill);
+                updateBillWithNewVoucher(bill, bestVoucher);
+//            }
         }
     }
 
