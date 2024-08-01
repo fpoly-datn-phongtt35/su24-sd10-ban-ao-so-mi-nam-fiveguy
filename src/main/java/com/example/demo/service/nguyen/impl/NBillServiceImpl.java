@@ -1,6 +1,7 @@
 package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.*;
+import com.example.demo.model.response.nguyen.BillResponse;
 import com.example.demo.repository.nguyen.NCustomerTypeVoucherRepository;
 import com.example.demo.repository.nguyen.NVoucherRepository;
 import com.example.demo.repository.nguyen.bill.*;
@@ -642,4 +643,35 @@ public class NBillServiceImpl implements NBillService {
         generatedCodes.add(code);
         return code;
     }
+
+
+
+//    Hải code
+@Override
+public Page<BillResponse> getBillsByFilters(List<Integer> statuses, String searchTerm, Integer typeBill, Date fromDate, Date toDate, Pageable pageable) {
+    Page<Bill> bills = billRepository.findBillsByFilters(statuses, searchTerm, typeBill, fromDate, toDate, pageable);
+    return bills.map(this::toBillResponse);
+}
+
+    private BillResponse toBillResponse(Bill bill) {
+        BillResponse response = new BillResponse();
+        response.setId(bill.getId());
+        response.setCode(bill.getCode());
+        response.setTotalAmount(bill.getTotalAmount());
+
+        // Set other fields as needed
+        response.setNameCustomer(bill.getCustomer() != null && bill.getCustomer().getFullName() != null
+                ? bill.getCustomer().getFullName()
+                : "Khách lẻ");
+        response.setCreateAt(new java.sql.Date(bill.getCreatedAt().getTime())); // Convert Date to SQL Date
+        response.setTypeBill(bill.getTypeBill());
+        response.setStatus(bill.getStatus());
+
+        // Sum quantity from BillDetail
+        Integer quantity = billDetailRepository.sumQuantityByBillId(bill.getId());
+        response.setQuantity(quantity != null ? quantity : 0);
+
+        return response;
+    }
+
 }

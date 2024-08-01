@@ -1,4 +1,6 @@
-<div class="container mt-5">
+<link rel="stylesheet" href="/src/admin/pages/bill-nguyen/bill.css">
+
+<!-- <div class="container mt-5">
     <h1 class="mb-4">Quản lý hóa đơn</h1>
 
     <div class="border rounded p-3 mb-4 shadow bg-body">
@@ -31,7 +33,6 @@
     </div>
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createBillModal">Thêm hóa đơn</button>
 
-    <!-- Tabs for filtering invoice status -->
     <ul class="nav nav-tabs" id="invoiceTabs" role="tablist">
         <li class="nav-item" role="presentation" ng-repeat="tab in tabs">
             <button class="nav-link" ng-class="{'active': currentTab === tab.status}" ng-click="setTab(tab.status)"
@@ -41,7 +42,6 @@
         </li>
     </ul>
 
-    <!-- Table for invoices -->
     <div class="tab-content rounded  p-3 shadow mb-5 bg-body" id="invoiceTabsContent">
         <div class="tab-pane fade show active" role="tabpanel">
             <table class="table mt-4">
@@ -66,7 +66,6 @@
                         <td>admin</td>
                         <td>{{bill.createdAt | date: 'dd/MM/yyyy HH:mm'}}</td>
                         <td>{{bill.totalAmount| number:0}} đ</td>
-                        <!-- <td>{{bill.typeBill}}</td> -->
                         <td ng-switch="bill.typeBill" style="font-size: 20px;">
                             <span ng-switch-when="1">
                                 <div class="badge bg-info text-wrap" style="width: 65%;">
@@ -91,36 +90,7 @@
                                     {{s.title}}
                                 </div>
                             </span>
-                            <!-- <span ng-switch-when="1">
-                                <div class="badge bg-warning text-wrap" style="width: 65%;">
-                                    Chờ xác nhận
-                                </div>
-                            </span>
-                            <span ng-switch-when="2">
-                                <div class="badge bg-info text-wrap" style="width: 65%;">
-                                    Đã xác nhận
-                                </div>
-                            </span>
-                            <span ng-switch-when="3">
-                                <div class="badge bg-primary text-wrap" style="width: 65%;">
-                                    Chờ giao hàng
-                                </div>
-                            </span>
-                            <span ng-switch-when="4">
-                                <div class="badge bg-secondary text-wrap" style="width: 65%;">
-                                    Đang giao hàng
-                                </div>
-                            </span>
-                            <span ng-switch-when="5">
-                                <div class="badge bg-success text-wrap" style="width: 65%;">
-                                    Hoàn thành
-                                </div>
-                            </span>
-                            <span ng-switch-when="6">
-                                <div class="badge bg-danger text-wrap" style="width: 65%;">
-                                    Đã hủy
-                                </div>
-                            </span> -->
+               
                         </td>
                         <td>
                             <a type="button" class="edit" href="#/admin/bill/{{bill.id}}">
@@ -136,7 +106,6 @@
                 </tbody>
             </table>
 
-            <!-- Pagination and items per page -->
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <label for="itemsPerPage">Hiển thị:</label>
@@ -150,23 +119,7 @@
                     </select>
                     <span>/ trang</span>
                 </div>
-                <!-- <nav aria-label="Page navigation example">
-                    <ul class="pagination mb-0">
-                        <li class="page-item" ng-class="{'disabled': currentPage === 0}">
-                            <a class="page-link" href="" ng-click="loadPage(currentPage - 1)" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        <li class="page-item" ng-repeat="page in pages" ng-class="{'active': page === currentPage}">
-                            <a class="page-link" href="" ng-click="loadPage(page)">{{page + 1}}</a>
-                        </li>
-                        <li class="page-item" ng-class="{'disabled': currentPage === totalPages - 1}">
-                            <a class="page-link" href="" ng-click="loadPage(currentPage + 1)" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav> -->
+
                 <nav aria-label="Page navigation example">
                     <div class="d-flex justify-content-between align-items-center">
                         <button class="btn btn-primary" ng-disabled="currentPage == 0"
@@ -182,7 +135,6 @@
         </div>
     </div>
 
-    <!-- Modal chuyển trạng thai -->
     <div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -202,8 +154,198 @@
         </div>
     </div>
 
-    <!-- Modal createBill-->
-    <div class="modal fade" id="createBillModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  
+</div> -->
+
+
+
+<style>
+    .badge-pill {
+        border-radius: 50rem;
+        padding: 0.5em 1em;
+    }
+    .badge-completed { background-color: #e9caff; }
+    .badge-pending { background-color: #ffeeba; }
+    .badge-cancelled { background-color: #f5c6cb; }
+</style>
+
+<div class="container-fluid">
+
+    <div style="justify-content: space-between;" class="title d-flex align-items-center">
+        <div class="d-flex align-items-center">
+            <span class="material-icons fs-4 me-2">view_headline</span>
+            <p class="m-0">Quản lý đơn hàng</p>
+        </div>
+        <!-- <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createBillModal">Thêm hóa đơn</button> -->
+
+        <div class="row justify-content-end">
+            <div class="col-auto d-flex align-items-center">
+                <button class="button-submit btn btn-success" data-bs-toggle="modal" data-bs-target="#createBillModal" data-bs-whatever="@mdo">
+                    <span class="material-icons align-middle">add</span> Thêm hóa đơn
+                </button>
+            </div>
+        </div>
+    </div>
+  
+    <div class="row">
+
+        <div class="search-bar">
+            <!-- <input type="text" placeholder="Nhập tên hoặc mã"> -->
+            <input type="text" placeholder="Tìm kiếm mã, tên khách, tên người nhận và sdt" class="form-control" id="searchTerm" ng-model="searchQuery" >
+            <!-- <input type="date" placeholder="Ngày bắt đầu"> -->
+            <input type="text" placeholder="Ngày bắt đầu" id="filterStartTime" class="form-control" ng-model="filterStartDate">
+    
+            
+            <!-- <input type="date" placeholder="Ngày kết thúc"> -->
+            <input type="text" placeholder="Ngày kết thúc" id="filterEndTime" class="form-control" ng-model="filterEndDate">
+        </div>
+        <div class="row">
+            <div class="col-md-6" style="display: flex;">
+                <div class="mb-3" style="display: flex;align-items: center;">
+                    <label class="radio-inline mr-3">
+                        <input type="radio" ng-model="typeBill" value=""> Tất cả
+                    </label>
+                    <label class="radio-inline mr-3">
+                        <input type="radio" ng-model="typeBill" value="1"> Tại quầy
+                    </label>
+                    <label class="radio-inline mr-3">
+                        <input type="radio" ng-model="typeBill" value="2"> Giao hàng
+                    </label>
+                    <label class="radio-inline mr-3">
+                        <input type="radio" ng-model="typeBill" value="3"> Trực tuyến
+                    </label>
+                </div>
+            </div>
+            
+            <div class="col-md-6 search-bar">
+                <select class="form-control" id="numberSelect" ng-model="selectedStatus" ng-change="logSelectedNumber()" ng-options="number for number in numbers">
+                    <option value="">Chọn trạng thái</option>
+                </select>
+            </div>
+        </div>
+
+
+
+        <div class="row justify-content-end" style="margin-bottom: 22px;">
+            <div class="col-auto d-flex align-items-center">
+                <button class="button-submit btn btn-primary" ng-click="searchOrder()">
+                    <span class="material-icons align-middle">search</span> Tìm kiếm
+                </button>
+            </div>
+            <div class="col-auto d-flex align-items-center">
+                <button class="button-submit btn btn-secondary" ng-click="refreshOrders()">
+                    <span class="material-icons align-middle">refresh</span> Làm mới
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item" ng-repeat="tab in tabs">
+            <a class="nav-link" ng-class="{'active': currentTab === tab}" ng-click="selectTab(tab)">{{tab}}</a>
+        </li>
+    </ul>
+    
+    <div class="tab-content">
+        <div class="table-responsive">
+            <table class="  table-container ">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã</th>
+                        <th>Tổng SP</th>
+                        <th>Tổng số tiền</th>
+                        <th>Tên khách hàng</th>
+                        <th>Ngày tạo</th>
+                        <th>Loại hóa đơn</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="order in orders">
+                        <td>{{$index + 1}}</td>
+                        <td>{{order.code}}</td>
+                        <td>{{order.quantity}}</td>
+                        <td>{{order.totalAmount | currency}}</td>
+                        <td>{{order.nameCustomer}}</td>
+                        <td>{{order.createdAt}}</td>
+                        <td ng-switch="order.typeBill" style="font-size: 20px;">
+                            <span ng-switch-when="1">
+                                <div class="badge bg-info text-wrap" style="width: 65%;">
+                                    Tại quầy
+                                </div>
+                            </span>
+                            <span ng-switch-when="2">
+                                <div class="badge bg-secondary text-wrap" style="width: 65%;">
+                                    Giao hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="3">
+                                <div class="badge bg-success text-wrap" style="width: 65%;">
+                                    Online
+                                </div>
+                            </span>
+                            <span ng-switch-default>
+                                <div class="badge bg-light text-dark text-wrap" style="width: 65%;">
+                                    Khác
+                                </div>
+                            </span>
+                        </td>
+                        <td>{{order.status}}</td>
+                        <td>
+                            <a type="button" class="" href="#/admin/bill/{{order.id}}">
+                                <i class="material-icons" title="Edit">&#xe8f4;</i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row text-center">
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <div class="d-flex align-items-center">
+                <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
+                <div>
+                    <input id="size" ng-model="pageSize2" ng-change="filterOrders()" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required />
+                </div>
+            </div>
+            
+
+            <ul class="pagination">
+                <div class="d-flex justify-content-between align-items-center">
+                    <button class="btn btn-primary mx-1" ng-disabled="currentPage2 == 0" ng-click="setCurrentPageOrder(0)">
+                        <span class="material-icons align-middle">first_page</span>
+                    </button>
+                    <button class="btn btn-primary mx-1" ng-disabled="currentPage2 == 0" ng-click="setCurrentPageOrder(currentPage2 - 1)">
+                        <span class="material-icons align-middle">chevron_left</span>
+                    </button>
+
+                    <div class="d-flex align-items-center mx-1">
+                        <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
+                            style="width: 40px;" ng-model="desiredPage2" min="1" max="{{totalPages2}}"
+                            ng-change="goToPageOrder()">
+                        <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages2}}</span>
+                    </div>
+
+                    <button class="btn btn-primary mx-1" ng-disabled="currentPage2 == totalPages2 - 1" ng-click="setCurrentPageOrder(currentPage2 + 1)">
+                        <span class="material-icons align-middle">chevron_right</span>
+                    </button>
+                    <button class="btn btn-primary mx-1" ng-disabled="currentPage2 == totalPages2 - 1" ng-click="setCurrentPageOrder(totalPages2 - 1)">
+                        <span class="material-icons align-middle">last_page</span>
+                    </button>
+                </div>
+            </ul>
+        </div>
+    </div>
+
+
+      <!-- Modal createBill-->
+      <div class="modal fade" id="createBillModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -314,4 +456,5 @@
             </div>
         </div>
     </div>
+
 </div>

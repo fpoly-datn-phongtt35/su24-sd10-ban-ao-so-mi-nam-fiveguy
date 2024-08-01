@@ -23,4 +23,8 @@ public interface NBillDetailRepository extends JpaRepository<BillDetail, Long> {
 
     @Query("SELECT SUM(CASE WHEN bd.promotionalPrice > 0 THEN bd.promotionalPrice ELSE bd.price END * bd.quantity) FROM BillDetail bd WHERE bd.bill.id = :billId")
     BigDecimal sumTotalAmountByBillId(@Param("billId") Long billId);
+
+//    Hải code
+    @Query("SELECT SUM(bd.quantity) FROM BillDetail bd WHERE bd.bill.id = :billId")
+    Integer sumQuantityByBillId(@Param("billId") Long billId);
 }
