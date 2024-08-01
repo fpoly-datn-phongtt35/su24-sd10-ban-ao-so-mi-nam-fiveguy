@@ -102,24 +102,37 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.getBillHistoryByBillId()
 
     $scope.showModalStatus = function (nextStatus) {
-        $scope.resetCheckBoxes();
+        $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
 
-        $('#changeStatusModal').modal('show');
+            //thiếu sản phẩm và trạng thái tiếp theo là chờ giao - 2
+            if (response.data == 1 && nextStatus == 2) {
+                $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
+                return;
+            }
 
-        $scope.currentStatus = $scope.status;
-        $scope.nextStatus = nextStatus;
-        $scope.selectedReasons = [];
+            $scope.resetCheckBoxes();
 
-        if ($scope.transitionReasons[$scope.currentStatus] && $scope.transitionReasons[$scope.currentStatus][nextStatus]) {
-            const reasonKeys = $scope.transitionReasons[$scope.currentStatus][nextStatus];
-            $scope.reasonSuggestions = reasonKeys.map(key => ({
-                value: key,
-                text: $scope.reasonsList[key].text,
-                checked: false
-            }));
-        } else {
-            $scope.reasonSuggestions = [];
-        }
+            $('#changeStatusModal').modal('show');
+
+            $scope.currentStatus = $scope.status;
+            $scope.nextStatus = nextStatus;
+            $scope.selectedReasons = [];
+
+            if ($scope.transitionReasons[$scope.currentStatus] && $scope.transitionReasons[$scope.currentStatus][nextStatus]) {
+                const reasonKeys = $scope.transitionReasons[$scope.currentStatus][nextStatus];
+                $scope.reasonSuggestions = reasonKeys.map(key => ({
+                    value: key,
+                    text: $scope.reasonsList[key].text,
+                    checked: false
+                }));
+            } else {
+                $scope.reasonSuggestions = [];
+            }
+        }).catch(function (error) {
+
+            console.log("lỗi update status check quantity", error)
+            return;
+        });
     };
 
     $scope.confirmChangeStatus = function () {
@@ -151,8 +164,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         let statusUpdate = $scope.nextStatus
         if ([3, 10].includes($scope.currentStatus) && [7, 8].includes($scope.nextStatus)) {
-            if ([9, 10].includes(reasonUpdate.value)) {
+            if ([9, 10].includes(reasonUpdate.value) && $scope.status == 4) {
                 statusUpdate = 7
+            }
+            if ([9].includes(reasonUpdate.value) && $scope.status == 10) {
+                statusUpdate = 8
             }
             if ([11].includes(reasonUpdate.value)) {
                 statusUpdate = 81
@@ -160,21 +176,6 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             if ([8, 12, 4].includes(reasonUpdate.value)) {
                 statusUpdate = 8
             }
-        }
-
-        if (statusUpdate == 2) {
-            $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
-                $('#changeStatusModal').modal('hide');
-                if (response.data == 1) {
-                    $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
-                    return;
-                }
-                $scope.getBillById($scope.idBill);
-                $scope.getBillHistoryByBillId();
-            }).catch(function (error) {
-
-                console.log("lỗi update status check quantity", error)
-            });
         }
 
         let bill = angular.copy($scope.billResponse);
@@ -623,8 +624,10 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             }
             $scope.getBillById($scope.idBill);
             $scope.getBillHistoryByBillId();
+            return;
         }).catch(function (error) {
             console.log("lỗi update status check quantity", error)
+            return;
         });
 
         let paymentDetails = $scope.calculatePaymentDetails();
@@ -665,7 +668,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.showSuccess("Xác nhận hoàn tiền thành công");
             $scope.getAllPaymentStatus($scope.idBill);
             $('#refundAmountModal').modal('hide');
-            $scope.confirmChangeStatusRefund()
+            if($scope.status == 1){
+                $scope.confirmChangeStatusRefund()
+            }
         });
     };
 
@@ -782,7 +787,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
             $scope.showSuccess("Xác nhận hoàn tiền thành công");
             $('#refundAmountCancelBillModal').modal('hide');
-            
+
             $scope.getBillById($scope.idBill);
             $scope.getBillHistoryByBillId();
         });
@@ -1003,8 +1008,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.addBillDetail = function (pdId, quantityInput, priceInput, pPriceInput, pd) {
 
         if (quantityInput >= pd.quantity) {
-            $scope.showWarning("Thêm thất bại, sửa lại số lượng")
-            return
+            $scope.showWarning("Thêm thất bại, không được vượt quá số lượng tồn")
+            return;
         }
 
         let params = {
@@ -1018,6 +1023,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             url: apiBill + "/" + $scope.idBill + "/details",
             params: params
         }).then(function (res) {
+            console.log("rssss" + res.data);
+            if (res.data == null || res.data == undefined || res.data == "") {
+                $scope.showWarning("Thêm thất bại, không được vượt quá số lượng tồn")
+                return;
+            }
             $scope.showSuccess("Thêm thành công");
             // $scope.getAllBillDetailByBillId($scope.idBill);
             $scope.getProductDetails(0);
@@ -1038,8 +1048,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.validateQuantity = function (pdIn) {
         // console.log(pdIn.inputQuantity);
         $scope.productDetails.forEach(function (pd) {
+            // if (pd == pdIn && pdIn.inputQuantity >= pd.quantity) {
+            //     pd.inputQuantity = pd.quantity - 1;
+            // }
             if (pd == pdIn && pdIn.inputQuantity >= pd.quantity) {
-                pd.inputQuantity = pd.quantity - 1;
+                pd.inputQuantity = pd.quantity;
             }
         });
         // console.log(pdIn.inputQuantity);
@@ -1064,12 +1077,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //Validate max quantity in dillDetail
     $scope.validateQuantityBd = function (bd, quantityNew) {
 
-        //total quantity
-        // if (quantityNew >= bd.productDetail.quantity + bd.quantity) {
-        //     bd.quantityNew = bd.productDetail.quantity + bd.quantity - 1;
+        // if (quantityNew >= bd.productDetail.quantity) {
+        //     bd.quantityNew = bd.productDetail.quantity - 1;
         // }
         if (quantityNew >= bd.productDetail.quantity) {
-            bd.quantityNew = bd.productDetail.quantity - 1;
+            bd.quantityNew = bd.productDetail.quantity;
         }
     };
 

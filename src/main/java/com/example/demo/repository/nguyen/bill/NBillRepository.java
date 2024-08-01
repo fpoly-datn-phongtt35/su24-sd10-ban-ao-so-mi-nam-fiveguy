@@ -57,18 +57,22 @@ public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecifica
 
 
 
-//    Hải code
-@Query("SELECT b FROM Bill b WHERE " +
-        "(:statuses IS NULL AND b.status <> 20 OR b.status IN :statuses) AND " +
-        "(:searchTerm IS NULL OR b.code LIKE %:searchTerm% OR b.reciverName LIKE %:searchTerm% OR b.customer.fullName LIKE %:searchTerm% OR b.phoneNumber LIKE %:searchTerm%) AND " +
-        "(:typeBill IS NULL OR b.typeBill = :typeBill) AND " +
-        "(:fromDate IS NULL OR b.createdAt >= :fromDate) AND " +
-        "(:toDate IS NULL OR b.createdAt <= :toDate)")
-Page<Bill> findBillsByFilters(@Param("statuses") List<Integer> statuses,
-                              @Param("searchTerm") String searchTerm,
-                              @Param("typeBill") Integer typeBill,
-                              @Param("fromDate") Date fromDate,
-                              @Param("toDate") Date toDate,
-                              Pageable pageable);
 
+
+    //SELL
+    List<Bill> findAllByTypeBillAndStatus(Integer typeBill, Integer status);
+
+    //    Hải code
+    @Query("SELECT b FROM Bill b WHERE " +
+            "(:statuses IS NULL AND b.status <> 20 OR b.status IN :statuses) AND " +
+            "(:searchTerm IS NULL OR b.code LIKE %:searchTerm% OR b.reciverName LIKE %:searchTerm% OR b.customer.fullName LIKE %:searchTerm% OR b.phoneNumber LIKE %:searchTerm%) AND " +
+            "(:typeBill IS NULL OR b.typeBill = :typeBill) AND " +
+            "(:fromDate IS NULL OR b.createdAt >= :fromDate) AND " +
+            "(:toDate IS NULL OR b.createdAt <= :toDate)")
+    Page<Bill> findBillsByFilters(@Param("statuses") List<Integer> statuses,
+                                  @Param("searchTerm") String searchTerm,
+                                  @Param("typeBill") Integer typeBill,
+                                  @Param("fromDate") Date fromDate,
+                                  @Param("toDate") Date toDate,
+                                  Pageable pageable);
 }

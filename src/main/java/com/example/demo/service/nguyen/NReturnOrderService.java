@@ -13,4 +13,6 @@ public interface NReturnOrderService {
     List<ReturnOrder> addReturnOrderAndUpdateBill(List<ReturnOrder> returnOrders, String fullName);
 
     ReturnOrderSummary calculateRefundSummary(Bill bill,List<ReturnOrder> returnOrders);
+
+    ReturnOrderSummary calculateReturnOrderSummary(Long billId, List<ReturnOrder> returnOrders);
 }

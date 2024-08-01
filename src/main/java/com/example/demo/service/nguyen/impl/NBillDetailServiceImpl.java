@@ -126,6 +126,10 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             existingBillDetail.setPrice(price);
             existingBillDetail.setPromotionalPrice(promotionalPrice);
 
+            if(existingBillDetail.getQuantity() + quantity > productDetail.getQuantity() ){
+                return null;
+            }
+
             // Save the updated BillDetail
             existingBillDetail = billDetailRepository.save(existingBillDetail);
 

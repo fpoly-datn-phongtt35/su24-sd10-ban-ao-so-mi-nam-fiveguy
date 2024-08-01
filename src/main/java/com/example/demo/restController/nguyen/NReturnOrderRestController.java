@@ -36,4 +36,12 @@ public class NReturnOrderRestController {
                 .ok(returnOrderService.addReturnOrderAndUpdateBill(returnOrders, fullName.get()));
     }
 
+    @PutMapping("/{billId}/calculateSummary")
+    public ResponseEntity<?> calculateReturnOrderSummary(@PathVariable Long billId,
+            @RequestBody List<ReturnOrder> returnOrders) {
+
+        return ResponseEntity
+                .ok(returnOrderService.calculateReturnOrderSummary(billId, returnOrders));
+    }
+
 }

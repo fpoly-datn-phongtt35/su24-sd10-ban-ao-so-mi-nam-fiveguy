@@ -22,9 +22,11 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
     $scope.bill = {};
     $scope.billDetails = [];
 
+    $scope.returnOrdersSummary = {};
+
     $scope.findById = function (id) {
         if (id == undefined || id == null || id == "") return;
-        
+
         $http.get($scope.apiBill + "/" + id).then(function (response) {
             $scope.bill = response.data;
             console.log(response.data);
@@ -65,7 +67,7 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
                 returnStatus: 2
             };
             $scope.returnOrders.push(returnOrder);
-            
+
             // $scope.returnOrders.forEach(function(ro){
             //     if(returnOrder.billDetail.id == ro.billDetail.id){
             //         ro.quantity = ro.quantity + returnOrder.quantity
@@ -93,10 +95,26 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
     $scope.confirmReturn = function () {
         $http.post($scope.apiReturnOrder + "/addReturnOrder", $scope.returnOrders).then(function (response) {
             console.log(response);
-            
+
             $location.path('/admin/bill/' + $scope.bill.id);
         }).catch(function (error) {
             console.error("Error:", error);
         });
     };
+    $scope.returnOrdersSummary.tongTienTra = 0;
+
+    $scope.calculateSummary = function () {
+        $http.put($scope.apiReturnOrder + "/" + $scope.idBill + "/calculateSummary", $scope.returnOrders).then(function (response) {
+            console.log(response.data);
+            $scope.returnOrdersSummary = response.data
+        }).catch(function (error) {
+            console.error("Error:", error);
+        });
+    }
+
+    $scope.$watch('returnOrders', function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+            $scope.calculateSummary()
+        }
+    }, true);
 });
