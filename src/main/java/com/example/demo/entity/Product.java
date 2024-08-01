@@ -32,8 +32,8 @@ public class Product {
     @Column(name = "Price")
     private BigDecimal price;
 
-    @Column(name = "ImportPrice")
-    private BigDecimal importPrice;
+//    @Column(name = "ImportPrice")
+//    private BigDecimal importPrice;
 
     @Column(name = "Describe", columnDefinition = "nvarchar(max)")
     private String describe;
