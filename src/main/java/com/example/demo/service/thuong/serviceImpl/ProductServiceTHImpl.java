@@ -48,7 +48,6 @@ public class ProductServiceTHImpl implements ProductServiceTH {
         Product product = new Product();
         product.setCode(productRequest.getCode());
         product.setName(productRequest.getName());
-        product.setImportPrice(productRequest.getImportPrice());
         product.setPrice(productRequest.getPrice());
         product.setDescribe(productRequest.getDescribe());
         product.setCreatedAt(new Date());
@@ -112,7 +111,6 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             Product product = productOptional.get();
             product.setCode(productRequestTH.getCode());
             product.setName(productRequestTH.getName());
-            product.setImportPrice(productRequestTH.getImportPrice());
             product.setPrice(productRequestTH.getPrice());
             product.setDescribe(productRequestTH.getDescribe());
             product.setUpdatedAt(new Date());
