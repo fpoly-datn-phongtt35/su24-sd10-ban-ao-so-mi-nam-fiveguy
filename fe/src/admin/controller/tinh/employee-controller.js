@@ -1,4 +1,4 @@
-app.controller("tinh-employee-controller", function ($scope, $http) {
+app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
   $scope.originalEmployee = [];
   $scope.employee = [];
   $scope.formUpdate = {};
@@ -30,27 +30,25 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   const apiAccount = "http://localhost:8080/api/admin/account";
   const apiAuditLog = "http://localhost:8080/api/admin/audit-log";
 
-
   imgShow("image-update", "image-preview-update");
-
 
   // notify
   toastr.options = {
-    "closeButton": false,
-    "debug": false,
-    "newestOnTop": true,
-    "progressBar": false,
-    "positionClass": "toast-top-right",
-    "preventDuplicates": false,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-  }
+    closeButton: false,
+    debug: false,
+    newestOnTop: true,
+    progressBar: false,
+    positionClass: "toast-top-right",
+    preventDuplicates: false,
+    showDuration: "300",
+    hideDuration: "1000",
+    timeOut: "5000",
+    extendedTimeOut: "1000",
+    showEasing: "swing",
+    hideEasing: "linear",
+    showMethod: "fadeIn",
+    hideMethod: "fadeOut",
+  };
   // Hàm hiển thị thông báo thành công
   $scope.showSuccessNotification = function (message) {
     toastr["success"](message);
@@ -60,7 +58,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.showErrorNotification = function (message) {
     toastr["error"](message);
   };
-
 
   $scope.showWarningNotification = function (message) {
     toastr["warning"](message);
@@ -82,8 +79,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   }
 
   // Gọi imgShow để gắn sự kiện
-  imgShow('image', 'image-preview');
-
+  imgShow("image", "image-preview");
 
   let allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
   $scope.showErrorImg = function (message) {
@@ -156,7 +152,9 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.checkPhoneNumber = function () {
     var phoneNumber = $scope.formInputAccount.phoneNumber;
     $http
-      .get(apiAccount + "/check-phone-number", { params: { phoneNumber: phoneNumber } })
+      .get(apiAccount + "/check-phone-number", {
+        params: { phoneNumber: phoneNumber },
+      })
       .then(function (response) {
         if (response.data) {
           // Email bị trùng
@@ -291,7 +289,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     }
 
     $scope.showError = false;
-    $scope.uploading = true; // Đang trong quá trình upload
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -303,11 +300,8 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
         data: data,
       };
       $scope.postFile(postData).then(function () {
-        $scope.uploading = false; // Hoàn thành quá trình upload
         $scope.$apply(); // Áp dụng thay đổi vào scope
-        if (!$scope.uploading) {
-          $scope.submitForm();
-        }
+        $scope.submitForm();
         $scope.getEmployee(0);
         $scope.resetFormInput();
         $("#modalAdd").modal("hide");
@@ -347,10 +341,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
           $scope.showSuccessNotification("Thêm thông tin thành công");
 
           // Sử dụng $timeout để cập nhật scope
-          $timeout(function () {
-            $scope.getEmployee(0);
-            $scope.resetFormCreate();
-          });
+          $scope.getEmployee(0);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -362,7 +353,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
       $scope.formCreateEmployee.$submitted = true;
     }
   };
-
 
   // END thêm Nhân Viên
 
@@ -620,7 +610,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     }
   };
 
-
   // END Sửa nhân viên
 
   //Hàm gọi id chi tiết nhân viên
@@ -682,18 +671,20 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.totalPages = 0;
   $scope.currentPage = 0;
   $scope.desiredPage = 1;
-  $scope.size = 5
+  $scope.size = 5;
   $scope.filters = {
     name: null,
     code: null,
     discountType: null,
     startDate: null,
     endDate: null,
-
   };
 
   $scope.getEmployee = function (pageNumber) {
-    let params = angular.extend({ pageNumber: pageNumber, size: $scope.size }, $scope.filters);
+    let params = angular.extend(
+      { pageNumber: pageNumber, size: $scope.size },
+      $scope.filters
+    );
     $http
       .get("http://localhost:8080/api/admin/employee/page", {
         params: params,
@@ -708,7 +699,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
 
   $scope.applyFilters = function () {
     $scope.getEmployee(0);
-
   };
 
   $scope.goToPage = function () {
@@ -775,7 +765,7 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
       });
   };
 
-  //phân trang + lọc auddit Log 
+  //phân trang + lọc auddit Log
   // get all da ta lịch sửa nv
   $scope.getAuditlog = function () {
     $http.get(apiAuditLog).then(function (resp) {
@@ -793,7 +783,10 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   // $scope.filterAuditlog.time = $scope.filterAuditlog.time ? $scope.filterAuditlog.time.toISOString().split('T')[0] : null;
 
   $scope.getAllAuditLog = function (pageNumber) {
-    let params = angular.extend({ pageNumber: pageNumber, size: $scope.size }, $scope.filterAuditlog);
+    let params = angular.extend(
+      { pageNumber: pageNumber, size: $scope.size },
+      $scope.filterAuditlog
+    );
     $http
       .get("http://localhost:8080/api/admin/audit-log/auditlog-page", {
         params: params,
@@ -809,7 +802,6 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
   $scope.applyFiltersAuditlog = function () {
     // $scope.filterAuditlog.time = $scope.filterAuditlog.time ? $scope.filterAuditlog.time.toISOString().split('T')[0] : null;
     $scope.getAllAuditLog(0);
-
   };
 
   $scope.goToPageAuditlog = function () {
@@ -839,23 +831,21 @@ app.controller("tinh-employee-controller", function ($scope, $http) {
     var date = new Date(dateString);
 
     // Lấy ngày, tháng, năm
-    var day = String(date.getDate()).padStart(2, '0');
-    var month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0-11, cần +1
+    var day = String(date.getDate()).padStart(2, "0");
+    var month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng tính từ 0-11, cần +1
     var year = date.getFullYear();
 
     // Lấy giờ, phút, giây
-    var hours = String(date.getHours()).padStart(2, '0');
-    var minutes = String(date.getMinutes()).padStart(2, '0');
-    var seconds = String(date.getSeconds()).padStart(2, '0');
+    var hours = String(date.getHours()).padStart(2, "0");
+    var minutes = String(date.getMinutes()).padStart(2, "0");
+    var seconds = String(date.getSeconds()).padStart(2, "0");
 
     // Trả về chuỗi định dạng dd/MM/yyyy HH:mm:ss
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-  }
+  };
   //Hàm gọi id chi tiết nhân viên
   $scope.detailAuditLog = function (employee) {
     $scope.formDetailAuditLog = angular.copy(employee);
     $scope.formDetailAuditLog.time = $scope.formatDateTime(employee.time);
   };
-
- 
 });
