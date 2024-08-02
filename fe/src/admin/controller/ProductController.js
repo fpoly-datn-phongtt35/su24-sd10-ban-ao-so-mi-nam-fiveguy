@@ -1006,13 +1006,6 @@ app.directive('customOnChange', function() {
     };
   });
 
-  app.filter('vndCurrency', function() {
-    return function(input) {
-      if (isNaN(input)) {
-        return input;
-      }
-      return parseInt(input).toLocaleString('vi-VN') + ' VND';
-    };
-  });
+
   
 

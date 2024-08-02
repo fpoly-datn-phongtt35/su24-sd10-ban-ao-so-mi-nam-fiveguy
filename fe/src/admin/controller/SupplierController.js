@@ -487,6 +487,7 @@ app.controller("SupplierController", function($scope, $http){
         dropdownParent: $("#box-ward"),
     }).on("select2:select", function (e) { 
         $scope.wardValue = e.params.data.text;
+        $scope.$apply();
     });
 
     // ---------------------------------------

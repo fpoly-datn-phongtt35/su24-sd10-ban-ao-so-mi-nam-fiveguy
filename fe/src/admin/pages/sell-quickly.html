@@ -1,23 +1,226 @@
-<div class="main-content" ng-controller="SellQuicklyController">
+<div class="main-content p-0" ng-controller="SellQuicklyController">
     <div class="row">
         <div class="col-md-12">
-            <div class="table-wrapper">
-                <nav>
-                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                        <button ng-repeat="(index, bill) in bills track by $index" class="nav-link d-flex align-items-center" ng-class="{'active': index == 0}" type="button" role="tab">{{bill.code}}
-                            <span type="button" class="btn-close icon-bill" aria-label="Close"></span>
-                        </button>
-                        <button ng-click="addBill()" type="button" class="btn p-0 ms-2 d-flex align-items-center"><i class="icon-add material-icons">add_circle</i></button>
-                    </div>
-                </nav>
-                <div class="row mx-0 mt-3 mb-2">
-                    <div class="tab-content">
-                        <div ng-repeat="tab in tabs" class="tab-pane fade" ng-class="{in: tab.active, active: tab.active}" style="color: #000;">
-                            {{ tab.content }}
+            <div class="table-wrapper" style="overflow: hidden; margin: 6px 0px 10px 0px">
+                <div class="mb-2 box-bills">
+                    <div class="row align-items-center">
+                        <div class="col-sm-5 p-0 d-flex">
+                            <div class="box-container container-fluid m-0">
+                                <div class="form-group has-search">
+                                    <form>
+                                        <i class="material-icons">
+                                            search
+                                        </i>
+                                        <input ng-model="keyword" ng-change="debounceSearch()" id="search-product" type="text" class="form-control" placeholder="Tìm hàng hóa">
+                                    </form>
+                                    <div id="item-list" class="product-list">
+                                        <div id="loading" class="justify-content-center align-items-center" style="display: none; height: 50px;">
+                                            <div class="spinner-border" role="status">
+                                              <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                          </div>
+                                          <div id="responseNull" class="justify-content-center align-items-center" style="height: 80px; display: none;">Không tìm thấy kết quả nào phù hợp</div>
+                                        <div ng-repeat="productDetail in productDetails" class="product" ng-click="addProductCart(productDetail.id)">
+                                            <img class="col-2" ng-src="{{productDetail.imagePath}}" alt="">
+                                            <div class="col-6 p-details">
+                                                <h2>{{productDetail.product.name}} {{productDetail.color.name}}</h2>
+                                                <h3>Size: {{productDetail.size.name}}</h3>
+                                                <h3>Số lượng: {{productDetail.quantity}}</h3>
+                                            </div>
+                                            <div class="col-4 p-details">
+                                                <h1>{{productDetail.product.price | number:'0':'symbol':'short'}} VND</h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         
+                        </div>
+                       
+                        <div class="col-sm-7 p-0 d-flex">
+                            <nav>
+                                <div style="height: 102px; border: none;" class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    <button ng-repeat="(index, bill) in bills track by $index" ng-click="setSelected(bill)" data-bs-toggle="tab" class="nav-link nav-bill d-flex align-items-center" ng-class="{'active' : bill.code == selectedBill.code}" type="button" role="tab">{{bill.code}}
+                                        <span ng-click='removeBill(index)' type="button" class="icon-bill material-icons">
+                                            close
+                                            </span>
+                                    </button>
+                                    <button ng-if="bills.length < 8" ng-click="addBill()" type="button" class="btn p-0 ms-2 d-flex align-items-center"><i class="icon-add material-icons">add_circle</i></button>
+                                </div>
+                            </nav>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="row mx-0 mb-2">
+                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <div class="tab-content pt-4 pb-4" style="max-height: 500px;">
+                        <div class="row m-0">
+                            <div class="col-sm-8">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <span class="material-icons me-2">
+                                            shopping_cart
+                                        </span> Giỏ hàng
+                                      </div>
+                                    <div class="card-body" style="height: 450px; overflow-y: scroll;">
+                                        <table class="table">
+                                            <tbody>
+                                                <tr ng-repeat="item in selectedBill.cart">
+                                                    <td style="font-size: 16px;">{{item.product.name}} {{item.color.name}}
+                                                        <br />
+                                                        <i style="font-size: 14px;">Size: {{item.size.name}}</i>
+                                                    </td>
+                                                    <td class="w-25">
+                                                        <div class="d-flex">
+                                                            <button class="btn btn-outline-primary btn-sm px-1 d-flex align-items-center">
+                                                                <i class="material-icons">
+                                                                    remove
+                                                                    </i>
+                                                            </button>
+                    
+                                                                <input id="form1" min="1" name="quantity" ng-model="item.qty" type="number"
+                                                                       class="text-center mx-2 form-control form-control-sm" />
+                    
+                                                            <button class="btn btn-outline-primary btn-sm px-1 d-flex align-items-center"
+                                                                   >
+                                                                   <i class="material-icons">
+                                                                    add
+                                                                    </i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                    <td style="line-height: 35px"><p class="m-0 fw-bold">120,000 VND</p></td>
+                                                    <td><button class="btn btn-light border text-danger icon-hover-danger d-flex align-items-center"><i class="material-icons">
+                                                        delete
+                                                        </i></button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="card">
+                                    <div class="card-header d-flex align-items-center">
+                                        <span class="material-icons me-2">
+                                            paid
+                                        </span> Thanh toán
+                                      </div>
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="ms-auto">{{timeCurrent | date : " dd-MM-yyyy hh:mm" : 0}}</div>
+                                        <div class="box-container">
+                                            <form style="width: 100%;">
+                                                <i class="material-icons">
+                                                    search
+                                                </i>
+                                                <input id="search-customer" type="text" class="form-control" style="padding-right: 35px;" placeholder="Tìm khách hàng">
+                                                <i data-bs-toggle="modal" data-bs-target="#customerModal" class="material-icons icon-add" style="right: 3px; padding: 5px; cursor: pointer;">
+                                                    add
+                                                </i>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
+    <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Thêm khách hàng</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form name="customerForm" ng-submit="createCustomer()" novalidate>
+                <div class="modal-body">
+                    <div class="row m-0">
+                        <div class="col-sm-3">
+                            <div class="mb-4 d-flex justify-content-center">
+                                <img id="selectedImage" class="rounded-circle" src="common/img/no-image.png"
+                                alt="example placeholder" style="width: 100%;" />
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <div data-mdb-ripple-init class="btn btn-primary btn-rounded">
+                                    <label class="form-label text-white m-1" for="customFile1">Chọn ảnh</label>
+                                    <input type="file" class="form-control d-none" onchange="angular.element(this).scope().SelectFile(event)"  />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="form-group">
+                                <label>Mã khách hàng</label>
+                                <input type="text" ng-model="customer.code" class="form-control" placeholder="Mã tự động">
+                                <p class="text-danger" ng-if="errors.code">{{errors.code}}</p>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label>Tên khách hàng <span ng-if="!customer.name" class="text-danger">*</span></label>
+                                <input type="text" ng-model="customer.name" class="form-control" placeholder="Tên khách hàng" required>
+                                <p class="text-danger" ng-if="errors.name">{{errors.name}}</p>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label>Ngày sinh</label>
+                                <input type="date" ng-model="customer.birthDate" class="form-control" >
+                                <p class="text-danger" ng-if="errors.birthDate">{{errors.birthDate}}</p>
+                            </div>
+                            <div class="form-group mt-3 d-flex">
+                                <label class="me-3">Giới tính:</label>
+                                <div class="form-check d-flex align-items-center">
+                                    <input ng-model="customer.gender" class="form-check-input" type="radio" name="gioiTinh" id="addRadioMan" ng-value="true">
+                                    <label class="form-check-label" for="addRadioMan" style="padding: 0 15px 0px 5px;">
+                                        Nam
+                                    </label>
+                                </div>
+                                <div class="form-check d-flex align-items-center">
+                                    <input ng-model="customer.gender" class="form-check-input" type="radio" name="gioiTinh" id="addRadioFemale" ng-value="false">
+                                    <label class="form-check-label" for="addRadioFemale" style="padding: 0 15px 0px 5px;">
+                                        Nữ
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="box-province" class="form-group mt-3">
+                                <label for="id-label-province">Tỉnh thành <span ng-if="!provinceValue" class="text-danger">*</span></label>
+                                <div class="mt-2">
+                                    <select class="province" id="id-label-province" data-placeholder="Chọn tỉnh thành">
+                                        <option></option>
+                                        <option ng-repeat="province in provinces" value="{{province.province_id}}">{{province.province_name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="box-district" class="form-group mt-3">
+                                <label for="id-label-district">Quận/huyện <span ng-if="!districtValue" class="text-danger">*</span></label>
+                                <div class="mt-2">
+                                    <select class="district" id="id-label-district" data-placeholder="Chọn quận/huyện">
+                                        <option></option>
+                                        <option ng-repeat="district in districts" value="{{district.district_id}}">{{district.district_name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="box-ward" class="form-group mt-3">
+                                <label for="id-label-ward">Phường/xã <span ng-if="!wardValue" class="text-danger">*</span></label>
+                                <div class="mt-2">
+                                    <select class="ward" id="id-label-ward" data-placeholder="Chọn phường/xã">
+                                        <option></option>
+                                        <option ng-repeat="ward in wards" value="{{ward.ward_id}}">{{ward.ward_name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                  <button type="submit" ng-disabled="customerForm.$invalid" class="btn btn-success">Thêm</button>
+                </div>
+            </form>
+
+            
+          </div>
+        </div>
+      </div>
 </div>

@@ -5,11 +5,10 @@ import com.example.demo.entity.Image;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductDetail;
 import com.example.demo.model.request.thuong.ProductRequestTH;
-import com.example.demo.model.response.thuong.ProductResponse;
+import com.example.demo.model.response.thuong.ProductResponseTH;
 import com.example.demo.repository.thuong.ImageRepositoryTH;
 import com.example.demo.repository.thuong.ProductDetailRepositoryTH;
 import com.example.demo.repository.thuong.ProductRepositoryTH;
-import com.example.demo.repository.thuong.ProductResponseRepositoryTH;
 import com.example.demo.service.thuong.ProductServiceTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,11 +34,9 @@ public class ProductServiceTHImpl implements ProductServiceTH {
     @Autowired
     private ImageRepositoryTH imageRepository;
 
-    @Autowired
-    private ProductResponseRepositoryTH productResponseRepository;
 
     @Override
-    public Product create(ProductRequestTH productRequest) {
+    public Product create(ProductRequestTH productRequest, String fullName) {
         Product exProductByName = productRepository.findByName(productRequest.getName());
         if (exProductByName != null) {
             throw new DuplicateException("Trùng tên sản phẩm", "name");
@@ -55,7 +52,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
         product.setPrice(productRequest.getPrice());
         product.setDescribe(productRequest.getDescribe());
         product.setCreatedAt(new Date());
-        product.setCreatedBy(productRequest.getCreatedBy());
+        product.setCreatedBy(fullName);
         product.setCategory(productRequest.getCategory());
         product.setSupplier(productRequest.getSupplier());
         product.setMaterial(productRequest.getMaterial());
@@ -101,7 +98,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
     }
 
     @Override
-    public Product update(ProductRequestTH productRequestTH, Long id) {
+    public Product update(ProductRequestTH productRequestTH, Long id, String fullName) {
         Product exProductByName = productRepository.findByName(productRequestTH.getName());
         if (exProductByName != null && !exProductByName.getId().equals(id)) {
             throw new DuplicateException("Trùng tên sản phẩm", "name");
@@ -119,6 +116,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             product.setPrice(productRequestTH.getPrice());
             product.setDescribe(productRequestTH.getDescribe());
             product.setUpdatedAt(new Date());
+            product.setUpdatedBy(fullName);
             product.setCategory(productRequestTH.getCategory());
             product.setSupplier(productRequestTH.getSupplier());
             product.setMaterial(productRequestTH.getMaterial());
@@ -173,8 +171,13 @@ public class ProductServiceTHImpl implements ProductServiceTH {
         return null;
     }
 
+    public String getImagePathByProductId(Long id) {
+        List<Image> images = imageRepository.findAllByProduct_IdAndStatus(id, 1);
+        return images.isEmpty() ? null : images.get(0).getPath();
+    }
+
     @Override
-    public Page<ProductResponse> getProducts(int page, int size, String keyword, String sortField, String sortDirection, BigDecimal minPrice,BigDecimal maxPrice, Integer status) {
+    public Page<ProductResponseTH> getProducts(int page, int size, String keyword, String sortField, String sortDirection, BigDecimal minPrice, BigDecimal maxPrice, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
@@ -184,9 +187,16 @@ public class ProductServiceTHImpl implements ProductServiceTH {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         if (keyword == null || keyword.isEmpty())
-            return productResponseRepository.findAllAndStatus( minPrice, maxPrice, status,pageable);
-        else return productResponseRepository.findByNameOrCode(minPrice, maxPrice, keyword, status,pageable);
+            return productRepository.findAllAndStatus( minPrice, maxPrice, status,pageable).map(p -> {
+                p.setImagePath(getImagePathByProductId(p.getId()));
+                return p;
+            });
+        else return productRepository.findByNameOrCode(minPrice, maxPrice, keyword, status,pageable).map(p -> {
+            p.setImagePath(getImagePathByProductId(p.getId()));
+            return p;
+        });
     }
+
 
     @Override
     public Product findById(Long id) {

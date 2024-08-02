@@ -91,9 +91,9 @@
                             <tr ng-repeat="(index, product) in products.content">
                                 <th>{{index + 1}}</th>
                                 <th>{{product.code}}</th>
-                                <th> <img class="img-fluid" ng-src="{{product.images[0].path ? product.images[0].path : 'common/img/no-image.png'}}" /> </th>
+                                <th> <img class="img-fluid" ng-src="{{product.imagePath ? product.imagePath : 'common/img/no-image.png'}}" /> </th>
                                 <th>{{product.name}}</th>
-                                <th>{{product.price | vndCurrency}}</th>
+                                <th>{{product.price | number:'0':'symbol':'short'}} VND</th>
                                 <th>
                                     <div class="d-flex align-items-center flex-column">
                                         <button type="button" class="btn btn-sm" ng-class="{'btn-success': product.status === 1, 'btn-danger': product.status === 0}">{{ product.status === 1 ? 'Kinh doanh' : 'Ngừng kinh doanh' }}</button>
