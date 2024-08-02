@@ -32,6 +32,15 @@ public class PaymentStatus {
     @Column(name = "PaymentDate")
     private Date paymentDate;
 
+//    1 tiền mặt  2 chuyển khoản
+    @Column(name = "PaymentMethod")
+    private Integer paymentMethod;
+
+//    1 khách hàng thanh toán 2 shipper thanh toán 3 shop hoàn tiền
+    @Column(name = "PaymentType")
+    private Integer paymentType;
+
+//    1 chưa thanh toán 2 thành công 3 thành công(hoàn) 4 chờ hoàn tiền
     @Column(name = "CustomerPaymentStatus")
     private int customerPaymentStatus;
 

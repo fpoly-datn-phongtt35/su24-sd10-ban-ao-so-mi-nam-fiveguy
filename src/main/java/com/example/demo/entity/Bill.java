@@ -36,8 +36,8 @@ public class Bill {
     @Column(name = "ShippingFee")
     private BigDecimal shippingFee;
 
-    @Column(name = "TransId")
-    private String transId;  // Mã giao dịch Momo dùng để hoàn tiền
+    @Column(name = "AddressId")
+    private String addressId;
 
     @Column(name = "Address", columnDefinition = "nvarchar(300)")
     private String address;
@@ -50,6 +50,12 @@ public class Bill {
 
     @Column(name = "TotalAmountAfterDiscount")
     private BigDecimal totalAmountAfterDiscount;
+
+    @Column(name = "PaidAmount")
+    private BigDecimal paidAmount;
+
+    @Column(name = "PaidShippingFee ")
+    private BigDecimal paidShippingFee ;
 
     @Column(name = "CreatedAt")
     private Date createdAt;
@@ -93,4 +99,8 @@ public class Bill {
     @JsonIgnore
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
     private List<PaymentStatus> paymentStatuses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
+    private List<ReturnOrder> returnOrders;
 }
