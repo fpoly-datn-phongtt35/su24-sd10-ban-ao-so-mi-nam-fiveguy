@@ -14,7 +14,7 @@ app.controller("SellQuicklyController", function($scope, $http){
     $scope.provinces = [];
     $scope.districts = [];
     $scope.wards = [];
-    $scope.customer = {gender: true};
+   
     $scope.timeCurrent = new Date();
 
     $http.get('https://vapi.vnappmob.com/api/province/')
@@ -110,26 +110,19 @@ app.controller("SellQuicklyController", function($scope, $http){
             cart: [],
             customer: {},
     }];
-     $('#selectCustomer').select2({
-    })
-    $scope.selectedBill = $scope.bills[0];
-    $scope.removeBill = index => {
-        if ($scope.bills.length == 1) return;
-        $scope.bills.splice(index, 1);
-        $scope.selectedBill = null;
-        localStorage.setItem("bills", JSON.stringify($scope.bills));
-    };
+
+    
+ 
+
     function makeBill() {
         return {
             code: 'HD' + Number(String(new Date().getTime()).slice(-6)),
-            createdAt: new Date(),
             itemQty: 0,
             moneyReturn: 0,
             customerPay: 0,
             totalCustomerPay: 0,
             totalAmount: 0,
             reciverName: null,
-            deliveryDate: new Date(),
             shippingFee: 0,
             phoneNumber: null,
             note: null,
@@ -141,20 +134,6 @@ app.controller("SellQuicklyController", function($scope, $http){
         }
     }
 
-    $scope.addBill = () => {
-        if ($scope.bills.length > 7) {
-            toastr["warning"]("Chỉ được tạo tối đa 8 hóa đơn");
-            return;
-        }
-        $scope.bills.push(makeBill());
-        localStorage.setItem("bills", JSON.stringify($scope.bills));
-    }
-
-    $scope.setSelected = bill => {
-        $scope.selectedBill = bill;
-    }
-
-    $scope
 
     let debounceTimer;
 
@@ -191,27 +170,6 @@ app.controller("SellQuicklyController", function($scope, $http){
        
     }
 
-    $scope.addProductCart = (id) => {
-        if ($scope.selectedBill == null) {
-            toastr["warning"]("Vui lòng chọn hóa đơn")
-            return;
-        }
-        var item = $scope.selectedBill.cart.find(item => item.id == id);
-        if (item) {
-            item.qty++;
-        } else {
-            $http.get(`${config.host}/product-detail/one/` + id).then(resp => {
-                resp.data.qty = 1;
-                $scope.selectedBill.cart.push(resp.data);
-            }).catch(error => {
-                if (error.status === 400) {
-                    if (error.data.alert) {
-                        toastr["error"](error.data.alert);
-                    }
-                } 
-            });
-        }
-    }
 
     
 });
