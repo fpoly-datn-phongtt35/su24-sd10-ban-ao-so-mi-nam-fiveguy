@@ -34,7 +34,7 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
                                              PaymentStatusRequest paymentStatusRequest) {
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new RuntimeException("Bill not found"));
-        
+
         if (paymentStatusRequest.getPayOrRefund() == 1) {
             bill.setPaidAmount(paymentStatusRequest.getBill().getTotalAmountAfterDiscount());
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());

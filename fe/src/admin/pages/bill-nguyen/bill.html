@@ -285,7 +285,7 @@
                         <td>{{order.quantity}}</td>
                         <td>{{order.totalAmount | currency}}</td>
                         <td>{{order.nameCustomer}}</td>
-                        <td>{{order.createdAt}}</td>
+                        <td>{{order.createdAt | date: "dd-MM-yyyy"}}</td>
                         <td ng-switch="order.typeBill" style="font-size: 20px;">
                             <span ng-switch-when="1">
                                 <div class="badge bg-info text-wrap" style="width: 65%;">
@@ -318,6 +318,11 @@
                             <a type="button" class="" href="#/admin/bill/{{order.id}}">
                                 <i class="material-icons" title="Edit">&#xe8f4;</i>
                             </a>
+                        </td>
+                    </tr>
+                    <tr ng-show="orders.length <= 0">
+                        <td colspan="12">
+                            <h5>Không có dữ liệu</h5>
                         </td>
                     </tr>
                 </tbody>

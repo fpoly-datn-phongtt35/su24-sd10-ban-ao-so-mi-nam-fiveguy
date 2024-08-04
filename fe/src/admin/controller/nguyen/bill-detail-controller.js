@@ -107,10 +107,10 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             //thiếu sản phẩm và trạng thái tiếp theo là chờ giao - 2
             if (response.data == 1 && nextStatus == 2) {
-                $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
+                $scope.showWarning("Giảm số lượng sản phẩm trong đơn hàng");
                 return;
-            }else if( response.data == 2 && nextStatus == 2){
-                $scope.showWarning("Chờ nhập hàng");
+            } else if (response.data == 2 && nextStatus == 2) {
+                $scope.showWarning("Có sản phẩm trong đơn hàng đã hết");
                 return;
             }
 
@@ -262,10 +262,6 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         11: { text: "Mất hàng", value: 11, status: 4, shortenText: "Mất hàng" },
         12: { text: "Thiếu hàng", value: 12, status: 5, shortenText: "Thiếu hàng" },
         13: { text: "Sai địa chỉ giao hàng", value: 13, status: 0, shortenText: "" },
-
-
-        21: { text: "Chưa thanh toán", value: 18, status: 32, shortenText: "Chưa thanh toán" },
-        22: { text: "Đã thanh toán", value: 18, status: 32, shortenText: "Đã thanh toán" },
     };
 
     $scope.reasonsList = {
@@ -286,8 +282,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         14: { text: "Khách trả hàng tại quầy", value: 14, status: 30, shortenText: "Trả tại quầy" },
         15: { text: "Khách yêu cầu trả hàng qua ship", value: 15, status: 31, shortenText: "Trả qua ship" },
 
-        17: { text: "Chưa thanh toán", value: 18, status: 32, shortenText: "Đã trả hàng" },
-        18: { text: "Đã thanh toán", value: 18, status: 32, shortenText: "Đã trả hàng" },
+        20: { text: "Chưa thanh toán", value: 17, status: 32, shortenText: "hưa thanh toán" },
+        21: { text: "Đã thanh toán", value: 18, status: 32, shortenText: "Đã thanh toán" },
+        22: { text: "Đã hoàn tiền", value: 18, status: 32, shortenText: "Đã hoàn tiền" },
     };
 
     $scope.transitionReasons = {
@@ -348,6 +345,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             3: { title: "Đang giao hàng", icon: "local_shipping", status: 3 },
             4: { title: "Đã giao hàng", icon: "check_circle", status: 4 },
 
+            60: { title: "Chờ nhập hàng", icon: "not_interested", status: 50 },
+
             50: { title: "Yêu cầu hủy", icon: "cancel", status: 50 },
             5: { title: "Khách hủy", icon: "cancel", status: 5 },
             6: { title: "Đã hủy", icon: "not_interested", status: 6 },
@@ -371,7 +370,6 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             32: { title: "Đã trả hàng", icon: "inventory_2", status: 32 },
             33: { title: "Trả hàng thất bại", icon: "assignment_late", status: 33 },
 
-            60: { title: "Chờ nhập hàng", icon: "not_interested", status: 50 },
         };
 
         // $scope.deliveryFlow = {
@@ -418,10 +416,12 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         $scope.deliveryFlow = {
             20: [1],              // Tạo đơn hàng -> Chờ xác nhận
-            1: [2, 5, 6],         // Chờ xác nhận -> Chờ giao hàng hoặc Khách hủy hoặc Đã hủy
-            2: [3, 5, 6],         // Chờ giao hàng -> Đang giao hàng hoặc Khách hủy hoặc Đã hủy
+            1: [2, 5, 6, 60],         // Chờ xác nhận -> Chờ giao hàng hoặc Khách hủy hoặc Đã hủy
+            2: [3, 5, 6, 60],         // Chờ giao hàng -> Đang giao hàng hoặc Khách hủy hoặc Đã hủy
             3: [4, 7, 81],        // Đang giao hàng -> Đã giao hàng hoặc Thất bại hoặc Thất bại (mất hàng)
             4: [21],      // Đã giao hàng -> Hoàn thành hoặc Trả hàng (tại quầy) hoặc Trả hàng (ship)
+
+            60: [1, 5, 6],        // Chờ nhập hàng -> Chờ xác nhận, khách hủy, đã hủy
 
             5: [],                // Khách hủy (kết thúc)
             6: [],                // Đã hủy (kết thúc)
@@ -806,7 +806,6 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //#endregion
 
 
-
     //theo dõi billResponse
     $scope.$watch('billResponse', function (newValue, oldValue) {
         if (newValue !== oldValue) {
@@ -815,10 +814,35 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             //Tính toán hoàn trả hay thanh toán
             $scope.paidOrRefundObject = $scope.calculatePaymentPaidOrRefund($scope.billResponse)
+
+            // $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
+            //     if (response.data == 1) {
+            //         $scope.errorQuantity = true;
+            //     } else if (response.data == 2) {
+            //         $scope.errorQuantity = true;
+            //     } else {
+            //         $scope.errorQuantity = false;
+            //     }
+            // })
+            
+            // console.log($scope.errorQuantity + "   afgafhgalkds");
         }
     }, true);
 
-
+    $scope.$watch('billDetails', function (newValue, oldValue) {
+        if (newValue != oldValue) {
+            $scope.errorQuantity = false;
+            $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
+                if (response.data == 1) {
+                    $scope.errorQuantity = true;
+                } else if (response.data == 2) {
+                    $scope.errorQuantity = true;
+                } else {
+                    $scope.errorQuantity = false;
+                }
+            })
+        }
+    })
 
     // #endregion
 
@@ -1042,6 +1066,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 $scope.showWarning("Thêm thất bại, không được vượt quá số lượng tồn")
                 return;
             }
+
             $scope.showSuccess("Thêm thành công");
             // $scope.getAllBillDetailByBillId($scope.idBill);
             $scope.getProductDetails(0);
@@ -1548,7 +1573,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             // Body data for the POST request
             var requestData = {
                 "service_id": 53321,
-                "insurance_value": $scope.billDetailSummary.totalPromotionalPrice,
+                "insurance_value": $scope.billResponse.totalAmountAfterDiscount,
                 "coupon": null,
                 "from_district_id": 1482,
                 "to_district_id": numericDistrictId,
@@ -1600,7 +1625,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.showAddress = function (bill) {
 
         //nếu status khác 1 thì ko cập nhật
-        if(bill.status !== 1) return;
+        if (bill.status !== 1) return;
 
 
         // load địa chỉ
@@ -1647,7 +1672,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //         $scope.showAddress($scope.billResponse)
     //     }
     // }, true);
-    
+
     // // Theo dõi billDetails
     // $scope.$watch('billDetails', function (newValue, oldValue) {
     //     if ($scope.status == 1 && newValue !== oldValue) {

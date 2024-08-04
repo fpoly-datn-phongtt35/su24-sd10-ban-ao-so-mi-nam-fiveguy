@@ -325,6 +325,8 @@ public class NBillServiceImpl implements NBillService {
                 .orElseThrow(
                         () -> new IllegalArgumentException("Bill not found with id " + billId));
 
+//        if(bill.getStatus() != 1 || bill.getStatus() != 2) return 0;
+
         List<BillDetail> billDetails = bill.getBillDetail();
         for (BillDetail billDetail : billDetails) {
             ProductDetail productDetail = billDetail.getProductDetail();
