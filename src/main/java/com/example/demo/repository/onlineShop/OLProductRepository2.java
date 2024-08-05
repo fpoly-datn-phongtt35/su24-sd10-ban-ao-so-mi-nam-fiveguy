@@ -71,7 +71,7 @@ Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
             "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
             "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
             "LEFT JOIN p.images i ON i.product.id = p.id " +
-            "WHERE p.status = 1 AND b.status = 4 " +
+            "WHERE p.status = 1 AND b.status = 21 " +
             "GROUP BY p.id, p.name, p.price, ps.discountPrice, s.value, s.discountType " +  // Grouping by all selected columns
             "ORDER BY COALESCE(SUM(bd.quantity), 0) DESC")
     List<Object[]> findAllProductsOrderedByTotalQuantitySold();

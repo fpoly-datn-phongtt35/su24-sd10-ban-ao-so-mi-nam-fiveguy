@@ -23,8 +23,7 @@ public class OLImageServiceImpl2 implements OLImageService2 {
 
     @Override
     public String getImagePathByProductId(Long id) {
-        List<Image> images = imageRepository.findImagesByProductId(id);
-        return images.isEmpty() ? null : images.get(0).getPath();
+        return imageRepository.findFirstImagePathByProductId(id);
     }
 
 }

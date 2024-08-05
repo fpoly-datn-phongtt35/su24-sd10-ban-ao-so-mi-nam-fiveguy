@@ -404,22 +404,22 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
     }
     
     
-    $scope.validateSaleCode = function() {
-        var saleCode = $scope.saleDetail.code;
+    // $scope.validateSaleCode = function() {
+    //     var saleCode = $scope.saleDetail.code;
     
-        if (saleCode && saleCode.length >= 6 && !$scope.checkSaleCodeUpdate(saleCode)) {
-            // Valid sale code and not already taken
-            $scope.saleCodeError = '';
-        } else if (saleCode && saleCode.length < 6) {
-            // Sale code too short
-            $scope.saleCodeError = 'Mã giảm giá phải có ít nhất 6 ký tự.';
-        } else if (saleCode && $scope.checkSaleCodeUpdate(saleCode)) {
-            // Sale code already exists
-            $scope.saleCodeError = 'Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.';
-        } else {
-            $scope.saleCodeError = ''; // No error case
-        }
-    };
+    //     if (saleCode && saleCode.length >= 6 && !$scope.checkSaleCodeUpdate(saleCode)) {
+    //         // Valid sale code and not already taken
+    //         $scope.saleCodeError = '';
+    //     } else if (saleCode && saleCode.length < 6) {
+    //         // Sale code too short
+    //         $scope.saleCodeError = 'Mã giảm giá phải có ít nhất 6 ký tự.';
+    //     } else if (saleCode && $scope.checkSaleCodeUpdate(saleCode)) {
+    //         // Sale code already exists
+    //         $scope.saleCodeError = 'Mã giảm giá đã tồn tại. Vui lòng chọn mã khác.';
+    //     } else {
+    //         $scope.saleCodeError = ''; // No error case
+    //     }
+    // };
     
     $scope.formatDate = function(dateString) {
         if (!dateString) return ''; // Xử lý trường hợp dateString không hợp lệ

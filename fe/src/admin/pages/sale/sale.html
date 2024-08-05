@@ -160,7 +160,7 @@
                                 <p style="    font-size: 22px;" class="text-center mb-4">BÁO CÁO HIỆU QUẢ CHƯƠNG TRÌNH GIẢM GIÁ</p>
                                 <div class="card mt-4">
                                     <div class="card-body">
-                                        <p class="card-text">Số lần sử dụng giảm giá: <strong>{{ summary.totalProductsSold }}</strong></p>
+                                        <p class="card-text">Số lần sử dụng: <strong>{{ summary.totalProductsSold }}</strong></p>
                                         <p class="card-text">Doanh số tương ứng: <strong>{{ formatCurrency(summary.totalRevenue) }}đ</strong></p>
                                         <!-- <p class="card-text">Lợi nhuận sau giảm giá: <strong>{{ formatCurrency(summary.totalProfit) }}đ</strong></p> -->
                                         <!-- <p class="card-text">Tỷ lệ lợi nhuận: <strong>{{ summary.profitMargin.toFixed(2) }}%</strong></p> -->
@@ -274,20 +274,20 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group" ng-class="{'has-error': (saleForm.saleCode.$touched || saleForm.$submitted) && saleCodeError}">
+                                <!-- <div class="form-group" ng-class="{'has-error': (saleForm.saleCode.$touched || saleForm.$submitted) && saleCodeError}">
                                     <label for="saleCode" class="form-label">Mã giảm giá</label>
                                     <input placeholder="Nhập mã nếu không sẽ tự tạo" type="text" class="form-control" id="saleCode" name="saleCode" ng-model="saleDetail.code" ng-blur="validateSaleCode()">
                                     
-                                    <!-- Error message for required and touched/submitted -->
+                             
                                     <div class="text-danger" ng-show="saleForm.saleCode.$error.required && (saleForm.saleCode.$touched || saleForm.$submitted)">
                                         {{ saleCodeError }}
                                     </div>
                                     
-                                    <!-- Error message from custom validation function -->
+                            
                                     <div class="text-danger" ng-show="saleCodeError">
                                         {{ saleCodeError }}
                                     </div>
-                                </div>
+                                </div> -->
                                 
                                 
 

@@ -15,8 +15,11 @@ public interface OLSizeRepository2 extends JpaRepository<Size, Long> {
     @Query("SELECT DISTINCT s.id, s.name " +
             "FROM ProductDetail pd " +
             "JOIN pd.size s " +
-            "WHERE pd.product.id = :idProduct")
+            "WHERE pd.product.id = :idProduct " +
+            "AND pd.product.status = 1 " +
+            "AND s.status = 1")
     List<Object[]> getSizesByProductId(@Param("idProduct") Long idProduct);
+
 
 
 

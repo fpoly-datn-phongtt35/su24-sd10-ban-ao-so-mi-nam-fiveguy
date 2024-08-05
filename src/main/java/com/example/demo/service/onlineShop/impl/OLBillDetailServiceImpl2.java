@@ -66,4 +66,9 @@ public class OLBillDetailServiceImpl2 implements OLBillDetailService2 {
         return responseList;
     }
 
+    @Override
+    public Integer getTotalQuantitySold(Long idProduct) {
+        return olBillDetailRepository.getTotalQuantitySold(idProduct);
+    }
+
 }

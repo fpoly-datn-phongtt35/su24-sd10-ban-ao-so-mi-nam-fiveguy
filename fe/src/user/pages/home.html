@@ -290,7 +290,7 @@
                         <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
                     </div>
                     <div ng-if="product.saleValue">
-                        <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
+                        <span class="sale-value" ng-if="product.discountType === 1"> -{{formatCurrency( product.saleValue) }}₫</span>
                         <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
                         <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
                     </div>
@@ -329,7 +329,7 @@
                       <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
                   </div>
                   <div ng-if="product.saleValue">
-                      <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
+                      <span class="sale-value" ng-if="product.discountType === 1"> -{{ formatCurrency(product.saleValue) }}₫</span>
                       <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
                       <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
                   </div>

@@ -186,20 +186,11 @@ public class OLProductServiceImpl2 implements OLProductService2 {
 
 
 
-    private int getTotalQuantitySold(Long idProduct) {
-        Optional<Product> product1 = productRepository.findById(idProduct);
-        if (product1.isPresent()){
-            List<ProductDetail> productDetails = olProductDetailService2.findByProduct(product1.get());
-            int totalQuantity = 0;
-            for (ProductDetail detail : productDetails) {
-                List<BillDetail> billDetails = olBillDetailServiceImpl2.findByProductDetail(detail);
-                for (BillDetail billDetail : billDetails) {
-                    if (billDetail.getBill().getStatus() == 5){
-                        totalQuantity += billDetail.getQuantity();
-                    }
-                }
-            }
-            return totalQuantity;
+    public int getTotalQuantitySold(Long idProduct) {
+        Optional<Product> productOptional = productRepository.findById(idProduct);
+        if (productOptional.isPresent()) {
+            Integer totalQuantity = olBillDetailServiceImpl2.getTotalQuantitySold(idProduct);
+            return totalQuantity != null ? totalQuantity : 0;
         }
         return 0;
     }

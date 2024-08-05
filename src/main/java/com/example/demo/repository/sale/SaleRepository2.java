@@ -32,7 +32,6 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    s.id AS saleId, " +
             "    SUM(bd.quantity) AS totalProductsSold, " +
             "    SUM(bd.promotionalPrice * bd.quantity) AS totalRevenue " +
-//            "    SUM((bd.productDetail.product.importPrice - bd.promotionalPrice) * bd.quantity) AS totalProfit " +
             "FROM " +
             "    Sale s " +
             "    JOIN ProductSale ps ON s.id = ps.sale.id " +
@@ -41,10 +40,23 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    JOIN Product p ON pd.product.id = p.id " +
             "    JOIN Bill b ON bd.bill.id = b.id " +
             "WHERE " +
-            "    s.id = :saleId AND b.status = 4 " +
+            "    s.id = :saleId AND (" +
+            "    EXISTS (" +
+            "        SELECT 1 FROM BillHistory bh " +
+            "        WHERE bh.bill.id = b.id AND bh.status = 32" +
+            "    ) OR (" +
+            "        EXISTS (" +
+            "            SELECT 1 FROM BillHistory bh " +
+            "            WHERE bh.bill.id = b.id AND bh.status = 21" +
+            "        ) AND NOT EXISTS (" +
+            "            SELECT 1 FROM BillHistory bh2 " +
+            "            WHERE bh2.bill.id = b.id AND bh2.status = 32" +
+            "        )" +
+            "    )) " +
             "GROUP BY " +
             "    s.id")
     SaleSummaryResponse findSaleSummaryById(@Param("saleId") Long saleId);
+
 
     @Query("SELECT " +
             "    s.id AS saleId, " +
@@ -66,10 +78,23 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    JOIN Customer c ON b.customer.id = c.id " +
             "    JOIN Account a ON c.account.id = a.id " +
             "WHERE " +
-            "    s.id = :saleId AND b.status = 4 AND bd.promotionalPrice > 0 " +
+            "    s.id = :saleId AND (" +
+            "    EXISTS (" +
+            "        SELECT 1 FROM BillHistory bh " +
+            "        WHERE bh.bill.id = b.id AND bh.status = 32" +
+            "    ) OR (" +
+            "        EXISTS (" +
+            "            SELECT 1 FROM BillHistory bh " +
+            "            WHERE bh.bill.id = b.id AND bh.status = 21" +
+            "        ) AND NOT EXISTS (" +
+            "            SELECT 1 FROM BillHistory bh2 " +
+            "            WHERE bh2.bill.id = b.id AND bh2.status = 32" +
+            "        )" +
+            "    )) AND bd.promotionalPrice > 0 " +
             "GROUP BY " +
             "    s.id, c.id, c.fullName, a.phoneNumber, a.email")
     List<SaleDetailResponse> findSaleDetailsById(@Param("saleId") Long saleId);
+
 
 
     // Hàm thực hiện lấy thông tin sản phẩm của khách hàng
@@ -90,12 +115,25 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
             "    JOIN Customer c ON b.customer.id = c.id " +
             "    JOIN Account a ON c.account.id = a.id " +
             "WHERE " +
-            "    s.id = :saleId AND b.status = 4 AND c.id = :customerId " +
+            "    s.id = :saleId AND c.id = :customerId AND (" +
+            "    EXISTS (" +
+            "        SELECT 1 FROM BillHistory bh " +
+            "        WHERE bh.bill.id = b.id AND bh.status = 32" +
+            "    ) OR (" +
+            "        EXISTS (" +
+            "            SELECT 1 FROM BillHistory bh " +
+            "            WHERE bh.bill.id = b.id AND bh.status = 21" +
+            "        ) AND NOT EXISTS (" +
+            "            SELECT 1 FROM BillHistory bh2 " +
+            "            WHERE bh2.bill.id = b.id AND bh2.status = 32" +
+            "        )" +
+            "    )) " +
             "GROUP BY " +
             "    p.name, bd.price, bd.promotionalPrice " +
             "ORDER BY " +
             "    p.name")
     List<ProductDetailResponse> findProductDetailsBySaleAndCustomer(@Param("saleId") Long saleId, @Param("customerId") Long customerId);
+
 
 
 }

@@ -12,8 +12,15 @@ import java.util.List;
 
 public interface OlColorRepository2 extends JpaRepository<Color, Long> {
 
-    @Query("SELECT DISTINCT c.id, c.name, c.colorCode FROM ProductDetail pd JOIN pd.color c WHERE pd.product.id = :idProduct")
+    @Query("SELECT DISTINCT c.id, c.name, c.colorCode " +
+            "FROM ProductDetail pd " +
+            "JOIN pd.color c " +
+            "JOIN pd.product p " +
+            "WHERE pd.product.id = :idProduct " +
+            "AND c.status = 1 " +
+            "AND p.status = 1")
     List<Object[]> getColorsByProductId(@Param("idProduct") Long idProduct);
+
 
 
 
