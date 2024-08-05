@@ -19,8 +19,7 @@
                 <div class="progress-container overflow-auto col-10" style="margin-left: 50px;" id="ccc">
                     <div class="d-flex">
                         <div ng-repeat="step in steps" class="d-flex align-items-center">
-                            <div ng-if="step.time != null" class="step shadow"
-                                ng-class="{'active': $last}">
+                            <div ng-if="step.time != null" class="step shadow" ng-class="{'active': $last}">
                                 <div class="step-circle shadow">
                                     <span class="material-icons statuss-{{step.status}}">{{ step.icon }}</span>
                                 </div>
@@ -72,17 +71,21 @@
                             ng-if="deliveryFlow[status].includes(1) && !errorQuantity"
                             ng-click="showModalStatus(1)">Tiếp tục đơn hàng</button>
 
-                        <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(2)"
-                            ng-click="showModalStatus(2); billHistoryUpdate.description = null">Xác nhận đơn
+                        <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(2) && !errorQuantity"
+                            ng-click="showModalStatus(2)">Xác nhận đơn
                             hàng</button>
                         <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(3)"
                             ng-click="showModalStatus(3)">Xác nhận giao hàng</button>
                         <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(4)"
                             ng-click="showModalStatus(4)">Xác nhận giao thành công</button>
 
-                        <button class="btn btn-outline-danger me-3"
+                        <!-- <button class="btn btn-outline-danger me-3"
                             ng-if="deliveryFlow[status].includes(6) && (paidOrRefundObject.paidOrRefund == 3 || errorQuantity)"
-                            ng-click="showModalStatus(6)">Hủy đơn hàng</button>
+                            ng-click="showModalStatus(6)">Hủy đơn hàng</button> -->
+
+                        <button class="btn btn-outline-danger me-3"
+                            ng-if="[1, 2, 81, 12, 13, 60].includes(status)"
+                            ng-click="showModalStatus(6)">Hủy (test)</button>
 
 
                         <button class="btn btn-outline-danger me-3"
@@ -754,13 +757,15 @@
                             </div>
                         </td>
                         <td class="col-2">
-                            <input type="number" class="form-control w-75 mb-1" ng-value="bd.quantity" ng-class="{'is-invalid': ((bd.quantityNew > bd.productDetail.quantity) 
-                                || (bd.quantity > bd.productDetail.quantity) || (bd.quantity <= 0)) && [1, 60].includes(status)}"
-                                ng-model="bd.quantityNew" min="1" ng-disabled="![1, 60].includes(status)"
+                            <input type="number" class="form-control w-75 mb-1" ng-value="bd.quantity"
+                                ng-class="{'is-invalid': ((bd.quantityNew > bd.productDetail.quantity) 
+                                || (bd.quantity > bd.productDetail.quantity) || (bd.quantity <= 0)) && [1, 60].includes(status)}" ng-model="bd.quantityNew" min="1"
+                                ng-disabled="![1, 60].includes(status)"
                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                 ng-change="validateQuantityBd(bd, bd.quantityNew)"
                                 ng-blur="updateBillDetailQuantity(bd.quantityNew, bd)">
-                            <span class="text-muted" ng-show="[1, 60].includes(status)">Còn lại: {{bd.productDetail.quantity}}</span>
+                            <span class="text-muted" ng-show="[1, 60].includes(status)">Còn lại:
+                                {{bd.productDetail.quantity}}</span>
                         </td>
                         <td class="col-2 text-end">
                             <p class="m-0" ng-if="bd.promotionalPrice > bd.price">
@@ -816,7 +821,7 @@
                     <tr ng-repeat="ro in returnOrders">
                         <td class="col-6">
                             <div class="d-flex align-items-center">
-                                <img ng-src="{{ro.billDetail.productDetail.imagePath}}" width="60px" height="60px"
+                                <img ng-src="{{ro.imagePath}}" width="60px" height="60px"
                                     class="me-3">
                                 <div class="d-flex flex-column text-start">
                                     <div class="fw-bold" ng-init="product = ro.billDetail.productDetail.product">
@@ -961,7 +966,7 @@
 
                 <!-- Thêm phần số tiền đã thanh toán -->
                 <div class="row mt-3 align-items-center"
-                    ng-show="paidOrRefundObject.paidOrRefund != 3 && !([5, 6, 12, 13, 21, 22, 30, 31, 32, 33].includes(status))">
+                    ng-show="paidOrRefundObject.paidOrRefund != 0">
                     <div class="col-7 fw-bold">Số tiền đã thanh toán:</div>
                     <div class="col-5 text-end fs-5 money">{{billResponse.paidAmount + billResponse.paidShippingFee |
                         number:0}}<span class="currency">đ</span></div>

@@ -355,6 +355,30 @@ public class NBillServiceImpl implements NBillService {
         }
     }
 
+    //Hoàn lại số lượng trong productDetail khi hoàn trả
+    public void refundProductDetailsQuantities______new(Bill bill) {
+        List<ReturnOrder> returnOrders = returnOrderRepository
+                .findAllReturnOrdersByBillIdOrderByCreatedAtDesc(bill.getId());
+
+        for (ReturnOrder returnOrder : returnOrders) {
+            BillDetail billDetail = returnOrder.getBillDetail();
+            ProductDetail productDetail = billDetail.getProductDetail();
+
+            // Hoàn lại số lượng trong ProductDetail
+            productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
+            productDetail.setUpdatedAt(new Date());
+            productDetailRepository.save(productDetail);
+
+            // Giảm số lượng trong BillDetail
+//            billDetail.setQuantity(billDetail.getQuantity() - returnOrder.getQuantity());
+
+            // Kiểm tra nếu số lượng trong BillDetail bằng 0 thì xóa
+            if (billDetail.getQuantity() == 0) {
+                billDetailRepository.delete(billDetail);
+            }
+        }
+    }
+
 
     //region Update voucher khi trạng thái sang 2 hoặc 5,6
     @Transactional

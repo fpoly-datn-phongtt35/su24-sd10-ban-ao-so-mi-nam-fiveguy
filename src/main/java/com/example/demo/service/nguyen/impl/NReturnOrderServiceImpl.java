@@ -86,6 +86,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         bill.setTotalAmountAfterDiscount(summary.getTongTienDaGiamSauKhiTra());
         bill.setStatus(30);  // Đảm bảo 23 là trạng thái đúng
         billRepository.save(bill);
+
     }
 
     private BillHistory createNewBillHistory(Bill bill, String fullName) {

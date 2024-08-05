@@ -623,6 +623,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.showSuccess("Xác nhận thanh toán thành công");
             $scope.getAllPaymentStatus($scope.idBill);
             $('#paymentAmountModal').modal('hide');
+
+            $scope.getBillById($scope.idBill);
+            $scope.getBillHistoryByBillId()
         });
     };
 
@@ -678,6 +681,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.showSuccess("Xác nhận hoàn tiền thành công");
             $scope.getAllPaymentStatus($scope.idBill);
             $('#refundAmountModal').modal('hide');
+            
+            $scope.getBillById($scope.idBill);
+            $scope.getBillHistoryByBillId()
             if ($scope.status == 1) {
                 $scope.confirmChangeStatusRefund()
             }
@@ -824,7 +830,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             //         $scope.errorQuantity = false;
             //     }
             // })
-            
+
             // console.log($scope.errorQuantity + "   afgafhgalkds");
         }
     }, true);

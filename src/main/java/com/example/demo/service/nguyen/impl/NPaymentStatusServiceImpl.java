@@ -1,8 +1,10 @@
 package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.entity.BillHistory;
 import com.example.demo.entity.PaymentStatus;
 import com.example.demo.model.request.nguyen.PaymentStatusRequest;
+import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.NPaymentStatusRepository;
 import com.example.demo.service.nguyen.NPaymentStatusService;
@@ -23,6 +25,9 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
     @Autowired
     NBillRepository billRepository;
 
+    @Autowired
+    NBillHistoryRepository billHistoryRepository;
+
     @Override
     public List<PaymentStatus> getAllByBillId(Long billId) {
         return paymentStatusRepository.findAllByBillIdOrderByIdAsc(billId);
@@ -40,11 +45,17 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
 
             billRepository.save(bill);
+
+            // thêm chữ đã hoàn tiền
+            setReasonBillHistory(bill);
         } else if (paymentStatusRequest.getPayOrRefund() == 2) {
             bill.setPaidAmount(paymentStatusRequest.getBill().getTotalAmountAfterDiscount());
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
 
             billRepository.save(bill);
+
+            // thêm chữ đã hoàn tiền
+            setReasonBillHistory(bill);
         } else if (paymentStatusRequest.getPayOrRefund() == 3) {
             bill.setPaidAmount(BigDecimal.ZERO);
             bill.setPaidShippingFee(BigDecimal.ZERO);
@@ -71,6 +82,15 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
         return paymentStatusRepository.save(ps);
     }
 
+    private void setReasonBillHistory(Bill bill) {
+        if (bill.getStatus() == 32) {
+            BillHistory billHistory = billHistoryRepository
+                    .findAllByBillIdAndStatus(bill.getId(), bill.getStatus());
+
+            billHistory.setReason(22);
+            billHistoryRepository.save(billHistory);
+        }
+    }
 
     @Override
     @Transactional

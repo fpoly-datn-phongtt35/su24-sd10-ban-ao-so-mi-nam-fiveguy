@@ -20,8 +20,15 @@ app.controller('nguyen-return-order-ctrl', function ($scope, $http, $location) {
         if(id == undefined || id == null || id == "") return;
         
         $http.get($scope.apiReturnOrder + "/" + id).then(function (response) {
+
+            console.log(response.data);
             if(response.data == ""){
-                $scope.showError("Không tìm thấy")
+                $scope.showError("Không tìm thấy đơn hàng")
+                return;
+            }
+
+            if(response.data.status !== 21){
+                $scope.showWarning("Đơn hàng không hợp lệ để trả hàng")
                 return;
             }
 

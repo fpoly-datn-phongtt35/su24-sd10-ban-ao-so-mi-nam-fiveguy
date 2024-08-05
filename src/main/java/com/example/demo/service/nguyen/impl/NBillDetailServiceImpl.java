@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class NBillDetailServiceImpl implements NBillDetailService {
@@ -48,9 +49,16 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         return billDetailRepository.findById(id).get();
     }
 
+    public List<BillDetail> getAllByBillId_____OLD(Long billId) {
+        return billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
+    }
+
     @Override
     public List<BillDetail> getAllByBillId(Long billId) {
-        return billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
+        List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
+        return billDetails.stream()
+                .filter(billDetail -> billDetail.getQuantity() > 0)
+                .collect(Collectors.toList());
     }
 
     @Override
