@@ -221,27 +221,27 @@
                         <div class="d-flex align-items-center">
                             <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                             <div>
-                                <input id="size" ng-model="size" ng-change="applyFilters()" value="1" type="number"
+                                <input id="size2" ng-model="size2" ng-change="applyFiltersSanPhamBanChay()" value="1" type="number"
                                     max="100" min="1" class="form-control" style="width: 5rem" required />
                             </div>
                         </div>
                         <ul class="pagination">
-                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
-                                <a class="page-link" ng-click="getEmployee(0)">Trang đầu</a>
+                            <li class="page-item" ng-class="{disabled: currentPage2 === 0}">
+                                <a class="page-link" ng-click="goToPageSanPhamBanChay(0)">Trang đầu</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
-                                <a class="page-link" ng-click="getEmployee(currentPage - 1)">&lt;</a>
+                            <li class="page-item" ng-class="{disabled: currentPage2 === 0}">
+                                <a class="page-link" ng-click="goToPageSanPhamBanChay(currentPage2 - 1)">&lt;</a>
                             </li>
                             <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
-                                ng-class="{active: $index === currentPage}">
-                                <a class="page-link" ng-click="currentPage !== $index && getEmployee($index)">{{$index +
+                                ng-class="{active: $index === currentPage2}">
+                                <a class="page-link" ng-click="currentPage2 !== $index && goToPageSanPhamBanChay($index)">{{$index +
                                     1}}</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
-                                <a class="page-link" ng-click="getEmployee(currentPage + 1)">&gt;</a>
+                            <li class="page-item" ng-class="{disabled: currentPage2 === totalPages - 1}">
+                                <a class="page-link" ng-click="goToPageSanPhamBanChay(currentPage2 + 1)">&gt;</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
-                                <a class="page-link" ng-click="getEmployee(totalPages - 1)">Trang cuối</a>
+                            <li class="page-item" ng-class="{disabled: currentPage2 === totalPages - 1}">
+                                <a class="page-link" ng-click="goToPageSanPhamBanChay(totalPages - 1)">Trang cuối</a>
                             </li>
                         </ul>
                     </div>
@@ -255,10 +255,69 @@
                         <canvas id="myChart"></canvas>
                     </div>
                 </div>
+
+                <!-- Khách hàng mua nhiều nhất -->
+                <div class="col-md-8">
+                    <div class="db-table">
+                        <div class="heading-db-table">Top khách hàng mua nhiều nhất {{hihi}}</div>
+                        <table class="table">
+                            <thead class="heading-table">
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên khách hàng</th>
+                                    <th>Số lượng sản phẩm</th>
+                                    <th>Số lượng hóa đơn</th>
+                                    <th>Tổng tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody class="tbody-table">
+                                <tr ng-repeat="khachHangMuaNhieuNhat in khachHangMuaNhieuNhat">
+                                    <td class="text-center">{{$index + 1}}</td>
+                                    <td class="text-left">{{khachHangMuaNhieuNhat.tenKhachHang}}</td>
+                                    <td class="text-left">{{khachHangMuaNhieuNhat.tongSoLuongMua}}</td>
+                                    <td class="text-center">{{khachHangMuaNhieuNhat.tongSoBill}}</td>
+                                    <td class="text-right">
+                                        {{khachHangMuaNhieuNhat.tongDoanhThu | currency}}
+                                    </td>
+                                    <!-- <td class="text-right">{{sanPhamBanChay.doanh_thu | currency}}</td> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="d-flex align-items-center">
+                            <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
+                            <div>
+                                <input id="size3" ng-model="size3" ng-change="applyFiltersKhachHangMuaNhieu()" value="1" type="number"
+                                    max="100" min="1" class="form-control" style="width: 5rem" required />
+                            </div>
+                        </div>
+                        <ul class="pagination">
+                            <li class="page-item" ng-class="{disabled: currentPage3 === 0}">
+                                <a class="page-link" ng-click="goToPageKhachHangMuaNhieu(0)">Trang đầu</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage3 === 0}">
+                                <a class="page-link" ng-click="currentPage3 > 0 && goToPage(currentPage3 - 1)">&lt;</a>
+                            </li>
+                            <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
+                                ng-class="{active: $index === currentPage3}">
+                                <a class="page-link" ng-click="currentPage3 !== $index && goToPage($index)">{{$index + 1}}</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage3 === totalPages - 1}">
+                                <a class="page-link" ng-click="currentPage3 < totalPages - 1 && goToPage(currentPage3 + 1)">&gt;</a>
+                            </li>
+                            <li class="page-item" ng-class="{disabled: currentPage3 === totalPages - 1}">
+                                <a class="page-link" ng-click="goToPage(totalPages - 1)">Trang cuối</a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </div>
+
             </div>
         </div>
-
         <!-- End Phần 2 -->
+
         <div class="d-flex align-items-stretch gap-3">
             <!-- start Phần 3 -->
             <div class="db-table-list p-3 mt-3">
@@ -303,26 +362,26 @@
                         <div class="d-flex align-items-center">
                             <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                             <div>
-                                <input id="size" ng-model="size" ng-change="applyFilters()" value="1" type="number"
+                                <input id="size1" ng-model="size1" ng-change="applyFiltersSanPhamSapHet()" value="1" type="number"
                                     max="100" min="1" class="form-control" style="width: 5rem" required />
                             </div>
                         </div>
                         <ul class="pagination">
-                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                            <li class="page-item" ng-class="{disabled: currentPage1 === 0}">
                                 <a class="page-link" ng-click="getProductDetall(0)">Trang đầu</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
-                                <a class="page-link" ng-click="getProductDetall(currentPage - 1)">&lt;</a>
+                            <li class="page-item" ng-class="{disabled: currentPage1 === 0}">
+                                <a class="page-link" ng-click="getProductDetall(currentPage1 - 1)">&lt;</a>
                             </li>
                             <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
-                                ng-class="{active: $index === currentPage}">
+                                ng-class="{active: $index === currentPage1}">
                                 <a class="page-link"
-                                    ng-click="currentPage !== $index && getProductDetall($index)">{{$index + 1}}</a>
+                                    ng-click="currentPage1 !== $index && getProductDetall($index)">{{$index + 1}}</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
-                                <a class="page-link" ng-click="getProductDetall(currentPage + 1)">&gt;</a>
+                            <li class="page-item" ng-class="{disabled: currentPage1 === totalPages - 1}">
+                                <a class="page-link" ng-click="getProductDetall(currentPage1 + 1)">&gt;</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                            <li class="page-item" ng-class="{disabled: currentPage1 === totalPages - 1}">
                                 <a class="page-link" ng-click="getProductDetall(totalPages - 1)">Trang cuối</a>
                             </li>
                         </ul>
@@ -337,9 +396,11 @@
                     <label for="">Tốc độ tăng trưởng của cửa hàng</label>
                     <!-- <input id="totalQuantity" ng-model="filters.totalQuantity" ng-change="applyFilters()" value="1"
                         type="number" max="100" min="1" class="form-control" style="width: 5rem;" required /> -->
-                        <a type="button" class="reload" ng-click=""><div class="d-flex align-items-center gap-2 reload">
+                    <a type="button" class="reload" ng-click="">
+                        <div class="d-flex align-items-center gap-2 reload">
                             <span class="material-icons"> sync </span>
-                        </div></a>
+                        </div>
+                    </a>
                 </div>
                 <div>
                     <div class="table-custom">

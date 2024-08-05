@@ -92,13 +92,15 @@ public class ProductDetailRestControllerTinh {
         // Áp dụng phân trang cho danh sách đã sắp xếp và lọc
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), productAndDetails.size());
+        if (start > end) {
+            start = end; // Điều chỉnh start để tránh lỗi
+        }
         List<Map<String, Object>> pagedProductAndDetails = productAndDetails.subList(start, end);
 
         Page<Map<String, Object>> resultPage = new PageImpl<>(pagedProductAndDetails, pageable, productAndDetails.size());
 
         return new PaginationResponse<>(resultPage);
     }
-
 
 
 

@@ -2,6 +2,7 @@ package com.example.demo.service.tinh;
 
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.ThongKe;
+import com.example.demo.entity.ThongKeKhachHang;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,14 +16,27 @@ public interface BillServiceTinh {
 
     void updateBillStatus(Long id);
 
-    List<ThongKe> getSanPhamBanChayNgay(Date date);
+    Page<ThongKe> getSanPhamBanChayNgay(Date date, Pageable pageable);
 
-    List<ThongKe> getSanPhamBanChayTuan(Date date);
+    Page<ThongKe> getSanPhamBanChayTuan(Date date, Pageable pageable);
 
-    List<ThongKe> getSanPhamBanChayThang(Date date);
+    Page<ThongKe> getSanPhamBanChayThang(Date date, Pageable pageable);
 
-    List<ThongKe> getSanPhamBanChayNam(Date date);
+    Page<ThongKe> getSanPhamBanChayNam(Date date, Pageable pageable);
 
-    List<ThongKe> getSanPhamBanChayTrongKhoangThoiGian(Date startDate, Date endDate);
+    Page<ThongKe> getSanPhamBanChayTrongKhoangThoiGian(Date startDate, Date endDate, Pageable pageable);
+
+    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNgay(Date date, Pageable pageable);
+
+    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuan(Date date, Pageable pageable);
+
+    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatThang(Date date, Pageable pageable);
+
+    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNam(Date date, Pageable pageable);
+
+
+    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuyChinh(Date startDate, Date endDate, Pageable pageable);
+
+
 
 }
