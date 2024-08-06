@@ -57,7 +57,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
 
         List<ReturnOrder> savedReturnOrders = returnOrderRepository.saveAll(returnOrders);
 
-        updateBillDetailsQuantities(savedReturnOrders);
+//        updateBillDetailsQuantities(savedReturnOrders);
 
 //        PaymentStatus newPaymentStatus = createNewPaymentStatus(bill, returnOrderSummary.getTongTienTra());
 //        paymentStatusRepository.save(newPaymentStatus);
@@ -82,12 +82,19 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
     }
 
     private void updateBill(Bill bill, ReturnOrderSummary summary) {
-        bill.setTotalAmount(summary.getTongTienSauKhiTra());
-        bill.setTotalAmountAfterDiscount(summary.getTongTienDaGiamSauKhiTra());
+//        BigDecimal newTotalAmount = BigDecimal.ZERO;
+//        for (BillDetail detail : billDetailRepository.findAllByBillIdOrderByIdDesc(bill.getId())) {
+//            newTotalAmount = newTotalAmount.add(
+//                    detail.getPromotionalPrice().multiply(BigDecimal.valueOf(detail.getQuantity()))
+//            );
+//        }
+//        bill.setTotalAmount(newTotalAmount);
+//        bill.setTotalAmountAfterDiscount(summary.getTongTienDaGiamSauKhiTra());
         bill.setStatus(30);  // Đảm bảo 23 là trạng thái đúng
         billRepository.save(bill);
 
     }
+
 
     private BillHistory createNewBillHistory(Bill bill, String fullName) {
         BillHistory newBillHistory = new BillHistory();
@@ -149,7 +156,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         ReturnOrderSummary summary = new ReturnOrderSummary();
 
         BigDecimal tiLeGiam = BigDecimal.ONE.subtract(
-                bill.getTotalAmountAfterDiscount().divide(bill.getTotalAmount(), 4, RoundingMode.HALF_UP)
+                bill.getTotalAmountAfterDiscount().divide(bill.getTotalAmount(), 50, RoundingMode.HALF_UP)
         );
 
         BigDecimal tongTienTra = BigDecimal.ZERO;
@@ -159,9 +166,10 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
             BigDecimal giaGoc = returnOrder.getBillDetail().getPromotionalPrice();
             int soLuong = returnOrder.getQuantity();
 
+//            BigDecimal tienHoanTra = giaGoc.multiply(BigDecimal.valueOf(soLuong))
+//                    .multiply(BigDecimal.ONE.subtract(tiLeGiam)).setScale(0, RoundingMode.HALF_UP);
             BigDecimal tienHoanTra = giaGoc.multiply(BigDecimal.valueOf(soLuong))
-                    .multiply(BigDecimal.ONE.subtract(tiLeGiam)).setScale(0, RoundingMode.HALF_UP);
-
+                    .multiply(BigDecimal.ONE.subtract(tiLeGiam));
             tongTienTra = tongTienTra.add(tienHoanTra);
             tongSoLuongTraLai += soLuong;
         }
@@ -170,7 +178,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         summary.setTongTienDaGiam(bill.getTotalAmountAfterDiscount().setScale(0, RoundingMode.HALF_UP));
         summary.setTongTienSauKhiTra(bill.getTotalAmount().subtract(tongTienTra).setScale(0, RoundingMode.HALF_UP));
         summary.setTongTienDaGiamSauKhiTra(bill.getTotalAmountAfterDiscount().subtract(tongTienTra).setScale(0, RoundingMode.HALF_UP));
-        summary.setTiLeGiam(tiLeGiam.setScale(4, RoundingMode.HALF_UP));
+        summary.setTiLeGiam(tiLeGiam.setScale(50, RoundingMode.HALF_UP));
         summary.setTongSoLuong(bill.getBillDetail().stream().mapToInt(BillDetail::getQuantity).sum());
         summary.setTongSoLuongTraLai(tongSoLuongTraLai);
         summary.setGiaTrungBinhSanPham(bill.getTotalAmount()
@@ -216,6 +224,51 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
                             .multiply(BigDecimal.ONE.subtract(tiLeGiam));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+
+    //Hiển thị
+    public ReturnOrderSummary calculateBillDetailSummary(Long billId, List<BillDetail> billDetails) {
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
+        if (billDetails.isEmpty()) return null;
+
+        ReturnOrderSummary summary = new ReturnOrderSummary();
+
+        BigDecimal tiLeGiam = BigDecimal.ONE.subtract(
+                bill.getTotalAmountAfterDiscount().divide(bill.getTotalAmount(), 50, RoundingMode.HALF_UP)
+        );
+
+        BigDecimal tongTienTra = BigDecimal.ZERO;
+        int tongSoLuongTraLai = 0;
+
+        for (BillDetail billDetail : billDetails) {
+            BigDecimal giaGoc = billDetail.getPromotionalPrice();
+            int soLuong = billDetail.getQuantity();
+
+//            BigDecimal tienHoanTra = giaGoc.multiply(BigDecimal.valueOf(soLuong))
+//                    .multiply(BigDecimal.ONE.subtract(tiLeGiam)).setScale(0, RoundingMode.HALF_UP);
+            BigDecimal tienHoanTra = giaGoc.multiply(BigDecimal.valueOf(soLuong))
+                    .multiply(BigDecimal.ONE.subtract(tiLeGiam));
+
+            tongTienTra = tongTienTra.add(tienHoanTra);
+            tongSoLuongTraLai += soLuong;
+        }
+
+        summary.setTongTien(bill.getTotalAmount().setScale(0, RoundingMode.HALF_UP));
+        summary.setTongTienDaGiam(bill.getTotalAmountAfterDiscount().setScale(0, RoundingMode.HALF_UP));
+        summary.setTongTienSauKhiTra(bill.getTotalAmount().subtract(tongTienTra).setScale(0, RoundingMode.HALF_UP));
+        summary.setTongTienDaGiamSauKhiTra(bill.getTotalAmountAfterDiscount().subtract(tongTienTra).setScale(0, RoundingMode.HALF_UP));
+        summary.setTiLeGiam(tiLeGiam.setScale(50, RoundingMode.HALF_UP));
+        summary.setTongSoLuong(bill.getBillDetail().stream().mapToInt(BillDetail::getQuantity).sum());
+        summary.setTongSoLuongTraLai(tongSoLuongTraLai);
+        summary.setGiaTrungBinhSanPham(bill.getTotalAmount()
+                .divide(BigDecimal.valueOf(summary.getTongSoLuong()), 0, RoundingMode.HALF_UP));
+        summary.setGiaTrungBinhSanPhamDaGiam(bill.getTotalAmountAfterDiscount()
+                .divide(BigDecimal.valueOf(summary.getTongSoLuong()), 0, RoundingMode.HALF_UP));
+        summary.setTongTienTra(tongTienTra.setScale(0, RoundingMode.HALF_UP));
+
+        return summary;
     }
 
 

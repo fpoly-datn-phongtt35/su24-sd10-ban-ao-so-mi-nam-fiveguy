@@ -93,6 +93,7 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
     }
 
     $scope.confirmReturn = function () {
+
         $http.post($scope.apiReturnOrder + "/addReturnOrder", $scope.returnOrders).then(function (response) {
             console.log(response);
 
@@ -115,6 +116,21 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
     $scope.$watch('returnOrders', function (newValue, oldValue) {
         if (newValue !== oldValue) {
             $scope.calculateSummary()
+        }
+    }, true);
+
+    $scope.calculateSummaryBillDetail = function () {
+        $http.put($scope.apiReturnOrder + "/" + $scope.idBill + "/calculateSummaryBillDetail", $scope.billDetails).then(function (response) {
+            // console.log(response.data);
+            $scope.billDetailSummary = response.data
+        }).catch(function (error) {
+            console.error("Error:", error);
+        });
+    }
+
+    $scope.$watch('billDetails', function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+            $scope.calculateSummaryBillDetail()
         }
     }, true);
 });

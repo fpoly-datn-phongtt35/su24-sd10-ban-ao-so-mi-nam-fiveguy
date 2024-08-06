@@ -1,9 +1,11 @@
 package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.Bill;
+import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.BillHistory;
 import com.example.demo.entity.PaymentStatus;
 import com.example.demo.model.request.nguyen.PaymentStatusRequest;
+import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
 import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.NPaymentStatusRepository;
@@ -27,6 +29,9 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
 
     @Autowired
     NBillHistoryRepository billHistoryRepository;
+
+    @Autowired
+    NBillDetailRepository billDetailRepository;
 
     @Override
     public List<PaymentStatus> getAllByBillId(Long billId) {
@@ -66,6 +71,9 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
 
             billRepository.save(bill);
+        } else if(paymentStatusRequest.getPayOrRefund() == 10) {
+            // thêm chữ đã hoàn tiền
+            setReasonBillHistory(bill);
         }
 
         PaymentStatus ps = new PaymentStatus();
@@ -91,6 +99,7 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
             billHistoryRepository.save(billHistory);
         }
     }
+
 
     @Override
     @Transactional

@@ -71,8 +71,9 @@
                             ng-if="deliveryFlow[status].includes(1) && !errorQuantity"
                             ng-click="showModalStatus(1)">Tiếp tục đơn hàng</button>
 
-                        <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(2) && !errorQuantity"
-                            ng-click="showModalStatus(2)">Xác nhận đơn
+                        <button class="btn btn-outline-primary me-3"
+                            ng-if="deliveryFlow[status].includes(2) && !errorQuantity" ng-click="showModalStatus(2)">Xác
+                            nhận đơn
                             hàng</button>
                         <button class="btn btn-outline-primary me-3" ng-if="deliveryFlow[status].includes(3)"
                             ng-click="showModalStatus(3)">Xác nhận giao hàng</button>
@@ -83,8 +84,7 @@
                             ng-if="deliveryFlow[status].includes(6) && (paidOrRefundObject.paidOrRefund == 3 || errorQuantity)"
                             ng-click="showModalStatus(6)">Hủy đơn hàng</button> -->
 
-                        <button class="btn btn-outline-danger me-3"
-                            ng-if="[1, 2, 81, 12, 13, 60].includes(status)"
+                        <button class="btn btn-outline-danger me-3" ng-if="[1, 2, 81, 12, 13, 60].includes(status)"
                             ng-click="showModalStatus(6)">Hủy (test)</button>
 
 
@@ -123,8 +123,7 @@
                         <button class="btn btn-outline-warning me-3" ng-if="deliveryFlow[status].includes(30)"
                             ng-click="goToReturnOrder()">Trả hàng</button>
 
-                        <button class="btn btn-outline-success me-3"
-                            ng-if="deliveryFlow[status].includes(32) && paidOrRefundObject.paidOrRefund == 2"
+                        <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(32)"
                             ng-click="showModalStatus(32)">Xác nhận trả hàng</button>
                         <!-- <button class="btn btn-outline-success me-3" ng-if="deliveryFlow[status].includes(33)"
                             ng-click="showModalStatus(33)">Trả hàng thất bại</button> -->
@@ -294,9 +293,16 @@
                         ng-show="[5, 30].includes(status)  && paidOrRefundObject.paidOrRefund == 2"
                         ng-click="showConfirmRefund()">
                         Xác nhận hoàn tiền (test)</button> -->
+
                     <button class="btn btn-primary"
-                        ng-show="[12, 32].includes(status) && paidOrRefundObject.paidOrRefund == 2"
+                        ng-show="[12].includes(status) && paidOrRefundObject.paidOrRefund == 2"
                         ng-click="showConfirmRefund()">
+                        Hoàn tiền trả hàng</button>
+
+
+                    <button class="btn btn-primary"
+                        ng-show="[32].includes(status) && paidOrRefundObject.paidOrRefund == 3"
+                        ng-click="showHoanTienTraHang()">
                         Hoàn tiền trả hàng</button>
 
                     <button class="btn btn-primary"
@@ -576,6 +582,61 @@
         </div>
     </div>
 
+    <!-- Modal Xác nhận hoàn tiền-->
+    <div class="modal fade" id="traHangHoanTienModal" tabindex="-1" aria-labelledby="paymentModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Hoàn tiền cho khách hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form name="paymentForm">
+                    <div class="modal-body">
+                        <div class="mb-3 row">
+                            <label for="totalAmount" class="col-sm-4 col-form-label">Số tiền hoàn trả</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="totalAmount"
+                                        ng-model="customerPayment.paymentAmount" readonly>
+                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-sm-4 col-form-label">Phương thức thanh toán</label>
+                            <div class="form-group col-sm-8">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="radioType2" id="radioType2"
+                                        ng-value="1" ng-model="customerPayment.paymentMethod">
+                                    <label class="form-check-label" for="radioType2">Tiền mặt</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="radioType1" id="radioType1"
+                                        ng-value="2" ng-model="customerPayment.paymentMethod">
+                                    <label class="form-check-label" for="radioType1">Chuyển khoản</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label for="notes" class="col-sm-4 col-form-label">Ghi chú</label>
+                            <div class="col-sm-8">
+                                <textarea class="form-control" id="notes" name="notes" rows="3"
+                                    ng-model="customerPayment.note" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary" ng-click="submitRefundPayment()">Xác nhận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Thông tin đơn hàng -->
     <div class="row card mt-4 border rounded p-4 shadow mb-3 bg-body">
         <div class="d-flex justify-content-between mb-3">
@@ -785,10 +846,11 @@
                             </button>
                         </td>
                     </tr>
+                    <td colspan="12" ng-show="billDetails.length <= 0">Không có sản phẩm</td>
                 </tbody>
 
                 <tfoot>
-                    <tr>
+                    <tr ng-show="billDetails.length > 0">
                         <th colspan="2"></th>
                         <th scope="col" class="fw-bold">{{billDetailSummary.totalQuantity}}</th>
                         <th colspan="1"></th>
@@ -813,7 +875,7 @@
                     <tr>
                         <th class="col-6">Sản phẩm</th>
                         <th class="col-2">Số lượng</th>
-                        <th class="col-2">Đơn giá</th>
+                        <th class="col-2">Đơn giá hoàn</th>
                         <th class="col-2">Tổng</th>
                     </tr>
                 </thead>
@@ -821,8 +883,7 @@
                     <tr ng-repeat="ro in returnOrders">
                         <td class="col-6">
                             <div class="d-flex align-items-center">
-                                <img ng-src="{{ro.imagePath}}" width="60px" height="60px"
-                                    class="me-3">
+                                <img ng-src="{{ro.imagePath}}" width="60px" height="60px" class="me-3">
                                 <div class="d-flex flex-column text-start">
                                     <div class="fw-bold" ng-init="product = ro.billDetail.productDetail.product">
                                         {{product.name + ' ' + product.collar.name + ' ' + product.wrist.name}}
@@ -841,8 +902,8 @@
                             </div>
                         </td>
                         <td class="col-2">{{ro.quantity}}</td>
-                        <td class="col-2">{{ro.billDetail.price | number:0}} VND</td>
-                        <td class="col-2">{{ro.billDetail.price * ro.quantity | number:0}} VND</td>
+                        <td class="col-2">{{ro.billDetail.price * (1 - returnOrdersSummary.tiLeGiam) | number:0}} VND</td>
+                        <td class="col-2">{{ro.billDetail.price * ro.quantity * (1 - returnOrdersSummary.tiLeGiam) | number:0}} VND</td>
                     </tr>
                     <td colspan="12" ng-show="returnOrders.length <= 0">Không có sản phẩm</td>
                 </tbody>
@@ -910,7 +971,7 @@
                     </div>
                 </div> -->
                 <div class="row align-items-center">
-                    <div class="col-7 fw-bold">Phí giao hàng in bill:</div>
+                    <div class="col-7 fw-bold">Phí giao hàng:</div>
                     <div class="col-5 text-end fs-5 money fw-bold">{{billResponse.shippingFee | number:0}}<span
                             class="currency">đ</span></div>
                 </div>
@@ -959,14 +1020,14 @@
                 <div class="row align-items-center">
                     <div class="col-7 fw-bold fs-5">Tổng tiền thanh toán:</div>
                     <div class="col-5 text-end fs-4 fw-bold money highlight-total">
-                        {{billResponse.totalAmountAfterDiscount + shippingFee | number:0}}<span
+                        {{billResponse.totalAmountAfterDiscount + billResponse.shippingFee | number:0}}<span
                             class="currency">đ</span>
                     </div>
                 </div>
 
                 <!-- Thêm phần số tiền đã thanh toán -->
                 <div class="row mt-3 align-items-center"
-                    ng-show="paidOrRefundObject.paidOrRefund != 0">
+                    ng-show="paidOrRefundObject.paidOrRefund != 0 && status !== 32">
                     <div class="col-7 fw-bold">Số tiền đã thanh toán:</div>
                     <div class="col-5 text-end fs-5 money">{{billResponse.paidAmount + billResponse.paidShippingFee |
                         number:0}}<span class="currency">đ</span></div>
@@ -974,23 +1035,30 @@
 
                 <!-- Thêm phần số tiền cần hoàn trả hoặc thanh toán tiếp -->
                 <div class="row mt-2 align-items-center"
-                    ng-if="(billResponse.totalAmountAfterDiscount + shippingFee) != (billResponse.paidAmount + billResponse.paidShippingFee) && (billResponse.paidAmount != 0 || billResponse.paidShippingFee != 0)">
+                    ng-if="(billResponse.totalAmountAfterDiscount + billResponse.shippingFee) != (billResponse.paidAmount + billResponse.paidShippingFee) && (billResponse.paidAmount != 0 || billResponse.paidShippingFee != 0)">
                     <div class="col-7 fw-bold">
-                        <span ng-if="paidOrRefundObject.paidOrRefund == 1">Số
+                        <span ng-if="paidOrRefundObject.paidOrRefund == 1 && status !== 32">Số
                             tiền cần thanh toán tiếp:</span>
-                        <span ng-if="paidOrRefundObject.paidOrRefund == 2">Số
+                        <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32">Số
                             tiền cần hoàn trả:</span>
+                        <span ng-if="status == 32">Số
+                            tiền hoàn trả:</span>
                     </div>
-                    <div class="col-5 text-end fs-5 money" ng-show="paidOrRefundObject.paidOrRefund == 1"
-                        ng-class="{'highlight-total': (billResponse.totalAmountAfterDiscount + shippingFee) > (billResponse.paidAmount + billResponse.paidShippingFee)}">
+                    <div class="col-5 text-end fs-5 money"
+                        ng-show="paidOrRefundObject.paidOrRefund == 1 && status !== 32"
+                        ng-class="{'highlight-total': (billResponse.totalAmountAfterDiscount + billResponse.shippingFee) > (billResponse.paidAmount + billResponse.paidShippingFee)}">
                         {{((billResponse.totalAmountAfterDiscount + billResponse.shippingFee) - (billResponse.paidAmount
                         + billResponse.paidShippingFee)) | number:0}}<span class="currency">đ</span>
                     </div>
-                    <div class="col-5 text-end fs-5 money" ng-show="paidOrRefundObject.paidOrRefund == 2"
-                        ng-class="{'highlight-discount': (billResponse.totalAmountAfterDiscount + shippingFee) < (billResponse.paidAmount + billResponse.paidShippingFee)}">
+                    <div class="col-5 text-end fs-5 money"
+                        ng-show="paidOrRefundObject.paidOrRefund == 2 && status !== 32"
+                        ng-class="{'highlight-discount': (billResponse.totalAmountAfterDiscount + billResponse.shippingFee) < (billResponse.paidAmount + billResponse.paidShippingFee)}">
                         {{(billResponse.paidAmount + billResponse.paidShippingFee) -
                         (billResponse.totalAmountAfterDiscount + billResponse.shippingFee)| number:0}}<span
                             class="currency">đ</span>
+                    </div>
+                    <div class="col-5 text-end fs-5 money highlight-discount" ng-show="status == 32">
+                        {{ returnOrdersSummary.tongTienTra | number:0}}<span class="currency">đ</span>
                     </div>
                 </div>
             </div>

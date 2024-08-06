@@ -1,5 +1,6 @@
 package com.example.demo.restController.nguyen;
 
+import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.ReturnOrder;
 import com.example.demo.model.response.nguyen.ReturnOrderResponse;
 import com.example.demo.security.service.SCAccountService;
@@ -62,6 +63,14 @@ public class NReturnOrderRestController {
 
         return ResponseEntity
                 .ok(returnOrderService.calculateReturnOrderSummary(billId, returnOrders));
+    }
+
+    @PutMapping("/{billId}/calculateSummaryBillDetail")
+    public ResponseEntity<?> calculateBillDetailSummary(@PathVariable Long billId,
+                                                         @RequestBody List<BillDetail> billDetails) {
+
+        return ResponseEntity
+                .ok(returnOrderService.calculateBillDetailSummary(billId, billDetails));
     }
 
     private ReturnOrderResponse toReturnOrderResponse(ReturnOrder returnOrder, String imagePath) {
