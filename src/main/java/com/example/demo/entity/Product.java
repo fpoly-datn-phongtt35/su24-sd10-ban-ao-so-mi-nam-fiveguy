@@ -57,13 +57,9 @@ public class Product {
     @JoinColumn(name = "IdCategory", referencedColumnName = "Id")
     private Category category;
 
-//    @ManyToOne
-//    @JoinColumn(name = "IdBrandSuppiler", referencedColumnName = "Id")
-//    private BrandSuppiler brand;
-
     @ManyToOne
-    @JoinColumn(name = "IdSuppiler", referencedColumnName = "Id")
-    private Supplier supplier;
+    @JoinColumn(name = "IdBrand", referencedColumnName = "Id")
+    private Brand brand;
 
     @ManyToOne
     @JoinColumn(name = "IdMaterial", referencedColumnName = "Id")
