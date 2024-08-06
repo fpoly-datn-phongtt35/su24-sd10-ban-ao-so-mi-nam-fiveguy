@@ -77,7 +77,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    sp.Price AS price, " +
                 "    COALESCE(SUM(hdct.quantity), 0) AS so_luong_ban, " +
                 "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS doanh_thu, " +
-                "    ha.Path As anh_mac_dinh " +
+                "    MAX(ha.Path) AS anh_mac_dinh " +
                 "FROM " +
                 "    ProductDetails pd " +
                 "JOIN " +
@@ -87,15 +87,15 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "JOIN " +
                 "    Products sp ON pd.IdProduct = sp.Id " +
                 "LEFT JOIN " +
-                "    Images ha ON sp.Id = ha.Id " +
+                "    Images ha ON sp.Id = ha.IdProduct " +
                 "JOIN " +
                 "    PaymentStatus ps ON b.Id = ps.BillId " +
                 "WHERE " +
-                "    ps.PaymentDate = ? " +
+                "    CAST(ps.PaymentDate AS DATE) = CAST(? AS DATE) " +
                 "    AND ps.CustomerPaymentStatus = 2 " +
                 "    AND b.Status = 21 " +
                 "GROUP BY " +
-                "    sp.Id, sp.Name, sp.Price, ha.Path " +
+                "    sp.Id, sp.Name, sp.Price " +
                 "ORDER BY " +
                 "    so_luong_ban DESC";
 
@@ -114,10 +114,9 @@ public class BillServiceImplTinh implements BillServiceTinh {
 
         // Implement pagination manually since we can't use Pageable directly with jdbctemplate
         int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), results.size());
+        int end = Math.min(start + pageable.getPageSize(), results.size());
         return new PageImpl<>(results.subList(start, end), pageable, results.size());
     }
-
 
     @Override
     public Page<ThongKe> getSanPhamBanChayTuan(Date date, Pageable pageable) {
@@ -127,7 +126,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    sp.Price AS price, " +
                 "    COALESCE(SUM(hdct.quantity), 0) AS so_luong_ban, " +
                 "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS doanh_thu, " +
-                "    ha.Path AS anh_mac_dinh " +
+                "    MAX(ha.Path) AS anh_mac_dinh " +
                 "FROM " +
                 "    ProductDetails spct " +
                 "JOIN " +
@@ -137,7 +136,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "JOIN " +
                 "    Products sp ON spct.IdProduct = sp.Id " +
                 "LEFT JOIN " +
-                "    Images ha ON sp.Id = ha.Id " +
+                "    Images ha ON sp.Id = ha.IdProduct " +
                 "JOIN " +
                 "    PaymentStatus ps ON hd.Id = ps.BillId " +
                 "WHERE " +
@@ -146,7 +145,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    AND ps.CustomerPaymentStatus = 2 " +
                 "    AND hd.Status = 21 " +
                 "GROUP BY " +
-                "    sp.Id, sp.Name, sp.Price, ha.Path " +
+                "    sp.Id, sp.Name, sp.Price " +
                 "ORDER BY " +
                 "    so_luong_ban DESC";
 
@@ -169,6 +168,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
         return new PageImpl<>(results.subList(start, end), pageable, results.size());
     }
 
+
     @Override
     public Page<ThongKe> getSanPhamBanChayThang(Date date, Pageable pageable) {
         String sql = "SELECT " +
@@ -177,7 +177,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    sp.Price AS price, " +
                 "    COALESCE(SUM(hdct.quantity), 0) AS so_luong_ban, " +
                 "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS doanh_thu, " +
-                "   ha.Path AS anh_mac_dinh " +
+                "    MAX(ha.Path) AS anh_mac_dinh " +
                 "FROM " +
                 "    ProductDetails spct " +
                 "JOIN " +
@@ -187,7 +187,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "JOIN " +
                 "    Products sp ON spct.IdProduct = sp.Id " +
                 "LEFT JOIN " +
-                "    Images ha ON sp.Id = ha.Id " +
+                "    Images ha ON sp.Id = ha.IdProduct " +
                 "JOIN " +
                 "    PaymentStatus ps ON hd.Id = ps.BillId " +
                 "WHERE " +
@@ -196,7 +196,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    AND ps.CustomerPaymentStatus = 2 " +
                 "    AND hd.Status = 21 " +
                 "GROUP BY " +
-                "    sp.Id, sp.Name, sp.Price,ha.Path " +
+                "    sp.Id, sp.Name, sp.Price " +
                 "ORDER BY " +
                 "    so_luong_ban DESC";
 
@@ -222,29 +222,32 @@ public class BillServiceImplTinh implements BillServiceTinh {
     @Override
     public Page<ThongKe> getSanPhamBanChayNam(Date date, Pageable pageable) {
         String sql = "SELECT " +
-                "spct.Id AS sanpham_id, " +
-                "sp.Name AS ten_sanpham, " +
-                "sp.Price AS price, " +
-                "COALESCE(SUM(hdct.quantity), 0) AS so_luong_ban, " +
-                "SUM(hdct.Quantity * sp.Price) AS doanh_thu, " +
-                "ha.Path AS anh_mac_dinh " +
+                "    sp.id AS sanpham_id, " +
+                "    sp.Name AS ten_sanpham, " +
+                "    sp.Price AS price, " +
+                "    COALESCE(SUM(hdct.quantity), 0) AS so_luong_ban,  " +
+                "    COALESCE(SUM(hdct.quantity * sp.Price), 0) AS doanh_thu, " +
+                "    MAX(ha.Path) AS anh_mac_dinh " +
                 "FROM " +
-                "ProductDetails spct " +
+                "    ProductDetails spct " +
                 "JOIN " +
-                "BillDetails hdct ON spct.id = hdct.IdProductDetail " +
+                "    BillDetails hdct ON spct.id = hdct.IdProductDetail " +
                 "JOIN " +
-                "Bills hd ON hd.id = hdct.IdBill " +
+                "    Bills hd ON hd.id = hdct.IdBill " +
                 "JOIN " +
-                "Products sp ON spct.IdProduct = sp.id " +
+                "    Products sp ON spct.IdProduct = sp.id " +
+                "LEFT JOIN " +
+                "    Images ha ON sp.id = ha.IdProduct " +
                 "JOIN " +
-                "Images ha ON spct.id = ha.Id " +
-                "JOIN " +
-                "PaymentStatus ps ON hd.id = ps.BillId " +
-                "WHERE DATEPART(YEAR, ps.paymentDate) = YEAR(?) " +
-                "AND ps.customerPaymentStatus = 2 " +
-                "AND hd.status = 21 " +
-                "GROUP BY spct.id, sp.Name, ha.Path, sp.Price " +
-                "ORDER BY so_luong_ban DESC";
+                "    PaymentStatus ps ON hd.id = ps.BillId " +
+                "WHERE " +
+                "    DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, ?) " +
+                "    AND ps.customerPaymentStatus = 2 " +
+                "    AND hd.status = 21 " +
+                "GROUP BY " +
+                "    sp.id, sp.Name, sp.Price " +
+                "ORDER BY " +
+                "    so_luong_ban DESC";
 
         List<ThongKe> results = jdbctemplate.query(
                 sql,
@@ -265,15 +268,17 @@ public class BillServiceImplTinh implements BillServiceTinh {
         return new PageImpl<>(results.subList(start, end), pageable, results.size());
     }
 
+
     @Override
     public Page<ThongKe> getSanPhamBanChayTrongKhoangThoiGian(Date startDate, Date endDate, Pageable pageable) {
+        // SQL query to select products and their sales data within a given time range
         String sql = "SELECT " +
                 "    sp.Id AS sanpham_id, " +
                 "    sp.Name AS ten_sanpham, " +
                 "    sp.Price AS price, " +
                 "    COALESCE(SUM(hdct.quantity), 0) AS so_luong_ban, " +
                 "    COALESCE(SUM(hdct.quantity * sp.Price), 0) AS doanh_thu, " +
-                "    ha.Path AS anh_mac_dinh " +
+                "    MAX(ha.Path) AS anh_mac_dinh " + // Ensure to get the most relevant image
                 "FROM " +
                 "    ProductDetails pd " +
                 "JOIN " +
@@ -283,7 +288,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "JOIN " +
                 "    Products sp ON pd.IdProduct = sp.Id " +
                 "LEFT JOIN " +
-                "    Images ha ON sp.Id = ha.Id " +
+                "    Images ha ON sp.Id = ha.IdProduct " + // Fixed joining condition for images
                 "JOIN " +
                 "    PaymentStatus ps ON b.Id = ps.BillId " +
                 "WHERE " +
@@ -291,7 +296,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    AND ps.CustomerPaymentStatus = 2 " +
                 "    AND b.Status = 21 " +
                 "GROUP BY " +
-                "    sp.Id, sp.Name, sp.Price, ha.Path " +
+                "    sp.Id, sp.Name, sp.Price " +
                 "ORDER BY " +
                 "    so_luong_ban DESC";
 
@@ -308,11 +313,12 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 )
         );
 
-        // Implement pagination manually since we can't use Pageable directly with jdbctemplate
+        // Implement pagination manually
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), results.size());
         return new PageImpl<>(results.subList(start, end), pageable, results.size());
     }
+
 
 
     //====================Khách hàng mua hàng nhiều nhất

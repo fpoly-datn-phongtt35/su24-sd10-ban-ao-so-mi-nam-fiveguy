@@ -26,7 +26,7 @@
                         </div>
                         <div class="db-item-info">
                             <div class="db-item-heading">Đơn trả</div>
-                            <div class="db-item-number">10</div>
+                            <div class="db-item-number">{{tongDonHangTraNgay}}</div>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                         </div>
                         <div class="db-item-info">
                             <div class="db-item-heading">Đơn trả</div>
-                            <div class="db-item-number">10</div>
+                            <div class="db-item-number">{{tongDonHangTraTuan}}</div>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                         </div>
                         <div class="db-item-info">
                             <div class="db-item-heading">Đơn trả</div>
-                            <div class="db-item-number">10</div>
+                            <div class="db-item-number">{{tongDonHangTraThang}}</div>
                         </div>
                     </div>
                 </div>
@@ -117,7 +117,7 @@
                         </div>
                         <div class="db-item-info">
                             <div class="db-item-heading">Đơn trả</div>
-                            <div class="db-item-number">10</div>
+                            <div class="db-item-number">{{tongDonHangTraNam}}</div>
                         </div>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
                         </div>
                         <div class="db-item-info">
                             <div class="db-item-heading">Đơn trả</div>
-                            <div class="db-item-number">10</div>
+                            <div class="db-item-number">{{tongDonHangTraTuyChinh}}</div>
                         </div>
                     </div>
                 </div>
@@ -197,6 +197,7 @@
                                     <th>Tên sản phẩm</th>
                                     <th>Số lượng</th>
                                     <th>Giá tiền</th>
+                                    <th>Chi tiêt</th>
                                 </tr>
                             </thead>
                             <tbody class="tbody-table">
@@ -212,6 +213,13 @@
                                     <td class="text-right">
                                         {{sanPhamBanChay.price | currency}}
                                     </td>
+                                    <td scope="col-2" class="css-text-overfolow-acction">
+                                        <button class="button-submit action-btn" data-bs-toggle="modal"
+                                            data-bs-target="#AuditLogUpdate" ng-click="detailAuditLog(employee)"><span
+                                                class="material-icons">
+                                                visibility
+                                            </span></i></button>
+                                    </td>
                                     <!-- <td class="text-right">{{sanPhamBanChay.doanh_thu | currency}}</td> -->
                                 </tr>
                             </tbody>
@@ -221,8 +229,8 @@
                         <div class="d-flex align-items-center">
                             <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                             <div>
-                                <input id="size2" ng-model="size2" ng-change="applyFiltersSanPhamBanChay()" value="1" type="number"
-                                    max="100" min="1" class="form-control" style="width: 5rem" required />
+                                <input id="size2" ng-model="size2" ng-change="applyFiltersSanPhamBanChay()" value="1"
+                                    type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
                             </div>
                         </div>
                         <ul class="pagination">
@@ -234,7 +242,8 @@
                             </li>
                             <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
                                 ng-class="{active: $index === currentPage2}">
-                                <a class="page-link" ng-click="currentPage2 !== $index && goToPageSanPhamBanChay($index)">{{$index +
+                                <a class="page-link"
+                                    ng-click="currentPage2 !== $index && goToPageSanPhamBanChay($index)">{{$index +
                                     1}}</a>
                             </li>
                             <li class="page-item" ng-class="{disabled: currentPage2 === totalPages - 1}">
@@ -288,8 +297,8 @@
                         <div class="d-flex align-items-center">
                             <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                             <div>
-                                <input id="size3" ng-model="size3" ng-change="applyFiltersKhachHangMuaNhieu()" value="1" type="number"
-                                    max="100" min="1" class="form-control" style="width: 5rem" required />
+                                <input id="size3" ng-model="size3" ng-change="applyFiltersKhachHangMuaNhieu()" value="1"
+                                    type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
                             </div>
                         </div>
                         <ul class="pagination">
@@ -301,17 +310,19 @@
                             </li>
                             <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
                                 ng-class="{active: $index === currentPage3}">
-                                <a class="page-link" ng-click="currentPage3 !== $index && goToPage($index)">{{$index + 1}}</a>
+                                <a class="page-link" ng-click="currentPage3 !== $index && goToPage($index)">{{$index +
+                                    1}}</a>
                             </li>
                             <li class="page-item" ng-class="{disabled: currentPage3 === totalPages - 1}">
-                                <a class="page-link" ng-click="currentPage3 < totalPages - 1 && goToPage(currentPage3 + 1)">&gt;</a>
+                                <a class="page-link"
+                                    ng-click="currentPage3 < totalPages - 1 && goToPage(currentPage3 + 1)">&gt;</a>
                             </li>
                             <li class="page-item" ng-class="{disabled: currentPage3 === totalPages - 1}">
                                 <a class="page-link" ng-click="goToPage(totalPages - 1)">Trang cuối</a>
                             </li>
                         </ul>
                     </div>
-                    
+
                 </div>
 
             </div>
@@ -362,8 +373,8 @@
                         <div class="d-flex align-items-center">
                             <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                             <div>
-                                <input id="size1" ng-model="size1" ng-change="applyFiltersSanPhamSapHet()" value="1" type="number"
-                                    max="100" min="1" class="form-control" style="width: 5rem" required />
+                                <input id="size1" ng-model="size1" ng-change="applyFiltersSanPhamSapHet()" value="1"
+                                    type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
                             </div>
                         </div>
                         <ul class="pagination">

@@ -52,7 +52,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.getTongBillStatusNgay = function () {
-        let promises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((status) =>
+        let promises = [1, 2, 3, 4, 5, 6, 21, 32, 8, 9].map((status) =>
             $scope.getTongBillStatus(
                 "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-ngay",
                 status
@@ -62,7 +62,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.getTongBillStatusTuan = function () {
-        let promises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((status) =>
+        let promises = [5, 6, 21, 32].map((status) =>
             $scope.getTongBillStatus(
                 "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-tuan",
                 status
@@ -72,7 +72,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.getTongBillStatusThang = function () {
-        let promises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((status) =>
+        let promises = [1, 2, 3, 4, 5, 6, 21, 32, 8, 9].map((status) =>
             $scope.getTongBillStatus(
                 "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-thang",
                 status
@@ -82,7 +82,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.getTongBillStatusNam = function () {
-        let promises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((status) =>
+        let promises = [1, 2, 3, 4, 5, 6, 21, 32, 8, 9].map((status) =>
             $scope.getTongBillStatus(
                 "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-nam",
                 status
@@ -105,7 +105,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             const formattedEndDate = $filter("date")(new Date(endDate), "yyyy-MM-dd");
 
             // Tạo một mảng các promises để gọi API cho từng trạng thái
-            const statusPromises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((status) =>
+            const statusPromises = [1, 2, 3, 4, 5, 6, 21, 32, 8, 9].map((status) =>
                 $scope.getTongBillStatus(
                     `http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
                     status
@@ -132,7 +132,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                 "Thất bại",
                 "Chờ giao lại",
                 "Đang giao lại",
-                "Chờ thanh toán",
+                "Đơn trả",
             ],
             datasets: [
                 {
@@ -175,12 +175,12 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             $scope.tongBillStatuses[1] || 0,
             $scope.tongBillStatuses[2] || 0,
             $scope.tongBillStatuses[3] || 0,
-            $scope.tongBillStatuses[4] || 0,
+            $scope.tongBillStatuses[21] || 0,
             ($scope.tongBillStatuses[5] || 0) + ($scope.tongBillStatuses[6] || 0),
             ($scope.tongBillStatuses[7] || 0) + ($scope.tongBillStatuses[8] || 0),
             $scope.tongBillStatuses[9] || 0,
             $scope.tongBillStatuses[10] || 0,
-            $scope.tongBillStatuses[11] || 0,
+            $scope.tongBillStatuses[32] || 0,
         ];
 
         // Cập nhật dữ liệu của biểu đồ
@@ -552,6 +552,91 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     //=================================End Get All Đơn hàng thành công=============================
 
+    // ========================get All tổng Đơn hàng tra hang=========================================
+    $scope.tongDonHangTraNgay = 0;
+    $scope.tongDonHangTraTuan = 0;
+    $scope.tongDonHangTraThang = 0;
+    $scope.tongDonHangTraNam = 0;
+    $scope.tongDonHangTraTuyChinh = 0;
+
+    $scope.getTongDonHangTraNgay = function () {
+        $http
+            .get(
+                "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-tra-hang-ngay/" +
+                `${todayfomat}`
+            )
+            .then(function (response) {
+                $scope.tongDonHangTraNgay = response.data;
+            });
+    };
+    $scope.getTongDonHangTraNgay();
+
+    $scope.getTongDonHangTraTuan = function () {
+        $http
+            .get(
+                "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-tra-hang-tuan/" +
+                `${todayfomat}`
+            )
+            .then(function (response) {
+                $scope.tongDonHangTraTuan = response.data;
+            });
+    };
+    $scope.getTongDonHangTraTuan();
+
+    $scope.getTongDonHangTraThang = function () {
+        $http
+            .get(
+                "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-tra-hang-thang/" +
+                `${todayfomat}`
+            )
+            .then(function (response) {
+                $scope.tongDonHangTraThang = response.data;
+            });
+    };
+    $scope.getTongDonHangTraThang();
+
+    $scope.getTongDonHangTraNam = function () {
+        $http
+            .get(
+                "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-tra-hang-nam/" +
+                `${todayfomat}`
+            )
+            .then(function (response) {
+                $scope.tongDonHangTraNam = response.data;
+            });
+    };
+    $scope.getTongDonHangTraNam();
+
+    $scope.getTongDonHangTraTuyChinh = function () {
+        // Lấy giá trị ngày từ ng-model
+        const startDate = $scope.filterStartDate;
+        const endDate = $scope.filterEndDate;
+
+        if (startDate && endDate) {
+            // Định dạng ngày theo kiểu 'yyyy-MM-dd'
+            const formattedStartDate = $filter("date")(
+                new Date(startDate),
+                "yyyy-MM-dd"
+            );
+            const formattedEndDate = $filter("date")(new Date(endDate), "yyyy-MM-dd");
+
+            // Gọi API với ngày bắt đầu và ngày kết thúc
+            $http
+                .get(
+                    `http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-tra-hang-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+                )
+                .then(function (response) {
+                    $scope.tongDonHangTraTuyChinh = response.data;
+                })
+                .catch(function (error) {
+                    console.error("Có lỗi xảy ra khi gọi API:", error);
+                });
+        }
+    };
+
+    //=================================End Get All Đơn hàng tra hang=============================
+
+
     // =====================get All tổng Đơn hàng Huy============================================
     $scope.tongDonHangHuyNgay = 0;
     $scope.tongDonHangHuyTuan = 0;
@@ -710,6 +795,8 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
         $http.get("http://localhost:8080/api/admin/bill-tinh/top-ban-chay-nam", { params: params })
             .then(function (response) {
                 $scope.sanPhamBanChay = response.data.content;
+                console.log(response.data.content);
+
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage2 = response.data.number;
                 $scope.desiredPage2 = $scope.currentPage2 + 1;
@@ -981,6 +1068,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                 // Nếu ngày hợp lệ, gọi hàm để tìm kiếm
                 $scope.getTongDoanhThuTuyChinh();
                 $scope.getTongDonHangTuyChinh();
+                $scope.getTongDonHangTraTuyChinh();
                 $scope.getTongDonHangHuyTuyChinh();
                 $scope.getTongSanPhamTuyChinh();
                 $scope.getSanPhamBanChayTuyChinh();

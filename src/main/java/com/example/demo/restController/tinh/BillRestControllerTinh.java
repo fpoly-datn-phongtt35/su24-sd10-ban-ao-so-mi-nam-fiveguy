@@ -27,7 +27,7 @@ import java.util.Random;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/admin/bill-tinh")
+@RequestMapping("/api/admin1/bill-tinh")
 public class BillRestControllerTinh {
     @Autowired
     BillServiceTinh billServiceTinh;
@@ -123,6 +123,32 @@ public class BillRestControllerTinh {
         return billRepositoryTinh.tongBillHuyOption(startDate, endDate).size();
     }
     //End Tổng dơne Hàng Huy================================================================
+
+    //Tỏng dơne hàng Tra====================================================================
+    @GetMapping("/tong-hoa-don-tra-hang-ngay/{sl}")
+    public int sumBillTraHangDay(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillTraHangDay(sl).size();
+    }
+    @GetMapping("/tong-hoa-don-tra-hang-tuan/{sl}")
+    public int sumBillTraHangTuan(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillTraHangWeek(sl).size();
+    }
+    @GetMapping("/tong-hoa-don-tra-hang-thang/{sl}")
+    public int sumBillTraHangMonth(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillTraHangMonth(sl).size();
+    }
+    @GetMapping("/tong-hoa-don-tra-hang-nam/{sl}")
+    public int sumBillTraHangYear(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillTraHangYear(sl).size();
+    }
+    @GetMapping("/tong-hoa-don-tra-hang-tuy-chinh")
+    public int sumBillTraHangOption(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return billRepositoryTinh.tongBillTraHangOption(startDate, endDate).size();
+
+    }
+    //End Tổng dơne Hàng Tra================================================================
 
     //San phẩm bán chạy ==================================================================
     @GetMapping("/top-ban-chay-ngay")
