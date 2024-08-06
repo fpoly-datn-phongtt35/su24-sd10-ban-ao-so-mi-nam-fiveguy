@@ -29,5 +29,7 @@ import java.util.Set;
         List<ProductSaleDetails> findProductsOrderedByCreatedAt();
 
         List<ProductSaleDetails> search(String name);
+
+        List<ProductSaleDetails> findProductsByCategoryId(Long productId);
     }
 

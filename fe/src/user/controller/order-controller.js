@@ -1,16 +1,19 @@
 app.controller("orderController", function ($scope, $http, $window,$routeParams,$rootScope,$location,$timeout) {
 
     const apiBillHistory = "http://localhost:8080/api/home/bill-history"
-    // Hàm hiển thị thông báo thành công
-    $scope.showSuccess = function (message) {
-        toastr["success"](message);
+    
+  // Hàm hiển thị thông báo thành công
+  $scope.showSuccessNotification = function(message) {
+    toastr["success"](message);
     };
+    
     // Hàm hiển thị thông báo lỗi
-    $scope.showError = function (message) {
-        toastr["error"](message);
+    $scope.showErrorNotification = function(message) {
+      toastr["error"](message);
     };
-    $scope.showWarning = function (message) {
-        toastr["warning"](message);
+    
+    $scope.showWarningNotification = function(message) {
+      toastr["warning"](message);
     };
 
     $scope.idBill = $routeParams.idBill;
@@ -555,4 +558,90 @@ if ($scope.idBill != undefined) {
 //               $scope.billInfo = null;
 //           });
 // };
+
+
+
+
+
+
+// Rating -------------------------
+$scope.getNumber = function(num) {
+
+    return new Array((num));
+  };
+  
+  
+  $scope.deleteDataRate = function(rate) {
+    $http.delete('http://localhost:8080/api/home/deleteRate/' + rate)
+        .then(function(response) {
+          $scope.listRatesFuc();
+          $scope.showSuccessNotification("Xóa đánh giá thành công");
+  
+        }, function errorCallback(response) {
+        $scope.showErrorNotification("Xóa đánh giá thất bại");
+        });
+  };
+  
+  $scope.ratings = []; // To store the retrieved ratings
+  
+  $scope.selectedBillDetail = null;
+  
+  $scope.openReview = function(detail) {
+    $scope.selectedBillDetail = detail;
+    $('#reviewModal').modal('show');
+  };
+  
+  $scope.closeReview = function() {
+    $scope.selectedBillDetail = null;
+    $('#reviewModal').modal('hide');
+  };
+  
+  
+  
+  
+  $scope.addRating = function() {
+    if ($scope.rating.stars === 0) {
+      $scope.showErrorNotification("Vui lòng chọn sao!"); 
+      return;
+    }
+  
+    var ratingData = {
+      rate: $scope.rating.stars,
+      content: $scope.rating.content,
+    //   idCustomer: 2,
+      idBillDetail: $scope.selectedBillDetail.id,
+      rated: true
+    };
+  
+    $http.post('http://localhost:8080/api/home/addRate', ratingData)
+      .then(function(response) {
+        if (response.data === true) {
+          $scope.showSuccessNotification("Cảm ơn bạn đã đánh giá"); 
+          $scope.showBillDetail();
+          $scope.closeReview();
+        } else {
+          $scope.showErrorNotification("Bạn đã đánh giá cho sản phẩm này trước đó"); 
+        }
+      })
+      .catch(function(error) {
+        $scope.showErrorNotification("Đánh giá thất bại vui lòng thử lại"); 
+      });
+  };
+  
+
+$scope.rating = {
+    stars: 0,
+    content: ''
+  };
+  
+  $scope.toggleStars = function(index) {
+    $scope.rating.stars = index + 1; // Lấy giá trị từ index và thêm 1
+    const stars = document.querySelectorAll('.fa-star');
+    for (let i = 0; i <= index; i++) {
+        stars[i].classList.add('checked');
+    }
+    for (let i = index + 1; i < stars.length; i++) {
+        stars[i].classList.remove('checked');
+    }
+  };
 });

@@ -1,5 +1,6 @@
 package com.example.demo.repository.onlineShop;
 
+import com.example.demo.entity.Category;
 import com.example.demo.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -107,7 +108,17 @@ Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
             "ORDER BY p.id")
     List<Object[]> search(@Param("search") String search);
 
-
-
+//    Lấy product với category
+@Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
+        "MIN(i.path) AS imagePath " +
+        "FROM Product p " +
+        "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+        "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
+        "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1 " +
+        "WHERE p.category = :category " +
+        "AND p.status = 1 " +
+        "GROUP BY p.id, p.name, ps.discountPrice, s.value, s.discountType " +
+        "ORDER BY p.id")
+List<Object[]> findProductsByCategory(@Param("category") Category category);
 
 }

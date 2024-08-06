@@ -14,7 +14,7 @@
     </div>
 
     <div class="overlay" id="overlay" ng-show="overlaySearchActive">
-    <div class="header-search">
+    <!-- <div class="header-search">
         <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
             <i class="fa-solid fa-xmark fa-lg"></i>
         </button>
@@ -31,14 +31,14 @@
           </div>
       </form>
       
-    </div>
+    </div> -->
     <div class="overlay" id="overlay" ng-click="closeOverlay($event)">
       <div class="header-search">
           <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
               <i class="fa-solid fa-xmark fa-lg"></i>
           </button>
           <form class="form-search">
-              <div class="input-group">
+              <div style="width: 100%;" class="input-group">
                   <div class="form-outline w-100">
                       <input style="border-bottom: 1px solid #cdcdcd;" type="search" id="form1" class="form-control" ng-model="searchTerm" ng-change="searchProducts(searchTerm)" />
                   </div>

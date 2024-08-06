@@ -35,12 +35,12 @@ app.controller("productController", function ($scope, $http, $window,$routeParam
     toastr["error"](message);
   };
   
-  
-  $scope.selectedVoucher = null;
-
   $scope.showWarningNotification = function(message) {
     toastr["warning"](message);
   };
+
+  $scope.selectedVoucher = null;
+
     $scope.sections = {
         colors: false,
         sizes: false,
@@ -1443,7 +1443,24 @@ $scope.dataCity.ProvinceID;
 // Đoạn mã AngularJS
 
 
-
+  //Các sản phẩm cùng thể loại ở chi tiết sản phẩm
+  $scope.loadProductsByCategory = function() {
+    var params = {
+      productId: $routeParams.idProduct
+    };
+    $http.get('http://localhost:8080/api/home/products/category', { params: params })
+      .then(function(response) {
+        if (response.data) {
+            $scope.productCate = response.data.slice(0, 6);
+            console.log( $scope.productCate)
+        }
+      })
+      .catch(function(error) {
+        console.error('Error fetching products:', error);
+      });
+  };
+  // console.log($scope.productDetailInfo.olViewProductDetailRespone.nameCategory )
+  $scope.loadProductsByCategory();
   
 
 });
