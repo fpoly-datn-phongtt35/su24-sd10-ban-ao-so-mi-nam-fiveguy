@@ -50,7 +50,7 @@
                           <input ng-model="item.quantity" type="number" min="1" max="100" ng-change="checkQuantityChange(item)" ng-blur="cart.update(item.id, item.quantity)" class="form-control updateQuantityProduct" style="max-width: 70px; overflow: hidden" />
                       </div>
                       <div class="text-total_price ms-3" style="max-width: 100px; white-space: nowrap">
-                          <span class="h6">{{ (item.promotionalPrice && item.promotionalPrice != 0 ? item.promotionalPrice : item.price) * item.quantity | number }} đ</span>
+                          <span class="h6 ">{{ (item.promotionalPrice && item.promotionalPrice != 0 ? item.promotionalPrice : item.price) * item.quantity | number }} đ</span>
                       </div>
                   </div>
                   <div class="col-lg col-sm-6 d-flex align-items-center">
@@ -234,14 +234,16 @@
                                 </p>
                                 <p>HSD: {{ voucher.endDate | date:'dd-MM-yyyy HH:mm' }}</p>
                                 <span ng-if="voucher.show === 2" class="limit-message">Bạn đã sử dụng hết lượt giảm giá</span>
+                                <span ng-if="voucher.quantity <= 1" class="limit-message">Giảm giá này đã kết thúc</span>
+
                               </div>
                               <div class="voucher-right-contain">
                                 <div class="voucher-right">
-                              
-                                  <span ng-if="voucher.show !== 2 && voucher.selected" class="checkmark">&#10003;</span>
-                                  <span ng-if="voucher.show !== 2 && !voucher.selected" class="addmark">+</span>
+                                  <span ng-if="voucher.quantity > 1 && voucher.show !== 2 && voucher.selected" class="checkmark">&#10003;</span>
+                                  <span ng-if="voucher.quantity > 1 && voucher.show !== 2 && !voucher.selected" class="addmark">+</span>
                                 </div>
                               </div>
+                              
                             </div>
                           </div>
                         </div>

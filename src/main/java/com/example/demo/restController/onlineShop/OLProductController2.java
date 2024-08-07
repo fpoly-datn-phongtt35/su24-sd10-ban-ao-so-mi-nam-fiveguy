@@ -166,6 +166,11 @@ public class OLProductController2 {
         return productService.search(name);
     }
 
+    @GetMapping("/products/category")
+    public ResponseEntity<?> getProductByCategory(@RequestParam(value = "productId", required = false) Long productId) {
+        List<ProductSaleDetails> searchResults = productService.findProductsByCategoryId(productId);
+        return ResponseEntity.ok(searchResults);
+    }
 
 
 }

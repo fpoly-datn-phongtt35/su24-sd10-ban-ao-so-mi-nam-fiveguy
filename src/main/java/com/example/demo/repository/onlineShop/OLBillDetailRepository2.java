@@ -23,4 +23,25 @@ public interface OLBillDetailRepository2 extends JpaRepository<BillDetail, Long>
 
     List<BillDetail> findAllByBillIdOrderByIdDesc(Long billId);
 
+//    lấy số lượng sản phẩm đã bán đc
+@Query("SELECT SUM(bd.quantity) " +
+        "FROM BillDetail bd " +
+        "JOIN bd.bill b " +
+        "JOIN bd.productDetail pd " +
+        "WHERE pd.product.id = :idProduct " +
+        "AND (" +
+        "    EXISTS (" +
+        "        SELECT 1 FROM BillHistory bh " +
+        "        WHERE bh.bill.id = b.id AND bh.status = 32" +
+        "    ) OR (" +
+        "        EXISTS (" +
+        "            SELECT 1 FROM BillHistory bh " +
+        "            WHERE bh.bill.id = b.id AND bh.status = 21" +
+        "        ) AND NOT EXISTS (" +
+        "            SELECT 1 FROM BillHistory bh2 " +
+        "            WHERE bh2.bill.id = b.id AND bh2.status = 32" +
+        "        )" +
+        "    )" +
+        ")")
+Integer getTotalQuantitySold(@Param("idProduct") Long idProduct);
 }

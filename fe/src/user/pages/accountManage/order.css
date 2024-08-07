@@ -379,3 +379,15 @@ dd {
 .input-group{
     width: 30%;
 }
+
+
+/* star */
+
+.star-container{
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+
+  .checked {
+    color: orange;
+  }

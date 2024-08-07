@@ -26,4 +26,6 @@ public class BillDetailResponse2 {
     private int defectiveProduct;
 
     private String imagePath;
+
+    private boolean  rated;
 }

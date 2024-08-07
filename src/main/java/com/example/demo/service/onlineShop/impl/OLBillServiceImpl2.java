@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -46,75 +47,43 @@ public class OLBillServiceImpl2 implements OLBillService2 {
     @Autowired
     private OLBillHistoryRepository2 billHistoryRepository;
 
-//    @Autowired
-//    private OlRatingService olRatingService;
-
-    @Autowired
-    private OLProductService2 olProductService;
-
-
-//    public OlBillDetailResponse convertToOlBillDetailResponse(BillDetail billDetail) {
-//        OlBillDetailResponse response = new OlBillDetailResponse();
-//        response.setId(billDetail.getId());
-//        response.setQuantity(billDetail.getQuantity());
-//        response.setPrice(billDetail.getPrice());
-//        response.setBill(billDetail.getBill());
-//        response.setProductDetail(billDetail.getProductDetail());
-//        response.setStatus(billDetail.getStatus());
-//        List<RatingEntity> list = olRatingService.findByBillDetail_Id(billDetail.getId());
-//
-//        if (list.isEmpty() || (!list.get(0).isRated())) {
-//            response.setRated(false); // Thiết lập thuộc tính 'rated' dựa trên điều kiện
-//        } else {
-//            response.setRated(true);
-//        }
-//
-//        return response;
-//    }
 
     private boolean isQuantityAvailable(ProductDetail productDetail, int quantityToRemove) {
         int currentQuantity = productDetail.getQuantity() - 1;
         return currentQuantity >= quantityToRemove;
     }
 
-    private void updateProductQuantity(BillDetail billDetail) {
+    private void checkProductQuantity(BillDetail billDetail) {
         Optional<ProductDetail> productDetail = olProductDetailService.findById(billDetail.getProductDetail().getId());
         if (productDetail.isPresent()) {
+
             int quantityToRemove = billDetail.getQuantity();
             if (isQuantityAvailable(productDetail.get(), quantityToRemove)) {
-//                int currentQuantity = productDetail.get().getQuantity();
-//                productDetail.get().setQuantity(currentQuantity - quantityToRemove);
-//
-//                // Kiểm tra xem số lượng của chi tiết sản phẩm đã hết hay chưa
-//                if (currentQuantity - quantityToRemove == 0) {
-//                    productDetail.get().setStatus(2);  // Đặt status = 2 nếu số lượng hết
-//                }
-//
-//                olProductDetailService.save(productDetail.get());
-
-                // Kiểm tra tất cả ProductDetail của Product có status = 2 không
-//                checkAndUpdateProductStatus(productDetail.get().getProduct());
+                // Xử lý khi số lượng sản phẩm đủ
+            } else if (productDetail.get().getQuantity() == 1) {
+                throw new IllegalArgumentException("Sản phẩm: " + productDetail.get().getProduct().getName() + " "
+                        + productDetail.get().getProduct().getCategory().getName() + " "
+                        + productDetail.get().getProduct().getMaterial().getName() + " " +
+                        productDetail.get().getProduct().getCode() + " Màu sắc: "
+                        + productDetail.get().getColor().getName() + " Kích cỡ: "
+                        + productDetail.get().getSize().getName() + " dã hết hàng");
             } else {
                 throw new IllegalArgumentException("Sản phẩm: " + productDetail.get().getProduct().getName() + " "
                         + productDetail.get().getProduct().getCategory().getName() + " "
                         + productDetail.get().getProduct().getMaterial().getName() + " " +
                         productDetail.get().getProduct().getCode() + " Màu sắc: "
                         + productDetail.get().getColor().getName() + " Kích cỡ: "
-                        + productDetail.get().getSize().getName() + " ");
+                        + productDetail.get().getSize().getName() + " Số lượng còn lại: " + (productDetail.get().getQuantity() - 1));
             }
         }
     }
 
-//    private void checkAndUpdateProductStatus(Product product) {
-//        List<ProductDetail> productDetails = olProductDetailService.findAllByProduct(product);
-//        boolean allProductDetailsAreStatus2 = productDetails.stream().allMatch(pd -> pd.getStatus() == 2);
-//
-//        if (allProductDetailsAreStatus2) {
-//            product.setStatus(2);  // Đặt status = 2 nếu tất cả ProductDetail đều có status = 2
-//            olProductService.save(product);
-//        }
-//    }
-
+    private String generateCode() {
+        long currentTimeMillis = System.currentTimeMillis();
+        SimpleDateFormat formatter = new SimpleDateFormat("HHmm");
+        String formattedTime = formatter.format(new Date(currentTimeMillis));
+        return "HD" + formattedTime;
+    }
 
     @Override
     public ResponseEntity<?> creatBill(JsonNode orderData, Customer customer) {
@@ -124,21 +93,15 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
         ObjectMapper mapper = new ObjectMapper();
         Bill bill = mapper.convertValue(orderData, Bill.class);
-
+        bill.setCreatedAt(new Date());
+        bill.setCode(generateCode());
 // Kiểm tra số lượng tồn của voucher trước khi sử dụng
         if (bill.getVoucher() != null) {
             Voucher existingVoucher = olVouchersRepository.findById(bill.getVoucher().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
 
-            if (existingVoucher != null && existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 0) {
-//                existingVoucher.setQuantity(existingVoucher.getQuantity() - 1);
-//
-//                // Kiểm tra xem số lượng của voucher đã hết hay chưa
-//                if (existingVoucher.getQuantity() == 0) {
-//                    existingVoucher.setStatus(2);  // Đặt status = 2 nếu số lượng hết
-//                }
-//
-//                olVouchersRepository.save(existingVoucher);
+            if ( existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 1) {
+
             } else {
                 return ResponseEntity.ok(3);
             }
@@ -152,7 +115,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
         for (BillDetail detail : billDetails) {
             try {
-                updateProductQuantity(detail);
+                checkProductQuantity(detail);
                 detail.setBill(bill);
             } catch (IllegalArgumentException e) {
                 insufficientQuantityProducts.add(e.getMessage());
