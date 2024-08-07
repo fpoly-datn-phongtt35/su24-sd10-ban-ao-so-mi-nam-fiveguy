@@ -32,8 +32,8 @@ public class Product {
     @Column(name = "Price")
     private BigDecimal price;
 
-    @Column(name = "ImportPrice")
-    private BigDecimal importPrice;
+//    @Column(name = "ImportPrice")
+//    private BigDecimal importPrice;
 
     @Column(name = "Describe", columnDefinition = "nvarchar(max)")
     private String describe;
@@ -57,13 +57,9 @@ public class Product {
     @JoinColumn(name = "IdCategory", referencedColumnName = "Id")
     private Category category;
 
-//    @ManyToOne
-//    @JoinColumn(name = "IdBrandSuppiler", referencedColumnName = "Id")
-//    private BrandSuppiler brand;
-
     @ManyToOne
-    @JoinColumn(name = "IdSuppiler", referencedColumnName = "Id")
-    private Supplier supplier;
+    @JoinColumn(name = "IdBrand", referencedColumnName = "Id")
+    private Brand brand;
 
     @ManyToOne
     @JoinColumn(name = "IdMaterial", referencedColumnName = "Id")
