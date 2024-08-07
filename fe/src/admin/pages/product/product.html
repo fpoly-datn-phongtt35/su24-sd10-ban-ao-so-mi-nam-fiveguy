@@ -91,7 +91,9 @@
                             <tr ng-repeat="(index, product) in products.content">
                                 <th>{{index + 1}}</th>
                                 <th>{{product.code}}</th>
-                                <th> <img class="img-fluid" ng-src="{{product.imagePath ? product.imagePath : 'common/img/no-image.png'}}" /> </th>
+                                <th> <img class="img-fluid" style="width: 80px;
+                                    object-fit: cover;
+                                    height: 80px;" ng-src="{{product.imagePath ? product.imagePath : 'common/img/no-image.png'}}" /> </th>
                                 <th>{{product.name}}</th>
                                 <th>{{product.price | number:'0':'symbol':'short'}} VND</th>
                                 <th>
@@ -434,7 +436,10 @@
                                                 <textarea ng-model="productUpdate.describe" class="form-control" id="description" rows="2"></textarea>
                                             </div>
                                         </div>
-                                        <div class="tab-pane fade" id="edt-product-detail" role="tabpanel" aria-labelledby="product-detail-tab">
+                                        <div class="tab-pane fade" style="position: relative;" id="edt-product-detail" role="tabpanel" aria-labelledby="product-detail-tab">
+                                            <div id="loading-edit" class="overlay-loading" style="z-index: 9999;">
+                                                <div class="loader"></div>
+                                              </div>
                                             <div class="row m-0">
                                                 <div id="box-update-size" class="col-sm-6">
                                                     <label for="id-update-size">Size</label>

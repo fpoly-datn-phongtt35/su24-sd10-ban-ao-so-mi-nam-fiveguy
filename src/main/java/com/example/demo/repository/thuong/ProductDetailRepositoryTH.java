@@ -12,7 +12,7 @@ import java.util.List;
 public interface ProductDetailRepositoryTH extends JpaRepository<ProductDetail, Long> {
     List<ProductDetail> findAllByProduct_Id(Long id);
 
-    @Query(value = "SELECT pd FROM ProductDetail pd JOIN pd.product p JOIN pd.color c WHERE pd.status = 1 AND pd.quantity > 0 AND (p.name LIKE %:keyword% OR c.name LIKE %:keyword% OR p.code LIKE %:keyword% OR CONCAT(p.name, ' ', c.name) LIKE %:keyword%)")
+    @Query(value = "SELECT pd FROM ProductDetail pd JOIN pd.product p JOIN pd.color c WHERE pd.status = 1 AND (p.name LIKE %:keyword% OR c.name LIKE %:keyword% OR p.code LIKE %:keyword% OR CONCAT(p.name, ' ', c.name) LIKE %:keyword%)")
     List<ProductDetail> findAllByStatus(@Param("keyword") String keyword);
 
 

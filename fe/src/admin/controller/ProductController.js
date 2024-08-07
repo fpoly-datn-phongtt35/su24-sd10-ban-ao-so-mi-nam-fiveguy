@@ -674,6 +674,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.editProduct = (key) => {
+        $('#loading-edit').css('display', 'flex');
         $http.get(`${config.host}/product/${key}`).then((response) => {
             $scope.productUpdate = response.data;
             $timeout(() => {
@@ -727,6 +728,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
                     $scope.sizeSelect = objIdSize.map(id => $scope.sizes.find(size => size.id.toString() === id));
                 });  
                 $('#id-update-color').val($scope.getColorCodes()).trigger('change');
+                $('#loading-edit').css('display', 'none');
             }).catch(error => console.error("Error", error));
         }).catch(error => console.error("Error", error));
     };

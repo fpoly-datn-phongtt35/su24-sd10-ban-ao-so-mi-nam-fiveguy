@@ -3,6 +3,7 @@ package com.example.demo.model.response.thuong;
 import com.example.demo.entity.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -20,4 +21,5 @@ public class ProductDetailResponseTH {
     private Size size;
     private Color color;
     private String imagePath;
+    private Integer promotionalPrice;
 }

@@ -6,10 +6,12 @@ import com.example.demo.entity.ProductDetail;
 import com.example.demo.model.response.thuong.ProductDetailResponseTH;
 import com.example.demo.repository.thuong.ImageRepositoryTH;
 import com.example.demo.repository.thuong.ProductDetailRepositoryTH;
+import com.example.demo.repository.thuong.ProductRepositoryTH;
 import com.example.demo.service.thuong.ProductDetailServiceTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,9 @@ public class ProductDetailServiceTHImpl implements ProductDetailServiceTH {
     @Autowired
     private ImageRepositoryTH imageRepository;
 
+    @Autowired
+    private ProductRepositoryTH productRepository;
+
     @Override
     public List<ProductDetail> findAllByProduct_Id(Long id) {
         return repository.findAllByProduct_Id(id);
@@ -30,6 +35,8 @@ public class ProductDetailServiceTHImpl implements ProductDetailServiceTH {
         List<Image> images = imageRepository.findAllByProductIdAndColorIdAndStatus(id, colorId, 1);
         return images.isEmpty() ? null : images.get(0).getPath();
     }
+
+
 
     @Override
     public List<ProductDetailResponseTH> getAll(String keyword) {
@@ -52,6 +59,7 @@ public class ProductDetailServiceTHImpl implements ProductDetailServiceTH {
             // Gán imagePath bằng hàm getImagePathByProductId
             String imagePath = getImagePathByProductId(pd.getProduct().getId(), pd.getColor().getId());
             pdr.setImagePath(imagePath);
+            pdr.setPromotionalPrice(productRepository.findPromotionalPriceByProductId(pd.getProduct().getId()));
 
             listProductDT.add(pdr);
         }
