@@ -162,19 +162,10 @@
                                 <div class="modal-body">
                                     <div class="tab-content" id="myTabContent">
                                         <div class="tab-pane fade show active" id="product-tb" role="tabpanel" aria-labelledby="product-tab">
-                                            <div class="form-group">
-                                                <label>Mã sản phẩm</label>
-                                                <input type="text" ng-model="product.code" class="form-control" placeholder="Mã tự động">
-                                                <p class="text-danger" ng-if="errors.code">{{errors.code}}</p>
-                                            </div>
                                             <div class="form-group mt-3">
                                                     <label>Tên sản phẩm <span ng-if="!product.name" class="text-danger">*</span></label>
                                                     <input type="text" ng-model="product.name" class="form-control" required>
                                                     <p class="text-danger" ng-if="errors.name">{{errors.name}}</p>
-                                            </div>
-                                            <div class="form-group mt-3">
-                                                <label for="description" class="form-label">Mô tả</label>
-                                                <textarea ng-model="product.describe" class="form-control" id="description" rows="2"></textarea>
                                             </div>
                                             <div class="row p-0 mt-3">
                                                 <div id="box-collar" class="col-sm-6">
@@ -217,17 +208,17 @@
                                                 </div>
                                             </div>
                                             <div class="row p-0 mt-3">
-                                                <div id="box-supplier" class="col-sm-6">
-                                                    <label for="id-label-supplier">Nhà cung cấp <span ng-if="!product.supplier.id" class="text-danger">*</span></label>
+                                                <div id="box-brand" class="col-sm-6">
+                                                    <label for="id-label-brand">Thương hiệu <span ng-if="!product.brand.id" class="text-danger">*</span></label>
                                                     <div class="mt-2 d-flex">
-                                                        <select style="width: 100%" id="id-label-supplier" data-placeholder="Chọn nhà cung cấp">
+                                                        <select style="width: 100%" id="id-label-brand" data-placeholder="Chọn thương hiệu">
                                                             <option></option>
-                                                            <option ng-repeat="supplier in suppliers" value="{{supplier.id}}">{{supplier.name}}</option>
+                                                            <option ng-repeat="brand in brands" value="{{brand.id}}">{{brand.name}}</option>
                                                         </select> 
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <label for="id-label-supplier">Trạng thái</label>
+                                                    <label>Trạng thái</label>
                                                     <div class="mt-2 d-flex">
                                                         <select class="form-select" ng-model="product.status">
                                                             <option ng-value="1">Kinh doanh</option>
@@ -237,23 +228,18 @@
                                                 </div>
                                             </div>
                                             <div class="row mt-3 p-0">
-                                                <div class="col-sm-6">
-                                                    <label>Giá nhập <span ng-if="!product.importPrice" class="text-danger">*</span></label>
-                                                    <div class="input-group">
-                                                        <input type="number" ng-model="product.importPrice" class="form-control" required>
-                                                        <span class="input-group-text">VND</span>
-                                                    </div>
-                                                    <p class="text-danger" ng-if="errors.importPrice">{{errors.importPrice}}</p>
-                                                </div>
-                                                <div class="col-sm-6">
+                                                <div class="col-sm-12">
                                                     <label>Giá bán <span ng-if="!product.price" class="text-danger">*</span></label>
                                                     <div class="input-group">
                                                         <input type="number" ng-model="product.price" class="form-control" required>
                                                         <span class="input-group-text">VND</span>
                                                     </div>
                                                     <p class="text-danger" ng-if="errors.price">{{errors.price}}</p>
-                                                </div>
-                                                
+                                                </div>                                               
+                                            </div>
+                                            <div class="form-group mt-3">
+                                                <label for="description" class="form-label">Mô tả</label>
+                                                <textarea ng-model="product.describe" class="form-control" id="description" rows="2"></textarea>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="product-detail" role="tabpanel" aria-labelledby="product-detail-tab">
@@ -353,8 +339,7 @@
                                         <div class="tab-pane fade show active" id="edt-product" role="tabpanel" aria-labelledby="edt-productdt-tab">
                                             <div class="form-group">
                                                 <label>Mã sản phẩm</label>
-                                                <input type="text" ng-model="productUpdate.code" class="form-control" placeholder="Mã tự động">
-                                                <p class="text-danger" ng-if="errorsUpdate.code">{{errorsUpdate.code}}</p>
+                                                <input type="text" ng-value="productUpdate.code" class="form-control" disabled>
                                             </div>
                                             <div class="form-group mt-3">
                                                     <label>Tên sản phẩm <span ng-if="!productUpdate.name" class="text-danger">*</span></label>
@@ -402,17 +387,17 @@
                                                 </div>
                                             </div>
                                             <div class="row p-0 mt-3">
-                                                <div id="box-update-supplier" class="col-sm-6">
-                                                    <label for="id-update-supplier">Nhà cung cấp <span ng-if="!productUpdate.supplier.id" class="text-danger">*</span></label>
+                                                <div id="box-update-brand" class="col-sm-6">
+                                                    <label for="id-update-brand">Thương hiệu<span ng-if="!productUpdate.brand.id" class="text-danger">*</span></label>
                                                     <div class="mt-2 d-flex">
-                                                        <select style="width: 100%" id="id-update-supplier" data-placeholder="Chọn nhà cung cấp">
+                                                        <select style="width: 100%" id="id-update-brand" data-placeholder="Chọn thương hiệu">
                                                             <option></option>
-                                                            <option ng-repeat="supplier in suppliers" value="{{supplier.id}}">{{supplier.name}}</option>
+                                                            <option ng-repeat="brand in brands" value="{{brand.id}}">{{brand.name}}</option>
                                                         </select> 
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <label for="id-label-supplier">Trạng thái</label>
+                                                    <label>Trạng thái</label>
                                                     <div class="mt-2 d-flex">
                                                         <select class="form-select" ng-model="productUpdate.status">
                                                             <option ng-value="1">Kinh doanh</option>

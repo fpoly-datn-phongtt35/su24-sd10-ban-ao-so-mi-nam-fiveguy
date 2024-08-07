@@ -53,13 +53,13 @@ public class ProductServiceTHImpl implements ProductServiceTH {
         product.setCreatedAt(new Date());
         product.setCreatedBy(fullName);
         product.setCategory(productRequest.getCategory());
-        product.setSupplier(productRequest.getSupplier());
+        product.setBrand(productRequest.getBrand());
         product.setMaterial(productRequest.getMaterial());
         product.setWrist(productRequest.getWrist());
         product.setCollar(productRequest.getCollar());
         product.setStatus(productRequest.getStatus());
         Product saveProduct = productRepository.save(product);
-        if (productRequest.getProductDetails() != null && productRequest.getImages() != null) {
+        if (productRequest.getProductDetails().size() > 0 && productRequest.getImages().size() > 0) {
             List<ProductDetail> productDetails = new ArrayList<>();
             for (ProductDetail dt : productRequest.getProductDetails()) {
                 ProductDetail productDetail = new ProductDetail();
@@ -109,14 +109,13 @@ public class ProductServiceTHImpl implements ProductServiceTH {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            product.setCode(productRequestTH.getCode());
             product.setName(productRequestTH.getName());
             product.setPrice(productRequestTH.getPrice());
             product.setDescribe(productRequestTH.getDescribe());
             product.setUpdatedAt(new Date());
             product.setUpdatedBy(fullName);
             product.setCategory(productRequestTH.getCategory());
-            product.setSupplier(productRequestTH.getSupplier());
+            product.setBrand(productRequestTH.getBrand());
             product.setMaterial(productRequestTH.getMaterial());
             product.setWrist(productRequestTH.getWrist());
             product.setCollar(productRequestTH.getCollar());
