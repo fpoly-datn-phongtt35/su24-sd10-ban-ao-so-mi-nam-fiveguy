@@ -1,6 +1,7 @@
 package com.example.demo.restController.thuong;
 
 import com.example.demo.model.request.thuong.ProductRequestTH;
+import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.thuong.ProductServiceTH;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 
 @CrossOrigin("*")
@@ -18,6 +20,9 @@ public class ProductControllerTH {
 
     @Autowired
     private ProductServiceTH productService;
+
+    @Autowired
+    private SCAccountService accountService;
 
     @GetMapping
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
@@ -39,13 +44,15 @@ public class ProductControllerTH {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductRequestTH productRequestTH) {
-        return new ResponseEntity<>(productService.create(productRequestTH), HttpStatus.CREATED);
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductRequestTH productRequestTH, @RequestHeader("Authorization") String token) {
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+        return new ResponseEntity<>(productService.create(productRequestTH, fullName.get()), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateColor(@PathVariable Long id, @Valid @RequestBody ProductRequestTH productRequest) {
-        return new ResponseEntity<>(productService.update(productRequest, id), HttpStatus.OK);
+    public ResponseEntity<?> updateColor(@PathVariable Long id, @Valid @RequestBody ProductRequestTH productRequest, @RequestHeader("Authorization") String token) {
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+        return new ResponseEntity<>(productService.update(productRequest, id, fullName.get()), HttpStatus.OK);
     }
 
     @PutMapping("/status/{id}")
