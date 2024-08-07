@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/src/admin/pages/return-order-nguyen/return-order-detail.css">
-<div class="container">
+<div class="container" style="text-transform: none;">
     <div class="rounded border p-3 shadow mb-4 bg-body">
         <div class="d-flex align-items-center">
             <span class="material-icons fs-4 me-2">view_headline</span>
@@ -12,7 +12,7 @@
                         <th scope="col-1"></th>
                         <th scope="col-1">Sản phẩm</th>
                         <th scope="col-1">Số lượng</th>
-                        <th scope="col-4">Đơn giá gốc</th>
+                        <th scope="col-4">Đơn giá</th>
                         <th scope="col-4">Đơn giá hoàn trả</th>
                     </tr>
                 </thead>
@@ -50,8 +50,17 @@
                                 <span class="input-group-text fw-bold fs-6">/ {{bd.quantity}}</span>
                             </div>
                         </td>
-                        <td class="col-2">{{bd.price | number:0}} VND</td>
-                        <td class="col-3">{{bd.price * (1 - billDetailSummary.tiLeGiam)  | number:0}} VND</td>
+                        <!-- <td class="col-2">{{bd.price | number:0}} VND</td> -->
+                        <td class="col-2 text-center">
+                            <p class="m-0" ng-if="bd.promotionalPrice < bd.price">
+                                <span>{{formatCurrency(bd.promotionalPrice)}}</span>
+                                <br>
+                                <span class="text-decoration-line-through text-danger"
+                                    style="font-size: 0.9em;">{{formatCurrency(bd.price)}}</span>
+                            </p>
+                            <p class="m-0" ng-if="bd.promotionalPrice == bd.price">{{formatCurrency(bd.price)}}</p>
+                        </td>
+                        <td class="col-3">{{bd.promotionalPrice * (1 - billDetailSummary.tiLeGiam)  | number:0}} VND</td>
                     </tr>
                 </tbody>
             </table>
@@ -98,8 +107,8 @@
                                 </div>
                             </td>
                             <td class="col-2">{{ro.quantity}}</td>
-                            <td class="col-2">{{ro.billDetail.price  * (1 - billDetailSummary.tiLeGiam)| number:0}} VND</td>
-                            <td class="col-2">{{ro.billDetail.price * ro.quantity * (1 - billDetailSummary.tiLeGiam)| number:0}} VND</td>
+                            <td class="col-2">{{ro.billDetail.promotionalPrice  * (1 - billDetailSummary.tiLeGiam)| number:0}} VND</td>
+                            <td class="col-2">{{ro.billDetail.promotionalPrice * ro.quantity * (1 - billDetailSummary.tiLeGiam)| number:0}} VND</td>
                         </tr>
                         <td colspan="12" ng-show="returnOrders.length <= 0">Không có sản phẩm</td>
                     </tbody>

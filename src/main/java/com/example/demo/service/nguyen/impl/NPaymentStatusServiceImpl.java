@@ -15,8 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class NPaymentStatusServiceImpl implements NPaymentStatusService {
@@ -51,21 +54,21 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
 
             billRepository.save(bill);
 
-            // thêm chữ đã hoàn tiền
-            setReasonBillHistory(bill);
+//            setReasonBillHistory(bill, 21);
         } else if (paymentStatusRequest.getPayOrRefund() == 2) {
             bill.setPaidAmount(paymentStatusRequest.getBill().getTotalAmountAfterDiscount());
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
 
             billRepository.save(bill);
 
-            // thêm chữ đã hoàn tiền
-            setReasonBillHistory(bill);
+            setReasonBillHistory(bill, 21);
         } else if (paymentStatusRequest.getPayOrRefund() == 3) {
             bill.setPaidAmount(BigDecimal.ZERO);
             bill.setPaidShippingFee(BigDecimal.ZERO);
 
             billRepository.save(bill);
+
+            setReasonBillHistory(bill, 22);
         } else if (paymentStatusRequest.getPayOrRefund() == 0) {
             bill.setPaidAmount(paymentStatusRequest.getBill().getTotalAmountAfterDiscount());
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
@@ -73,11 +76,11 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
             billRepository.save(bill);
         } else if(paymentStatusRequest.getPayOrRefund() == 10) {
             // thêm chữ đã hoàn tiền
-            setReasonBillHistory(bill);
+            setReasonBillHistory(bill, 22);
         }
 
         PaymentStatus ps = new PaymentStatus();
-        ps.setCode("auto");
+        ps.setCode(generateUniqueCode());
         ps.setPaymentDate(new Date());
         ps.setBill(bill);
         ps.setPaymentAmount(paymentStatusRequest.getPaymentStatus().getPaymentAmount());
@@ -90,14 +93,29 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
         return paymentStatusRepository.save(ps);
     }
 
-    private void setReasonBillHistory(Bill bill) {
-        if (bill.getStatus() == 32) {
-            BillHistory billHistory = billHistoryRepository
-                    .findAllByBillIdAndStatus(bill.getId(), bill.getStatus());
+    @Override
+    public Integer checkIsRefund(Long id) {
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
 
-            billHistory.setReason(22);
-            billHistoryRepository.save(billHistory);
+//        if(bill.getStatus() != 32) return 0;
+
+        List<PaymentStatus> paymentStatuses = paymentStatusRepository.findAllByBillIdAndPaymentTypeAndBillStatus(id, 4, 32);
+
+        if(paymentStatuses.isEmpty()) return 0;
+
+        return 1; //nếu đã hoàn
+    }
+
+    private void setReasonBillHistory(Bill bill, Integer reason) {
+        BillHistory billHistory = billHistoryRepository
+                .findAllByBillIdAndStatus(bill.getId(), bill.getStatus());
+        if (bill.getStatus() == 32) {
+            billHistory.setReason(reason);
+        } else if (bill.getStatus() == 4){
+            billHistory.setReason(reason);
         }
+        billHistoryRepository.save(billHistory);
     }
 
 
@@ -139,5 +157,21 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
             }
         }
         return null;
+    }
+
+    private static final Random random = new Random();
+    private static final String PREFIX = "TT";
+    private static final int MAX_ATTEMPTS = 1000;
+
+    public String generateUniqueCode() {
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            int randomNumber = random.nextInt(10000);
+            String code = PREFIX + String.format("%04d", randomNumber);
+
+            if (!paymentStatusRepository.existsByCode(code)) {
+                return code;
+            }
+        }
+        throw new RuntimeException("Không thể tạo mã duy nhất sau " + MAX_ATTEMPTS + " lần thử.");
     }
 }

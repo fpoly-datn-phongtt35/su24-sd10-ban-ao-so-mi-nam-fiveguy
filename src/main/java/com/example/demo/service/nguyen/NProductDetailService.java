@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 public interface NProductDetailService {
 
-    public Page<ProductDetail> searchProductDetails(
+    Page<ProductDetail> searchProductDetails(
             String productName,
             Long categoryId,
             Long materialId,

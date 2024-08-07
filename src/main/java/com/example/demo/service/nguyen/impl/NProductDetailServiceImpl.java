@@ -48,4 +48,5 @@ public class NProductDetailServiceImpl implements NProductDetailService {
                 .searchProductDetails(productName, categoryId, materialId, wristId, collarId,
                         sizeId, colorId, minPrice, maxPrice, 1, pageable);
     }
+
 }

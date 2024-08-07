@@ -133,4 +133,52 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
             $scope.calculateSummaryBillDetail()
         }
     }, true);
+
+
+    
+    $scope.formatInput = function (input) {
+        // Lấy giá trị hiện tại của input, chỉ giữ lại số nguyên
+        let value = input.value.replace(/\D/g, '');
+
+        // Format số
+        if (value) {
+            let number = parseInt(value, 10);
+            input.value = formatCurrency(number);
+        }
+    }
+
+    $scope.formatCurrency = function (number) {
+        // Làm tròn số đến 2 chữ số thập phân
+        let roundedNumber = Number(number).toFixed(0);
+
+        // Tách phần nguyên và phần thập phân
+        let parts = roundedNumber.split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts.length > 1 ? parts[1] : '';
+
+        // Thêm dấu chấm để phân tách hàng nghìn
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        // Ghép lại phần nguyên và phần thập phân (nếu có)
+        let formattedNumber = integerPart + (decimalPart ? ',' + decimalPart : '');
+
+        // Thêm ký hiệu tiền tệ
+        return formattedNumber + ' đ';
+    }
+
+
+
+});
+
+
+app.filter('formatCurrency', function () {
+    return function (input) {
+        if (!input) return '';
+
+        // Chuyển đổi input thành số và làm tròn đến số nguyên
+        var number = Math.round(parseFloat(input));
+
+        // Format số thành chuỗi có dấu chấm phân cách hàng nghìn
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
 });

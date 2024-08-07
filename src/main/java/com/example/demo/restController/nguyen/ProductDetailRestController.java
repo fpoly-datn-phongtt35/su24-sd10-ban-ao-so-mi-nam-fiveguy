@@ -49,13 +49,14 @@ public class ProductDetailRestController {
             String imagePath = productService
                     .getImagePathByProductId(productDetail.getProduct().getId(),
                             productDetail.getColor().getId());
-            return toResponse(productDetail, imagePath);
+            BigDecimal promotionalPrice = productService.findPromotionalPriceByProductId(productDetail.getProduct().getId());
+            return toResponse(productDetail, imagePath, promotionalPrice);
         });
 
         return ResponseEntity.ok(responsePage);
     }
 
-    private ProductDetailResponse toResponse(ProductDetail productDetail, String imagePath) {
+    private ProductDetailResponse toResponse(ProductDetail productDetail, String imagePath, BigDecimal promotionalPrice) {
         ProductDetailResponse response = new ProductDetailResponse();
         response.setId(productDetail.getId());
         response.setQuantity(productDetail.getQuantity());
@@ -69,6 +70,11 @@ public class ProductDetailRestController {
         response.setSize(productDetail.getSize());
         response.setColor(productDetail.getColor());
         response.setImagePath(imagePath);
+        if(promotionalPrice.compareTo(BigDecimal.ZERO) == 0){
+            response.setPromotionalPrice(BigDecimal.ZERO);
+        }else{
+            response.setPromotionalPrice(promotionalPrice);
+        }
         return response;
     }
 

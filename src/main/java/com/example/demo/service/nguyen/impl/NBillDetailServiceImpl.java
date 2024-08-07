@@ -135,8 +135,15 @@ public class NBillDetailServiceImpl implements NBillDetailService {
                 existingBillDetail.setQuantity(existingBillDetail.getQuantity() - quantity);
                 return null;
             }
-            existingBillDetail.setPrice(price);
-            existingBillDetail.setPromotionalPrice(promotionalPrice);
+
+//            if(promotionalPrice.compareTo(price) == 0){
+//                billDetail.setPromotionalPrice(price);
+//            }else{
+//                existingBillDetail.setPrice(price);
+//                existingBillDetail.setPromotionalPrice(promotionalPrice);
+//            }
+//            existingBillDetail.setPrice(price);
+//            existingBillDetail.setPromotionalPrice(promotionalPrice);
 
             System.out.println(existingBillDetail.getQuantity() + quantity);
             System.out.println(productDetail.getQuantity());
@@ -162,7 +169,12 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             billDetail.setProductDetail(productDetail);
             billDetail.setQuantity(quantity);
             billDetail.setPrice(price);
-            billDetail.setPromotionalPrice(promotionalPrice);
+
+            if(promotionalPrice.compareTo(BigDecimal.ZERO) == 0){
+                billDetail.setPromotionalPrice(price);
+            }else{
+                billDetail.setPromotionalPrice(promotionalPrice);
+            }
             billDetail.setDefectiveProduct(0);
             billDetail.setStatus(1);
 

@@ -15,4 +15,6 @@ public interface NPaymentStatusService {
     PaymentStatus updateStatusPaymentRefund(Long billId, String note);
 
     PaymentStatus createPaymentStatus(Long billId, PaymentStatusRequest paymentStatusRequest);
+
+    Integer checkIsRefund(Long id);
 }

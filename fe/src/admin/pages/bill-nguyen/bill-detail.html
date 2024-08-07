@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/src/admin/pages/bill-nguyen/bill-detail.css">
-<div class="container mt-3">
+<div class="container mt-3" style="text-transform: none;">
     <!-- TRẠNG THÁI ĐƠN HÀNG -->
     <div class="row  border rounded shadow mb-3 pt-3 bg-body" style="height: 405px;">
         <div class=" row">
@@ -301,7 +301,7 @@
 
 
                     <button class="btn btn-primary"
-                        ng-show="[32].includes(status) && paidOrRefundObject.paidOrRefund == 3"
+                        ng-show="[32].includes(status) && !isRefund"
                         ng-click="showHoanTienTraHang()">
                         Hoàn tiền trả hàng</button>
 
@@ -334,11 +334,12 @@
                             <p class="mb-0" style="margin-top: -5px;">{{ps.paymentDate | date:"HH : mm"}}</p>
                             <p class="mb-0" style="margin-top: -3px;">{{ps.paymentDate | date:"dd-MM-yyyy"}}</p>
                         </td>
-                        <td><strong class="text-primary">{{ps.paymentAmount | number:0}} đ</strong></td>
+                        <td><strong class="text-primary">{{formatCurrency(ps.paymentAmount)}}</strong></td>
                         <td ng-switch="ps.paymentType">
                             <span ng-switch-when="1" class="badge bg-info">Thanh toán</span>
                             <span ng-switch-when="2" class="badge bg-info">Thanh toán</span>
                             <span ng-switch-when="3" class="badge bg-warning">Hoàn tiền</span>
+                            <span ng-switch-when="4" class="badge bg-warning">Hoàn tiền</span>
                         </td>
                         <td ng-switch="ps.paymentMethod">
                             <span ng-switch-when="1" class="badge bg-secondary">Tiền mặt</span>
@@ -395,7 +396,7 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="totalAmount"
                                         ng-model="customerPayment.paymentAmount" readonly>
-                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                    <span class="input-group-text" id="basic-addon2">đ</span>
                                 </div>
                             </div>
                         </div>
@@ -467,7 +468,7 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="totalAmount"
                                         ng-model="customerPayment.paymentAmount" readonly>
-                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                    <span class="input-group-text" id="basic-addon2">đ</span>
                                 </div>
                             </div>
                         </div>
@@ -543,7 +544,7 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="totalAmount"
                                         ng-model="customerPayment.paymentAmount" readonly>
-                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                    <span class="input-group-text" id="basic-addon2">đ</span>
                                 </div>
                             </div>
                         </div>
@@ -582,13 +583,13 @@
         </div>
     </div>
 
-    <!-- Modal Xác nhận hoàn tiền-->
-    <div class="modal fade" id="traHangHoanTienModal" tabindex="-1" aria-labelledby="paymentModalLabel"
+    <!-- Modal Xác nhận hoàn tiền trả hàng-->
+    <div class="modal fade" id="traHangHoanTienModal" tabindex="-1" aria-labelledby="traHangHoanTienModal"
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="paymentModalLabel">Hoàn tiền cho khách hàng</h5>
+                    <h5 class="modal-title" id="traHangHoanTienModal">Hoàn tiền cho khách hàng</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form name="paymentForm">
@@ -599,7 +600,7 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="totalAmount"
                                         ng-model="customerPayment.paymentAmount" readonly>
-                                    <span class="input-group-text" id="basic-addon2">vnđ</span>
+                                    <span class="input-group-text" id="basic-addon2">đ</span>
                                 </div>
                             </div>
                         </div>
@@ -629,8 +630,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary" ng-click="submitRefundPayment()">Xác nhận</button>
+                        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button> -->
+                        <button type="submit" class="btn btn-primary" ng-click="submitHoanTienTraHang()">Xác nhận</button>
                     </div>
                 </form>
             </div>
@@ -825,21 +826,21 @@
                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                 ng-change="validateQuantityBd(bd, bd.quantityNew)"
                                 ng-blur="updateBillDetailQuantity(bd.quantityNew, bd)">
-                            <span class="text-muted" ng-show="[1, 60].includes(status)">Còn lại:
+                            <span ng-show="[1, 60].includes(status)"
+                                ng-class="{'text-danger': ((bd.quantityNew > bd.productDetail.quantity) 
+                                || (bd.quantity > bd.productDetail.quantity) || (bd.quantity <= 0)) && [1, 60].includes(status)}">Còn lại:
                                 {{bd.productDetail.quantity}}</span>
                         </td>
                         <td class="col-2 text-end">
-                            <p class="m-0" ng-if="bd.promotionalPrice > bd.price">
-                                <span>{{bd.promotionalPrice | number:0}} VND</span>
+                            <p class="m-0" ng-if="bd.promotionalPrice < bd.price">
+                                <span>{{formatCurrency(bd.promotionalPrice)}}</span>
                                 <br>
                                 <span class="text-decoration-line-through text-danger"
-                                    style="font-size: 0.9em;">{{bd.price
-                                    | number:0}} VND</span>
+                                    style="font-size: 0.9em;">{{formatCurrency(bd.price)}}</span>
                             </p>
-                            <p class="m-0" ng-if="bd.promotionalPrice === bd.price">{{bd.price | number:0}} VND</p>
+                            <p class="m-0" ng-if="bd.promotionalPrice == bd.price">{{formatCurrency(bd.price)}}</p>
                         </td>
-                        <td class="col-2 text-end">{{(bd.promotionalPrice > 0 ? bd.promotionalPrice : bd.price) *
-                            bd.quantity | number:0}} VND</td>
+                        <td class="col-2 text-end">{{(bd.promotionalPrice > 0 ? bd.promotionalPrice : bd.price) * bd.quantity}}</td>
                         <td>
                             <button class="btn" ng-click="removeBillDetail(bd.id)" ng-show="[1].includes(status)">
                                 <i class="material-icons">&#xE15C;</i>
@@ -854,8 +855,8 @@
                         <th colspan="2"></th>
                         <th scope="col" class="fw-bold">{{billDetailSummary.totalQuantity}}</th>
                         <th colspan="1"></th>
-                        <th scope="col" class="fw-bold fs-6 text-end">{{billDetailSummary.totalPromotionalPrice |
-                            number:0}} VND</th>
+                        <th scope="col" class="fw-bold fs-6 text-end">
+                            {{formatCurrency(billDetailSummary.totalPromotionalPrice)}}</th>
                         <th scope="col"></th>
                     </tr>
                 </tfoot>
@@ -876,7 +877,7 @@
                         <th class="col-6">Sản phẩm</th>
                         <th class="col-2">Số lượng</th>
                         <th class="col-2">Đơn giá hoàn</th>
-                        <th class="col-2">Tổng</th>
+                        <th class="col-2">Thành tiền</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -902,8 +903,10 @@
                             </div>
                         </td>
                         <td class="col-2">{{ro.quantity}}</td>
-                        <td class="col-2">{{ro.billDetail.price * (1 - returnOrdersSummary.tiLeGiam) | number:0}} VND</td>
-                        <td class="col-2">{{ro.billDetail.price * ro.quantity * (1 - returnOrdersSummary.tiLeGiam) | number:0}} VND</td>
+                        <td class="col-2">{{formatCurrency(ro.billDetail.price * (1 - returnOrdersSummary.tiLeGiam))}}
+                        </td>
+                        <td class="col-2">{{formatCurrency(ro.billDetail.price * ro.quantity * (1 -
+                            returnOrdersSummary.tiLeGiam))}}</td>
                     </tr>
                     <td colspan="12" ng-show="returnOrders.length <= 0">Không có sản phẩm</td>
                 </tbody>
@@ -917,19 +920,18 @@
             <div class="row mb-3 align-items-center">
                 <div class="col-7 fw-bold">Tổng tiền hàng sau giảm giá</div>
                 <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.totalAmountAfterDiscount |
-                    number:0}}<span class="currency">đ</span></div>
+                    number:0}}</div>
             </div>
             <hr>
             <div class="row mb-3 align-items-center">
                 <div class="col-7 fw-bold">Đã thanh toán</div>
-                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidAmount | number:0}}<span
-                        class="currency">đ</span></div>
+                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidAmount | number:0}}</div>
             </div>
             <hr>
             <div class="row mb-3 align-items-center">
                 <div class="col-7 fw-bold">Thanh toán hoặc hoàn</div>
                 <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidAmount -
-                    billResponse.totalAmountAfterDiscount | number:0}}<span class="currency">đ</span></div>
+                    billResponse.totalAmountAfterDiscount | number:0}}</div>
             </div>
 
             <hr>
@@ -938,21 +940,20 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-7 fw-bold">Tổng tiền ship</div>
-                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.shippingFee | number:0}}<span
-                        class="currency">đ</span></div>
+                <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.shippingFee | number:0}}</div>
             </div>
             <hr>
             <div class="row mb-3 align-items-center">
                 <div class="col-7 fw-bold">Đã thanh toán</div>
                 <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidShippingFee |
-                    number:0}}<span class="currency">đ</span></div>
+                    number:0}}</div>
             </div>
             <hr>
             <div class="row mb-3 align-items-center">
                 <div class="col-7 fw-bold">Thanh toán hoặc hoàn ship</div>
                 <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.paidShippingFee -
                     billResponse.shippingFee |
-                    number:0}}<span class="currency">đ</span></div>
+                    number:0}}</div>
             </div>
 
         </div>
@@ -961,8 +962,7 @@
             <div class="p-4">
                 <div class="row mb-2 align-items-center">
                     <div class="col-7 fw-bold">Tổng tiền hàng:</div>
-                    <div class="col-5 text-end fs-5 money fw-bold">{{billResponse.totalAmount | number:0}}<span
-                            class="currency">đ</span></div>
+                    <div class="col-5 text-end fs-5 money fw-bold">{{formatCurrency(billResponse.totalAmount)}}</div>
                 </div>
                 <!-- <div class="row align-items-center">
                     <div class="col-7 fw-bold">Phí giao hàng:</div>
@@ -972,8 +972,7 @@
                 </div> -->
                 <div class="row align-items-center">
                     <div class="col-7 fw-bold">Phí giao hàng:</div>
-                    <div class="col-5 text-end fs-5 money fw-bold">{{billResponse.shippingFee | number:0}}<span
-                            class="currency">đ</span></div>
+                    <div class="col-5 text-end fs-5 money fw-bold">{{formatCurrency(billResponse.shippingFee)}}</div>
                 </div>
             </div>
 
@@ -989,10 +988,9 @@
                         </div>
                         <div class="voucher-conditions">
                             <span ng-show="billResponse.voucher.discountType == 1" class="me-1">Giảm tối đa <span
-                                    class="highlighted-value">{{
-                                    billResponse.voucher.maximumReductionValue | number }}đ</span></span>
+                                    class="highlighted-value">{{formatCurrency(billResponse.voucher.maximumReductionValue)}}</span></span>
                             <span>Đơn từ <span class="highlighted-value">{{
-                                    billResponse.voucher.minimumTotalAmount | number }}đ</span></span>
+                                    formatCurrency(billResponse.voucher.minimumTotalAmount)}}</span></span>
                         </div>
                     </div>
                     <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucher"
@@ -1013,15 +1011,15 @@
             <div class="p-4">
                 <div class="row mb-3 align-items-center">
                     <div class="col-7 fw-bold">Giảm giá:</div>
-                    <div class="col-5 text-end fs-5 money highlight-discount">{{billResponse.totalAmount -
-                        billResponse.totalAmountAfterDiscount | number:0}}<span class="currency">đ</span></div>
+                    <div class="col-5 text-end fs-5 money highlight-discount">{{formatCurrency(billResponse.totalAmount
+                        -
+                        billResponse.totalAmountAfterDiscount)}}</div>
                 </div>
                 <hr>
                 <div class="row align-items-center">
                     <div class="col-7 fw-bold fs-5">Tổng tiền thanh toán:</div>
                     <div class="col-5 text-end fs-4 fw-bold money highlight-total">
-                        {{billResponse.totalAmountAfterDiscount + billResponse.shippingFee | number:0}}<span
-                            class="currency">đ</span>
+                        {{formatCurrency(billResponse.totalAmountAfterDiscount + billResponse.shippingFee)}}
                     </div>
                 </div>
 
@@ -1029,221 +1027,258 @@
                 <div class="row mt-3 align-items-center"
                     ng-show="paidOrRefundObject.paidOrRefund != 0 && status !== 32">
                     <div class="col-7 fw-bold">Số tiền đã thanh toán:</div>
-                    <div class="col-5 text-end fs-5 money">{{billResponse.paidAmount + billResponse.paidShippingFee |
-                        number:0}}<span class="currency">đ</span></div>
+                    <div class="col-5 text-end fs-5 money">{{formatCurrency(billResponse.paidAmount +
+                        billResponse.paidShippingFee)}}</div>
                 </div>
 
                 <!-- Thêm phần số tiền cần hoàn trả hoặc thanh toán tiếp -->
-                <div class="row mt-2 align-items-center"
-                    ng-if="(billResponse.totalAmountAfterDiscount + billResponse.shippingFee) != (billResponse.paidAmount + billResponse.paidShippingFee) && (billResponse.paidAmount != 0 || billResponse.paidShippingFee != 0)">
-                    <div class="col-7 fw-bold">
-                        <span ng-if="paidOrRefundObject.paidOrRefund == 1 && status !== 32">Số
-                            tiền cần thanh toán tiếp:</span>
-                        <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32">Số
-                            tiền cần hoàn trả:</span>
-                        <span ng-if="status == 32">Số
-                            tiền hoàn trả:</span>
-                    </div>
-                    <div class="col-5 text-end fs-5 money"
-                        ng-show="paidOrRefundObject.paidOrRefund == 1 && status !== 32"
-                        ng-class="{'highlight-total': (billResponse.totalAmountAfterDiscount + billResponse.shippingFee) > (billResponse.paidAmount + billResponse.paidShippingFee)}">
-                        {{((billResponse.totalAmountAfterDiscount + billResponse.shippingFee) - (billResponse.paidAmount
-                        + billResponse.paidShippingFee)) | number:0}}<span class="currency">đ</span>
-                    </div>
-                    <div class="col-5 text-end fs-5 money"
-                        ng-show="paidOrRefundObject.paidOrRefund == 2 && status !== 32"
-                        ng-class="{'highlight-discount': (billResponse.totalAmountAfterDiscount + billResponse.shippingFee) < (billResponse.paidAmount + billResponse.paidShippingFee)}">
-                        {{(billResponse.paidAmount + billResponse.paidShippingFee) -
-                        (billResponse.totalAmountAfterDiscount + billResponse.shippingFee)| number:0}}<span
-                            class="currency">đ</span>
-                    </div>
-                    <div class="col-5 text-end fs-5 money highlight-discount" ng-show="status == 32">
-                        {{ returnOrdersSummary.tongTienTra | number:0}}<span class="currency">đ</span>
-                    </div>
+                <div class="row mt-2 align-items-center"">
+                    <div class=" col-7 fw-bold">
+                    <span ng-if="paidOrRefundObject.paidOrRefund == 1 && status !== 32">Số
+                        tiền cần thanh toán tiếp:</span>
+                    <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32">Số
+                        tiền cần hoàn trả:</span>
+                    <span ng-if="[30, 31, 32].includes(status)">Số
+                        tiền hoàn trả:</span>
+                </div>
+                <div class="col-5 text-end fs-5 money" ng-show="paidOrRefundObject.paidOrRefund == 1 && status !== 32"
+                    ng-class="{'highlight-total': (billResponse.totalAmountAfterDiscount + billResponse.shippingFee) > (billResponse.paidAmount + billResponse.paidShippingFee)}">
+                    {{formatCurrency(((billResponse.totalAmountAfterDiscount + billResponse.shippingFee) -
+                    (billResponse.paidAmount
+                    + billResponse.paidShippingFee)))}}
+                </div>
+                <div class="col-5 text-end fs-5 money" ng-show="paidOrRefundObject.paidOrRefund == 2 && status !== 32"
+                    ng-class="{'highlight-discount': (billResponse.totalAmountAfterDiscount + billResponse.shippingFee) < (billResponse.paidAmount + billResponse.paidShippingFee)}">
+                    {{formatCurrency((billResponse.paidAmount + billResponse.paidShippingFee) -
+                    (billResponse.totalAmountAfterDiscount + billResponse.shippingFee))}}
+                </div>
+                <div class="col-5 text-end fs-5 money highlight-discount" ng-show="[30, 31, 32].includes(status)">
+                    {{formatCurrency(returnOrdersSummary.tongTienTra)}}
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
-    <!-- Modal Chọn voucher có thể sử dụng-->
-    <div class="modal fade" id="modalListVoucher" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable" style="width: 40%;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="voucherModalLabel">Danh sách khuyến mãi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="voucher-list mt-2">
-                        <div class="voucher-container mx-4 mb-4" ng-repeat="voucher in vouchers">
-                            <div class="voucher-item">
-                                <div class="voucher-content">
-                                    <div class="mb-2">
-                                        <span class="voucher-code">{{ voucher.code }}</span>
-                                        <span class="mx-2">•</span>
-                                        <span class="voucher-value">Giảm <span class="highlight-main">{{ voucher.value
-                                                | number}}{{ voucher.discountType === 2 ? 'đ' : '%' }}</span></span>
-                                    </div>
-                                    <div class="voucher-conditions">
-                                        <span ng-show="voucher.discountType == 1" class="me-1">Giảm tối đa <span
-                                                class="highlighted-value">{{
-                                                voucher.maximumReductionValue | number }}đ</span></span>
-                                        <span>Đơn từ <span class="highlighted-value">{{
-                                                voucher.minimumTotalAmount | number }}đ</span></span>
-                                    </div>
+<!-- Modal Chọn voucher có thể sử dụng-->
+<div class="modal fade" id="modalListVoucher" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="width: 40%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="voucherModalLabel">Danh sách khuyến mãi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="voucher-list mt-2">
+                    <div class="voucher-container mx-4 mb-4" ng-repeat="voucher in vouchers">
+                        <div class="voucher-item">
+                            <div class="voucher-content">
+                                <div class="mb-2">
+                                    <span class="voucher-code">{{ voucher.code }}</span>
+                                    <span class="mx-2">•</span>
+                                    <span class="voucher-value">Giảm <span class="highlight-main">{{ voucher.value
+                                            | number}}{{ voucher.discountType === 2 ? 'đ' : '%' }}</span></span>
                                 </div>
-                                <button class="voucher-edit-button">
-                                    <!-- <i class="material-icons">edit</i> -->
+                                <div class="voucher-conditions">
+                                    <span ng-show="voucher.discountType == 1" class="me-1">Giảm tối đa <span
+                                            class="highlighted-value">{{
+                                            formatCurrency(voucher.maximumReductionValue)}}</span></span>
+                                    <span>Đơn từ <span class="highlighted-value">{{
+                                            formatCurrency(voucher.minimumTotalAmount)}}</span></span>
+                                </div>
+                            </div>
+                            <button class="voucher-edit-button">
+                                <!-- <i class="material-icons">edit</i> -->
 
-                                    <button class="voucher-edit-button"
-                                        ng-style="{'background-color': voucher.code === billResponse.voucher.code ? 'green' : ''}"
-                                        ng-click="setVoucherToBill(voucher)">
-                                        <i class="material-icons" style="color: aliceblue;"
-                                            ng-if="voucher.code === billResponse.voucher.code">check</i>
-                                        <i class="material-icons" ng-if="voucher.code !== billResponse.voucher.code"
-                                            class="material-icons">add</i>
-                                    </button>
+                                <button class="voucher-edit-button"
+                                    ng-style="{'background-color': voucher.code === billResponse.voucher.code ? 'green' : ''}"
+                                    ng-click="setVoucherToBill(voucher)">
+                                    <i class="material-icons" style="color: aliceblue;"
+                                        ng-if="voucher.code === billResponse.voucher.code">check</i>
+                                    <i class="material-icons" ng-if="voucher.code !== billResponse.voucher.code"
+                                        class="material-icons">add</i>
                                 </button>
-                            </div>
+                            </button>
                         </div>
-                        <div class="voucher-item mb-2 text-center" ng-show="vouchers.length == 0">
-                            <h6 class="text-center">Không có mã giảm giá phù hợp</h6>
-                        </div>
+                    </div>
+                    <div class="voucher-item mb-2 text-center" ng-show="vouchers.length == 0">
+                        <h6 class="text-center">Không có mã giảm giá phù hợp</h6>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
-    <!-- Modal Thêm sản phẩm vào hóa đơn -->
-    <div class="modal fade" id="addBillDetail" tabindex="-1" data-bs-backdrop="true" aria-labelledby="editModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Thêm sản phẩm</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div>
-                        <!-- Form filter -->
-                        <form ng-submit="applyFilters()">
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="productName" class="form-label">Tên sản phẩm</label>
-                                    <input type="text" class="form-control" id="productName"
-                                        ng-model="filters.productName" placeholder="Nhập tên sản phẩm...">
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="category" class="form-label">Loại</label>
-                                    <select class="form-select" id="category" ng-model="filters.categoryId">
-                                        <option value="">Tất cả</option>
-                                        <option ng-repeat="c in categories" ng-value="c.id">{{c.name}}</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="material" class="form-label">Chất liệu</label>
-                                    <select class="form-select" id="material" ng-model="filters.materialId">
-                                        <option value="">Tất cả</option>
-                                        <option ng-repeat="m in materials" ng-value="m.id">{{m.name}}</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="collar" class="form-label">Cổ áo</label>
-                                    <select class="form-select" id="collar" ng-model="filters.collarId">
-                                        <option value="">Tất cả</option>
-                                        <option ng-repeat="collar in collars" ng-value="collar.id">{{collar.name}}
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="wrist" class="form-label">Tay áo</label>
-                                    <select class="form-select" id="wrist" ng-model="filters.wristId">
-                                        <option value="">Tất cả</option>
-                                        <option ng-repeat="w in wrists" ng-value="w.id">{{w.name}}</option>
-                                    </select>
-                                </div>
+<!-- Modal Thêm sản phẩm vào hóa đơn -->
+<div class="modal fade" id="addBillDetail" tabindex="-1" data-bs-backdrop="true" aria-labelledby="editModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Thêm sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <!-- Form filter -->
+                    <form ng-submit="applyFilters()">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="productName" class="form-label">Tên sản phẩm</label>
+                                <input type="text" class="form-control" id="productName" ng-model="filters.productName"
+                                    placeholder="Nhập tên sản phẩm...">
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-md-2">
-                                    <label for="color" class="form-label">Màu sắc</label>
-                                    <select class="form-select" id="color" ng-model="filters.colorId">
-                                        <option value="">Tất cả</option>
-                                        <option ng-repeat="color in colors" ng-value="color.id">{{color.name}}</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="size" class="form-label">Kích cỡ</label>
-                                    <select class="form-select" id="size" ng-model="filters.sizeId">
-                                        <option value="">Tất cả</option>
-                                        <option ng-repeat="s in sizes" ng-value="s.id">{{s.name}}</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-1"></div>
-                                <div class="col-md-6">
-                                    <label for="priceRange" class="form-label d-flex justify-content-center">Khoảng
-                                        giá</label>
-                                    <div id="slider" class="slider"></div>
-                                    <!-- <div class="labels-container">
+                            <div class="col-md-2">
+                                <label for="category" class="form-label">Loại</label>
+                                <select class="form-select" id="category" ng-model="filters.categoryId">
+                                    <option value="">Tất cả</option>
+                                    <option ng-repeat="c in categories" ng-value="c.id">{{c.name}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="material" class="form-label">Chất liệu</label>
+                                <select class="form-select" id="material" ng-model="filters.materialId">
+                                    <option value="">Tất cả</option>
+                                    <option ng-repeat="m in materials" ng-value="m.id">{{m.name}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="collar" class="form-label">Cổ áo</label>
+                                <select class="form-select" id="collar" ng-model="filters.collarId">
+                                    <option value="">Tất cả</option>
+                                    <option ng-repeat="collar in collars" ng-value="collar.id">{{collar.name}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="wrist" class="form-label">Tay áo</label>
+                                <select class="form-select" id="wrist" ng-model="filters.wristId">
+                                    <option value="">Tất cả</option>
+                                    <option ng-repeat="w in wrists" ng-value="w.id">{{w.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-2">
+                                <label for="color" class="form-label">Màu sắc</label>
+                                <select class="form-select" id="color" ng-model="filters.colorId">
+                                    <option value="">Tất cả</option>
+                                    <option ng-repeat="color in colors" ng-value="color.id">{{color.name}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="size" class="form-label">Kích cỡ</label>
+                                <select class="form-select" id="size" ng-model="filters.sizeId">
+                                    <option value="">Tất cả</option>
+                                    <option ng-repeat="s in sizes" ng-value="s.id">{{s.name}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="col-md-6">
+                                <label for="priceRange" class="form-label d-flex justify-content-center">Khoảng
+                                    giá</label>
+                                <div id="slider" class="slider"></div>
+                                <!-- <div class="labels-container">
                                             <div id="minLabel" class="label"></div>
                                             <div id="maxLabel" class="label"></div>
                                         </div> -->
-                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                            <button type="button" class="btn btn-secondary" ng-click="resetFilters()">Làm mới</button>
-                        </form>
-                    </div>
-
-                    <table class="table mt-3">
-                        <thead>
-                            <tr class="table-warning">
-                                <th scope="col">#</th>
-                                <th scope="col">Sản phẩm</th>
-                                <th scope="col">Giá bán</th>
-                                <th scope="col">Số lượng tồn</th>
-                                <th scope="col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="pd in productDetails">
-                                <th scope="row">{{$index + 1}}</th>
-                                <td><img ng-src="{{pd.imagePath}}" width="100px" height="100px">
-                                    {{pd.product.name + ' ' + pd.color.name + ' ' + pd.size.name}}</td>
-                                <td class="col-2">
-                                    <p>{{pd.product.price | number:0}} VND</p>
-                                </td>
-                                <td class="col-2">
-                                    <p><input type="number" class="form-control w-50" min="1"
-                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                            ng-model="pd.inputQuantity" ng-change="validateQuantity(pd)"></p>
-                                    <p>Còn lại: {{pd.quantity}}</p>
-                                </td>
-                                <td><button class="btn btn-warning"
-                                        ng-click="addBillDetail(pd.id, pd.inputQuantity, pd.product.price, pd.product.price, pd)">Thêm</button>
-                                </td>
-                                <!-- Button trigger modal -->
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <!-- Pagination and items per page -->
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <label for="itemsPerPage">Hiển thị:</label>
-                            <select id="itemsPerPage" ng-model="pageSize" ng-change="applyFilters()"
-                                class="form-select d-inline-block w-auto">
-                                <option value="2">2</option>
-                                <option value="5">5</option>
-                                <option value="10">10</option>
-                                <option value="20">20</option>
-                                <option value="50">50</option>
-                            </select>
-                            <span>/ trang</span>
                         </div>
-                        <!-- <nav aria-label="Page navigation example">
+                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        <button type="button" class="btn btn-secondary" ng-click="resetFilters()">Làm mới</button>
+                    </form>
+                </div>
+
+                <table class="table mt-3">
+                    <thead>
+                        <tr class="table-warning">
+                            <th scope="col">#</th>
+                            <th scope="col">Sản phẩm</th>
+                            <th scope="col">Giá bán</th>
+                            <th scope="col">Số lượng tồn</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="pd in productDetails">
+                            <th scope="row">{{$index + 1}}</th>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img ng-src="{{pd.imagePath}}" width="100px" height="100px" class="me-3">
+                                    <div class="d-flex flex-column fs-6 text-start">
+                                        <div class="fw-bold" style="font-size: 1.2em;">
+                                            {{pd.product.name + ' ' + pd.product.collar.name + ' ' +
+                                            pd.product.wrist.name}}
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">Màu:</span>
+                                            <span class="btn" style="width: 50px; height: 25px;"
+                                                ng-style="{'background-color' : pd.color.colorCode}"></span>
+                                        </div>
+                                        <div class="mt-1">
+                                            <span class="me-2">Size: </span>
+                                            <span class="fw-bold"
+                                                style="text-decoration: underline;">{{pd.size.name}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="col-2">
+                                <!-- <p>{{formatCurrency(pd.product.price)}}</p> -->
+
+
+                                <p class="m-0" ng-if="pd.promotionalPrice !== 0">
+                                    <span>{{formatCurrency(pd.promotionalPrice)}}</span>
+                                    <br>
+                                    <span class="text-decoration-line-through text-danger"
+                                        style="font-size: 0.9em;">{{formatCurrency(pd.product.price)}}</span>
+                                </p>
+                                <p class="m-0" ng-if="pd.promotionalPrice == 0">{{formatCurrency(pd.product.price)}}</p>
+                            </td>
+                            <td class="col-2">
+                                <p><input type="number" class="form-control w-50" min="1"
+                                        oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
+                                        ng-model="pd.inputQuantity" ng-change="validateQuantity(pd)"></p>
+                                <p>Còn lại: {{pd.quantity}}</p>
+                            </td>
+                            <td><button class="btn btn-warning"
+                                    ng-click="addBillDetail(pd.id, pd.inputQuantity, pd.product.price, pd.promotionalPrice, pd)">Thêm</button>
+                            </td>
+                            <!-- Button trigger modal -->
+                        </tr>
+                    </tbody>
+                </table>
+
+
+                <!-- <td class="col-2 text-end">
+                    <p class="m-0" ng-if="bd.promotionalPrice > bd.price">
+                        <span>{{formatCurrency(pd.promotionalPrice)}}</span>
+                        <br>
+                        <span class="text-decoration-line-through text-danger"
+                            style="font-size: 0.9em;">{{formatCurrency(bd.price)}}</span>
+                    </p>
+                    <p class="m-0" ng-if="bd.promotionalPrice === bd.price">{{formatCurrency(bd.price)}}</p>
+                </td> -->
+
+                <!-- Pagination and items per page -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <label for="itemsPerPage">Hiển thị:</label>
+                        <select id="itemsPerPage" ng-model="pageSize" ng-change="applyFilters()"
+                            class="form-select d-inline-block w-auto">
+                            <option value="2">2</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>/ trang</span>
+                    </div>
+                    <!-- <nav aria-label="Page navigation example">
                             <ul class="pagination mb-0">
                                 <li class="page-item" ng-class="{'disabled': currentPage === 0}">
                                     <a class="page-link" href="" ng-click="loadPage(currentPage - 1)"
@@ -1262,108 +1297,108 @@
                                 </li>
                             </ul>
                         </nav> -->
-                        <nav aria-label="Page navigation example">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <button class="btn btn-primary" ng-disabled="currentPage == 0"
-                                    ng-click="loadPage(currentPage - 1)">Previous</button>
-                                <span class="ms-3 me-3">Page <input type="number"
-                                        class="form-control d-inline-block w-auto ms-2 me-2" ng-model="desiredPage"
-                                        min="1" max="{{totalPages}}" ng-change="goToPage()"> of {{totalPages}}</span>
-                                <button class="btn btn-primary" ng-disabled="currentPage == totalPages - 1"
-                                    ng-click="loadPage(currentPage + 1)">Next</button>
-                            </div>
-                        </nav>
-                    </div>
+                    <nav aria-label="Page navigation example">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button class="btn btn-primary" ng-disabled="currentPage == 0"
+                                ng-click="loadPage(currentPage - 1)">Previous</button>
+                            <span class="ms-3 me-3">Page <input type="number"
+                                    class="form-control d-inline-block w-auto ms-2 me-2" ng-model="desiredPage" min="1"
+                                    max="{{totalPages}}" ng-change="goToPage()"> of {{totalPages}}</span>
+                            <button class="btn btn-primary" ng-disabled="currentPage == totalPages - 1"
+                                ng-click="loadPage(currentPage + 1)">Next</button>
+                        </div>
+                    </nav>
                 </div>
             </div>
-            <!-- <div class="modal-footer">
+        </div>
+        <!-- <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                         <button type="button" class="btn btn-primary">Lưu thay đổi</button>
                     </div> -->
-        </div>
     </div>
+</div>
 
-    <!-- Modal Lịch sử giao dịch-->
-    <div class="modal fade" id="paymentStatusModal" data-bs-backdrop="none" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Lịch sử giao dịch</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table text-center">
-                        <thead>
-                            <tr>
-                                <th scope="col">STT</th>
-                                <th scope="col">Mã GD</th>
-                                <th scope="col">Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="ps in listPaymentStatus">
-                                <td class="col-1">{{$index + 1}}</td>
-                                <td class="col-7">
-                                    {{ps.code}}
-                                </td>
-                                <td class="col-4"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+<!-- Modal Lịch sử giao dịch-->
+<div class="modal fade" id="paymentStatusModal" data-bs-backdrop="none" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Lịch sử giao dịch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th>
+                            <th scope="col">Mã GD</th>
+                            <th scope="col">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="ps in listPaymentStatus">
+                            <td class="col-1">{{$index + 1}}</td>
+                            <td class="col-7">
+                                {{ps.code}}
+                            </td>
+                            <td class="col-4"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal sản phấm lỗi-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Sản phẩm bị lỗi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <table class="table text-center">
-                        <thead>
-                            <tr>
-                                <th scope="col">STT</th>
-                                <th scope="col">Sản phẩm</th>
-                                <th scope="col">Số sp bị lỗi / Số lượng</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="bd in billDetails">
-                                <td class="col-1">{{$index + 1}}</td>
-                                <td class="col-7" style="text-align: start;">
-                                    <div class="row">
-                                        <div class="col-2"><img src="" width="70px" height="70px"></div>
-                                        <div class="col-10">
-                                            <p class="fs-6">{{bd.productDetail.product.name + ' '
-                                                + bd.productDetail.color.name + ' '
-                                                + bd.productDetail.size.name}}</p>
-                                            <p class="text-danger" style="margin-top: -5px;">{{bd.price | number:0}} đ
-                                            </p>
-                                        </div>
+<!-- Modal sản phấm lỗi-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Sản phẩm bị lỗi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th scope="col">STT</th>
+                            <th scope="col">Sản phẩm</th>
+                            <th scope="col">Số sp bị lỗi / Số lượng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="bd in billDetails">
+                            <td class="col-1">{{$index + 1}}</td>
+                            <td class="col-7" style="text-align: start;">
+                                <div class="row">
+                                    <div class="col-2"><img src="" width="70px" height="70px"></div>
+                                    <div class="col-10">
+                                        <p class="fs-6">{{bd.productDetail.product.name + ' '
+                                            + bd.productDetail.color.name + ' '
+                                            + bd.productDetail.size.name}}</p>
+                                        <p class="text-danger" style="margin-top: -5px;">{{bd.price | number:0}} đ
+                                        </p>
                                     </div>
+                                </div>
 
-                                </td>
-                                <td class="col-4 fs-5">
-                                    <div class="row"><input type="number" class="form-control w-50"
-                                            ng-value="bd.quantity" min="0" max="{{bd.quantity}}"
-                                            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0">
-                                        / {{bd.quantity}}</div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+                            </td>
+                            <td class="col-4 fs-5">
+                                <div class="row"><input type="number" class="form-control w-50" ng-value="bd.quantity"
+                                        min="0" max="{{bd.quantity}}"
+                                        oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0">
+                                    / {{bd.quantity}}</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
+</div>
 
 </div>
 

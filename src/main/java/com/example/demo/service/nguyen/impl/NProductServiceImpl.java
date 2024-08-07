@@ -57,4 +57,13 @@ public class NProductServiceImpl implements NProductService {
         List<Image> images = imageRepository.findAllByProductIdAndColorIdAndStatus(id, colorId, 1);
         return images.isEmpty() ? null : images.get(0).getPath();
     }
+
+
+    public BigDecimal findPromotionalPriceByProductId(Long id) {
+        Integer promotionalPrice = productRepository.findPromotionalPriceByProductId(id);
+
+        if(promotionalPrice == null) return BigDecimal.ZERO;
+
+        return BigDecimal.valueOf(Double.valueOf(promotionalPrice));
+    }
 }

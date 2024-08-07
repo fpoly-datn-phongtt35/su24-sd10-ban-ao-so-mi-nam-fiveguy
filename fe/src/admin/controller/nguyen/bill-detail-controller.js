@@ -427,7 +427,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $scope.deliveryFlow = {
             20: [1],              // Tạo đơn hàng -> Chờ xác nhận
             1: [2, 5, 6, 60],         // Chờ xác nhận -> Chờ giao hàng hoặc Khách hủy hoặc Đã hủy
-            2: [3, 5, 6, 60],         // Chờ giao hàng -> Đang giao hàng hoặc Khách hủy hoặc Đã hủy
+            2: [3, 5, 6],         // Chờ giao hàng -> Đang giao hàng hoặc Khách hủy hoặc Đã hủy
             3: [4, 7, 81],        // Đang giao hàng -> Đã giao hàng hoặc Thất bại hoặc Thất bại (mất hàng)
             4: [21],      // Đã giao hàng -> Hoàn thành hoặc Trả hàng (tại quầy) hoặc Trả hàng (ship)
 
@@ -852,7 +852,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             paymentAmount: $scope.returnOrdersSummary.tongTienTra,
             customerPaymentStatus: 3,
             paymentMethod: $scope.customerPayment.paymentMethod,
-            paymentType: 3,
+            paymentType: 4,
             note: $scope.customerPayment.note
         };
 
@@ -866,11 +866,14 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
         $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
             $scope.showSuccess("Xác nhận hoàn tiền thành công");
-            $scope.getAllPaymentStatus($scope.idBill);
             $('#traHangHoanTienModal').modal('hide');
+
+            $scope.getAllPaymentStatus($scope.idBill);
 
             $scope.getBillById($scope.idBill);
             $scope.getBillHistoryByBillId()
+            
+            $scope.checkIsRefund()
         });
     };
 
@@ -897,7 +900,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             // })
 
             // console.log($scope.errorQuantity + "   afgafhgalkds");
-
+            $scope.checkIsRefund()
         }
     }, true);
 
@@ -915,6 +918,16 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             })
         }
     })
+
+    $scope.checkIsRefund = function () {
+        $http.get(apiBill + "/" + $scope.idBill + "/isRefund").then(function (response) {
+            if (response.data == 1) {
+                $scope.isRefund = true;
+            } else if (response.data == 0) {
+                $scope.isRefund = false;
+            }
+        })
+    }
 
     // #endregion
 
@@ -1032,6 +1045,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
                 $scope.desiredPage = pageNumber + 1;
 
+                console.log(response.data.content)
+
                 // Initialize inputQuantity for each productDetail
                 $scope.productDetails.forEach(function (pd) {
                     pd.inputQuantity = 1; // Set default value to 1
@@ -1128,6 +1143,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             price: priceInput,
             promotionalPrice: pPriceInput
         };
+
         $http({
             method: 'POST',
             url: apiBill + "/" + $scope.idBill + "/details",
@@ -1141,10 +1157,10 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             $scope.showSuccess("Thêm thành công");
             // $scope.getAllBillDetailByBillId($scope.idBill);
-            $scope.getProductDetails(0);
-            $scope.productDetails.forEach(function (pd) {
-                pd.inputQuantity = 1; // Set default value to 0
-            });
+            // $scope.getProductDetails(0);
+            // $scope.productDetails.forEach(function (pd) {
+            //     pd.inputQuantity = 1; // Set default value to 0
+            // });
 
             //Lấy lại bill để hiển thị lại totalAmount
             $scope.getBillById($scope.idBill)
@@ -1749,4 +1765,46 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     //#endregion
 
+
+    $scope.formatInput = function (input) {
+        // Lấy giá trị hiện tại của input, chỉ giữ lại số nguyên
+        let value = input.value.replace(/\D/g, '');
+
+        // Format số
+        if (value) {
+            let number = parseInt(value, 10);
+            input.value = formatCurrency(number);
+        }
+    }
+
+    $scope.formatCurrency = function (number) {
+        // Làm tròn số đến 2 chữ số thập phân
+        let roundedNumber = Number(number).toFixed(0);
+
+        // Tách phần nguyên và phần thập phân
+        let parts = roundedNumber.split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts.length > 1 ? parts[1] : '';
+
+        // Thêm dấu chấm để phân tách hàng nghìn
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        // Ghép lại phần nguyên và phần thập phân (nếu có)
+        let formattedNumber = integerPart + (decimalPart ? ',' + decimalPart : '');
+
+        // Thêm ký hiệu tiền tệ
+        return formattedNumber + ' đ';
+    }
+});
+
+app.filter('formatCurrency', function () {
+    return function (input) {
+        if (!input) return '';
+
+        // Chuyển đổi input thành số và làm tròn đến số nguyên
+        var number = Math.round(parseFloat(input));
+
+        // Format số thành chuỗi có dấu chấm phân cách hàng nghìn
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
 });

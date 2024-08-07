@@ -12,4 +12,6 @@ public interface NProductService {
     BigDecimal getMinPrice();
 
     String getImagePathByProductId(Long id, Long colorId);
+
+    BigDecimal findPromotionalPriceByProductId(Long id);
 }

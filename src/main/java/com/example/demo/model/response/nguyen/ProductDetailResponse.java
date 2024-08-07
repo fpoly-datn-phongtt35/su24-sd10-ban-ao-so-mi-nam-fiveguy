@@ -6,6 +6,7 @@ import com.example.demo.entity.ProductDetail;
 import com.example.demo.entity.Size;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -28,4 +29,7 @@ public class ProductDetailResponse {
     private Color color;
 
     private String imagePath;
+
+
+    private BigDecimal promotionalPrice;
 }

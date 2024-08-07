@@ -189,6 +189,11 @@ public class NBillRestController {
         return ResponseEntity.ok(paymentStatusService.updateStatusPaymentRefund(billId, note));
     }
 
+    @GetMapping("/{billId}/isRefund")
+    public ResponseEntity<?> checkIsRefund(@PathVariable Long billId) {
+        return ResponseEntity.ok(paymentStatusService.checkIsRefund(billId));
+    }
+
     @GetMapping("/{billId}/checkQuantity")
     public ResponseEntity<?> checkQuantity(@PathVariable Long billId) {
         return ResponseEntity.ok(billService.isQuantityExceedsProductDetail(billId));
@@ -207,4 +212,5 @@ public class NBillRestController {
                                               @RequestBody Voucher voucher) {
         return ResponseEntity.ok(billService.setVoucherToBill(billId, voucher));
     }
+
 }
