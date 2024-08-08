@@ -6,7 +6,8 @@
             <div class="d-flex justify-content-between mb-3">
                 <h5 class="ms-3">Trạng thái đơn hàng</h5>
                 <div>
-                    <button class="btn btn-primary me-3" ng-click="exportBill()">In hóa
+                    <button class="btn btn-primary me-3" ng-show="[2, 3, 4, 21, 22].includes(status)"
+                        ng-click="exportBill()">In hóa
                         đơn</button>
                     <!-- <button class="btn btn-warning" ng-click="goToReturnOrder()">Trả hàng</button> -->
                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#billHistoryModal">Lịch
@@ -84,8 +85,12 @@
                             ng-if="deliveryFlow[status].includes(6) && (paidOrRefundObject.paidOrRefund == 3 || errorQuantity)"
                             ng-click="showModalStatus(6)">Hủy đơn hàng</button> -->
 
-                        <button class="btn btn-outline-danger me-3" ng-if="[1, 2, 81, 12, 13, 60].includes(status)"
-                            ng-click="showModalStatus(6)">Hủy (test)</button>
+                        <button class="btn btn-outline-danger me-3"
+                            ng-if="[81, 12, 13, 60].includes(status) && paidOrRefundObject.paidOrRefund == 3"
+                            ng-click="showModalStatus(6)">Hủy (test1)</button>
+
+                        <button class="btn btn-outline-danger me-3" ng-if="[1, 2].includes(status)"
+                            ng-click="showModalStatus(6)">Hủy (test2)</button>
 
 
                         <button class="btn btn-outline-danger me-3"
@@ -299,9 +304,13 @@
                         ng-click="showConfirmRefund()">
                         Hoàn tiền trả hàng</button>
 
-
                     <button class="btn btn-primary"
-                        ng-show="[32].includes(status) && !isRefund"
+                        ng-show="[5, 6].includes(status) && paidOrRefundObject.paidOrRefund == 0"
+                        ng-click="showCancelBillRefund()">
+                        Hoàn tiền trả hàng</button>
+
+
+                    <button class="btn btn-primary" ng-show="[32].includes(status) && !isRefund"
                         ng-click="showHoanTienTraHang()">
                         Hoàn tiền trả hàng</button>
 
@@ -631,7 +640,8 @@
                     </div>
                     <div class="modal-footer">
                         <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button> -->
-                        <button type="submit" class="btn btn-primary" ng-click="submitHoanTienTraHang()">Xác nhận</button>
+                        <button type="submit" class="btn btn-primary" ng-click="submitHoanTienTraHang()">Xác
+                            nhận</button>
                     </div>
                 </form>
             </div>
@@ -778,6 +788,11 @@
 
 
 
+
+
+
+
+
     <!-- SẢN PHẨM -->
 
     <!-- Bảng sản phẩm trong giỏ hàng -->
@@ -846,7 +861,8 @@
                             </p>
                             <p class="m-0" ng-if="bd.promotionalPrice == bd.price">{{formatCurrency(bd.price)}}</p>
                         </td>
-                        <td class="col-2 text-end">{{(bd.promotionalPrice > 0 ? bd.promotionalPrice : bd.price) * bd.quantity}}</td>
+                        <td class="col-2 text-end">{{(bd.promotionalPrice > 0 ? bd.promotionalPrice : bd.price) *
+                            bd.quantity}}</td>
                         <td>
                             <button class="btn" ng-click="removeBillDetail(bd.id)" ng-show="[1].includes(status)">
                                 <i class="material-icons">&#xE15C;</i>

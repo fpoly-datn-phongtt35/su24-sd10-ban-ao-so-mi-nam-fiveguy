@@ -705,10 +705,10 @@ public class NBillServiceImpl implements NBillService {
                 bill.getCustomer() != null && bill.getCustomer().getFullName() != null
                         ? bill.getCustomer().getFullName()
                         : "Khách lẻ");
-        response.setCreateAt(
-                new java.sql.Date(bill.getCreatedAt().getTime())); // Convert Date to SQL Date
+        response.setCreatedAt(bill.getCreatedAt()); // Convert Date to SQL Date
         response.setTypeBill(bill.getTypeBill());
         response.setStatus(bill.getStatus());
+        response.setPaidAmount(bill.getPaidAmount());
 
         // Sum quantity from BillDetail
         Integer quantity = billDetailRepository.sumQuantityByBillId(bill.getId());

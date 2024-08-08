@@ -5,7 +5,7 @@ import com.example.demo.entity.ProductDetail;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 
 @Data
 
@@ -21,10 +21,12 @@ public class BillResponse {
 
     private String nameCustomer;
 
-    private Date createAt;
+    private Date createdAt;
 
     private int typeBill;
 
     private int status;
 
+
+    private BigDecimal paidAmount;
 }

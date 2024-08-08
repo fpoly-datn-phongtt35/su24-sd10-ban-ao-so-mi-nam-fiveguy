@@ -283,9 +283,9 @@
                         <td>{{$index + 1}}</td>
                         <td>{{order.code}}</td>
                         <td>{{order.quantity}}</td>
-                        <td>{{order.totalAmount | currency}}</td>
+                        <td ng-class="{'text-danger': order.paidAmount == 0}">{{order.totalAmount | currency}}</td>
                         <td>{{order.nameCustomer}}</td>
-                        <td>{{order.createdAt | date: "dd-MM-yyyy"}}</td>
+                        <td>{{order.createdAt | date: "HH:mm dd-MM-yyyy"}}</td>
                         <td ng-switch="order.typeBill" style="font-size: 20px;">
                             <span ng-switch-when="1">
                                 <div class="badge bg-info text-wrap" style="width: 65%;">
