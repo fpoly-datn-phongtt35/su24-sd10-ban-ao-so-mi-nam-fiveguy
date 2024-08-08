@@ -1,0 +1,112 @@
+
+
+
+<section style="margin-top: 82px;" class="container-fluid" >
+
+    <div style="margin-bottom: 40px;padding: 46px 64px;" class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+
+            <div class="account-page-title">
+                <span>Tài khoản của bạn</span>
+            </div>
+
+
+            <div class="collapsible-account-content">
+                <div class="block-title">
+                    <strong class="customer-name">{{userData.fullName}}</strong>
+                </div>
+                <div class="block-content block-collapsible-nav-content">
+     
+    
+                      
+                    <ul class="nav items">
+                        <li class="nav item current"><a href="#/home/account-info"><strong>Thông tin tài khoản</strong></a></li>
+                    </ul>
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-history">Lịch sử mua hàng</a></li>
+                    </ul>
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-address">Sổ địa chỉ</a></li>
+                    </ul>
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-favorite">Sản phẩm yêu thích</a></li>
+                    </ul>
+                    <ul  class="nav items"><li class="nav item current"><a href="#/home/account-evaluate">Đánh giá</a></li>
+                    </ul>
+                <hr>
+    
+                <ul class="nav items">
+                    <li class="nav item current"><a href=""   ng-click="logout()">Đăng xuất</a></li>
+                </ul>
+                </div>
+            </div>
+      
+        </div>
+        <div class="col-lg-9 col-md-6 col-sm-6 mb-4">
+           <div class="column-main">
+            <div class="page-title-wrapper">
+                <h1 class="page-title">
+                    <span class="base">Sản phẩm yêu thích</span>
+                </h1>
+            </div>
+            <div class="row">
+      
+                <div ng-repeat="favorite in favoritesList.content" class="col-lg-3 col-md-6 col-sm-6">
+                  <div class="card  border shadow-0 mb-4 ">
+                    <a href="#!product-detail/{{favorite.product.id}}">
+                        <img style="position: relative;" class="card-img-top" width="100%" height="100%" class="rounded-2" loading="lazy"
+                          ng-src="{{ favorite.path }}" />
+                      </a>
+                    <div class="card-body d-flex flex-column pt-3 border-top">
+                        <p href="#" class="nav-link">
+                            {{ favorite.product.name }} {{
+                            favorite.product.category.name }} {{
+                                favorite.product.material.name }} {{
+                                    favorite.product.code }}
+                          </p>
+                      <div class="price-wrap mb-2">
+                        <strong class="">{{ favorite.price | number }} đ</strong>
+                      </div>
+                      <div class="card-footer d-flex align-items-end justify-content-between pt-3 px-0 pb-0 mt-auto">
+                        <a href="#!product-detail/{{favorite.product.id}}" class="btn btn-primary w-60">Xem chi tiết</a>
+                        <button ng-click="deleteDataFavorite(favorite.id)"  class="btn btn-primary w-30">Xóa</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            
+              </div>
+              <div class="row text-center">
+                <div class="col-md-12" ng-if="favoritesList && (favoritesList.totalPages !== 1)">
+                    <ul class="pagination">
+                        <li ng-class="{disabled: favoritesList.first}">
+                            <a href="#!/account-favorite" ng-click="setCurrentPageRateFavorite(0)">
+                                <i class="fa fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li ng-class="{disabled: favoritesList.first}">
+                            <a href="#!/account-favorite" ng-click="setCurrentPageRateFavorite(favoritesList.number - 1)">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        </li>
+                
+                        {{ favoritesList.number + 1 }}
+                        <li ng-class="{disabled: favoritesList.last}">
+                            <a href="#!/account-favorite" ng-click="setCurrentPageRateFavorite(favoritesList.number + 1)">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li ng-class="{disabled: favoritesList.last}">
+                            <a href="#!/account-favorite" ng-click="setCurrentPageRateFavorite(favoritesList.totalPages - 1)">
+                                <i class="fa fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+             
+            </div>
+
+           </div>
+        </div>
+    </div>
+</section>
