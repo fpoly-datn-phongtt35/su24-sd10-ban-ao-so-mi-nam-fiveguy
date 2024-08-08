@@ -12,7 +12,7 @@ app.controller("SellQuicklyController", function($scope, $http){
         }
     });
     
-    $scope.customer = {gender: true};
+    $scope.customer = {gender: true, addresses: []};
     $scope.provinces = [];
     $scope.districts = [];
     $scope.wards = [];
@@ -122,6 +122,7 @@ app.controller("SellQuicklyController", function($scope, $http){
         if (!$scope.selectedBill || $scope.selectedBill.id != id) {
             $http.get(`${config.host}/bill-th/${id}`).then(resp => {
                 $scope.selectedBill = resp.data;
+                console.log($scope.selectedBill)
                 $scope.getTotalQuantity();
             }).catch(error => {
                 console.log("Error", error);
@@ -342,9 +343,30 @@ app.controller("SellQuicklyController", function($scope, $http){
         return true;
     }
 
+    $scope.setBillCustomer = () => {
+        $http.put(`${config.host}/bill-th`, $scope.selectedBill).then(resp => {
+            $scope.getBills();
+            $scope.selectedBill = resp.data;
+        }).catch(error => {
+            console.log("Error", error);
+        });
+    }
+
     $scope.createCustomer = () => {
         if ($scope.customerForm.$valid && $scope.isAddress($scope.provinceValue, $scope.districtValue, $scope.wardValue)) {
-            console.log(123)
+            $scope.customer.addresses = [
+                {
+                    name: $scope.addressDetail,
+                    addressId: `${$scope.wardCode}, ${$scope.districtCode}, ${$scope.provinceCode}`,
+                    address: `${$scope.wardValue}, ${$scope.districtValue}, ${$scope.provinceValue}`
+                }
+            ]
+            console.log($scope.customer)
+
+            $http.post(`${config.host}/customer-th`, $scope.customer).then(resp => {
+                $scope.selectedBill.customer = resp.data;
+                $scope.setBillCustomer();
+            })
         }
     }
   

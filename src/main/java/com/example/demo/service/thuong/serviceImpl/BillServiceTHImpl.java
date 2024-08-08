@@ -35,6 +35,9 @@ public class BillServiceTHImpl implements BillServiceTH {
     @Autowired
     private ProductRepositoryTH productRepository;
 
+    @Autowired
+    private CustomerRepositoryTH customerRepository;
+
     @Override
     public List<BillResponseTH> findAllByStatusAndTypeBill(Integer status, Integer typeBill) {
         return billRepository.findAllByStatusAndTypeBill(status, typeBill).stream().map(b -> {
@@ -271,6 +274,18 @@ public class BillServiceTHImpl implements BillServiceTH {
         bill.setStatus(20);
         bill.setEmployee(employee);
         bill.setTotalAmount(BigDecimal.valueOf(0));
+        return setBillResponse(billRepository.save(bill));
+    }
+
+    @Override
+    public BillResponseTH update(Employee employee, BillResponseTH billRequest) {
+        Optional<Bill> billOptional = billRepository.findById(billRequest.getId());
+        if (billOptional.isEmpty()) {
+            return null;
+        }
+        Bill bill = billOptional.get();
+        bill.setEmployee(employee);
+        bill.setCustomer(billRequest.getCustomer());
         return setBillResponse(billRepository.save(bill));
     }
 }

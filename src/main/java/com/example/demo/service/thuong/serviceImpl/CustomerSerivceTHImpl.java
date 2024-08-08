@@ -7,6 +7,9 @@ import com.example.demo.service.thuong.CustomerServiceTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.stream.Collectors;
+
 @Service
 public class CustomerSerivceTHImpl implements CustomerServiceTH {
 
@@ -32,8 +35,18 @@ public class CustomerSerivceTHImpl implements CustomerServiceTH {
     }
 
     @Override
-    public CustomerResponseTH create(Customer customerRequest) {
-        customerRequest.setStatus(1);
-        return setBillResponse(customerRepository.save(customerRequest));
+    public CustomerResponseTH create(CustomerResponseTH customerRequest, String name) {
+        Customer customer = new Customer();
+        customer.setCode("KH" + Integer.parseInt(Long.toString(System.currentTimeMillis()).substring(7)));
+        customer.setFullName(customerRequest.getFullName());
+        customer.setAvatar(customerRequest.getAvatar());
+        customer.setBirthDate(customerRequest.getBirthDate());
+        customer.setGender(customerRequest.getGender());
+        customer.setCreatedAt(new Date());
+        customer.setCreatedBy(name);
+        customer.setStatus(1);
+        customerRequest.getAddresses().forEach(d -> d.setCustomer(customer));
+        customer.setAddresses(customerRequest.getAddresses());
+        return setBillResponse(customerRepository.save(customer));
     }
 }

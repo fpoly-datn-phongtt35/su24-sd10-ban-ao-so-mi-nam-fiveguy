@@ -34,8 +34,8 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/color", {
       templateUrl: "pages/product/color.html",
     })
-    .when("/admin/supplier", {
-      templateUrl: "pages/product/supplier.html",
+    .when("/admin/brand", {
+      templateUrl: "pages/product/brand.html",
     })
     .when("/admin/sell-quickly", {
       templateUrl: "pages/sell-quickly.html",

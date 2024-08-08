@@ -15,4 +15,5 @@ public interface BillServiceTH {
     BillResponseTH deleteProductCart(BillResponseTH bill, Long id);
     Bill deleteBill(Long id);
     BillResponseTH create(Employee employee);
+    BillResponseTH update(Employee employee, BillResponseTH bill);
 }

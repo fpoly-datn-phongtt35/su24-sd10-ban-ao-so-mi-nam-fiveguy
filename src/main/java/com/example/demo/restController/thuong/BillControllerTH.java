@@ -62,7 +62,12 @@ public class BillControllerTH {
     @PostMapping
     public ResponseEntity<?> createBill(@RequestHeader("Authorization") String token) {
         Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
-
         return new ResponseEntity<>(billService.create(employee.get()), HttpStatus.CREATED);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateBill(@RequestHeader("Authorization") String token, @RequestBody BillResponseTH bill) {
+        Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
+        return new ResponseEntity<>(billService.update(employee.get(), bill), HttpStatus.CREATED);
     }
 }
