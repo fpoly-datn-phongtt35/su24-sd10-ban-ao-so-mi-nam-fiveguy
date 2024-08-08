@@ -71,7 +71,7 @@ public class Customer {
     private CustomerType customerType;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",  cascade = CascadeType.ALL)
     private List<Address> addresses;
 
 
