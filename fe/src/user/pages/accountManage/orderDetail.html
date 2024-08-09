@@ -195,7 +195,9 @@
 
                             <td class="col-5">
                                 <div class="d-flex align-items-center">
+                                    <a href="#home/product/product-detail/{{bd.productDetail.product.id}}">
                                     <img ng-src="{{bd.imagePath}}" width="100px" height="100px" class="me-3">
+                                </a>
                                     <div class="d-flex flex-column fs-6 text-start">
                                         <div class="fw-bold" style="font-size: 1.2em;"
                                             ng-init="product = bd.productDetail.product">
@@ -260,6 +262,7 @@
             </div>
         </div>
     </div>
+    
         <div class="row" style="    display: flex;
         justify-content: flex-end;">
             <div class="col-md-4">

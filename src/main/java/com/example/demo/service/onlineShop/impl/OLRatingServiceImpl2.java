@@ -11,9 +11,12 @@ import com.example.demo.repository.onlineShop.OLRatingRepository2;
 import com.example.demo.service.onlineShop.OLBillDetailService2;
 import com.example.demo.service.onlineShop.OLProductDetailService2;
 import com.example.demo.service.onlineShop.OlRatingService2;
+import com.example.demo.service.onlineShop.RatingSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -60,7 +63,22 @@ public class OLRatingServiceImpl2 implements OlRatingService2 {
     }
 
     @Override
-    public boolean addRating(OlRatingResponse ratingEntity) {
+    public void hideRating(Long id) {
+        Optional<Rating> rating = olRatingRepository.findById(id);
+        if (rating.isPresent()){
+            rating.get().setStatus(3);
+            olRatingRepository.save(rating.get());
+        }
+    }
+
+    @Override
+    public Integer updateRating(Rating rating) {
+        olRatingRepository.save(rating);
+        return 0;
+    }
+
+    @Override
+    public Integer addRating(OlRatingResponse ratingEntity) {
         Optional<BillDetail> billDetail = olBillDetailRepository2.findById(ratingEntity.getIdBillDetail());
 
         if (billDetail.isPresent() ) {
@@ -75,18 +93,19 @@ public class OLRatingServiceImpl2 implements OlRatingService2 {
                 ratingEntity1.setRate(ratingEntity.getRate());
                 ratingEntity1.setRated(true);
                 ratingEntity1.setStatus(1);
+                ratingEntity1.setApprovalStatus(2);
                 olRatingRepository.save(ratingEntity1);
-                return true;
+                return 1;
             }
         }
 
-        return false;
+        return 0;
     }
 
 
     @Override
-    public List<Rating> findByBillDetailAndStatus(BillDetail billDetail,int status) {
-        return olRatingRepository.findByBillDetailAndStatus(billDetail , status);
+    public List<Rating> findByBillDetail(BillDetail billDetail) {
+        return olRatingRepository.findByBillDetailAndStatus(billDetail );
     }
 
     @Override
@@ -95,9 +114,10 @@ public class OLRatingServiceImpl2 implements OlRatingService2 {
     }
 
     @Override
-    public Page<Rating> findAllByCustomer_IdOrderByYourFieldDesc(Long customerId, int page, int size) {
+    public Page<Rating> findAllByCustomer_IdOrderByYourFieldDesc(Long customerId,String search, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return olRatingRepository.findAllByCustomer_IdOrderByYourFieldDesc(customerId,pageRequest);
+        Page<Rating> ratings = olRatingRepository.findAllByCustomerIdAndSearch(customerId,search,pageRequest);
+        return olRatingRepository.findAllByCustomerIdAndSearch(customerId,search,pageRequest);
     }
 
     @Override
@@ -105,4 +125,12 @@ public class OLRatingServiceImpl2 implements OlRatingService2 {
         PageRequest pageRequest = PageRequest.of(page, size);
         return olRatingRepository.findByProductId(productId,pageRequest);
     }
+
+    @Override
+    public Page<Rating> getRatingsAdmin(int approvalStatus, String search, Pageable pageable) {
+        Specification<Rating> spec = Specification.where(RatingSpecifications.hasApprovalStatus(approvalStatus))
+                .and(RatingSpecifications.hasSearch(search));
+        return olRatingRepository.findAll(spec, pageable);
+    }
+
 }

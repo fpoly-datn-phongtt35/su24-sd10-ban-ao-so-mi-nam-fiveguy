@@ -391,3 +391,15 @@ dd {
   .checked {
     color: orange;
   }
+
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Khoảng cách giữa các phần tử là 20px */
+  }
+  
+  /* Cho các nút trong footer có khoảng cách đều nhau */
+  .modal-footer {
+    display: flex;
+    justify-content: space-evenly;
+  }

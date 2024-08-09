@@ -53,6 +53,10 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl : "pages/accountManage/orderDetail.html",
       controller : "orderController"
     })
+    .when("/home/rating", {
+      templateUrl : "pages/accountManage/rating.html",
+      controller : "ratingController"
+    })
 
 
     .otherwise({

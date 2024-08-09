@@ -278,7 +278,6 @@ $scope.getPageRange = function() {
 
     //   ProductDetail -----------------------------------
 
-      var productId = $routeParams.idProduct;
 
       $scope.productDetailInfo = {};
       $scope.selectedColor = null;
@@ -289,7 +288,7 @@ $scope.getPageRange = function() {
       $scope.imagesD = [];
   
       $scope.loadProductDetails = function() {
-          $http.get('http://localhost:8080/api/home/product/viewProduct/' + productId)
+          $http.get('http://localhost:8080/api/home/product/viewProduct/' + $routeParams.idProduct)
               .then(function(response) {
                   $scope.productDetailInfo  = response.data;
                   $scope.colorD = response.data.colors;
@@ -308,7 +307,12 @@ $scope.getPageRange = function() {
       };
   
       // Example usage
-    //   $scope.loadProductDetails(productId);
+      if ($routeParams.idProduct != undefined) {
+      $scope.loadProductDetails();
+        
+      }
+
+
     $scope.fetchProductDetails = function() {
         if ($scope.selectedColor && $scope.selectedSize) {
             $scope.getProductDetail(productId, $scope.selectedSize, $scope.selectedColor);
@@ -1461,6 +1465,51 @@ $scope.dataCity.ProvinceID;
   };
   // console.log($scope.productDetailInfo.olViewProductDetailRespone.nameCategory )
   $scope.loadProductsByCategory();
+  
+
+
+
+
+
+
+
+  // ------------Rate-------------
+
+  $scope.currentPageRate = 0;
+$scope.pageSizeRate = 7;
+
+
+$scope.productId = $routeParams.idProduct; 
+var productId = $routeParams.idProduct; 
+
+$scope.getRates = function() {
+  
+    $http({
+      method: 'GET',
+      url: 'http://localhost:8080/api/home/listRate',
+      params: { productId: $routeParams.idProduct, page: $scope.currentPageRate }
+  }) .then(function(response) {
+            $scope.ratings = response.data; 
+            console.log($scope.ratings)
+        })
+        .catch(function(error) {
+            console.error('Error fetching ratings:', error);
+        });
+  };
+  
+  $scope.getRates();
+  
+  $scope.setCurrentPageRateProduct = function(page) {
+    if (page >= 0 && page < $scope.ratings.totalPages) {
+        $scope.currentPageRate = page;
+        $scope.getRates();
+    }
+  };
+
+  $scope.getNumber = function(num) {
+
+    return new Array((num));
+  };
   
 
 });

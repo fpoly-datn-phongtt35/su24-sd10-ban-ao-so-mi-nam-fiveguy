@@ -86,4 +86,6 @@ public class OLBillDetailServiceImpl2 implements OLBillDetailService2 {
         return olBillDetailRepository.getTotalQuantitySold(idProduct);
     }
 
+
+
 }

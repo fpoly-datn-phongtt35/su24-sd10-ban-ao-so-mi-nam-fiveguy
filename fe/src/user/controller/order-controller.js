@@ -565,6 +565,9 @@ if ($scope.idBill != undefined) {
 
 
 // Rating -------------------------
+
+
+
 $scope.getNumber = function(num) {
 
     return new Array((num));
@@ -600,33 +603,38 @@ $scope.getNumber = function(num) {
   
   
   $scope.addRating = function() {
+    // Kiểm tra nếu số sao là 0
     if ($scope.rating.stars === 0) {
       $scope.showErrorNotification("Vui lòng chọn sao!"); 
       return;
     }
   
+    // Tạo đối tượng dữ liệu đánh giá
     var ratingData = {
       rate: $scope.rating.stars,
       content: $scope.rating.content,
-    //   idCustomer: 2,
       idBillDetail: $scope.selectedBillDetail.id,
       rated: true
     };
   
+    // Gửi yêu cầu POST đến API
     $http.post('http://localhost:8080/api/home/addRate', ratingData)
       .then(function(response) {
-        if (response.data === true) {
-          $scope.showSuccessNotification("Cảm ơn bạn đã đánh giá"); 
-          $scope.showBillDetail();
+        if (response.data === 1) {
+            $scope.showSuccessNotification("Cảm ơn bạn đã đánh giá"); 
+            $scope.getBillDetailByIdBill($scope.idBill)
           $scope.closeReview();
         } else {
+          // Nếu đánh giá đã tồn tại
           $scope.showErrorNotification("Bạn đã đánh giá cho sản phẩm này trước đó"); 
         }
       })
       .catch(function(error) {
+        console.log(error)
         $scope.showErrorNotification("Đánh giá thất bại vui lòng thử lại"); 
       });
   };
+  
   
 
 $scope.rating = {
