@@ -19,20 +19,22 @@ public class OlRatingResponse {
 
     private int rate;
 
-
     private Date createdAt;
-
 
     private Date updatedAt;
 
     private boolean rated;
 
-
     private Customer Customer;
-
 
     private Long idBillDetail;
 
-
     private int status;
+
+    private String reviewer;
+
+    private Date reviewedAt;
+
+    private int approvalStatus;
+
 }

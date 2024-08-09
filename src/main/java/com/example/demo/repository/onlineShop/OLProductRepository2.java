@@ -55,13 +55,13 @@ List<Object[]> findProductsWithImages();
 
 
     //    get  promotionalPrice  hiển thị cart
-@Query("SELECT ps.promotionalPrice " +
-        "FROM Product p " +
-        "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
-        "WHERE p.id = :productId " +
-        "AND p.status = 1 " +
-        "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")
-Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
+    @Query("SELECT ps.promotionalPrice " +
+            "FROM Product p " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "WHERE p.id = :productId " +
+            "AND p.status = 1 " +
+            "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")
+    Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
 
     @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
             "MIN(i.path) AS imagePath " +  // Selecting the first image path per product

@@ -14,8 +14,6 @@ import java.util.List;
 
 public interface OLBillDetailRepository2 extends JpaRepository<BillDetail, Long> {
 
-//    List<BillDetail> findByProductDetailAndStatus(ProductDetail productDetail, int status);
-
     List<BillDetail> findByProductDetail(ProductDetail productDetail);
 
     @Query("SELECT bd FROM BillDetail bd WHERE bd.bill.id = :billId")

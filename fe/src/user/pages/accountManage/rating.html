@@ -1,0 +1,140 @@
+
+        <div class="col-lg-9 col-md-6 col-sm-6 mb-4">
+           <div class="column-main">
+            <div class="page-title-wrapper">
+                <h1 class="page-title">
+                    <span class="base">Đánh giá</span>
+                </h1>
+            </div>
+            <div class="row">
+                <div class="search-bar">
+                    <!-- Search field -->
+                    <input type="text" placeholder="Tìm kiếm theo tên sản phẩm, mã hóa đơn" class="form-control" ng-model="search">
+                </div>
+    
+    
+                <div class="row justify-content-end">
+                    <div class="col-auto d-flex align-items-center">
+                        <button class="button-submit btn btn-primary" ng-click="getRates(0)">
+                            <span class="material-icons align-middle">search</span> Tìm kiếm
+                        </button>
+                    </div>
+                    <div class="col-auto d-flex align-items-center">
+                        <button class="button-submit btn btn-secondary" ng-click="refreshData()">
+                            <span class="material-icons align-middle">refresh</span> Làm mới
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                
+                <div class="col-md-6 " ng-repeat="rate in listRates">
+                    <div class="rate-item">
+                        <div style="display: inline-block;">
+                            <div class="star-container" style="display: inline-block;">
+                                <span style="margin-right: 8px;" class="fa fa-star checked" ng-repeat="i in getNumber(rate.rate) track by $index"></span>
+                            </div>
+                        </div>
+                        <p><strong>Sản phẩm:</strong> 
+                            {{ rate.billDetail.productDetail.product.name }}
+                            {{ rate.billDetail.productDetail.product.category.name }}
+                            {{ rate.billDetail.productDetail.product.material.name }}
+                            {{ rate.billDetail.productDetail.product.code }}
+                        </p>
+                        <p><strong>Nội dung:</strong> {{ rate.content }}</p>
+                        <div style="display: flex;justify-content: space-between;    align-items: center;">
+                            <p>{{ rate.createdAt | date:'dd/MM/yyyy' }}</p>
+                            <p ng-style="getStatusStyle(rate.status)">
+                                <span ng-if="rate.status == 1">Đang hiển thị</span>
+                                <span ng-if="rate.status == 3">Đánh giá này đã ẩn</span>
+                            </p>
+                            <p ng-style="getApprovalStatusStyle(rate.approvalStatus)">
+                                <span ng-if="rate.approvalStatus == 1">Được phê duyệt</span>
+                                <span ng-if="rate.approvalStatus == 2">Chờ duyệt</span>
+                                <span ng-if="rate.approvalStatus == 3">Từ chối</span>
+                            </p>
+                            
+                            <div style="margin: 10px;">
+                                <button ng-click="openReview(rate)"  class="btn btn-outline-primary w-30">Cập nhật</button> 
+                                <a href="#home/product/product-detail/{{rate.billDetail.productDetail.product.id}}"  class="btn btn-primary">Xem sản phẩm</a>
+                            </div>
+         
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center" style="margin-top: 22px;">
+                <ul class="pagination">
+                    <div class="d-flex  align-items-center">
+                        <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPageRate(0)">
+                            <span class="material-icons align-middle">first_page</span>
+                        </button>
+                        <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPageRate(currentPage - 1)">
+                            <span class="material-icons align-middle">chevron_left</span>
+                        </button>
+            
+                        <div class="d-flex align-items-center mx-1">
+                            <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
+                                style="width: 60px;" ng-model="desiredPage" min="1" max="{{totalPages}}"
+                                ng-change="goToPage()">
+                            <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages}}</span>
+                        </div>
+            
+                        <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1" ng-click="setCurrentPageRate(currentPage + 1)">
+                            <span class="material-icons align-middle">chevron_right</span>
+                        </button>
+                        <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1" ng-click="setCurrentPageRate(totalPages - 1)">
+                            <span class="material-icons align-middle">last_page</span>
+                        </button>
+                    </div>
+                </ul>
+            </div>
+            
+            
+            
+           </div>
+        </div>
+    </div>
+
+
+           <!-- Modal Rating-->
+<!-- Modal Rating -->
+<div class="modal fade show" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Đánh giá sản phẩm</h5>
+            </div>
+            <div class="modal-body">
+                <div class="star-container">
+                    <span class="fa fa-star" ng-class="{'checked': selectedRating.rate >= 1}" ng-click="toggleStars(0)"></span>
+                    <span class="fa fa-star" ng-class="{'checked': selectedRating.rate >= 2}" ng-click="toggleStars(1)"></span>
+                    <span class="fa fa-star" ng-class="{'checked': selectedRating.rate >= 3}" ng-click="toggleStars(2)"></span>
+                    <span class="fa fa-star" ng-class="{'checked': selectedRating.rate >= 4}" ng-click="toggleStars(3)"></span>
+                    <span class="fa fa-star" ng-class="{'checked': selectedRating.rate >= 5}" ng-click="toggleStars(4)"></span>
+                </div>
+                <textarea ng-model="selectedRating.content" rows="4" cols="50" placeholder="Nhập nội dung đánh giá..."></textarea>
+                <!-- Conditionally show the checkbox based on status -->
+                <div class="form-check mt-3">
+                    <input type="checkbox" class="form-check-input" id="statusCheckbox" ng-model="selectedRating.statusCheckbox" ng-change="updateStatus()">
+                    <label class="form-check-label" for="statusCheckbox">
+                        Ẩn đánh giá
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" ng-click="closeReview()">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="updateRating()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+</section> 

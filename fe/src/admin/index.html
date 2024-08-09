@@ -53,9 +53,10 @@
   <!-- <link rel="stylesheet" href="/src/admin/pages/bill-nguyen/bill-detail.css"> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
 
-  <!-- Hải -->
-  <!-- <link rel="stylesheet" href="/src/admin/pages/sale/sale.css"> -->
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> -->
+	<!-- Hải -->
+	 <!-- <link rel="stylesheet" href="/src/admin/pages/sale/sale.css"> -->
+	 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body ng-app="appAdmin">
@@ -128,21 +129,30 @@
             <!-- Tịnh -->
             <li><a href="#/admin/bil-history-tinh">Lịch sử </a></li>
             <!-- end tịnh -->
+					</ul>
+				</li>
+				<li class="">
+					<a href="#/admin/" class=""><i class="material-icons">assignment_return</i>Trả hàng
+					</a>
+				</li>
+				<li class="">
+					<a href="#/admin/staff" class=""><i class="material-icons">groups</i>Nhân Viên
+					</a>
+				</li>
+				<li class="">
+					<a href="#/admin/customer" class=""><i class="material-icons">person</i>Khách Hàng
+					</a>
+				</li>
+				<li class="">
+					<a href="#/admin/rating" class=""><i class="material-icons">thumb_up</i>Đánh giá
+					</a>
+				</li>
+			</ul>
+		</div>
+		<!-------sidebar--design- close----------->
+		<!-------page-content start----------->
 
-          </ul>
-        </li>
-        <li class="">
-          <a href="#/admin/employee" class=""><i class="material-icons">groups</i>Nhân Viên
-          </a>
-        </li>
-        <li class="">
-          <a href="#/admin/customer" class=""><i class="material-icons">person</i>Khách Hàng
-          </a>
-        </li>
-      </ul>
-    </div>
-    <!-------sidebar--design- close----------->
-    <!-------page-content start----------->
+
     <div id="content">
       <!------top-navbar-start----------->
       <div class="top-navbar">
@@ -373,18 +383,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wnumb/1.1.0/wNumb.min.js"></script>
 
-<<<<<<< HEAD
 	<!-- Hải -->
-	<script src="/src/admin/controller/sale-controller.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-
-	<!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
-=======
-  <!-- Hải -->
   <script src="/src/admin/controller/sale-controller.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
->>>>>>> c014eadf70269b82e19a5304a8225dad56bd44d7
-
+	<script src="/src/admin/controller/rating-controller.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 </body>
 

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.Optional;
 
 @CrossOrigin("*")
@@ -26,12 +27,13 @@ public class OlRatingRestController2 {
 
     @GetMapping("/rates")
     public ResponseEntity<?> listRates(@RequestHeader("Authorization") String token,
+                                       @RequestParam(required = false, defaultValue = "") String search,
                                        @RequestParam("page") int page) {
 
         Optional<Customer> customer = SCCustomerService.getCustomerByToken(token);
             if (customer.isPresent()) {
                 int size = 6;
-                Page<Rating> ratingEntities = olRatingService.findAllByCustomer_IdOrderByYourFieldDesc(customer.get().getId(), page, size);
+                Page<Rating> ratingEntities = olRatingService.findAllByCustomer_IdOrderByYourFieldDesc(customer.get().getId(),search, page, size);
                 if (ratingEntities.isEmpty()) {
                     return ResponseEntity.ok("Không có hóa đơn nào được tìm thấy cho khách hàng này");
                 }
@@ -49,15 +51,26 @@ public class OlRatingRestController2 {
     }
 
 
+    @PostMapping("/update")
+    public void updateRating(@RequestBody Rating rating) {
+        rating.setUpdatedAt(new Date());
+        olRatingService.updateRating(rating);
+    }
+
+
+
+
     @PostMapping("/addRate")
-    public boolean addRate(@RequestHeader("Authorization") String token,@RequestBody OlRatingResponse ratingEntity) {
+    public ResponseEntity<?> addRate(@RequestHeader("Authorization") String token, @RequestBody OlRatingResponse ratingEntity) {
         Optional<Customer> customer = SCCustomerService.getCustomerByToken(token);
         if (customer.isPresent()) {
             ratingEntity.setCustomer(customer.get());
-            return olRatingService.addRating(ratingEntity);
-
+            Integer result = olRatingService.addRating(ratingEntity);
+            return ResponseEntity.ok(result);
         }
-        return false;
+
+        Integer result = olRatingService.addRating(ratingEntity);
+        return ResponseEntity.ok(result);
     }
 
 

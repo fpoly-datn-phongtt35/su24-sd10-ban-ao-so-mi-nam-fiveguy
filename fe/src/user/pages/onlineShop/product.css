@@ -678,3 +678,49 @@ font-weight: 400;
 .carousel-control-next {
   right: 15px;
 }
+
+
+/* rating */
+
+
+/* Apply styles to the ratings container */
+.reviews-leftside__rating {
+  position: sticky;
+  top: 150px;
+  padding: 30px 12px;
+  border-radius: 0.5rem;
+  background: #f1f1f1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Style for the title */
+.reviews-rating-mb__title h5 {
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+/* Adjustments for the title */
+.reviews-rating-mb__title {
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Ensure equal spacing between elements */
+.reviews-leftside__rating > * {
+  margin-bottom: 1rem;
+  
+}
+
+.reviews-rating-mb__rating h5{
+  font-size: 3.25rem;
+  font-weight: 700;
+}
+
+.star-container{
+  margin-bottom: 14px;
+  font-size: 20px;
+}

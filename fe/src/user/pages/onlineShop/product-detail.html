@@ -1,5 +1,5 @@
 <!-- content -->
-<section style="    margin-top: 82px;" ng-init="getRates();loadProductDetails()">
+<section style="    margin-top: 82px;" >
 
     
     <div class="container">
@@ -31,26 +31,25 @@
           <div class="ps-lg-3">
             <div class="d-flex justify-content-between">
               <div class="tile-product_left">
-                <span class="title-product">
+                <span class="product-title">
                     {{ productDetailInfo.productInfo.productName }} {{ productDetailInfo.productInfo.categoryName }} {{ productDetailInfo.productInfo.materialName }} {{ productDetailInfo.productInfo.code }}
                 </span>
             </div>
             
-              <div class="tile-right">
+              <!-- <div class="tile-right">
                 <button style="background-color: transparent;" ng-click="addFavorite(productDetailInfo.olViewProductDetailRespone.id)" class="btn btn-light border-0 py-2 icon-hover px-3 btn-heart">
                   <i class="me-1 fa fa-heart fa-lg"></i>
                 </button>
-              </div>
+              </div> -->
   
   
   
             </div>
-  
             <div class="d-flex flex-row mb-3">
               <div class="mb-1 me-2">
                   <span style="margin-right: 8px; font-size: 18px;" class="fa fa-star checked"
-                        ng-repeat="i in getNumber(productDetailInfo.productInfo.rate) track by $index"></span>
-                  <span>({{ productDetailInfo.productInfo.totalRate }})</span>
+                        ng-repeat="i in getNumber(productDetailInfo.rate) track by $index"></span>
+                  <span>({{ productDetailInfo.totalRate }})</span>
               </div>
               <span class="text-muted">
                   <i class="fas fa-shopping-basket fa-sm mx-1"></i>
@@ -196,27 +195,27 @@
       </div>
     </div>
   
-    <div style="padding: 46px;" class="row" ng-if="productDetailInfo.olViewProductDetailRespone.totalRate >= 1">
-  
+    <div style="padding: 46px;" class="row" >
+      <!-- ng-if="productDetailInfo.olViewProductDetailRespone.totalRate >= 1" -->
       <div class="col-md-2 rate-show">
         <div class="reviews-leftside__rating">
           <div class="reviews-rating-mb__title">
             <h5>Đánh giá sản phẩm</h5>
           </div>
           <div class="reviews-rating-mb__rating">
-            <h5>{{ productDetailInfo.olViewProductDetailRespone.rate}}</h5>
+            <h5>{{ productDetailInfo.rate}}</h5>
   
           </div>
           <div style="display: inline-block;">
             <div class="star-container" style="display: inline-block;">
               <span style="margin-right: 8px;    font-size: 2rem;" class="fa fa-star checked"
-                ng-repeat="i in getNumber(productDetailInfo.olViewProductDetailRespone.rate) track by $index"></span>
+                ng-repeat="i in getNumber(productDetailInfo.rate) track by $index"></span>
             </div>
           </div>
   
           <div class="reviews-rating-mb__count">
   
-            {{productDetailInfo.olViewProductDetailRespone.totalRate}} đánh giá
+            {{productDetailInfo.totalRate}} đánh giá
           </div>
         </div>
       </div>
@@ -253,29 +252,28 @@
           </div>
     </div>
       </div>
-  
    <div class="row text-center">
     <div class="col-md-12" ng-if="ratings && (ratings.totalPages !== 1)">
       <ul class="pagination">
         <li ng-class="{disabled: ratings.first}">
-          <a href="#!/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(0)">
+          <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(0)">
             <i class="fa fa-angle-double-left"></i>
           </a>
         </li>
         <li ng-class="{disabled: ratings.first}">
-          <a href="#!/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number - 1)">
+          <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number - 1)">
             <i class="fa fa-angle-left"></i>
           </a>
         </li>
   
-        {{ ratings.number + 1 }}
+        <!-- {{ ratings.number + 1 }} -->
         <li ng-class="{disabled: ratings.last}">
-          <a href="#!/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number + 1)">
+          <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number + 1)">
             <i class="fa fa-angle-right"></i>
           </a>
         </li>
         <li ng-class="{disabled: ratings.last}">
-          <a href="#!/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.totalPages - 1)">
+          <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.totalPages - 1)">
             <i class="fa fa-angle-double-right"></i>
           </a>
         </li>

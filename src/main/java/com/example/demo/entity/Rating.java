@@ -42,6 +42,17 @@ public class Rating {
     @Column(name = "Rated")
     private boolean  rated;
 
+    @Column(name = "Reviewer")
+    private String reviewer;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "ReviewedAt")
+    private Date reviewedAt;
+
+//    1 duyệt 2 chờ chuyệt 3 ko duyệt
+    @Column(name = "ApprovalStatus")
+    private int approvalStatus;
+
     @ManyToOne
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
     private Customer customer;

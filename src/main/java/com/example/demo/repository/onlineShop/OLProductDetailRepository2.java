@@ -14,8 +14,8 @@ import java.util.List;
 
 public interface OLProductDetailRepository2 extends JpaRepository<ProductDetail, Long>, JpaSpecificationExecutor<ProductDetail> {
 
-    List<ProductDetail> findByProductAndStatus(Product product, int status);
-
+    @Query("SELECT pd FROM ProductDetail pd WHERE pd.product.id = :productId AND pd.status = :status")
+    List<ProductDetail> findByProductIdAndStatus(@Param("productId") Long productId, @Param("status") Integer status);
 
     @Query("SELECT pd FROM ProductDetail pd " +
             "JOIN pd.product p " +

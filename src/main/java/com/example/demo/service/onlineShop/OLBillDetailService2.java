@@ -20,4 +20,6 @@ public interface OLBillDetailService2 {
     List<BillDetailResponse2> gettBillDetailResponse2(Long id);
 
     Integer getTotalQuantitySold(Long idProduct);
+
+
 }
