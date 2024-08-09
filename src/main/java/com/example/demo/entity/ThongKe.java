@@ -21,4 +21,5 @@ public class ThongKe {
     private BigDecimal doanh_thu;
 
     private String anh_mac_dinh;
+
 }

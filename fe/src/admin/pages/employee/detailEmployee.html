@@ -1,0 +1,178 @@
+<link rel="stylesheet" href="./pages/employee/detailEmployee.css">
+<main class="content">
+    <div class="de-detailemployee-main">
+        <div class="row">
+            <div class="col-4">
+                <label for="image">
+                    <img id="image-preview-update" style="width: 250px; height: 250px;"
+                        ng-src="{{getDetailEmployee.avatar ? getDetailEmployee.avatar : '/src/admin/common/img/no-img.png'}}" />
+                </label>
+                <input type="file" id="image-update" style="display: none;" />
+            </div>
+            <div class="col-8">
+                <div>
+                    <h3>Thông tin nhân viên</h3>
+                    <form name="updateEmployee" ng-submit="updateEmployee.$valid && uploadBtnUpdate()"
+                        novalidate>
+
+                        <div class="row mb-3">
+                            <label for="inputFullName" class="col-sm-3 col-form-label">Họ Tên</label>
+                            <div class="col-sm-9">
+                                <input name="fullName" id="inputFullName" type="text" class="form-control"
+                                    ng-model="formUpdate.fullName" required />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.fullName.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <!-- <div class="row mb-3">
+                            <label for="inputaccount" class="col-sm-3 col-form-label">Tài khoản</label>
+                            <div class="col-sm-9">
+                                <input name="account" id="inputaccount" type="text" class="form-control"
+                                    ng-model="formInputAccount.account" ng-change="checkAccount()" required />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.account.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Họ Tên không được để trống
+                                    </div>
+                                    <div ng-show="accountError" class="error-message text-danger form-text">
+                                        {{accountError}}
+                                    </div>
+                                </span>
+                            </div>
+                        </div> -->
+                        <div class="row mb-3">
+                            <label for="inputphonenumber" class="col-sm-3 col-form-label">SĐT</label>
+                            <div class="col-sm-9">
+                                <input name="phoneNumber" id="inputphonenumber" type="text" class="form-control"
+                                    ng-model="formInputAccount.phoneNumber" ng-change="checkPhoneNumber()" required
+                                    ng-pattern="/^(\+84|0)[2|3|5|7|8|9][0-9]{8}$/" />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.phoneNumber.$error.required"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                    <div ng-show="!updateEmployee.phoneNumber.$error.required && updateEmployee.phoneNumber.$error.pattern"
+                                        class="error-message text-danger form-text">
+                                        Số điện thoại không hợp lệ
+                                    </div>
+                                    <div ng-show="phoneNumberError" class="error-message text-danger form-text">
+                                        {{phoneNumberError}}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <label for="inputemail" class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                <input name="email" id="inputemail" type="mail" class="form-control"
+                                    ng-model="formInputAccount.email" ng-change="checkEmail()" required />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.email.$error.required"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                    <div ng-show="!updateEmployee.email.$error.required && updateEmployee.email.$error.email"
+                                        class="error-message text-danger form-text">
+                                        Email không hợp lệ
+                                    </div>
+                                    <div ng-show="emailError" class="error-message text-danger form-text">
+                                        {{emailError}}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputBirthDate" class="col-sm-3 col-form-label">Ngày Sinh</label>
+                            <div class="col-sm-9">
+                                <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
+                                    ng-model="formUpdate.birthDate" required />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.birthDate.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputAddress" class="col-sm-3 col-form-label">Địa Chỉ</label>
+                            <div class="col-sm-9">
+                                <input name="address" id="inputAddress" type="text" class="form-control"
+                                    ng-model="formUpdate.address" required />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.address.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <a ng-click="togglePasswordChange()" class="btn btn-primary">
+                            {{ showPasswordChange ? 'Hủy' : 'Thay đổi mật khẩu' }}
+                        </a>
+                        <div class="row mb-3" ng-show="showPasswordChange">
+                            <label for="currentPassword" class="col-sm-3 col-form-label">Mật khẩu hiện tại</label>
+                            <div class="col-sm-9">
+                                <input name="currentPassword" id="currentPassword" type="password" class="form-control"
+                                    ng-model="formInputAccount.password" required ng-change="checkPassword()" />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.currentPassword.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                                <span ng-show="!passwordMatched && formInputAccount.password">
+                                    <div class="error-message text-danger form-text">
+                                        Mật khẩu không đúng
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3" ng-show="showPasswordChange">
+                            <label for="newPassword" class="col-sm-3 col-form-label">Mật khẩu mới</label>
+                            <div class="col-sm-9">
+                                <input name="password" id="password" type="type" class="form-control"
+                                    ng-model="formInputAccount.password" required />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.password.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3" ng-show="showPasswordChange">
+                            <label for="confirmPassword" class="col-sm-3 col-form-label">Xác nhận mật khẩu</label>
+                            <div class="col-sm-9">
+                                <input name="confirmPassword" id="confirmPassword" type="password" class="form-control"
+                                    ng-model="formUpdate.confirmPassword" password-match="formUpdate.newPassword"
+                                    required />
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.confirmPassword.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                                <span ng-show="updateEmployee.$submitted || formUpdate.confirmPassword.$touched">
+                                    <div ng-show="updateEmployee.confirmPassword.$error.match"
+                                        class="error-message text-danger form-text">
+                                        Mật khẩu không khớp
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="submit">Cập nhật thông tin</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

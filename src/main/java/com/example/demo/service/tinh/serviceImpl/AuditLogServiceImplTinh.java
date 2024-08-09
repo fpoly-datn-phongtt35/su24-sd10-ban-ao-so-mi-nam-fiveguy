@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -72,17 +73,20 @@ public class AuditLogServiceImplTinh implements AuditLogServiceTinh {
     }
 
     @Override
-    public Page<AuditLogs> findAuditLog(String implementer, String code, String actionType, Date time, String detailedAction,  Integer status, Pageable pageable) {
+    public Page<AuditLogs> findAuditLog(String implementer, String code, String actionType, Date time, String detailedAction, Pageable pageable) {
+        // Định nghĩa các trạng thái bạn muốn lọc
+        List<Integer> statuses = Arrays.asList(1, 3);
 
-        Specification<AuditLogs> spec = Specification.where(AuditLogSpecificationTinh.hasEmpCode(code))
+        Specification<AuditLogs> spec = Specification.where(AuditLogSpecificationTinh.hasStatusIn(statuses))
+                .and(AuditLogSpecificationTinh.hasEmpCode(code))
                 .and(AuditLogSpecificationTinh.hasImplementer(implementer))
                 .and(AuditLogSpecificationTinh.hasActionType(actionType))
                 .and(AuditLogSpecificationTinh.hasDetailedAction(detailedAction))
-                .and(AuditLogSpecificationTinh.hasTime(time))
-                .and(AuditLogSpecificationTinh.hasStatus(status));
+                .and(AuditLogSpecificationTinh.hasTime(time));
 
         return auditLogRepositoryTinh.findAll(spec, pageable);
     }
+
 
 
 }

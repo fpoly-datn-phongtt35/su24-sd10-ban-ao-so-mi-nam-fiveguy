@@ -3,6 +3,7 @@ package com.example.demo.restController.tinh;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.Employee;
 import com.example.demo.entity.ThongKe;
+import com.example.demo.entity.ThongKeKhachHang;
 import com.example.demo.repository.tinh.BillRepositoryTinh;
 import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.tinh.BillServiceTinh;
@@ -40,8 +41,13 @@ public class BillRestControllerTinh {
     //Tổng doanh thu =========================================================================
     @GetMapping("/tong-doanh-thu-ngay/{sl}")
     public ResponseEntity<BigDecimal> tongTienDay(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
-        BigDecimal customers = billRepositoryTinh.tongSoTienDay(sl);
-        return ResponseEntity.ok(customers);
+        // Kiểm tra ngày được truyền vào
+        if (sl == null) {
+            return ResponseEntity.badRequest().body(BigDecimal.ZERO);
+        }
+
+        BigDecimal totalAmount = billRepositoryTinh.tongSoTienDay(sl);
+        return ResponseEntity.ok(totalAmount);
     }
 
     @GetMapping("/tong-doanh-thu-tuan/{sl}")
@@ -123,40 +129,96 @@ public class BillRestControllerTinh {
     }
     //End Tổng dơne Hàng Huy================================================================
 
-    //San phẩm bán chạy ==================================================================
-    @GetMapping("/top-ban-chay-ngay/{sl}")
-    public ResponseEntity<?> topbanchayNgay(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl){
-        return ResponseEntity.ok().body(billServiceTinh.getSanPhamBanChayNgay(sl));
+    //Tỏng dơne hàng Tra====================================================================
+    @GetMapping("/tong-hoa-don-tra-hang-ngay/{sl}")
+    public int sumBillTraHangDay(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillTraHangDay(sl).size();
     }
-    @GetMapping("/top-ban-chay-tuan/{sl}")
-    public ResponseEntity<?> topbanchayTuan(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl){
-        return ResponseEntity.ok().body(billServiceTinh.getSanPhamBanChayTuan(sl));
+    @GetMapping("/tong-hoa-don-tra-hang-tuan/{sl}")
+    public int sumBillTraHangTuan(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillTraHangWeek(sl).size();
     }
-    @GetMapping("/top-ban-chay-thang/{sl}")
-    public ResponseEntity<?> topbanchayThang(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl){
-        return ResponseEntity.ok().body(billServiceTinh.getSanPhamBanChayThang(sl));
+    @GetMapping("/tong-hoa-don-tra-hang-thang/{sl}")
+    public int sumBillTraHangMonth(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillTraHangMonth(sl).size();
     }
-    @GetMapping("/top-ban-chay-nam/{sl}")
-    public ResponseEntity<?> topbanchayNam(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl){
-        return ResponseEntity.ok().body(billServiceTinh.getSanPhamBanChayNam(sl));
+    @GetMapping("/tong-hoa-don-tra-hang-nam/{sl}")
+    public int sumBillTraHangYear(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillTraHangYear(sl).size();
     }
-    @GetMapping("/top-ban-chay-tuy-chinh")
-    public ResponseEntity<List<ThongKe>> getSanPhamBanChayTrongKhoangThoiGian(
+    @GetMapping("/tong-hoa-don-tra-hang-tuy-chinh")
+    public int sumBillTraHangOption(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        List<ThongKe> result = billServiceTinh.getSanPhamBanChayTrongKhoangThoiGian(startDate, endDate);
-        return ResponseEntity.ok(result);
+        return billRepositoryTinh.tongBillTraHangOption(startDate, endDate).size();
+
     }
-//    public ResponseEntity<Page<ThongKe>> getSanPhamBanChayTrongKhoangThoiGian(
-//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
-//            @RequestParam int page,
-//            @RequestParam int size) {
-//
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<ThongKe> result = billServiceTinh.getSanPhamBanChayTrongKhoangThoiGian(startDate, endDate, pageable);
-//        return ResponseEntity.ok(result);
-//    }
+    //End Tổng dơne Hàng Tra================================================================
+
+    //San phẩm bán chạy ==================================================================
+    @GetMapping("/top-ban-chay-ngay")
+    public ResponseEntity<?> topBanChayNgay(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKe> sanPhamPage = billServiceTinh.getSanPhamBanChayNgay(date, pageable);
+        return ResponseEntity.ok().body(sanPhamPage);
+    }
+
+    @GetMapping("/top-ban-chay-tuan")
+    public ResponseEntity<?> topBanChayTuan(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKe> sanPhamPage = billServiceTinh.getSanPhamBanChayTuan(date, pageable);
+        return ResponseEntity.ok().body(sanPhamPage);
+    }
+
+    @GetMapping("/top-ban-chay-thang")
+    public ResponseEntity<?> topBanChayThang(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKe> sanPhamPage = billServiceTinh.getSanPhamBanChayThang(date, pageable);
+        return ResponseEntity.ok().body(sanPhamPage);
+    }
+
+    @GetMapping("/top-ban-chay-nam")
+    public ResponseEntity<?> topBanChayNam(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKe> sanPhamPage = billServiceTinh.getSanPhamBanChayNam(date, pageable);
+        return ResponseEntity.ok().body(sanPhamPage);
+    }
+
+    @GetMapping("/top-ban-chay-khoang-thoi-gian")
+    public ResponseEntity<?> topBanChayKhoangThoiGian(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKe> sanPhamPage = billServiceTinh.getSanPhamBanChayTrongKhoangThoiGian(startDate, endDate, pageable);
+        return ResponseEntity.ok().body(sanPhamPage);
+    }
+
+    @GetMapping("/chi-tiet-top-ban-chay-ngay")
+    public ResponseEntity<?> detailTopBanChayKhoangThoiGian(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date, Long id){
+        List<ThongKe> thongKes = billServiceTinh.getBySanPhamBanChayNgay(date, id);
+        return ResponseEntity.ok().body(thongKes);
+    }
+
     //End Sản phẩm bán chạy ==============================================================
 
     //Tông bill theo status
@@ -194,6 +256,65 @@ public class BillRestControllerTinh {
             @RequestParam Integer status) {
         return billRepositoryTinh.tongStatusBillOption(startDate,endDate, status).size();
     }
+
+    //Khách hàng mua nhiều nhất-----------------------------------------------
+    @GetMapping("/khach-hang-mua-nhieu-nhat-ngay")
+    public ResponseEntity<?> khachHangMuaNhietNhatNgay(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Page<ThongKeKhachHang> khachHangPage = billServiceTinh.getKhachHangMuaNhieuNhatNgay(date, PageRequest.of(page, size));
+        return ResponseEntity.ok().body(khachHangPage);
+    }
+
+    @GetMapping("/khach-hang-mua-nhieu-nhat-tuan")
+    public ResponseEntity<?> khachHangMuaNhieuNhatTuan(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Page<ThongKeKhachHang> khachHangPage = (Page<ThongKeKhachHang>) billServiceTinh.getKhachHangMuaNhieuNhatTuan(date, PageRequest.of(page, size));
+        return ResponseEntity.ok().body(khachHangPage);
+    }
+
+
+    @GetMapping("/khach-hang-mua-nhieu-nhat-thang")
+    public ResponseEntity<?> khachHangMuaNhieuNhatThang(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKeKhachHang> khachHangPage = billServiceTinh.getKhachHangMuaNhieuNhatThang(date, pageable);
+        return ResponseEntity.ok().body(khachHangPage);
+    }
+
+
+    @GetMapping("/khach-hang-mua-nhieu-nhat-nam")
+    public ResponseEntity<?> khachHangMuaNhieuNhatNam(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKeKhachHang> khachHangPage = billServiceTinh.getKhachHangMuaNhieuNhatNam(date, pageable);
+        return ResponseEntity.ok().body(khachHangPage);
+    }
+
+
+    @GetMapping("/khach-hang-mua-nhieu-nhat-tuy-chinh")
+    public ResponseEntity<?> khachHangMuaNhieuNhatTuyChinh(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKeKhachHang> khachHangPage = billServiceTinh.getKhachHangMuaNhieuNhatTuyChinh(startDate, endDate, pageable);
+        return ResponseEntity.ok().body(khachHangPage);
+    }
+
 
 
     @PostMapping("/")
@@ -269,4 +390,5 @@ public class BillRestControllerTinh {
         Page<Bill> page = billRepositoryTinh.getAllBillChoThanhToan(pageable);
         return new PaginationResponse<>(page);
     }
+
 }
