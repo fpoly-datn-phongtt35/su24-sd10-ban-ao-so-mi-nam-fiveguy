@@ -54,14 +54,14 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
 
             billRepository.save(bill);
 
-//            setReasonBillHistory(bill, 21);
+            setReasonBillHistory(bill, 21);
         } else if (paymentStatusRequest.getPayOrRefund() == 2) {
             bill.setPaidAmount(paymentStatusRequest.getBill().getTotalAmountAfterDiscount());
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
 
             billRepository.save(bill);
 
-            setReasonBillHistory(bill, 21);
+            setReasonBillHistory(bill, 22);
         } else if (paymentStatusRequest.getPayOrRefund() == 3) {
             bill.setPaidAmount(BigDecimal.ZERO);
             bill.setPaidShippingFee(BigDecimal.ZERO);

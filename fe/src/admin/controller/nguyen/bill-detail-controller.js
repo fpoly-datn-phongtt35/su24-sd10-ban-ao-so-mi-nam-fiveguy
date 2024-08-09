@@ -624,7 +624,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         let data = {
             bill: $scope.billResponse,
             paymentStatus: paymentStatus,
-            payOrRefund: 2
+            payOrRefund: 1
         }
 
         console.log(data);
@@ -694,9 +694,9 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             $scope.getBillById($scope.idBill);
             $scope.getBillHistoryByBillId()
-            if ($scope.status == 1) {
-                $scope.confirmChangeStatusRefund()
-            }
+            // if ($scope.status == 1) {
+            //     $scope.confirmChangeStatusRefund()
+            // }
         });
     };
 
@@ -1646,7 +1646,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             // Body data for the POST request
             var requestData = {
                 "service_id": 53321,
-                "insurance_value": $scope.billResponse.totalAmountAfterDiscount,
+                "insurance_value": 1,
                 "coupon": null,
                 "from_district_id": 1482,
                 "to_district_id": numericDistrictId,
@@ -1800,6 +1800,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         return ($scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee) - 
                ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee);
     };
+    
 });
 
 app.filter('formatCurrency', function () {
