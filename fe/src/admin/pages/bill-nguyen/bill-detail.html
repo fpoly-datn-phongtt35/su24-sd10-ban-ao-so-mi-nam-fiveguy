@@ -215,13 +215,16 @@
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" type="button"
-                                ng-show="([1].includes(status) && paidOrRefundObject.paidOrRefund == 2)"
+                                ng-show="status === 1 && paidOrRefundObject.paidOrRefund === 2 && ![5, 6].includes(nextStatus)"
                                 ng-click="showConfirmRefund()" data-bs-dismiss="modal">
-                                Xác nhận (HT)</button>
+                                Xác nhận (HT)
+                            </button>
 
-                            <button ng-show="!([1].includes(status) && paidOrRefundObject.paidOrRefund == 2)"
-                                type="submit" class="btn btn-primary" ng-click="printSelectedValues()">Xác
-                                nhận</button>
+                            <button type="submit" class="btn btn-primary"
+                                ng-show="status !== 1 || paidOrRefundObject.paidOrRefund !== 2 || [5, 6].includes(nextStatus)"
+                                ng-click="printSelectedValues()">
+                                Xác nhận
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -305,9 +308,9 @@
                         Hoàn tiền trả hàng</button>
 
                     <button class="btn btn-primary"
-                        ng-show="[5, 6].includes(status) && paidOrRefundObject.paidOrRefund == 0"
+                        ng-show="[5, 6].includes(status) && paidOrRefundObject.paidOrRefund != 3"
                         ng-click="showCancelBillRefund()">
-                        Hoàn tiền trả hàng</button>
+                        Hoàn tiền huỷ đơn</button>
 
 
                     <button class="btn btn-primary" ng-show="[32].includes(status) && !isRefund"
@@ -861,8 +864,8 @@
                             </p>
                             <p class="m-0" ng-if="bd.promotionalPrice == bd.price">{{formatCurrency(bd.price)}}</p>
                         </td>
-                        <td class="col-2 text-end">{{(bd.promotionalPrice > 0 ? bd.promotionalPrice : bd.price) *
-                            bd.quantity}}</td>
+                        <td class="col-2 text-end">{{formatCurrency((bd.promotionalPrice > 0 ? bd.promotionalPrice : bd.price) *
+                            bd.quantity)}}</td>
                         <td>
                             <button class="btn" ng-click="removeBillDetail(bd.id)" ng-show="[1].includes(status)">
                                 <i class="material-icons">&#xE15C;</i>
@@ -1045,37 +1048,36 @@
                     </div>
                 </div>
 
-                <!-- Thêm phần số tiền đã thanh toán -->
+                <!-- Phần số tiền đã thanh toán -->
                 <div class="row mt-3 align-items-center"
-                    ng-show="paidOrRefundObject.paidOrRefund != 0 && status !== 32">
+                    ng-show="paidOrRefundObject.paidOrRefund != 0 && status !== 32 && (billResponse.paidAmount + billResponse.paidShippingFee) > 0">
                     <div class="col-7 fw-bold">Số tiền đã thanh toán:</div>
                     <div class="col-5 text-end fs-5 money">{{formatCurrency(billResponse.paidAmount +
                         billResponse.paidShippingFee)}}</div>
                 </div>
 
-                <!-- Thêm phần số tiền cần hoàn trả hoặc thanh toán tiếp -->
-                <div class="row mt-2 align-items-center"">
-                    <div class=" col-7 fw-bold">
-                    <span ng-if="paidOrRefundObject.paidOrRefund == 1 && status !== 32">Số
-                        tiền cần thanh toán tiếp:</span>
-                    <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32">Số
-                        tiền cần hoàn trả:</span>
-                    <span ng-if="[30, 31, 32].includes(status)">Số
-                        tiền hoàn trả:</span>
-                </div>
-                <div class="col-5 text-end fs-5 money" ng-show="paidOrRefundObject.paidOrRefund == 1 && status !== 32"
-                    ng-class="{'highlight-total': (billResponse.totalAmountAfterDiscount + billResponse.shippingFee) > (billResponse.paidAmount + billResponse.paidShippingFee)}">
-                    {{formatCurrency(((billResponse.totalAmountAfterDiscount + billResponse.shippingFee) -
-                    (billResponse.paidAmount
-                    + billResponse.paidShippingFee)))}}
-                </div>
-                <div class="col-5 text-end fs-5 money" ng-show="paidOrRefundObject.paidOrRefund == 2 && status !== 32"
-                    ng-class="{'highlight-discount': (billResponse.totalAmountAfterDiscount + billResponse.shippingFee) < (billResponse.paidAmount + billResponse.paidShippingFee)}">
-                    {{formatCurrency((billResponse.paidAmount + billResponse.paidShippingFee) -
-                    (billResponse.totalAmountAfterDiscount + billResponse.shippingFee))}}
-                </div>
-                <div class="col-5 text-end fs-5 money highlight-discount" ng-show="[30, 31, 32].includes(status)">
-                    {{formatCurrency(returnOrdersSummary.tongTienTra)}}
+                <!-- Phần số tiền cần hoàn trả hoặc thanh toán tiếp -->
+                <div class="row mt-2 align-items-center" ng-show="shouldShowAmount()">
+                    <div class="col-7 fw-bold">
+                        <span ng-if="paidOrRefundObject.paidOrRefund == 1 && status !== 32">Số tiền cần thanh toán
+                            tiếp:</span>
+                        <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32">Số tiền cần hoàn trả:</span>
+                        <span ng-if="[30, 31, 32].includes(status)">Số tiền hoàn trả:</span>
+                    </div>
+                    <div class="col-5 text-end fs-5 money"
+                        ng-show="paidOrRefundObject.paidOrRefund == 1 && status !== 32 && getAdditionalPaymentAmount() > 0"
+                        ng-class="{'highlight-total': getAdditionalPaymentAmount() > 0}">
+                        {{formatCurrency(getAdditionalPaymentAmount())}}
+                    </div>
+                    <div class="col-5 text-end fs-5 money"
+                        ng-show="paidOrRefundObject.paidOrRefund == 2 && status !== 32 && getRefundAmount() > 0"
+                        ng-class="{'highlight-discount': getRefundAmount() > 0}">
+                        {{formatCurrency(getRefundAmount())}}
+                    </div>
+                    <div class="col-5 text-end fs-5 money highlight-discount"
+                        ng-show="[30, 31, 32].includes(status) && returnOrdersSummary.tongTienTra > 0">
+                        {{formatCurrency(returnOrdersSummary.tongTienTra)}}
+                    </div>
                 </div>
             </div>
         </div>

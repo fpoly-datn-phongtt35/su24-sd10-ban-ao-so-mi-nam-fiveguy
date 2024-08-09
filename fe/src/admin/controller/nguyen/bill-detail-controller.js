@@ -1785,6 +1785,21 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         // Thêm ký hiệu tiền tệ
         return formattedNumber + ' đ';
     }
+
+    $scope.shouldShowAmount = function() {
+        return ($scope.paidOrRefundObject.paidOrRefund != 0 && $scope.status !== 32) || 
+               [30, 31, 32].includes($scope.status);
+    };
+    
+    $scope.getAdditionalPaymentAmount = function() {
+        return ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee) - 
+               ($scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee);
+    };
+    
+    $scope.getRefundAmount = function() {
+        return ($scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee) - 
+               ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee);
+    };
 });
 
 app.filter('formatCurrency', function () {

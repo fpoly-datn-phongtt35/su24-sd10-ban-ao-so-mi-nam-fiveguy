@@ -54,7 +54,9 @@ public class NBillServiceImpl implements NBillService {
 
     @Override
     public Bill getById(Long id) {
-        return billRepository.findById(id).get();
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() ->  new RuntimeException("Bill not found"));
+        return bill;
     }
 
     @Override
