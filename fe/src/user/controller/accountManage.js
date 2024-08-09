@@ -10,7 +10,6 @@ app.controller("accountManage", function ($scope, $http, $window) {
   const emailAccount = null;
 
   // notify
-
   toastr.options = {
       "closeButton": false,
       "debug": false,
@@ -54,16 +53,16 @@ app.controller("accountManage", function ($scope, $http, $window) {
   $scope.getUser();
 
   $scope.getAddressList = function () {
-    $http.get("http://localhost:8080/api/ol/authenticated/address").then(
-      function successCallback(response) {
+    $http.get("http://localhost:8080/api/ol/authenticated/address")
+      .then(response => {
         $scope.addressList = response.data;
-      },
-      function errorCallback(response) {
+      })
+      .catch(error => {
         // Xử lý khi gọi API không thành công
         console.error("Error while fetching data");
-      }
-    );
+      });
   };
+  
 
   $scope.addressData = {}; // Khai báo biến addressData trong $scope
   $scope.addressData = {};
@@ -180,12 +179,15 @@ app.controller("accountManage", function ($scope, $http, $window) {
   };
 
   $scope.getNameWard = function (districtId, wardId) {
+    console.log(districtId)
+    console.log(wardId)
     $scope.getWardsByDistrict(districtId).then(function () {
       if ($scope.wards) {
         // Tìm quận/huyện được chọn trong mảng districts
         var selectedWard = $scope.wards.find(function (ward) {
           return ward.WardCode == wardId;
         });
+        console.log(selectedWard);
 
         if (selectedWard) {
           // $scope.billAddressWard = selectedWard.WardCode;

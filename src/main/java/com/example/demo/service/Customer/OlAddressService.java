@@ -9,15 +9,15 @@ import java.util.Optional;
 
 public interface OlAddressService {
 
-   List<Address> getAddressListByUsername(String username);
+    List<Address> getAddressListByIdCustomer(Long id);
 
-   void deleteAddress(Long id);
+    void deleteAddress(Long id);
 
     boolean update(Address userInfoRequest);
 
     boolean addAddress(Address addressRequest);
 
-    Address findByDefaultAddressTrue(String username);
+    Address findByDefaultAddressTrue(Long id);
 
     Optional<Address> findById(Long id);
 }

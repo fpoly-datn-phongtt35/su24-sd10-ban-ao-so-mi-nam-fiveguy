@@ -7,17 +7,14 @@ body {
     font-family: 'Roboto', sans-serif;
     color: #333;
     line-height: 1.6;
-    background-color: #f9f9f9;
+
     margin: 0;
     padding: 0;
 }
 
 /* Container chính */
 .container-fluid {
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
 }
 
 /* Tiêu đề tài khoản */
@@ -143,6 +140,7 @@ img.rounded-4.fit {
         width: 120px;
         height: 120px;
     }
+  
 }
 
 </style>
@@ -196,94 +194,75 @@ img.rounded-4.fit {
                     <span class="base">Địa chỉ của tôi</span>
                 </h1>
             </div>
-         <div class="row">
-            
-            <!-- <div class="block-account-information col-lg-6 col-md-6 col-sm-6 mb-4" style="height: 580px; overflow-y: auto;">
-                <div ng-repeat="address in addressList" class="account-address__item">
-                    <div class="address-info">
-                        <span class="address-line">
-                            <div class="account-address__head"><strong>Họ và tên:</strong>  {{  address.name }}</div>
+            <div class="row">
+                <!-- Column 1: Address List -->
+                <div class="block-account-information col-lg-6 col-md-6 col-sm-12 mb-4" style="height: 580px; overflow-y: auto;">
+                    <div ng-repeat="address in addressList" class="account-address__item">
+                        <div class="address-info">
+                            <div class="account-address__head"><strong>Họ và tên:</strong>  {{ address.name }}</div>
+                            <div><strong>Số điện thoại:</strong> {{ address.phoneNumber }}</div>
+                            <div><strong>Địa chỉ:</strong> {{ address.address }}</div>
+                            <div ng-if="address.defaultAddress" style="color: red;">Địa chỉ mặc định</div>
                             <div class="actions">
                                 <button class="btn-update btn btn-primary" ng-click="fillDataToUpdate(address)">Cập nhật</button>
                                 <button class="btn-delete btn btn-primary" ng-click="deleteDataAddress(address.id)">Xóa</button>
                             </div>
-                        </span>
-                        <div><strong>Số điện thoại:</strong> {{ address.phoneNumber }}</div>
-                        <div><strong>Địa chỉ:</strong> {{ address.address }}</div>
-                        <div ng-if="address.defaultAddress" class="default-address">Địa chỉ mặc định</div>
+                        </div>
                     </div>
                 </div>
-            </div> -->
             
-            
-            
-            
-            
-                
-            <div class="personal-information col-lg-8 col-md-6 col-sm-6 mb-4">
-                <form class="form-edit-account">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Họ và tên:</label>
-                        <input type="text" class="form-control"  id="name" ng-model="addressData.name">
-                        <p style="color: red;" class="error-message" ng-if="isNameUserAddressInvalid">Vui lòng nhập thông tin này.</p>
-                    </div>
-                
-                    <div class="mb-3">
-                        <label for="phoneNumber" class="form-label">Số điện thoại:</label>
-                        <input type="tel" class="form-control" id="phoneNumber" ng-model="addressData.phoneNumber">
-                        <p style="color: red;" class="error-message" ng-if="isPhoneNumberAddressInvalid">Số điện thoại không hợp lệ.</p>
-                    </div>
-                
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Địa chỉ:</label>
-                        <input type="text" class="form-control" id="address" ng-model="addressData.addressDetail">
-                        <p style="color: red;" class="error-message" ng-if="isNameDetailAddressInvalid">Vui lòng nhập thông tin này.</p>
-                    </div>
-                
-             <!-- Tỉnh/Thành phố -->
-                  <div class="mb-3">
-                    <label for="city" class="form-label">Tỉnh/Thành phố:</label>
-                    <select ng-model="dataCity" class="form-control" ng-options="city as city.ProvinceName for city in cities" ng-change="getDistrictsByProvince(dataCity.ProvinceID)">
-                      <option value="">Chọn Tỉnh/Thành phố</option>
-                    </select>
-                    <p style="color: red;" class="error-message" ng-if="isCityAddressInvalid">Vui lòng nhập thông tin này.</p>
-                  </div>
-
-                  <!-- Quận/Huyện -->
-                  <div class="mb-3">
-                    <label for="district" class="form-label">Quận/Huyện:</label>
-                    <select ng-model="dataDistrict" class="form-control" ng-options="district as district.DistrictName for district in districts" ng-change="getWardsByDistrict(dataDistrict.DistrictID)">
-                      <option value="">Chọn Quận/Huyện</option>
-                    </select>
-                    <p style="color: red;" class="error-message" ng-if="isDistrictAddressInvalid">Vui lòng nhập thông tin này.</p>
-                  </div>
-
-
-                  <div class="mb-3">
-                    <label for="district" class="form-label">Phường/Xã:</label>
-                    <select ng-model="dataWard" class="form-control" ng-options="ward as ward.WardName for ward in wards" ng-change="calculateShippingFee(dataDistrict.DistrictID, dataWard.WardCode.toString())">
-                      <option value="">Chọn Phường/Xã</option>
-                    </select>
-                    <p style="color: red;" class="error-message" ng-if="isWardAddressInvalid">Vui lòng nhập thông tin này.</p>
-                  </div>
-
-                
-                    <div class="mb-3 form-check">   
-                        <input type="checkbox" class="form-check-input" id="defaultAddress" ng-model="addressData.defaultAddress" >
-                        <label class="form-check-label" for="defaultAddress">Đặt làm địa chỉ mặc định</label>
-                    </div>
-                    <button ng-click="updateAddress()" class="btn btn-primary">Cập nhật</button>
-                    <button ng-click="addAddress()" class="btn btn-primary">
-                        Thêm địa chỉ mới
-                      </button>
-                </form>
-                
+                <!-- Column 2: Address Form -->
+                <div class="personal-information col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <form class="form-edit-account">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Họ và tên:</label>
+                            <input type="text" class="form-control" id="name" ng-model="addressData.name">
+                            <p style="color: red;" class="error-message" ng-if="isNameUserAddressInvalid">Vui lòng nhập thông tin này.</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Số điện thoại:</label>
+                            <input type="tel" class="form-control" id="phoneNumber" ng-model="addressData.phoneNumber">
+                            <p style="color: red;" class="error-message" ng-if="isPhoneNumberAddressInvalid">Số điện thoại không hợp lệ.</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Địa chỉ:</label>
+                            <input type="text" class="form-control" id="address" ng-model="addressData.addressDetail">
+                            <p style="color: red;" class="error-message" ng-if="isNameDetailAddressInvalid">Vui lòng nhập thông tin này.</p>
+                        </div>
+                        <!-- Tỉnh/Thành phố -->
+                        <div class="mb-3">
+                            <label for="city" class="form-label">Tỉnh/Thành phố:</label>
+                            <select ng-model="dataCity" class="form-control" ng-options="city as city.ProvinceName for city in cities" ng-change="getDistrictsByProvince(dataCity.ProvinceID)">
+                                <option value="">Chọn Tỉnh/Thành phố</option>
+                            </select>
+                            <p style="color: red;" class="error-message" ng-if="isCityAddressInvalid">Vui lòng nhập thông tin này.</p>
+                        </div>
+                        <!-- Quận/Huyện -->
+                        <div class="mb-3">
+                            <label for="district" class="form-label">Quận/Huyện:</label>
+                            <select ng-model="dataDistrict" class="form-control" ng-options="district as district.DistrictName for district in districts" ng-change="getWardsByDistrict(dataDistrict.DistrictID)">
+                                <option value="">Chọn Quận/Huyện</option>
+                            </select>
+                            <p style="color: red;" class="error-message" ng-if="isDistrictAddressInvalid">Vui lòng nhập thông tin này.</p>
+                        </div>
+                        <!-- Phường/Xã -->
+                        <div class="mb-3">
+                            <label for="district" class="form-label">Phường/Xã:</label>
+                            <select ng-model="dataWard" class="form-control" ng-options="ward as ward.WardName for ward in wards" ng-change="calculateShippingFee(dataDistrict.DistrictID, dataWard.WardCode.toString())">
+                                <option value="">Chọn Phường/Xã</option>
+                            </select>
+                            <p style="color: red;" class="error-message" ng-if="isWardAddressInvalid">Vui lòng nhập thông tin này.</p>
+                        </div>
+                        <div class="mb-3 form-check">   
+                            <input type="checkbox" class="form-check-input" id="defaultAddress" ng-model="addressData.defaultAddress">
+                            <label class="form-check-label" for="defaultAddress">Đặt làm địa chỉ mặc định</label>
+                        </div>
+                        <button ng-click="updateAddress()" class="btn btn-primary">Cập nhật</button>
+                        <button ng-click="addAddress()" class="btn btn-primary">Thêm địa chỉ mới</button>
+                    </form>
+                </div>
             </div>
-
-
-
             
-         </div>
            </div>
         </div>
     </div>
