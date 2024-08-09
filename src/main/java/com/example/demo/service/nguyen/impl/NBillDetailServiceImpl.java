@@ -379,6 +379,10 @@ public class NBillDetailServiceImpl implements NBillDetailService {
             return false; // Voucher is not active
         }
 
+        if (voucher.getQuantity() <= 0) {
+            return false;
+        }
+
         if (voucher.getStartDate().after(new Date()) || voucher.getEndDate().before(new Date())) {
             return false; // Voucher is not within the valid date range
         }
