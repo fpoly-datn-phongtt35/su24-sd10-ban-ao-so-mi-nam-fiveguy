@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@ToString
+//@ToString
 @Entity
 @Table(name = "Collars")
 public class Collar implements Serializable {

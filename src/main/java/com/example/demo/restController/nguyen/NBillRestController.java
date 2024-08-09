@@ -1,8 +1,9 @@
 package com.example.demo.restController.nguyen;
 
-import com.example.demo.entity.Bill;
-import com.example.demo.entity.BillDetail;
+import com.example.demo.entity.*;
 import com.example.demo.model.request.nguyen.BillRequest;
+import com.example.demo.model.request.nguyen.PaymentStatusRequest;
+import com.example.demo.model.response.nguyen.BillResponse;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NBillDetailService;
 import com.example.demo.service.nguyen.NBillService;
@@ -16,8 +17,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @RestController
 @CrossOrigin("*")
@@ -46,6 +51,35 @@ public class NBillRestController {
         return ResponseEntity.ok(billService.getById(id));
     }
 
+    //Hải code
+    @GetMapping("/fill")
+    public Page<BillResponse> searchBills(@RequestParam(required = false) List<Integer> statuses,
+                                          @RequestParam(required = false) String searchTerm,
+                                          @RequestParam(required = false) Integer typeBill,
+                                          @RequestParam(required = false) String fromDate,
+                                          @RequestParam(required = false) String toDate,
+                                          @RequestParam int page,
+                                          @RequestParam int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Date parsedStartDate = null;
+        Date parsedEndDate = null;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        try {
+            if (fromDate != null) {
+                parsedStartDate = dateFormat.parse(fromDate);
+            }
+            if (toDate != null) {
+                parsedEndDate = dateFormat.parse(toDate);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return billService.getBillsByFilters(statuses, searchTerm, typeBill, parsedStartDate, parsedEndDate, pageable);
+    }
+
+
     @GetMapping("/page")
     public Page<Bill> getBills(@RequestParam(required = false) String code,
                                @RequestParam(required = false) String customerName,
@@ -71,6 +105,15 @@ public class NBillRestController {
         return billService.updateShipmentDetail(bill, id, fullName.get());
     }
 
+    @PutMapping("/shippingFeeUpdate/{id}")
+    public Bill updateShippingFee(@RequestHeader("Authorization") String token,
+                                  @PathVariable Long id, @RequestBody BigDecimal shippingFee) {
+
+        return billService.updateShippingFee(id, shippingFee);
+    }
+
+
+    //main function
     @PutMapping("/billStatusUpdate/{id}")
     public Bill updateBillStatusAndSaveBillHistory(
             @RequestHeader("Authorization") String token, @RequestBody BillRequest billRequest,
@@ -126,4 +169,48 @@ public class NBillRestController {
     public ResponseEntity<?> getAllPaymentStatusByBillId(@PathVariable Long billId) {
         return ResponseEntity.ok(paymentStatusService.getAllByBillId(billId));
     }
+
+    @PostMapping("/{billId}/savePaymentStatus")
+    public ResponseEntity<?> savePaymentStatus(@PathVariable Long billId, @RequestBody
+            PaymentStatusRequest paymentStatusRequest) {
+        return ResponseEntity
+                .ok(paymentStatusService.createPaymentStatus(billId, paymentStatusRequest));
+    }
+
+    @PutMapping("/{billId}/updateStatusPayment")
+    public ResponseEntity<?> updateStatusPayment(@PathVariable Long billId,
+                                                 @RequestBody String note) {
+        return ResponseEntity.ok(paymentStatusService.updateStatusPayment(billId, note));
+    }
+
+    @PutMapping("/{billId}/updateRefundAmount")
+    public ResponseEntity<?> updateRefundAmount(@PathVariable Long billId,
+                                                @RequestBody String note) {
+        return ResponseEntity.ok(paymentStatusService.updateStatusPaymentRefund(billId, note));
+    }
+
+    @GetMapping("/{billId}/isRefund")
+    public ResponseEntity<?> checkIsRefund(@PathVariable Long billId) {
+        return ResponseEntity.ok(paymentStatusService.checkIsRefund(billId));
+    }
+
+    @GetMapping("/{billId}/checkQuantity")
+    public ResponseEntity<?> checkQuantity(@PathVariable Long billId) {
+        return ResponseEntity.ok(billService.isQuantityExceedsProductDetail(billId));
+    }
+
+    //khong su dung - chua check lai
+    @PostMapping("/{billId}/addReturnOrder")
+    public ResponseEntity<?> addReturnOrderAndUpdateBill(
+            @RequestHeader("Authorization") String token,
+            @RequestBody List<ReturnOrder> returnOrdera) {
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping("/{billId}/setVoucherToBill")
+    public ResponseEntity<?> setVoucherToBill(@PathVariable Long billId,
+                                              @RequestBody Voucher voucher) {
+        return ResponseEntity.ok(billService.setVoucherToBill(billId, voucher));
+    }
+
 }

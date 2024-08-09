@@ -3,9 +3,12 @@ package com.example.demo.service.nguyen;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillDetail;
 import com.example.demo.entity.BillHistory;
+import com.example.demo.entity.Voucher;
+import com.example.demo.model.response.nguyen.BillResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -26,4 +29,11 @@ public interface NBillService {
 
     Bill updateShipmentDetail(Bill bill, Long id, String fullName);
 
+    Integer isQuantityExceedsProductDetail(Long idBill);
+
+    Bill setVoucherToBill(Long id, Voucher voucher);
+
+    Bill updateShippingFee(Long id, BigDecimal shippingFee);
+
+    Page<BillResponse> getBillsByFilters(List<Integer> statuses, String searchTerm, Integer typeBill, Date fromDate, Date toDate, Pageable pageable);
 }

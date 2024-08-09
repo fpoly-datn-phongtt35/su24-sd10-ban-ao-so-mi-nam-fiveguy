@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -20,4 +21,5 @@ public interface NVoucherRepository extends JpaRepository<Voucher, Long>, JpaSpe
     Voucher findByIdN(@Param("id") Long id);
 
     boolean existsByCode(String code);
+
 }

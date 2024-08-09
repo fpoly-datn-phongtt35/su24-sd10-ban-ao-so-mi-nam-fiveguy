@@ -12,4 +12,6 @@ public interface NBillHistoryRepository extends JpaRepository<BillHistory, Long>
     BillHistory findBillHistoryByBillId(Long id);
 
     List<BillHistory> findByBillIdOrderByCreatedAtAsc(Long billId);
+
+    BillHistory findAllByBillIdAndStatus(Long billId, Integer status);
 }

@@ -10,4 +10,6 @@ import java.util.List;
 public interface NCustomerTypeVoucherRepository extends JpaRepository<CustomerTypeVoucher, Long> {
 
     List<CustomerTypeVoucher> findAllByVoucherId(Long id);
+
+    boolean existsByVoucherIdAndCustomerTypeId(Long voucherId, Long customerTypeId);
 }

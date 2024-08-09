@@ -31,4 +31,6 @@ public interface NVoucherService {
     VoucherStatistics calculateVoucherStatistics(Long voucherId);
 
     Page<CustomerVoucherStatsDTO> getCustomerVoucherStats(Long voucherId, Pageable pageable);
+
+    List<Voucher> findAllVoucherCanUse(Long billId);
 }

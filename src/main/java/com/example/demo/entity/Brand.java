@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@ToString
+//@ToString
 @Builder
 @Entity
 @Table(name = "Brands")

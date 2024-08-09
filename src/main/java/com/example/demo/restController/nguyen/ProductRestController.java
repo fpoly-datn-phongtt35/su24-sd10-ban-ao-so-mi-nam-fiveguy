@@ -1,5 +1,6 @@
 package com.example.demo.restController.nguyen;
 
+import com.example.demo.entity.Image;
 import com.example.demo.service.nguyen.NProductDetailService;
 import com.example.demo.service.nguyen.NProductService;
 import org.springframework.beans.factory.annotation.Autowired;

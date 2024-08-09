@@ -9,5 +9,11 @@ import java.util.List;
 @Repository
 public interface NPaymentStatusRepository extends JpaRepository<PaymentStatus, Long> {
 
-    List<PaymentStatus> findAllByBillIdOrderByIdDesc(Long billId);
+    List<PaymentStatus> findAllByBillIdOrderByIdAsc(Long billId);
+
+    List<PaymentStatus> findAllByBillIdAndCustomerPaymentStatusOrderByIdAsc(Long billId, Integer status);
+
+    List<PaymentStatus> findAllByBillIdAndPaymentTypeAndBillStatus(Long billId, Integer paymentType, Integer status);
+
+    boolean existsByCode(String code);
 }
