@@ -5,6 +5,7 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
   $scope.formInput = {};
   $scope.formInputAccount = {};
   $scope.formUpdateAccount = {};
+  // $scope.formUpdateEmployee = {};
   formDetailAuditLog = {};
   $scope.formDelete = {};
   $scope.showAlert = false;
@@ -301,13 +302,17 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
       };
       $scope.postFile(postData).then(function () {
         $scope.$apply(); // Áp dụng thay đổi vào scope
+
+        // Gọi submitForm sau khi upload ảnh hoàn tất
         $scope.submitForm();
+
         $scope.getEmployee(0);
         $scope.resetFormInput();
         $("#modalAdd").modal("hide");
       });
     };
   };
+
 
   $scope.addEmployee = async (objectData) => {
     try {
@@ -446,47 +451,39 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
   $scope.uploadBtnUpdate = async function () {
     const fileInputupdate = document.getElementById("image-update");
     const file = fileInputupdate.files[0];
-
     if (!file) {
       $scope.showError = true;
       //submit form khi ảnh ko được thay đổi
-      if ($scope.formUpdateEmployee.$valid) {
-        const addAccountData = await $scope.suaAccount();
-        console.log(addAccountData);
-        if (addAccountData) {
-          const dataObject = {
-            code: $scope.formUpdate.code,
-            avata: $scope.formUpdate.avata,
-            account: {
-              id: addAccountData.id,
-            },
-
-            avatar: $scope.formUpdate.avatar, // Add the image data here
-            fullName: $scope.formUpdate.fullName,
-            gender: $scope.formUpdate.gender,
-            birthDate: $scope.formUpdate.birthDate,
-            address: $scope.formUpdate.address,
-            createdAt: $scope.formUpdate.createdAt,
-            updatedAt: $scope.formUpdate.updatedAt,
-            createdBy: $scope.formUpdate.createdBy,
-            updatedBy: $scope.formUpdate.updatedBy,
-            status: $scope.formUpdate.status,
-          };
-          console.log(dataObject);
-          const updateEmployeesData = await $scope.updateEmployee(dataObject);
-          $scope.showSuccessNotification("Sửa thông tin thành công");
-          $scope.getEmployee(0);
-          $scope.resetFormUpdate();
-          console.log("updateEmployeesData = ", updateEmployeesData);
-          $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
-        }
-        // $uibModalInstance.close(); // Đóng modal
+      const addAccountData = await $scope.suaAccount();
+      if (addAccountData) {
+        const dataObject = {
+          code: $scope.formUpdate.code,
+          avata: $scope.formUpdate.avata,
+          account: {
+            id: addAccountData.id,
+          },
+          avatar: $scope.formUpdate.avatar, // Image data here
+          fullName: $scope.formUpdate.fullName,
+          gender: $scope.formUpdate.gender,
+          birthDate: $scope.formUpdate.birthDate,
+          address: $scope.formUpdate.address,
+          createdAt: $scope.formUpdate.createdAt,
+          updatedAt: $scope.formUpdate.updatedAt,
+          createdBy: $scope.formUpdate.createdBy,
+          updatedBy: $scope.formUpdate.updatedBy,
+          status: $scope.formUpdate.status,
+        };
+        const updateEmployeesData = await $scope.updateEmployee(dataObject);
+        $scope.showSuccessNotification("Sửa thông tin thành công");
+        $scope.getEmployee(0);
+        $scope.resetFormUpdate();
+        $("#modalUpdate").modal("hide");
       }
       $scope.$apply();
       return;
     } else {
       $scope.showError = false;
-      $scope.uploading = true; // Đang trong quá trình upload
+      $scope.uploading = true;
 
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -498,8 +495,8 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
           data: data,
         };
         $scope.postFile(postData).then(function () {
-          $scope.uploading = false; // Hoàn thành quá trình upload
-          $scope.$apply(); // Áp dụng thay đổi vào scope
+          $scope.uploading = false;
+          $scope.$apply();
           if (!$scope.uploading) {
             $scope.submitFormUpdate();
           }
@@ -507,6 +504,7 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
       };
     }
   };
+
 
   $scope.updateAccount = async (objectAccount) => {
     // let email = $scope.edit(employee.account.email);
@@ -525,6 +523,8 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
     }
   };
 
+  const pass = null;
+  const status = null;
   //Hàm xử lý sửa account. Check điều kiện kiểm tra và gọi api thêm mới account
   $scope.suaAccount = async function () {
     const email = $scope.formInputAccount.email;
@@ -534,8 +534,8 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
         email: email,
         phoneNumber: $scope.formInputAccount.phoneNumber,
         role: $scope.formInputAccount.role,
-        // password: password
-        // status: status
+        password: $scope.pass,
+        status: $scope.statu
       };
 
       try {
@@ -554,10 +554,9 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
     }
   };
 
-  // Thêm mới nhân viên
+  // sửa nhân viên
   $scope.updateEmployee = async (objectData) => {
     let item = angular.copy($scope.formUpdate);
-    console.log(item);
     try {
       const result = await $http.put(`${apiEmployee}/${item.id}`, objectData);
       console.log("Sửa account thành công", result.data);
@@ -574,9 +573,8 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
     $scope.formUpdateEmployee.$submitted = true;
 
     // Kiểm tra tính hợp lệ của form
-    if ($scope.formUpdateEmployee.$valid) {
+    if ($scope.formUpdateEmployee.$invalid) {
       const addAccountData = await $scope.suaAccount();
-      console.log(addAccountData);
       if (addAccountData) {
         const dataObject = {
           code: $scope.formUpdate.code,
@@ -595,13 +593,11 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
           updatedBy: $scope.formUpdate.updatedBy,
           status: $scope.formUpdate.status,
         };
-        console.log(dataObject);
         const updateEmployeesData = await $scope.updateEmployee(dataObject);
         $scope.getEmployee(0);
         $scope.resetFormUpdate();
         $scope.showSuccessNotification("Sửa thông tin thành công");
-        console.log("updateEmployeesData = ", updateEmployeesData);
-        $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
+        $("#modalUpdate").modal("hide");
       }
     } else {
       // Hiển thị lỗi
@@ -609,6 +605,7 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
       console.log($scope.formUpdateEmployee.$error);
     }
   };
+
 
   // END Sửa nhân viên
 
@@ -627,6 +624,10 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
     $scope.formUpdate.avatar = angular.copy(employee.avatar);
 
     $scope.formInputAccount.role.id = angular.copy(employee.account.role.id);
+    $scope.pass = angular.copy(employee.account.password);
+    $scope.statu = angular.copy(employee.account.status);
+    console.log($scope.pass);
+
   };
 
   // hàm làm mới form update
@@ -767,16 +768,20 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
 
   //phân trang + lọc auddit Log
   // get all da ta lịch sửa nv
-  $scope.getAuditlog = function () {
-    $http.get(apiAuditLog).then(function (resp) {
-      $scope.auditLog = resp.data;
-      //   $scope.employee = angular.copy($scope.originalEmployee);
-    });
-  };
+  // $scope.getAuditlog = function () {
+  //   $http.get(apiAuditLog).then(function (resp) {
+  //     $scope.auditLog = resp.data;
+  //     //   $scope.employee = angular.copy($scope.originalEmployee);
+  //   });
+  // };
   $scope.getAuditlog = [];
+  $scope.totalPages1 = 0;
+  $scope.currentPage1 = 0;
+  $scope.desiredPage1 = 1;
+  $scope.size1 = 5;
   $scope.filterAuditlog = {
     status: null,
-    empCode: null,
+    code: null,
     implementer: null,
     time: null,
   };
@@ -784,7 +789,7 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
 
   $scope.getAllAuditLog = function (pageNumber) {
     let params = angular.extend(
-      { pageNumber: pageNumber, size: $scope.size },
+      { pageNumber: pageNumber, size: $scope.size1 },
       $scope.filterAuditlog
     );
     $http
@@ -793,24 +798,29 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
       })
       .then(function (response) {
         $scope.getAuditlog = response.data.content;
-        $scope.totalPages = response.data.totalPages;
-        $scope.currentPage = pageNumber;
-        $scope.desiredPage = pageNumber + 1;
+        $scope.totalPages1 = response.data.totalPages;
+        $scope.currentPage1 = pageNumber;
+        $scope.desiredPage1 = pageNumber + 1;
       });
   };
 
   $scope.applyFiltersAuditlog = function () {
-    // $scope.filterAuditlog.time = $scope.filterAuditlog.time ? $scope.filterAuditlog.time.toISOString().split('T')[0] : null;
+    // Chuyển đổi thời gian từ định dạng yyyy-MM-dd sang Date nếu cần
+    if ($scope.filterAuditlog.time) {
+      let date = new Date($scope.filterAuditlog.time);
+      $scope.filterAuditlog.time = date.toISOString().split('T')[0]; // Lấy ngày, bỏ giờ phút giây
+    }
     $scope.getAllAuditLog(0);
   };
 
+
   $scope.goToPageAuditlog = function () {
-    let pageNumber = $scope.desiredPage - 1;
-    if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+    let pageNumber = $scope.desiredPage1 - 1;
+    if (pageNumber >= 0 && pageNumber < $scope.totalPages1) {
       $scope.getAllAuditLog(pageNumber);
     } else {
       // Reset desiredPage to currentPage if the input is invalid
-      $scope.desiredPage = $scope.currentPage + 1;
+      $scope.desiredPage1 = $scope.currentPage1 + 1;
     }
   };
   // Initial load
@@ -819,7 +829,7 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
   $scope.resetfilterAuditlog = function () {
     $scope.filterAuditlog = {
       status: null,
-      empCode: null,
+      code: null,
       implementer: null,
       time: null,
     };

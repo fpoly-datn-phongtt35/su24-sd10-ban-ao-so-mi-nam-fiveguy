@@ -44,7 +44,6 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             .get(`${url}?startDate=${todayfomat}&status=${status}`)
             .then(function (response) {
                 $scope.tongBillStatuses[status] = response.data;
-                // console.log(`Status ${status}:`, response.data);
             })
             .catch(function (error) {
                 console.error(`Có lỗi xảy ra khi gọi API với status=${status}:`, error);
@@ -204,6 +203,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             )
             .then(function (response) {
                 $scope.tongDoanhThuNgay = response.data;
+
             });
     };
     $scope.getTongDoangThuNgay();
@@ -385,7 +385,6 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                 )
                 .then(function (response) {
                     $scope.tongSanPhamTuyChinh = response.data;
-                    console.log(response.data);
                 })
                 .catch(function (error) {
                     console.error("Có lỗi xảy ra khi gọi API:", error);
@@ -724,21 +723,21 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     $scope.sanPhamBanChay = [];
     $scope.size2 = 5;
-    $scope.totalPages = 0;
+    $scope.totalPages2 = 0;
     $scope.currentPage2 = 0;
     $scope.desiredPage2 = 1;
 
-    $scope.getSanPhamBanChayNgay = function (pageNumber) {
+    $scope.getSanPhamBanChayNgay = function (pageNumber2) {
         let params = {
             date: todayfomat,
-            page: pageNumber || 0,
+            page: pageNumber2 || 0,
             size: $scope.size2
         };
 
         $http.get("http://localhost:8080/api/admin/bill-tinh/top-ban-chay-ngay", { params: params })
             .then(function (response) {
                 $scope.sanPhamBanChay = response.data.content;
-                $scope.totalPages = response.data.totalPages;
+                $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = response.data.number;
                 $scope.desiredPage2 = $scope.currentPage2 + 1;
             })
@@ -747,17 +746,17 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getSanPhamBanChayTuan = function (pageNumber) {
+    $scope.getSanPhamBanChayTuan = function (pageNumber2) {
         let params = {
             date: todayfomat,
-            page: pageNumber || 0,
+            page: pageNumber2 || 0,
             size: $scope.size2
         };
 
         $http.get("http://localhost:8080/api/admin/bill-tinh/top-ban-chay-tuan", { params: params })
             .then(function (response) {
                 $scope.sanPhamBanChay = response.data.content;
-                $scope.totalPages = response.data.totalPages;
+                $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = response.data.number;
                 $scope.desiredPage2 = $scope.currentPage2 + 1;
             })
@@ -766,17 +765,17 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getSanPhamBanChayThang = function (pageNumber) {
+    $scope.getSanPhamBanChayThang = function (pageNumber2) {
         let params = {
             date: todayfomat,
-            page: pageNumber || 0,
+            page: pageNumber2 || 0,
             size: $scope.size2
         };
 
         $http.get("http://localhost:8080/api/admin/bill-tinh/top-ban-chay-thang", { params: params })
             .then(function (response) {
                 $scope.sanPhamBanChay = response.data.content;
-                $scope.totalPages = response.data.totalPages;
+                $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = response.data.number;
                 $scope.desiredPage2 = $scope.currentPage2 + 1;
             })
@@ -785,19 +784,17 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getSanPhamBanChayNam = function (pageNumber) {
+    $scope.getSanPhamBanChayNam = function (pageNumber2) {
         let params = {
             date: todayfomat,
-            page: pageNumber || 0,
+            page: pageNumber2 || 0,
             size: $scope.size2
         };
 
         $http.get("http://localhost:8080/api/admin/bill-tinh/top-ban-chay-nam", { params: params })
             .then(function (response) {
                 $scope.sanPhamBanChay = response.data.content;
-                console.log(response.data.content);
-
-                $scope.totalPages = response.data.totalPages;
+                $scope.totalPages2 = response.data.totalPages;
                 $scope.currentPage2 = response.data.number;
                 $scope.desiredPage2 = $scope.currentPage2 + 1;
             })
@@ -806,7 +803,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getSanPhamBanChayTuyChinh = function (pageNumber) {
+    $scope.getSanPhamBanChayTuyChinh = function (pageNumber2) {
         // Lấy giá trị ngày từ ng-model
         const startDate = $scope.filterStartDate;
         const endDate = $scope.filterEndDate;
@@ -820,14 +817,14 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             let params = {
                 startDate: formattedStartDate,
                 endDate: formattedEndDate,
-                page: pageNumber || 0,
+                page: pageNumber2 || 0,
                 size: $scope.size2
             };
 
             $http.get("http://localhost:8080/api/admin/bill-tinh/top-ban-chay-khoang-thoi-gian", { params: params })
                 .then(function (response) {
                     $scope.sanPhamBanChay = response.data.content;
-                    $scope.totalPages = response.data.totalPages;
+                    $scope.totalPages2 = response.data.totalPages;
                     $scope.currentPage2 = response.data.number;
                     $scope.desiredPage2 = $scope.currentPage2 + 1;
                 })
@@ -839,6 +836,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
 
     $scope.applyFiltersSanPhamBanChay = function () {
+        $scope.desiredPage2 = 0; // Reset desired page to first page
         switch ($scope.selectedButton) {
             case 'ngay':
                 $scope.getSanPhamBanChayNgay(0);
@@ -858,28 +856,27 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
         }
     };
 
-    $scope.goToPageSanPhamBanChay = function () {
-        let pageNumber = $scope.desiredPage2 - 1;
-        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+    $scope.goToPageSanPhamBanChay = function (pageNumber2) {
+        if (pageNumber2 >= 0 && pageNumber2 < $scope.totalPages2) {
             switch ($scope.selectedButton) {
                 case 'ngay':
-                    $scope.getSanPhamBanChayNgay(pageNumber);
+                    $scope.getSanPhamBanChayNgay(pageNumber2);
                     break;
                 case 'tuan':
-                    $scope.getSanPhamBanChayTuan(pageNumber);
+                    $scope.getSanPhamBanChayTuan(pageNumber2);
                     break;
                 case 'thang':
-                    $scope.getSanPhamBanChayThang(pageNumber);
+                    $scope.getSanPhamBanChayThang(pageNumber2);
                     break;
                 case 'nam':
-                    $scope.getSanPhamBanChayNam(pageNumber);
+                    $scope.getSanPhamBanChayNam(pageNumber2);
                     break;
                 case 'tuyChinh':
-                    $scope.getSanPhamBanChayTuyChinh(pageNumber);
+                    $scope.getSanPhamBanChayTuyChinh(pageNumber2);
                     break;
             }
-        } else {
-            $scope.desiredPage2 = $scope.currentPage2 + 1;
+            $scope.currentPage2 = pageNumber2; // Update current page
+            $scope.desiredPage2 = pageNumber2 + 1; // Adjust desired page
         }
     };
 
@@ -897,23 +894,21 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.khachHangMuaNhieuNhat = [];
 
     $scope.size3 = 5;
-    $scope.totalPages = 0;
+    $scope.totalPages3 = 0;
     $scope.currentPage3 = 0;
     $scope.desiredPage3 = 1;
 
-    $scope.getKhachHangMuaNhieuNhatNgay = function (pageNumber) {
+    $scope.getKhachHangMuaNhieuNhatNgay = function (pageNumber3) {
         let params = {
             date: todayfomat,
-            page: pageNumber || 0,
+            page: pageNumber3 || 0,
             size: $scope.size3
         };
-
-        console.log("Request params: ", params); // Log để kiểm tra tham số
 
         $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-ngay", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
-                $scope.totalPages = response.data.totalPages;
+                $scope.totalPages3 = response.data.totalPages;
                 $scope.currentPage3 = response.data.number;
                 $scope.desiredPage3 = $scope.currentPage3 + 1;
             }).catch(function (error) {
@@ -921,19 +916,17 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getKhachHangMuaNhieuNhatTuan = function (pageNumber) {
+    $scope.getKhachHangMuaNhieuNhatTuan = function (pageNumber3) {
         let params = {
             date: todayfomat,
-            page: pageNumber || 0,
+            page: pageNumber3 || 0,
             size: $scope.size3
         };
-
-        console.log("Request params: ", params); // Log để kiểm tra tham số
 
         $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-tuan", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
-                $scope.totalPages = response.data.totalPages;
+                $scope.totalPages3 = response.data.totalPages;
                 $scope.currentPage3 = response.data.number;
                 $scope.desiredPage3 = $scope.currentPage3 + 1;
             }).catch(function (error) {
@@ -941,19 +934,17 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getKhachHangMuaNhieuNhatThang = function (pageNumber) {
+    $scope.getKhachHangMuaNhieuNhatThang = function (pageNumber3) {
         let params = {
             date: todayfomat,
-            page: pageNumber || 0,
+            page: pageNumber3 || 0,
             size: $scope.size3
         };
-
-        console.log("Request params: ", params); // Log để kiểm tra tham số
 
         $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-thang", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
-                $scope.totalPages = response.data.totalPages;
+                $scope.totalPages3 = response.data.totalPages;
                 $scope.currentPage3 = response.data.number;
                 $scope.desiredPage3 = $scope.currentPage3 + 1;
             }).catch(function (error) {
@@ -961,19 +952,17 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getKhachHangMuaNhieuNhatNam = function (pageNumber) {
+    $scope.getKhachHangMuaNhieuNhatNam = function (pageNumber3) {
         let params = {
             date: todayfomat,
-            page: pageNumber || 0,
+            page: pageNumber3 || 0,
             size: $scope.size3
         };
-
-        console.log("Request params: ", params); // Log để kiểm tra tham số
 
         $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-nam", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
-                $scope.totalPages = response.data.totalPages;
+                $scope.totalPages3 = response.data.totalPages;
                 $scope.currentPage3 = response.data.number;
                 $scope.desiredPage3 = $scope.currentPage3 + 1;
             }).catch(function (error) {
@@ -981,7 +970,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getKhachHangMuaNhieuNhatTuyChinh = function (pageNumber) {
+    $scope.getKhachHangMuaNhieuNhatTuyChinh = function (pageNumber3) {
         // Lấy giá trị ngày từ ng-model
         const startDate = $scope.filterStartDate;
         const endDate = $scope.filterEndDate;
@@ -994,11 +983,11 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             // Gọi API với ngày bắt đầu, ngày kết thúc, trang và kích thước trang
             $http
                 .get(
-                    `http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}&page=${pageNumber || 0}&size=${$scope.size}`
+                    `http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}&page=${pageNumber3 || 0}&size=${$scope.size}`
                 )
                 .then(function (response) {
                     $scope.khachHangMuaNhieuNhat = response.data.content;
-                    $scope.totalPages = response.data.totalPages;
+                    $scope.totalPages3 = response.data.totalPages;
                     $scope.currentPage3 = response.data.number;
                     $scope.desiredPage3 = $scope.currentPage3 + 1;
                 })
@@ -1009,6 +998,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.applyFiltersKhachHangMuaNhieu = function () {
+        $scope.desiredPage = 0;
         switch ($scope.selectedButton) {
             case 'ngay':
                 $scope.getKhachHangMuaNhieuNhatNgay(0);
@@ -1028,29 +1018,29 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
         }
     };
 
-    $scope.goToPageKhachHangMuaNhieu = function () {
-        let pageNumber = $scope.desiredPage3 - 1;
-        if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
+    $scope.goToPageKhachHangMuaNhieu = function (pageNumber3) {
+
+        if (pageNumber3 >= 0 && pageNumber3 < $scope.totalPages3) {
             switch ($scope.selectedButton) {
                 case 'ngay':
-                    $scope.getKhachHangMuaNhieuNhatNgay(pageNumber);
+                    $scope.getKhachHangMuaNhieuNhatNgay(pageNumber3);
                     break;
                 case 'tuan':
-                    $scope.getKhachHangMuaNhieuNhatTuan(pageNumber);
+                    $scope.getKhachHangMuaNhieuNhatTuan(pageNumber3);
                     break;
                 case 'thang':
-                    $scope.getKhachHangMuaNhieuNhatThang(pageNumber);
+                    $scope.getKhachHangMuaNhieuNhatThang(pageNumber3);
                     break;
                 case 'nam':
-                    $scope.getKhachHangMuaNhieuNhatNam(pageNumber);
+                    $scope.getKhachHangMuaNhieuNhatNam(pageNumber3);
                     break;
                 case 'tuyChinh':
-                    $scope.getKhachHangMuaNhieuNhatTuyChinh(pageNumber);
+                    $scope.getKhachHangMuaNhieuNhatTuyChinh(pageNumber3);
                     break;
             }
-        } else {
-            $scope.desiredPage3 = $scope.currentPage3 + 1;
         }
+        $scope.currentPage3 = pageNumber3; // Update current page
+        $scope.desiredPage3 = pageNumber3 + 1; // Adjust desired page
     };
 
     //=================================END Khachs hàng mua nhiều nhất================================
@@ -1129,9 +1119,9 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     //===================================Sản phẩm gần hết=============================================================
     $scope.filterProductDetall = [];
     $scope.totalPages = 0;
-    $scope.currentPage1 = 0;
-    $scope.desiredPage1 = 1;
-    $scope.size1 = 5;
+    $scope.currentPage = 0;
+    $scope.desiredPage = 1;
+    $scope.size = 5;
     $scope.filters = {
         name: null,
         price: null,
@@ -1140,7 +1130,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     $scope.getProductDetall = function (pageNumber) {
         let params = angular.extend(
-            { pageNumber: pageNumber, size: $scope.size1 },
+            { pageNumber: pageNumber, size: $scope.size },
             $scope.filters
         );
         $http
@@ -1158,8 +1148,8 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                         // $scope.initializeEmployee(product);
                     });
                     $scope.totalPages = response.data.totalPages || 0;
-                    $scope.currentPage1 = pageNumber;
-                    $scope.desiredPage1 = pageNumber + 1;
+                    $scope.currentPage = pageNumber;
+                    $scope.desiredPage = pageNumber + 1;
                 } else {
                     console.error("Invalid API response structure");
                 }
@@ -1174,11 +1164,11 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.goToPageSanPhamSapHet = function () {
-        let pageNumber = $scope.desiredPage1 - 1;
+        let pageNumber = $scope.desiredPage - 1;
         if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
             $scope.getProductDetall(pageNumber);
         } else {
-            $scope.desiredPage1 = $scope.currentPage1 + 1;
+            $scope.desiredPage = $scope.currentPage + 1;
         }
     };
 

@@ -27,7 +27,7 @@ import java.util.Random;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/admin1/bill-tinh")
+@RequestMapping("/api/admin/bill-tinh")
 public class BillRestControllerTinh {
     @Autowired
     BillServiceTinh billServiceTinh;
@@ -41,8 +41,13 @@ public class BillRestControllerTinh {
     //Tổng doanh thu =========================================================================
     @GetMapping("/tong-doanh-thu-ngay/{sl}")
     public ResponseEntity<BigDecimal> tongTienDay(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
-        BigDecimal customers = billRepositoryTinh.tongSoTienDay(sl);
-        return ResponseEntity.ok(customers);
+        // Kiểm tra ngày được truyền vào
+        if (sl == null) {
+            return ResponseEntity.badRequest().body(BigDecimal.ZERO);
+        }
+
+        BigDecimal totalAmount = billRepositoryTinh.tongSoTienDay(sl);
+        return ResponseEntity.ok(totalAmount);
     }
 
     @GetMapping("/tong-doanh-thu-tuan/{sl}")
@@ -206,16 +211,14 @@ public class BillRestControllerTinh {
         Page<ThongKe> sanPhamPage = billServiceTinh.getSanPhamBanChayTrongKhoangThoiGian(startDate, endDate, pageable);
         return ResponseEntity.ok().body(sanPhamPage);
     }
-//    public ResponseEntity<Page<ThongKe>> getSanPhamBanChayTrongKhoangThoiGian(
-//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
-//            @RequestParam int page,
-//            @RequestParam int size) {
-//
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<ThongKe> result = billServiceTinh.getSanPhamBanChayTrongKhoangThoiGian(startDate, endDate, pageable);
-//        return ResponseEntity.ok(result);
-//    }
+
+    @GetMapping("/chi-tiet-top-ban-chay-ngay")
+    public ResponseEntity<?> detailTopBanChayKhoangThoiGian(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date date, Long id){
+        List<ThongKe> thongKes = billServiceTinh.getBySanPhamBanChayNgay(date, id);
+        return ResponseEntity.ok().body(thongKes);
+    }
+
     //End Sản phẩm bán chạy ==============================================================
 
     //Tông bill theo status

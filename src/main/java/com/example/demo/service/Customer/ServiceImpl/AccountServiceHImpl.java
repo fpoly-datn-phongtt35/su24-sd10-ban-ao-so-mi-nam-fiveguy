@@ -342,7 +342,7 @@ public class AccountServiceHImpl implements AccountServiceH {
             account.setEmail(accountEntity.getEmail());
             account.setPhoneNumber(accountEntity.getPhoneNumber());
             account.setRole(accountEntity.getRole());
-            account.setStatus(1);
+            account.setStatus(accountEntity.getStatus());
 
             return accountRepositoryH.save(account); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu
         } else {

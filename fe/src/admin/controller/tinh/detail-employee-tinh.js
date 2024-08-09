@@ -178,7 +178,7 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
     if (!file) {
       $scope.showError = true;
       //submit form khi ảnh ko được thay đổi
-      if ($scope.formUpdateEmployee.$valid) {
+      if ($scope.updateEmployee.$valid) {
         const addAccountData = await $scope.suaAccount();
         console.log(addAccountData);
         if (addAccountData) {
@@ -299,10 +299,10 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
   // Form submit update
   $scope.submitFormUpdate = async function () {
     // Đánh dấu form đã được submit để ng-show hoạt động
-    $scope.formUpdateEmployee.$submitted = true;
+    $scope.updateEmployee.$submitted = true;
 
     // Kiểm tra tính hợp lệ của form
-    if ($scope.formUpdateEmployee.$valid) {
+    if ($scope.updateEmployee.$valid) {
       const addAccountData = await $scope.suaAccount();
       console.log(addAccountData);
       if (addAccountData) {
@@ -332,7 +332,7 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
     } else {
       // Hiển thị lỗi
       $scope.showErrorNotification("Không thành công");
-      console.log($scope.formUpdateEmployee.$error);
+      console.log($scope.updateEmployee.$error);
     }
   };
 

@@ -16,7 +16,7 @@ public interface BillDetailRepositoryTinh extends JpaRepository<BillDetail, Long
             "JOIN hdct.bill b " +
             "JOIN b.paymentStatuses ps " +
             "JOIN b.billHistories bls " +
-            "WHERE ps.paymentDate = :date AND ps.customerPaymentStatus = 2 AND b.status = 21 And bls.status = 21")
+            "WHERE CAST(ps.paymentDate AS DATE) = CAST(:date AS DATE) AND ps.customerPaymentStatus = 2 AND b.status = 21 And bls.status = 21")
     Integer sanPhamBanDuocNgay(Date date);
 
     @Query("SELECT COALESCE(SUM(hdct.quantity), 0) " +

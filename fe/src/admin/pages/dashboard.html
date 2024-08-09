@@ -240,17 +240,19 @@
                             <li class="page-item" ng-class="{disabled: currentPage2 === 0}">
                                 <a class="page-link" ng-click="goToPageSanPhamBanChay(currentPage2 - 1)">&lt;</a>
                             </li>
-                            <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
+                            <li class="page-item" ng-repeat="page in [].constructor(totalPages2) track by $index"
                                 ng-class="{active: $index === currentPage2}">
                                 <a class="page-link"
                                     ng-click="currentPage2 !== $index && goToPageSanPhamBanChay($index)">{{$index +
                                     1}}</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage2 === totalPages - 1}">
+                            <li class="page-item" ng-class="{disabled: currentPage2 === totalPages2 - 1}">
                                 <a class="page-link" ng-click="goToPageSanPhamBanChay(currentPage2 + 1)">&gt;</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage2 === totalPages - 1}">
-                                <a class="page-link" ng-click="goToPageSanPhamBanChay(totalPages - 1)">Trang cuối</a>
+                            <li class="page-item" ng-class="{disabled: currentPage2 === totalPages2 - 1}">
+                                <a class="page-link" ng-click="goToPageSanPhamBanChay(totalPages2 - 1)">Trang cuối</a>
+                            </li>
+
                             </li>
                         </ul>
                     </div>
@@ -306,19 +308,20 @@
                                 <a class="page-link" ng-click="goToPageKhachHangMuaNhieu(0)">Trang đầu</a>
                             </li>
                             <li class="page-item" ng-class="{disabled: currentPage3 === 0}">
-                                <a class="page-link" ng-click="currentPage3 > 0 && goToPage(currentPage3 - 1)">&lt;</a>
+                                <a class="page-link" ng-click="goToPageKhachHangMuaNhieu(currentPage2 - 1)">&lt;</a>
                             </li>
-                            <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
+                            <li class="page-item" ng-repeat="page in [].constructor(totalPages3) track by $index"
                                 ng-class="{active: $index === currentPage3}">
-                                <a class="page-link" ng-click="currentPage3 !== $index && goToPage($index)">{{$index +
+                                <a class="page-link"
+                                    ng-click="currentPage3 !== $index && goToPageKhachHangMuaNhieu($index)">{{$index +
                                     1}}</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage3 === totalPages - 1}">
-                                <a class="page-link"
-                                    ng-click="currentPage3 < totalPages - 1 && goToPage(currentPage3 + 1)">&gt;</a>
+                            <li class="page-item" ng-class="{disabled: currentPage3 === totalPages3 - 1}">
+                                <a class="page-link" ng-click="goToPageKhachHangMuaNhieu(currentPage3 + 1)">&gt;</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage3 === totalPages - 1}">
-                                <a class="page-link" ng-click="goToPage(totalPages - 1)">Trang cuối</a>
+                            <li class="page-item" ng-class="{disabled: currentPage3 === totalPages3 - 1}">
+                                <a class="page-link" ng-click="goToPageKhachHangMuaNhieu(totalPages3 - 1)">Trang
+                                    cuối</a>
                             </li>
                         </ul>
                     </div>
@@ -334,8 +337,8 @@
             <div class="db-table-list p-3 mt-3">
                 <div class="db-title p-3">
                     <label for="">Sản phẩm sắp hết hàng</label>
-                    <input id="totalQuantity" ng-model="filters.totalQuantity" ng-change="applyFilters()" value="1"
-                        type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
+                    <input id="totalQuantity" ng-model="filters.totalQuantity" ng-change="applyFiltersSanPhamSapHet()"
+                        value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
                 </div>
                 <div class="row mt-3">
                     <!-- Danh sách bảng -->
@@ -373,26 +376,26 @@
                         <div class="d-flex align-items-center">
                             <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                             <div>
-                                <input id="size1" ng-model="size1" ng-change="applyFiltersSanPhamSapHet()" value="1"
+                                <input id="size" ng-model="size" ng-change="applyFiltersSanPhamSapHet()" value="1"
                                     type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
                             </div>
                         </div>
                         <ul class="pagination">
-                            <li class="page-item" ng-class="{disabled: currentPage1 === 0}">
+                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
                                 <a class="page-link" ng-click="getProductDetall(0)">Trang đầu</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage1 === 0}">
-                                <a class="page-link" ng-click="getProductDetall(currentPage1 - 1)">&lt;</a>
+                            <li class="page-item" ng-class="{disabled: currentPage === 0}">
+                                <a class="page-link" ng-click="getProductDetall(currentPage - 1)">&lt;</a>
                             </li>
                             <li class="page-item" ng-repeat="page in [].constructor(totalPages) track by $index"
-                                ng-class="{active: $index === currentPage1}">
+                                ng-class="{active: $index === currentPage}">
                                 <a class="page-link"
-                                    ng-click="currentPage1 !== $index && getProductDetall($index)">{{$index + 1}}</a>
+                                    ng-click="currentPage !== $index && getProductDetall($index)">{{$index + 1}}</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage1 === totalPages - 1}">
-                                <a class="page-link" ng-click="getProductDetall(currentPage1 + 1)">&gt;</a>
+                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
+                                <a class="page-link" ng-click="getProductDetall(currentPage + 1)">&gt;</a>
                             </li>
-                            <li class="page-item" ng-class="{disabled: currentPage1 === totalPages - 1}">
+                            <li class="page-item" ng-class="{disabled: currentPage === totalPages - 1}">
                                 <a class="page-link" ng-click="getProductDetall(totalPages - 1)">Trang cuối</a>
                             </li>
                         </ul>

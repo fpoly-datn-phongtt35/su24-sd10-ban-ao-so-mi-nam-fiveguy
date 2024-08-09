@@ -37,6 +37,6 @@ public interface BillServiceTinh {
 
     Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuyChinh(Date startDate, Date endDate, Pageable pageable);
 
-
+    List<ThongKe> getBySanPhamBanChayNgay(Date date, Long productId);
 
 }

@@ -109,6 +109,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                         rs.getInt("so_luong_ban"),
                         rs.getBigDecimal("doanh_thu"),
                         rs.getString("anh_mac_dinh")
+//                        rs.getString("id_")
                 )
         );
 
@@ -572,5 +573,46 @@ public class BillServiceImplTinh implements BillServiceTinh {
         return new PageImpl<>(pagedKhachHangList, pageable, total);
     }
 
-
+    @Override
+    public List<ThongKe> getBySanPhamBanChayNgay(Date date, Long productId) {
+        return jdbctemplate.query(
+                "SELECT " +
+                        "    sp.Id AS sanpham_id, " +
+                        "    sp.Name AS ten_sanpham, " +
+                        "    sp.Price AS price, " +
+                        "    COALESCE(SUM(hdct.quantity), 0) AS so_luong_ban, " +
+                        "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS doanh_thu, " +
+                        "    COALESCE(MAX(ha.Name), '') AS anh_mac_dinh " +
+                        "FROM " +
+                        "    ProductDetails pd " +
+                        "JOIN " +
+                        "    BillDetails hdct ON pd.Id = hdct.IdProductDetail " +
+                        "JOIN " +
+                        "    Bills b ON hdct.IdBill = b.Id " +
+                        "JOIN " +
+                        "    Products sp ON pd.IdProduct = sp.Id " +
+                        "LEFT JOIN " +
+                        "    Images ha ON sp.Id = ha.Id " +
+                        "JOIN " +
+                        "    PaymentStatus ps ON b.Id = ps.BillId " +
+                        "WHERE " +
+                        "    CAST(ps.PaymentDate AS DATE) = CAST(? AS DATE) " +
+                        "    AND ps.CustomerPaymentStatus = 2 " +
+                        "    AND b.Status = 21 " +
+                        "    AND sp.Id = ? " + // Thêm điều kiện lọc theo productId
+                        "GROUP BY " +
+                        "    sp.Id, sp.Name, sp.Price " +
+                        "ORDER BY " +
+                        "    so_luong_ban DESC",
+                new Object[]{date, productId},
+                (rs, rowNum) -> new ThongKe(
+                        rs.getLong("sanpham_id"),
+                        rs.getString("ten_sanpham"),
+                        rs.getBigDecimal("price"),
+                        rs.getInt("so_luong_ban"),
+                        rs.getBigDecimal("doanh_thu"),
+                        rs.getString("anh_mac_dinh")
+                )
+        );
+    }
 }

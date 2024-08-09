@@ -12,7 +12,7 @@
             <div class="col-8">
                 <div>
                     <h3>Thông tin nhân viên</h3>
-                    <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && uploadBtnUpdate()"
+                    <form name="updateEmployee" ng-submit="updateEmployee.$valid && uploadBtnUpdate()"
                         novalidate>
 
                         <div class="row mb-3">
@@ -20,8 +20,8 @@
                             <div class="col-sm-9">
                                 <input name="fullName" id="inputFullName" type="text" class="form-control"
                                     ng-model="formUpdate.fullName" required />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.fullName.$invalid"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.fullName.$invalid"
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
@@ -33,8 +33,8 @@
                             <div class="col-sm-9">
                                 <input name="account" id="inputaccount" type="text" class="form-control"
                                     ng-model="formInputAccount.account" ng-change="checkAccount()" required />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.account.$invalid"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.account.$invalid"
                                         class="error-message text-danger form-text">
                                         Họ Tên không được để trống
                                     </div>
@@ -50,12 +50,12 @@
                                 <input name="phoneNumber" id="inputphonenumber" type="text" class="form-control"
                                     ng-model="formInputAccount.phoneNumber" ng-change="checkPhoneNumber()" required
                                     ng-pattern="/^(\+84|0)[2|3|5|7|8|9][0-9]{8}$/" />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.phoneNumber.$error.required"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.phoneNumber.$error.required"
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
-                                    <div ng-show="!formUpdateEmployee.phoneNumber.$error.required && formUpdateEmployee.phoneNumber.$error.pattern"
+                                    <div ng-show="!updateEmployee.phoneNumber.$error.required && updateEmployee.phoneNumber.$error.pattern"
                                         class="error-message text-danger form-text">
                                         Số điện thoại không hợp lệ
                                     </div>
@@ -70,12 +70,12 @@
                             <div class="col-sm-9">
                                 <input name="email" id="inputemail" type="mail" class="form-control"
                                     ng-model="formInputAccount.email" ng-change="checkEmail()" required />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.email.$error.required"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.email.$error.required"
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
-                                    <div ng-show="!formUpdateEmployee.email.$error.required && formUpdateEmployee.email.$error.email"
+                                    <div ng-show="!updateEmployee.email.$error.required && updateEmployee.email.$error.email"
                                         class="error-message text-danger form-text">
                                         Email không hợp lệ
                                     </div>
@@ -90,8 +90,8 @@
                             <div class="col-sm-9">
                                 <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
                                     ng-model="formUpdate.birthDate" required />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.birthDate.$invalid"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.birthDate.$invalid"
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
@@ -103,8 +103,8 @@
                             <div class="col-sm-9">
                                 <input name="address" id="inputAddress" type="text" class="form-control"
                                     ng-model="formUpdate.address" required />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.address.$invalid"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.address.$invalid"
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
@@ -119,8 +119,8 @@
                             <div class="col-sm-9">
                                 <input name="currentPassword" id="currentPassword" type="password" class="form-control"
                                     ng-model="formInputAccount.password" required ng-change="checkPassword()" />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.currentPassword.$invalid"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.currentPassword.$invalid"
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
@@ -138,8 +138,8 @@
                             <div class="col-sm-9">
                                 <input name="password" id="password" type="type" class="form-control"
                                     ng-model="formInputAccount.password" required />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.password.$invalid"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.password.$invalid"
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
@@ -153,14 +153,14 @@
                                 <input name="confirmPassword" id="confirmPassword" type="password" class="form-control"
                                     ng-model="formUpdate.confirmPassword" password-match="formUpdate.newPassword"
                                     required />
-                                <span ng-show="formUpdateEmployee.$submitted">
-                                    <div ng-show="formUpdateEmployee.confirmPassword.$invalid"
+                                <span ng-show="updateEmployee.$submitted">
+                                    <div ng-show="updateEmployee.confirmPassword.$invalid"
                                         class="error-message text-danger form-text">
                                         Không được để trống
                                     </div>
                                 </span>
-                                <span ng-show="formUpdateEmployee.$submitted || formUpdate.confirmPassword.$touched">
-                                    <div ng-show="formUpdateEmployee.confirmPassword.$error.match"
+                                <span ng-show="updateEmployee.$submitted || formUpdate.confirmPassword.$touched">
+                                    <div ng-show="updateEmployee.confirmPassword.$error.match"
                                         class="error-message text-danger form-text">
                                         Mật khẩu không khớp
                                     </div>
