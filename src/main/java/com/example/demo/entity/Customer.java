@@ -32,6 +32,9 @@ public class Customer {
     @Column(name = "Avatar")
     private String avatar;
 
+    @Column(name= "Point")
+    private Integer point;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "BirthDate")
     private Date birthDate;
