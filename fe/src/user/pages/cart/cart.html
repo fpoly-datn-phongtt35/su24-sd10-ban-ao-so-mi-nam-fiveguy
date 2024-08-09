@@ -39,18 +39,18 @@
                   <div class="col-lg-5 col-sm-6 col-6 d-flex align-items-center">
                       <div class="text-price me-3">
                           <span class="h6" ng-if="!item.promotionalPrice || item.promotionalPrice == 0">
-                              {{ item.price | number }} đ
+                              {{ formatCurrency(item.price) }} đ
                           </span>
                           <span class="h6" ng-if="item.promotionalPrice && item.promotionalPrice != 0">
-                              <del>{{ item.price | number }} đ</del>
-                              <span>{{ item.promotionalPrice | number }} đ</span>
+                              <del>{{ formatCurrency(item.price) }} đ</del>
+                              <span>{{ formatCurrency(item.promotionalPrice)  }} đ</span>
                           </span>
                       </div>
                       <div class="input-number flex-grow-1">
                           <input ng-model="item.quantity" type="number" min="1" max="100" ng-change="checkQuantityChange(item)" ng-blur="cart.update(item.id, item.quantity)" class="form-control updateQuantityProduct" style="max-width: 70px; overflow: hidden" />
                       </div>
                       <div class="text-total_price ms-3" style="max-width: 100px; white-space: nowrap">
-                          <span class="h6 ">{{ (item.promotionalPrice && item.promotionalPrice != 0 ? item.promotionalPrice : item.price) * item.quantity | number }} đ</span>
+                          <span class="h6 ">{{formatCurrency( (item.promotionalPrice && item.promotionalPrice != 0 ? item.promotionalPrice : item.price) * item.quantity  )}} đ</span>
                       </div>
                   </div>
                   <div class="col-lg col-sm-6 d-flex align-items-center">
@@ -229,12 +229,12 @@
                               <div class="voucher-left">
                                 <h5>{{ voucher.code }}</h5>
                                 <h5>{{ voucher.name }}</h5>
-                                <p>Giảm {{ voucher.value | number}}{{ voucher.discountType === 2 ? ' đ' : ' %' }} cho đơn từ {{ voucher.minimumTotalAmount | number }} đ
-                                  <br/>Tối đa {{ voucher.maximumReductionValue | number }} đ
+                                <p>Giảm {{ formatCurrency(voucher.value) }}{{ voucher.discountType === 2 ? ' đ' : ' %' }} cho đơn từ {{ formatCurrency(voucher.minimumTotalAmount)  }} đ
+                                  <br/>Tối đa {{ formatCurrency(voucher.maximumReductionValue)  }} đ
                                 </p>
                                 <p>HSD: {{ voucher.endDate | date:'dd-MM-yyyy HH:mm' }}</p>
                                 <span ng-if="voucher.show === 2" class="limit-message">Bạn đã sử dụng hết lượt giảm giá</span>
-                                <span ng-if="voucher.quantity <= 1" class="limit-message">Giảm giá này đã kết thúc</span>
+                                <span ng-if="voucher.quantity <= 1" class="limit-message">Giảm giá này đã hết số lượng</span>
 
                               </div>
                               <div class="voucher-right-contain">
@@ -272,21 +272,21 @@
             <div class="card-body">
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Tạm tính:</p>
-                <p class="mb-2">{{ totalAmount | number }} đ</p>
+                <p class="mb-2">{{ formatCurrency(totalAmount) }} đ</p>
               </div>
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Giảm giá:</p>
-                <p class="mb-2">{{valueVoucher | number }} đ</p>
+                <p class="mb-2">{{formatCurrency(valueVoucher)  }} đ</p>
               </div>
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Phí giao hàng:</p>
-                <p class="mb-2">{{shippingFee | number }} đ</p>
+                <p class="mb-2">{{formatCurrency(shippingFee)  }} đ</p>
               </div>
             
               <hr />
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Tổng tiền:</p>
-                <p class="mb-2 fw-bold">{{totalAmountAfterDiscount + shippingFee | number }} đ</p>
+                <p class="mb-2 fw-bold">{{formatCurrency(totalAmountAfterDiscount + shippingFee)  }} đ</p>
               </div>
   
             </div>

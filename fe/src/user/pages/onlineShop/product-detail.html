@@ -197,7 +197,7 @@
   
     <div style="padding: 46px;" class="row" >
       <!-- ng-if="productDetailInfo.olViewProductDetailRespone.totalRate >= 1" -->
-      <div class="col-md-2 rate-show">
+      <div class="col-md-2 rate-show" ng-if="ratings.content.length > 0 && ratings.totalPages > 1">
         <div class="reviews-leftside__rating">
           <div class="reviews-rating-mb__title">
             <h5>Đánh giá sản phẩm</h5>
@@ -252,34 +252,32 @@
           </div>
     </div>
       </div>
-   <div class="row text-center">
-    <div class="col-md-12" ng-if="ratings && (ratings.totalPages !== 1)">
-      <ul class="pagination">
-        <li ng-class="{disabled: ratings.first}">
-          <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(0)">
-            <i class="fa fa-angle-double-left"></i>
-          </a>
-        </li>
-        <li ng-class="{disabled: ratings.first}">
-          <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number - 1)">
-            <i class="fa fa-angle-left"></i>
-          </a>
-        </li>
-  
-        <!-- {{ ratings.number + 1 }} -->
-        <li ng-class="{disabled: ratings.last}">
-          <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number + 1)">
-            <i class="fa fa-angle-right"></i>
-          </a>
-        </li>
-        <li ng-class="{disabled: ratings.last}">
-          <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.totalPages - 1)">
-            <i class="fa fa-angle-double-right"></i>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
+      <div class="row text-center" ng-if="ratings.content.length > 0 && ratings.totalPages > 1">
+        <div class="col-md-12">
+          <ul class="pagination">
+            <li ng-class="{disabled: ratings.first}">
+              <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(0)">
+                <i class="fa fa-angle-double-left"></i>
+              </a>
+            </li>
+            <li ng-class="{disabled: ratings.first}">
+              <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number - 1)">
+                <i class="fa fa-angle-left"></i>
+              </a>
+            </li>
+            <li ng-class="{disabled: ratings.last}">
+              <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.number + 1)">
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+            <li ng-class="{disabled: ratings.last}">
+              <a href="#/home/product/product-detail/{{productId}}" ng-click="setCurrentPageRateProduct(ratings.totalPages - 1)">
+                <i class="fa fa-angle-double-right"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
   
       
     

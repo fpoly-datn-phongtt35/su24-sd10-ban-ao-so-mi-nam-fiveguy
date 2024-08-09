@@ -711,7 +711,7 @@ $scope.province1 = function () {
         // Body data for the POST request
         var requestData = {
             "service_id": 53321,
-            "insurance_value": $scope.totalAmountAfterDiscount,
+            "insurance_value": 1,
             "coupon": null,
             "from_district_id": 1482,
             "to_district_id": numericDistrictId,
@@ -1216,19 +1216,20 @@ $scope.dataCity.ProvinceID;
       .then(function(response) {
         if (response.data) {
           $scope.vouchers = response.data;
-          $scope.displayedVouchers = $scope.vouchers.slice(0, 4); // Hiển thị 6 vouchers ban đầu
+          $scope.displayedVouchers = $scope.vouchers.slice(0, 4); // Hiển thị 4 vouchers ban đầu
+          $scope.showAllVouchers = $scope.vouchers.length > 4; // Kiểm tra nếu số lượng vouchers lớn hơn 4
         }
       })
       .catch(function(error) {
-        // alert("Có lỗi xảy ra khi gọi API để lấy danh sách vouchers!");
         console.error(error);
       });
   };
   
   $scope.viewMoreVouchers = function() {
-    $scope.showAllVouchers = true;
-    $scope.displayedVouchers = $scope.vouchers;
+    $scope.displayedVouchers = $scope.vouchers; // Hiển thị tất cả vouchers
+    $scope.showAllVouchers = false; // Ẩn nút "Xem thêm" sau khi tất cả vouchers đã được hiển thị
   };
+  
 
   // $scope.getAllVouchers();
   // $scope.getBestVoucher = function(totalAmount) {
@@ -1255,11 +1256,13 @@ $scope.dataCity.ProvinceID;
       console.log("Không có vouchers để chọn.");
       return;
     }
+  
     // Bước 1: Lọc danh sách voucher còn số lượng và đủ điều kiện áp dụng
     var validVouchers = $scope.customerVouchers.filter(function(voucher) {
       return voucher.quantity > 1 && $scope.totalAmount >= voucher.minimumTotalAmount && voucher.show == 1;
     });
-    console.log(validVouchers)
+  
+    console.log(validVouchers);
   
     if (validVouchers.length === 0) {
       console.log("Không tìm được voucher phù hợp.");
@@ -1280,22 +1283,29 @@ $scope.dataCity.ProvinceID;
         // Percentage discount
         var discountPercentage = voucher.value / 100;
         valueVoucher = $scope.totalAmount * discountPercentage;
-        if (valueVoucher >= voucher.maximumReductionValue) {
+        if (voucher.maximumReductionValue && valueVoucher > voucher.maximumReductionValue) {
           valueVoucher = voucher.maximumReductionValue;
         }
       } else if (voucher.discountType === 2) {
         // Fixed amount discount
         valueVoucher = voucher.value;
-        if (valueVoucher >= voucher.maximumReductionValue) {
+        if (voucher.maximumReductionValue && valueVoucher > voucher.maximumReductionValue) {
           valueVoucher = voucher.maximumReductionValue;
         }
       }
       voucher.valueVoucher = valueVoucher;
     });
   
-    // Bước 3: Tìm voucher có giá trị giảm giá cao nhất
+    // Bước 3: Tìm voucher có giá trị giảm giá cao nhất hoặc giá trị giảm tối ưu nhất
     var bestVoucher = validVouchers.reduce(function(prev, current) {
-      return (prev.valueVoucher > current.valueVoucher) ? prev : current;
+      if (prev.valueVoucher > current.valueVoucher) {
+        return prev;
+      } else if (prev.valueVoucher === current.valueVoucher) {
+        // Compare by maximum reduction value or other criteria if discount values are equal
+        return (prev.maximumReductionValue > current.maximumReductionValue) ? prev : current;
+      } else {
+        return current;
+      }
     });
   
     // Áp dụng voucher tốt nhất
@@ -1309,6 +1319,7 @@ $scope.dataCity.ProvinceID;
   
     console.log("Chọn voucher tốt nhất:", bestVoucher);
   };
+  
   
 
 
