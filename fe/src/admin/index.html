@@ -48,6 +48,58 @@
 
 	<!-- Tịnh -->
 
+  <style>
+    #hover-nav-item {
+      position: relative;
+    }
+
+
+    #hover-nav-item:hover .list-setting-account {
+      display: block;
+    }
+
+    .list-setting-account {
+      width: 150px;
+      background-color: #fff;
+      position: absolute;
+      right: -5px;
+      top: 50px;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .list-setting-account::after {
+      content: "";
+      width: 100%;
+      height: 20px;
+      background-color: transparent;
+      position: absolute;
+      top: -15px;
+      left: 0;
+    }
+
+
+    .item-list-menu-account {
+      color: #000;
+      padding: 5px;
+      font-size: 14px;
+      width: 100%;
+      text-align: left;
+      border-bottom: 0.5px solid #ccc;
+      transition: all .3s ease;
+    }
+
+    .item-list-menu-account:last-child {
+      border: none;
+    }
+
+    .item-list-menu-account:hover {
+      cursor: pointer;
+      font-weight: bold;
+      background-color: #ccc;
+    }
+  </style>
+
   <!-- Nguyên -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <!-- <link rel="stylesheet" href="/src/admin/pages/bill-nguyen/bill-detail.css"> -->
@@ -177,7 +229,7 @@
                 </form>
               </div>
             </div>
-
+            <!-- tinh -->
             <div class="col-10 col-md-6 col-lg-8 order-1 order-md-3">
               <div class="xp-profilebar text-end">
                 <nav class="navbar p-0">
@@ -213,42 +265,25 @@
                         <span class="material-icons">question_answer</span>
                       </a>
                     </li>
-
-                    <!-- <li class="dropdown nav-item"> -->
-                      <!-- Tịnh sửa -->
-                      <!-- <a class="nav-link" href="#" data-bs-toggle="dropdown">ảnh -->
-                        <!-- <img ng-src="{{getDetailEmployee.avatar}}" style="width: 40px; border-radius: 50%;" /> -->
-                        <!-- {{getDetailEmployee.fullName}} -->
-                        <!-- end tịnh sửa -->
-                        <!-- <span class="xp-user-live"></span>
+                    <li class="nav-item" id="hover-nav-item">
+                      <a class="nav-link" href="#">
+                        <span class="material-icons">account_circle</span>
                       </a>
-                      <ul class="dropdown-menu small-menu"> -->
-                        <li>
-                          <a class="dropdown-item" href="#/admin/detailEmployee">
-                            <span class="material-icons">person_outline</span>
-                            Profile
-                          </a>
-                        </li>
-                        <!-- <li>
-                          <a class="dropdown-item" href="#">
-                            <span class="material-icons">settings</span>
-                            Settings
-                          </a>
-                        </li>
-                        <li>
-                          <a class="dropdown-item" href="#">
-                            <span class="material-icons">logout</span>
-                            Logout
-                          </a>
-                        </li>
-                      </ul>
-                    </li> -->
+                      <div class="list-setting-account">
+                        <a class="item-list-menu-account" href="#/admin/detailEmployee">Quản lý tài khoản</a>
+                        <a class="item-list-menu-account" href="http://127.0.0.1:5555/src/login/login.html">Đăng
+                          xuất</a>
+                        <a class="item-list-menu-account">Project</a>
+
+                      </div>
+                    </li>
 
                   </ul>
                 </nav>
               </div>
             </div>
           </div>
+          <!-- tinh -->
           <!-- 
           <div class="xp-breadcrumbbar text-center">
             <h4 class="page-title">Dashboard</h4>
