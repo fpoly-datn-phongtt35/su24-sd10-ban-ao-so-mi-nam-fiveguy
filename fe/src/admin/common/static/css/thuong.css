@@ -125,6 +125,20 @@
 			padding: 0px 5px;
 		}
 
+		.icon-customer-remove {
+			position: absolute; 
+			top: 5px;
+			right: 5px;
+			font-size: 20px;
+			padding: 5px;
+		}
+
+		.icon-customer-remove:hover {
+			border-radius: 50%;
+			background-color: #ccc;
+			color: #000;
+		}
+
 		.image_container .cached {
 			top: 8px;
 			left: 16px;

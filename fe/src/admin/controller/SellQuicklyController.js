@@ -12,6 +12,20 @@ app.controller("SellQuicklyController", function($scope, $http){
         }
     });
     
+    const inputElementCustomer = document.getElementById('search-customer');
+    const hiddenElementCustomer = document.getElementById('customer-list');
+    
+    inputElementCustomer.addEventListener('input', function() {
+        hiddenElementCustomer.style.display = 'block';
+    });
+    
+    document.addEventListener('click', function(event) {
+        if (!inputElementCustomer.contains(event.target) && !hiddenElementCustomer.contains(event.target)) {
+            hiddenElementCustomer.style.display = 'none';
+        }
+    });
+    
+
     $scope.customer = {gender: true, addresses: []};
     $scope.provinces = [];
     $scope.districts = [];
@@ -122,7 +136,6 @@ app.controller("SellQuicklyController", function($scope, $http){
         if (!$scope.selectedBill || $scope.selectedBill.id != id) {
             $http.get(`${config.host}/bill-th/${id}`).then(resp => {
                 $scope.selectedBill = resp.data;
-                console.log($scope.selectedBill)
                 $scope.getTotalQuantity();
             }).catch(error => {
                 console.log("Error", error);
@@ -147,6 +160,7 @@ app.controller("SellQuicklyController", function($scope, $http){
             $('#deleteBill').modal('hide');
             toastr["success"]("Xóa " + resp.data.code + " thành công");
             $scope.getBills();
+            $scope.totalQuantity = 0;
         }).catch(error => {
             $('#deleteBill').modal('hide');
             console.log("Error", error);
@@ -300,7 +314,45 @@ app.controller("SellQuicklyController", function($scope, $http){
                 $('#loading').css('display', 'none');
                 console.log("Error", error);
             });
-       
+    }
+
+    let debounceTimerCustomer;
+
+    $scope.debounceSearchCustomer = () => {
+        if (debounceTimerCustomer) {
+            clearTimeout(debounceTimerCustomer);
+        }
+    
+        $scope.customers = [];
+        const keyword = $scope.keywordCustomer?.trim();
+    
+        if (!keyword) {
+            toggleDisplay('#loading-customer', false);
+            toggleDisplay('#null-customer', true);
+            return;
+        }
+    
+        toggleDisplay('#loading-customer', true);
+        toggleDisplay('#null-customer', false);
+    
+        debounceTimerCustomer = setTimeout($scope.searchCustomers, 2000);
+    };
+    
+    $scope.searchCustomers = () => {
+        $http.get(`${config.host}/customer-th`, { params: { keyword: $scope.keywordCustomer } })
+            .then(resp => {
+                toggleDisplay('#loading-customer', false);
+                $scope.customers = resp.data;
+                toggleDisplay('#null-customer', resp.data.length === 0);
+            })
+            .catch(error => {
+                toggleDisplay('#loading-customer', false);
+                console.error("Error", error);
+            });
+    };
+    
+    function toggleDisplay(selector, show) {
+        $(selector).css('display', show ? 'flex' : 'none');
     }
 
     function isImage(file) {
@@ -322,28 +374,53 @@ app.controller("SellQuicklyController", function($scope, $http){
         let reader = new FileReader();
         reader.onload = function (e) {
             $scope.$apply(function () {
-                $scope.customer.path = e.target.result;
+                $scope.customer.avatar = e.target.result;
             });
         };
     
         reader.readAsDataURL(image);
     };
 
-    $scope.isAddress = (provice, district, ward) => {
+    $scope.showCustomerUpdate = () => {
+        $http.get(`${config.host}/customer-th/${$scope.selectedBill.customer.id}`).then(resp => {
+            $scope.customerUpdate = resp.data;    
+        }).catch(error => {
+            console.log("Error", error);
+        });
+    }
+
+    $scope.validateCustomer = (provice, district, ward) => {
+        $scope.errors = [];
+        if ($scope.customer.birthDate) {
+            var birthDate = new Date($scope.customer.birthDate);
+            if (birthDate.getFullYear() < 1900) {
+                    $scope.errors.birthDate = "Năm sinh phải lớn hơn hoặc bằng 1900";
+                    $scope.customer.birthDate = null;
+                    return false;
+            } 
+        }
+        if ($scope.phoneNumber) {
+            var phoneNumberPattern = /^\d{10,11}$/;
+
+            if (!$scope.phoneNumber.match(phoneNumberPattern)) {
+                $scope.errors.phoneNumber = "Số điện thoại không hợp lệ, phải có 10 hoặc 11 chữ số.";
+                return false;
+            }
+        }
         if (provice == undefined) {
-            toastr["warning"]("Vui lòng chọn tỉnh thành");
+            $scope.errors.provice = "Vui lòng chọn tỉnh thành";
             return false;
         } else if (district == "") {
-            toastr["warning"]("Vui lòng chọn quận/huyện");
+            $scope.errors.district = "Vui lòng chọn quận/huyện";
             return false;
         }  else if (ward == "") {
-            toastr["warning"]("Vui lòng chọn phường/xã");
+            $scope.errors.ward = "Vui lòng chọn phường/xã";
             return false;
         } 
         return true;
     }
 
-    $scope.setBillCustomer = () => {
+    $scope.updateBill = () => {
         $http.put(`${config.host}/bill-th`, $scope.selectedBill).then(resp => {
             $scope.getBills();
             $scope.selectedBill = resp.data;
@@ -352,20 +429,37 @@ app.controller("SellQuicklyController", function($scope, $http){
         });
     }
 
-    $scope.createCustomer = () => {
-        if ($scope.customerForm.$valid && $scope.isAddress($scope.provinceValue, $scope.districtValue, $scope.wardValue)) {
-            $scope.customer.addresses = [
-                {
-                    name: $scope.addressDetail,
-                    addressId: `${$scope.wardCode}, ${$scope.districtCode}, ${$scope.provinceCode}`,
-                    address: `${$scope.wardValue}, ${$scope.districtValue}, ${$scope.provinceValue}`
-                }
-            ]
-            console.log($scope.customer)
+    $scope.setCustomerBill = (customer) => {
+        if ($scope.selectedBill == null) {
+            toastr["warning"]("Vui lòng chọn hóa đơn");
+            return;
+        }
+        $scope.selectedBill.customer = customer;
+        $scope.updateBill();
+        hiddenElementCustomer.style.display = 'none';
+    }
 
+    $scope.removeCustomer = () => {
+        $scope.selectedBill.customer = null;
+        $scope.updateBill();
+    }
+
+    $scope.createCustomer = () => {
+        if ($scope.customerForm.$valid && $scope.validateCustomer($scope.provinceValue, $scope.districtValue, $scope.wardValue)) {
+            $scope.customer.addresses.push({
+                name: $scope.addressDetail,
+                addressId: `${$scope.wardCode}, ${$scope.districtCode}, ${$scope.provinceCode}`,
+                address: `${$scope.wardValue}, ${$scope.districtValue}, ${$scope.provinceValue}`,
+                phoneNumber: $scope.phoneNumber,
+                defaultAddress: true
+            })
             $http.post(`${config.host}/customer-th`, $scope.customer).then(resp => {
-                $scope.selectedBill.customer = resp.data;
-                $scope.setBillCustomer();
+                toastr["success"]("Thêm mới khách hàng " + resp.data.fullName + " thành công");
+                $('#customerModal').modal('hide');
+                if ($scope.selectedBill) {
+                    $scope.selectedBill.customer = resp.data;
+                    $scope.updateBill();
+                }               
             })
         }
     }

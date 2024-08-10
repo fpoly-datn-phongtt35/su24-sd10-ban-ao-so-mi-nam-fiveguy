@@ -35,9 +35,6 @@ public class BillServiceTHImpl implements BillServiceTH {
     @Autowired
     private ProductRepositoryTH productRepository;
 
-    @Autowired
-    private CustomerRepositoryTH customerRepository;
-
     @Override
     public List<BillResponseTH> findAllByStatusAndTypeBill(Integer status, Integer typeBill) {
         return billRepository.findAllByStatusAndTypeBill(status, typeBill).stream().map(b -> {

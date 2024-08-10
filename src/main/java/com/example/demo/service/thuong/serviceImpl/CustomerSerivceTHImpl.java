@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 public class CustomerSerivceTHImpl implements CustomerServiceTH {
@@ -48,5 +48,16 @@ public class CustomerSerivceTHImpl implements CustomerServiceTH {
         customerRequest.getAddresses().forEach(d -> d.setCustomer(customer));
         customer.setAddresses(customerRequest.getAddresses());
         return setBillResponse(customerRepository.save(customer));
+    }
+
+    @Override
+    public List<Customer> searchCustomer(String keyword) {
+        return customerRepository.findAllByStatus(keyword);
+    }
+
+    @Override
+    public CustomerResponseTH getOne(Long id) {
+        Customer customer = customerRepository.findById(id).orElse(null);
+        return  setBillResponse(customer);
     }
 }

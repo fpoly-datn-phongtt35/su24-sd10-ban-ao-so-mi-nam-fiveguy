@@ -26,4 +26,14 @@ public class CustomerControllerTH {
         Optional<String> name = accountService.getFullNameByToken(token);
         return new ResponseEntity<>(customerService.create(customer, name.get()), HttpStatus.CREATED);
     }
+
+    @GetMapping
+    public ResponseEntity<?> searchCustomers(@RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(customerService.searchCustomer(keyword));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOne(@PathVariable Long id) {
+        return ResponseEntity.ok(customerService.getOne(id));
+    }
 }
