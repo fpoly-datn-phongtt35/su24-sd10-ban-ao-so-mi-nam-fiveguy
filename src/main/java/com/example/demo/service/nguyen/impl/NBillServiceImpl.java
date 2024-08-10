@@ -1,11 +1,14 @@
 package com.example.demo.service.nguyen.impl;
 
+import com.example.demo.entity.AuditLogs;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillHistory;
 import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
 import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.BillSpecification;
+import com.example.demo.repository.tinh.AuditLogRepositoryTinh;
+import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.nguyen.NBillService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -281,36 +281,35 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
 
   //upload ảnh
   $scope.uploadBtnAdd = function () {
-    const fileInput = document.getElementById("image");
-    const file = fileInput.files[0];
-    if (!file) {
-      $scope.showError = true;
-      $scope.$apply();
-      return;
-    }
+    return new Promise((resolve, reject) => {
+      const fileInput = document.getElementById("image");
+      const file = fileInput.files[0];
+      if (!file) {
+        $scope.showError = true;
+        $scope.$apply();
+        return reject(new Error("No file selected"));
+      }
 
-    $scope.showError = false;
+      $scope.showError = false;
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      const data = reader.result.split(",")[1];
-      const postData = {
-        name: file.name,
-        type: file.type,
-        data: data,
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        const data = reader.result.split(",")[1];
+        const postData = {
+          name: file.name,
+          type: file.type,
+          data: data,
+        };
+        $scope.postFile(postData).then(function () {
+          $scope.$apply(); // Áp dụng thay đổi vào scope
+          resolve(); // Resolve promise khi upload hoàn tất
+        }).catch(reject);
       };
-      $scope.postFile(postData).then(function () {
-        $scope.$apply(); // Áp dụng thay đổi vào scope
-
-        // Gọi submitForm sau khi upload ảnh hoàn tất
-        $scope.submitForm();
-
-        $scope.getEmployee(0);
-        $scope.resetFormInput();
-        $("#modalAdd").modal("hide");
-      });
-    };
+      reader.onerror = function (error) {
+        reject(error);
+      };
+    });
   };
 
 
@@ -329,6 +328,10 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
   $scope.submitForm = async function () {
     if ($scope.formCreateEmployee.$valid) {
       try {
+        // Đợi cho hàm uploadBtnAdd hoàn tất
+        await $scope.uploadBtnAdd();
+
+        // Tiếp tục thực hiện submitForm sau khi upload hoàn tất
         const addAccountData = await $scope.themAccount();
         if (addAccountData) {
           const dataObject = {
@@ -347,6 +350,7 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
 
           // Sử dụng $timeout để cập nhật scope
           $scope.getEmployee(0);
+          $("#modalAdd").modal("hide");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -358,6 +362,13 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
       $scope.formCreateEmployee.$submitted = true;
     }
   };
+
+  // $scope.uploadBtnAdd().then(() => {
+  //   $scope.submitForm();
+  // }).catch(error => {
+  //   console.error("Upload error:", error);
+  // });
+
 
   // END thêm Nhân Viên
 
