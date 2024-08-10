@@ -29,7 +29,7 @@ public class Customer {
     @Column(name = "FullName", columnDefinition = "nvarchar(300)")
     private String fullName;
 
-    @Column(name = "Avatar")
+    @Column(name = "Avatar", columnDefinition = "nvarchar(max)")
     private String avatar;
 
     @Column(name= "Point")
