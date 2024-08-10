@@ -89,10 +89,11 @@
                                         <span ng-if="saleInfo.discountType != 1 && saleInfo.discountType != 2">Không rõ loại giảm giá</span>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr ng-if="saleInfo.maximumDiscountAmount && saleInfo.maximumDiscountAmount > 0">
                                     <td>Giá trị giảm tối đa</td>
                                     <td class="fs-6">{{formatCurrency(saleInfo.maximumDiscountAmount)}}đ</td>
                                 </tr>
+                                
                                 <!-- <tr>
                                     <td>Lượt sử dụng / người</td>
                                     <td class="fs-6">{{saleInfo.numberOfUses}}</td>
@@ -274,23 +275,6 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-6">
-                                <!-- <div class="form-group" ng-class="{'has-error': (saleForm.saleCode.$touched || saleForm.$submitted) && saleCodeError}">
-                                    <label for="saleCode" class="form-label">Mã giảm giá</label>
-                                    <input placeholder="Nhập mã nếu không sẽ tự tạo" type="text" class="form-control" id="saleCode" name="saleCode" ng-model="saleDetail.code" ng-blur="validateSaleCode()">
-                                    
-                             
-                                    <div class="text-danger" ng-show="saleForm.saleCode.$error.required && (saleForm.saleCode.$touched || saleForm.$submitted)">
-                                        {{ saleCodeError }}
-                                    </div>
-                                    
-                            
-                                    <div class="text-danger" ng-show="saleCodeError">
-                                        {{ saleCodeError }}
-                                    </div>
-                                </div> -->
-                                
-                                
-
                                 <div class="form-group" ng-class="{'has-error': (saleForm.saleName.$touched || saleForm.$submitted) && saleForm.saleName.$invalid}">
                                     <label for="saleName" class="form-label">Tên đợt giảm giá</label>
                                     <input type="text" class="form-control" id="saleName" name="saleName" ng-model="saleDetail.name" required>
@@ -299,13 +283,7 @@
                                     </div>
                                 </div>
                    
-                                <div class="form-group" ng-class="{'has-error': (saleForm.saleDescription.$touched || saleForm.$submitted) && saleForm.saleDescription.$invalid}">
-                                    <label for="saleDescription" class="form-label">Mô tả</label>
-                                    <textarea class="form-control" id="saleDescription" name="saleDescription" rows="3" ng-model="saleDetail.describe" required></textarea>
-                                    <div class="text-danger" ng-show="(saleForm.saleDescription.$touched || saleForm.$submitted) && saleForm.saleDescription.$invalid">
-                                        Mô tả là bắt buộc.
-                                    </div>
-                                </div>
+                   
                                 <div class="form-group" ng-class="{'has-error': (saleForm.startTime.$touched || saleForm.$submitted) && saleForm.startTime.$invalid}">
                                     <label for="startTime" class="form-label">Thời gian bắt đầu</label>
                                     <input type="text" class="form-control" id="startTime" name="startTime" ng-model="displayStartDate" required>
@@ -325,6 +303,13 @@
                                     </div>
                                     <div class="text-danger" ng-show="(saleForm.endTime.$touched || saleForm.$submitted) && endDateError">
                                         {{endDateError}}
+                                    </div>
+                                    <div class="form-group" ng-class="{'has-error': (saleForm.saleDescription.$touched || saleForm.$submitted) && saleForm.saleDescription.$invalid}">
+                                        <label for="saleDescription" class="form-label">Mô tả</label>
+                                        <textarea class="form-control" id="saleDescription" name="saleDescription" rows="3" ng-model="saleDetail.describe" required></textarea>
+                                        <div class="text-danger" ng-show="(saleForm.saleDescription.$touched || saleForm.$submitted) && saleForm.saleDescription.$invalid">
+                                            Mô tả là bắt buộc.
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -358,14 +343,23 @@
                                 
                                 
                                 <div class="col-md-6">
-                                    <div class="form-group" ng-class="{'has-error': (saleForm.maximumDiscountAmount.$touched || saleForm.$submitted) && saleForm.maximumDiscountAmount.$invalid}">
-                                        <label for="maximumDiscountAmount" class="form-label">Số tiền giảm giá tối đa</label>
-                                        <input type="number" class="form-control" id="maximumDiscountAmount" name="maximumDiscountAmount" ng-model="saleDetail.maximumDiscountAmount" ng-required="saleDetail.discountType === '2'" ng-disabled="saleDetail.discountType === '1'">
-                                        <div class="text-danger" ng-show="(saleForm.maximumDiscountAmount.$touched || saleForm.$submitted) && saleForm.maximumDiscountAmount.$invalid">
-                                            Số tiền giảm giá tối đa là bắt buộc.
+                                    <div class="form-group" 
+                                         ng-class="{'has-error': (saleForm.maximumDiscountAmount.$touched || saleForm.$submitted) && saleForm.maximumDiscountAmount.$invalid}">
+                                        <label for="maximumDiscountAmount" style="white-space: nowrap;" class="form-label">
+                                            Số tiền giảm giá tối đa
+                                        </label>
+                                        <input type="number" class="form-control" id="maximumDiscountAmount" 
+                                               name="maximumDiscountAmount" 
+                                               ng-model="saleDetail.maximumDiscountAmount" 
+                                               ng-required="saleDetail.discountType === '2'" 
+                                               ng-disabled="saleDetail.discountType === '1'" ng-min="saleDetail.discountType === '2' ? 1 : null">
+                                        <div class="text-danger" 
+                                             ng-show="(saleForm.maximumDiscountAmount.$touched || saleForm.$submitted) && saleForm.maximumDiscountAmount.$invalid">
+                                            Số tiền giảm giá tối đa là bắt buộc và phải lớn hơn 0.
                                         </div>
                                     </div>
                                 </div>
+                                
                                 
                                 
                                 
@@ -393,7 +387,7 @@
                                 
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Lưu</button>
+                        <button style="margin-top: 10px;" type="submit" class="btn btn-primary">Lưu</button>
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy bỏ</button> -->
                     </div>
                 </form>
