@@ -50,8 +50,8 @@ public class Rating {
     private Date reviewedAt;
 
 //    1 duyệt 2 chờ chuyệt 3 ko duyệt
-    @Column(name = "Check")
-    private int check;
+    @Column(name = "ApprovalStatus")
+    private int approvalStatus;
 
     @ManyToOne
     @JoinColumn(name = "IdCustomer", referencedColumnName = "Id")
