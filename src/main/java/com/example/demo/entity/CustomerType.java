@@ -29,6 +29,12 @@ public class CustomerType {
     @Column(name = "Name", columnDefinition = "nvarchar(300)")
     private String name;
 
+    @Column(name = "MinPoints")
+    private Integer minPoints;
+
+    @Column(name = "MaxPoints")
+    private Integer maxPoints;
+
     @Column(name = "CreatedAt")
     private Date createdAt;
 

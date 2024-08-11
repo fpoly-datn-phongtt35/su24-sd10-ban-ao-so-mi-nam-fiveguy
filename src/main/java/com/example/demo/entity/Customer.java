@@ -77,6 +77,8 @@ public class Customer {
     @OneToMany(mappedBy = "customer",  cascade = CascadeType.ALL)
     private List<Address> addresses;
 
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<CustomerPointsHistory> pointsHistory;
 }
 
