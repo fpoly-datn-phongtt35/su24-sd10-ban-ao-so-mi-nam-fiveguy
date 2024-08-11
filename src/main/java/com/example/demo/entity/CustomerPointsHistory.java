@@ -23,6 +23,10 @@ public class CustomerPointsHistory {
     @JoinColumn(name = "CustomerId", nullable = false)
     private Customer customer; // The customer who earned the points
 
+    @ManyToOne
+    @JoinColumn(name = "BillId", nullable = true)
+    private Bill bill; // The bill associated with the points
+
     @Column(name = "Points", nullable = false)
     private Integer points; // Number of points earned
 

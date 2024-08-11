@@ -103,4 +103,8 @@ public class Bill {
     @JsonIgnore
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
     private List<ReturnOrder> returnOrders;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
+    private List<CustomerPointsHistory> customerPointsHistories;
 }
