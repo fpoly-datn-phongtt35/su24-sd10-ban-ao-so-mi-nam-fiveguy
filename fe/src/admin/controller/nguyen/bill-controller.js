@@ -389,4 +389,22 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http,$timeout) {
         }
     });
     
+    $scope.formatCurrency = function (number) {
+        // Làm tròn số đến 2 chữ số thập phân
+        let roundedNumber = Number(number).toFixed(0);
+
+        // Tách phần nguyên và phần thập phân
+        let parts = roundedNumber.split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts.length > 1 ? parts[1] : '';
+
+        // Thêm dấu chấm để phân tách hàng nghìn
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+        // Ghép lại phần nguyên và phần thập phân (nếu có)
+        let formattedNumber = integerPart + (decimalPart ? ',' + decimalPart : '');
+
+        // Thêm ký hiệu tiền tệ
+        return formattedNumber + ' đ';
+    }
 });

@@ -707,7 +707,7 @@ public class NBillServiceImpl implements NBillService {
         BillResponse response = new BillResponse();
         response.setId(bill.getId());
         response.setCode(bill.getCode());
-        response.setTotalAmount(bill.getTotalAmount());
+        response.setTotalAmount(bill.getTotalAmountAfterDiscount());
 
         // Set other fields as needed
         response.setNameCustomer(
