@@ -1,0 +1,69 @@
+<div class="col-lg-12 mb-4">
+    <div class="column-main">
+        <!-- Existing Content -->
+
+        <!-- New Row: Thiết lập điểm -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="pointConversionRate" class="form-label">Tỉ lệ quy đổi điểm thưởng</label>
+                <input type="number" class="form-control" id="pointConversionRate" ng-model="pointConversionRate" placeholder="1 điểm thưởng tương ứng với bao nhiêu tiền?">
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button class="btn btn-success" ng-click="savePointConversionRate()">Lưu</button>
+            </div>
+        </div>
+
+        <!-- New Table: CustomerType -->
+        <div class="row">
+            <div class="col-md-12">
+                <h3>CustomerType</h3>
+                <button class="btn btn-primary mb-3" ng-click="createCustomerType()">Tạo thêm loại khách hàng</button>
+                <table class="table table-container">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên</th>
+                            <th>Code</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="customerType in customerTypes">
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ customerType.name }}</td>
+                            <td>{{ customerType.code }}</td>
+                            <td>
+                                <span ng-if="customerType.status == 1" class="text-success">Đang hoạt động</span>
+                                <span ng-if="customerType.status == 0" class="text-danger">Không hoạt động</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-secondary" ng-click="viewCustomerTypeDetails(customerType)">Xem chi tiết</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal for editing CustomerType -->
+        <div class="modal fade" id="customerTypeModal" tabindex="-1" aria-labelledby="customerTypeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="customerTypeModalLabel">Chỉnh sửa loại khách hàng</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Modal content for editing customer type -->
+                        <!-- Include form fields for name, rates, code, and status -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary" ng-click="saveCustomerType()">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

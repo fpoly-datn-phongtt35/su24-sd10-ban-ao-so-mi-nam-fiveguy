@@ -183,7 +183,7 @@
                                                 <th>Số lượng</th>
                                                 <!-- <th>Tổng tiền trước khi giảm giá</th> -->
                                                 <th>Tổng giá trị giảm</th>
-                                                <th>Tổng tiền sau khi giảm</th>
+                                                <!-- <th>Tổng tiền sau khi giảm</th> -->
                                                <th>Hành động</th>
                                             </tr>
                                         </thead>
@@ -195,7 +195,7 @@
                                                 <!-- <td>{{ formatCurrency(staticCustomer.totalAmountBeforeDiscount) }}đ</td> -->
                                         
                                                 <td>{{ formatCurrency(staticCustomer.totalDiscountAmount) }}đ</td>
-                                                <td>{{ formatCurrency(staticCustomer.totalAmountAfterDiscount) }}đ</td>
+                                                <!-- <td>{{ formatCurrency(staticCustomer.totalAmountAfterDiscount) }}đ</td> -->
                                                 <td>
                                                     <button class="btn btn-primary" ng-click="showCustomerDetails(staticCustomer, $index)">
                                                         Xem
@@ -209,8 +209,7 @@
                                                     
                                                     <th>Sản phẩm</th>
                                                     <th>Số lượng</th>
-                                                    <th>Giá gốc</th>
-                                                    <th>Giá giảm</th>
+                                                    <th>Giá</th>
                                                     <th>Tổng tiền sau khi giảm</th>
                                                 </tr>
                                             <!-- </tbody> -->
@@ -221,11 +220,15 @@
                                                     <tr>
                                                         <td>{{ productDetail.productName }}</td>
                                                         <td>{{ productDetail.totalQuantityBought }}</td>
-                                                        <td>{{formatCurrency (productDetail.originalPrice) }}đ</td>
-                                                        <td>{{ formatCurrency(productDetail.promotionalPrice) }}đ</td>
+                                                        <td>
+                                                            <span style="text-decoration: line-through;">{{ formatCurrency(productDetail.originalPrice) }}đ</span>
+                                                            <br>
+                                                            <span>{{ formatCurrency(productDetail.promotionalPrice) }}đ</span>
+                                                          </td>
+                                                          
                                                         <!-- <td>{{ formatCurrency(productDetail.totalAmountBeforeDiscount) }}đ</td> -->
                                                         <td style="font-size: 14px; font-weight: bold;">
-                                                            {{ formatCurrency(productDetail.totalAmountAfterDiscount) }}đ
+                                                            {{ formatCurrency(productDetail.totalDiscountAmount) }}đ
                                                         </td>
                                                         
                                                     </tr>
