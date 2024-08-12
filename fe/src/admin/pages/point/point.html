@@ -12,12 +12,15 @@
                 <button class="btn btn-success" ng-click="savePointConversionRate()">Lưu</button>
             </div>
         </div>
-
+        
         <!-- New Table: CustomerType -->
         <div class="row">
             <div class="col-md-12">
                 <h3>CustomerType</h3>
-                <button class="btn btn-primary mb-3" ng-click="createCustomerType()">Tạo thêm loại khách hàng</button>
+                <button class="btn btn-primary mb-3" ng-click="viewCustomerTypeDetails({})">Tạo thêm loại khách hàng</button>
+                <div class="mb-3">
+                    <input type="text" class="form-control" ng-model="searchName" placeholder="Tìm kiếm theo tên" ng-change="searchCustomerTypes()">
+                </div>
                 <table class="table table-container">
                     <thead>
                         <tr>
@@ -45,7 +48,7 @@
                 </table>
             </div>
         </div>
-
+        
         <!-- Modal for editing CustomerType -->
         <div class="modal fade" id="customerTypeModal" tabindex="-1" aria-labelledby="customerTypeModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -55,15 +58,56 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Modal content for editing customer type -->
-                        <!-- Include form fields for name, rates, code, and status -->
+                        <form name="customerTypeForm" novalidate>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Tên</label>
+                                <input type="text" class="form-control" id="name" ng-model="selectedCustomerType.name" required>
+                                <div class="invalid-feedback" ng-if="customerTypeForm.name.$error.required">Tên không được để trống.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="code" class="form-label">Code</label>
+                                <input type="number" class="form-control" id="code" ng-model="selectedCustomerType.code" min="1" required>
+                                <div class="invalid-feedback" ng-if="customerTypeForm.code.$error.required">Code phải lớn hơn 0.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Trạng thái</label>
+                                <select class="form-select" id="status" ng-model="selectedCustomerType.status" required>
+                                    <option value="1">Đang hoạt động</option>
+                                    <option value="0">Không hoạt động</option>
+                                </select>
+                            </div>
+                        </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-primary" ng-click="saveCustomerType()">Lưu thay đổi</button>
+                        <button type="button" class="btn btn-primary" ng-click="saveCustomerType()" ng-disabled="customerTypeForm.$invalid">Lưu thay đổi</button>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <ul class="pagination">
+            <div class="d-flex justify-content-between align-items-center">
+                <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPage(0)">
+                    <span class="material-icons align-middle">first_page</span>
+                </button>
+                <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0" ng-click="setCurrentPage(currentPage - 1)">
+                    <span class="material-icons align-middle">chevron_left</span>
+                </button>
+                <div class="d-flex align-items-center mx-1">
+                    <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
+                        style="width: 40px;" ng-model="desiredPage" min="1" max="{{totalPages}}"
+                        ng-change="goToPage()">
+                    <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages}}</span>
+                </div>
+                <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1" ng-click="setCurrentPage(currentPage + 1)">
+                    <span class="material-icons align-middle">chevron_right</span>
+                </button>
+                <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1" ng-click="setCurrentPage(totalPages - 1)">
+                    <span class="material-icons align-middle">last_page</span>
+                </button>
+            </div>
+        </ul>
+        
     </div>
 </div>
