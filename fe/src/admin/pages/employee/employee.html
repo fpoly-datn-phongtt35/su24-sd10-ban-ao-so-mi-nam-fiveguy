@@ -142,7 +142,7 @@
                             <tbody>
                                 <tr ng-repeat="employee in filteremployee">
                                     <td scope="col-1">
-                                        {{ ($index + 1) + (desiredPage != 1 ? (desiredPage * 5) : 0)
+                                        {{ ($index + 1) + (currentPage * size)
                                         }}
                                     </td>
                                     <td scope="col-1" class="css-text-overfolow">{{employee.code}}</td>
@@ -293,7 +293,7 @@
                             <tbody>
                                 <tr ng-repeat="employee in getAuditlog">
                                     <td scope="col-1" class="">
-                                        {{ ($index + 1) + (desiredPage != 1 ? (desiredPage * 5) : 0)
+                                        {{($index + 1) + (currentPage1 * size1)
                                         }}
                                     </td>
                                     <td scope="col-1" class="">{{employee.empCode}}</td>
@@ -522,10 +522,16 @@
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
+            <div class="overlay" ng-show="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
             <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && uploadBtnUpdate()" novalidate>
                 <div class="modal-header">
                     <h5 class="modal-title">Cập nhật nhân viên</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" ng-click="resetFormUpdate()"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body row">
                     <div class="col-lg-6">
@@ -542,12 +548,14 @@
                                 <label for="image-update" class="col-sm-4 col-form-label">Hình Ảnh</label>
                                 <div>
                                     <input class="form-control" name="path" type="file" id="image-update" />
-                                    <span ng-if="showError" class="error-message text-danger form-text">
+
+                                    <span ng-if="showErrorImg" class="error-message text-danger form-text">
                                         {{alertErrorImg}}
                                     </span>
                                 </div>
                             </div>
                         </div>
+
                         <div class="row mb-3">
                             <label for="inputCode" class="col-sm-4 col-form-label">Mã</label>
                             <div class="col-sm-8">
@@ -621,6 +629,8 @@
                                 </span>
                             </div>
                         </div>
+
+
                         <div class="row mb-4">
                             <label for="inputemail" class="col-sm-4 col-form-label">Email</label>
                             <div class="col-sm-8">
@@ -641,6 +651,9 @@
                                 </span>
                             </div>
                         </div>
+
+                    </div>
+                    <div class="col-lg-6">
                         <div class="row mb-3">
                             <label for="inputGender" class="col-sm-5 col-form-label">Giới Tính</label>
                             <div class="row col-sm-7">
@@ -654,8 +667,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
                         <div class="row mb-3">
                             <label for="inputBirthDate" class="col-sm-4 col-form-label">Ngày Sinh</label>
                             <div class="col-sm-8">
@@ -688,32 +699,32 @@
                         <div class="row mb-3">
                             <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Tạo</label>
                             <div class="col-sm-8">
-                                <input name="createdAt" id="inputUpdatedAt" type="text" class="form-control"
+                                <input name="createdAt" id="inputUpdatedAt" type="date" class="form-control"
                                     ng-model="formUpdate.createdAt" readonly />
                             </div>
                         </div>
-                        <div class="row mb-3">
+                        <!-- <div class="row mb-3">
                             <label for="inputcreatedBy" class="col-sm-4 col-form-label">Người Tạo</label>
                             <div class="col-sm-8">
                                 <input name="createdBy" id="inputcreatedBy" type="text" class="form-control"
                                     ng-model="formUpdate.createdBy" readonly />
                             </div>
-                        </div>
+                        </div> -->
                         <div class="row mb-3">
                             <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Sửa</label>
                             <div class="col-sm-8">
-                                <input name="updatedAt" id="inputUpdatedAt" type="text" class="form-control"
+                                <input name="updatedAt" id="inputUpdatedAt" type="date" class="form-control"
                                     ng-model="formUpdate.updatedAt" ng-value="currentDate | date:'yyyy-MM-dd'"
                                     readonly />
                             </div>
                         </div>
-                        <div class="row mb-3">
+                        <!-- <div class="row mb-3">
                             <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Người Sửa</label>
                             <div class="col-sm-8">
                                 <input name="updatedBy" id="inputUpdatedBy" type="text" class="form-control"
                                     ng-model="formUpdate.updatedBy" readonly />
                             </div>
-                        </div>
+                        </div> -->
                         <div class="row mb-3">
                             <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Chức vụ</label>
                             <div class="col-sm-8">
@@ -753,7 +764,8 @@
                     <button ng-click="resetFormUpdate()" type="button" class="btn btn-warning">
                         xoá form
                     </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" ng-click="resetFormUpdate()"
+                        data-bs-dismiss="modal">
                         Đóng
                     </button>
                 </div>

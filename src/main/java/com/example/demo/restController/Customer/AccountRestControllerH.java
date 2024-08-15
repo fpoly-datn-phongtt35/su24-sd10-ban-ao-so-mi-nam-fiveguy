@@ -145,7 +145,14 @@ public class AccountRestControllerH {
 
     @GetMapping("/check-phone-number")
     public ResponseEntity<Boolean> checkPhoneNumber(@RequestParam String phoneNumber) {
-        boolean phoneNumberExists = accountService.checkPhoneNumberExists(phoneNumber);
-        return ResponseEntity.ok(phoneNumberExists);
+        try {
+            boolean phoneNumberExists = accountService.checkPhoneNumberExists(phoneNumber);
+            return ResponseEntity.ok(phoneNumberExists);
+        } catch (Exception e) {
+            // Log the exception and return a suitable error response
+            System.err.println("Error checking phone number: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
     }
+
 }
