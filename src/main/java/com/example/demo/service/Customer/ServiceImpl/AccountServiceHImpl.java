@@ -320,7 +320,7 @@ public class AccountServiceHImpl implements AccountServiceH {
             account.setAccount(accountEntity.getAccount());
             account.setPassword(accountEntity.getPassword());
             account.setEmail(accountEntity.getEmail());
-//            account.setPhoneNumber(accountEntity.getPhoneNumber());
+            account.setPhoneNumber(accountEntity.getPhoneNumber());
             account.setRole(accountEntity.getRole());
             account.setStatus(1);
 

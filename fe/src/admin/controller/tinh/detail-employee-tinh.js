@@ -1,7 +1,8 @@
 app.controller("tinh-detail-employee-controller", function ($scope, $http) {
-  $scope.getDetailEmployee = [];
-  $scope.formUpdate = {};
+  $scope.getDetailEmployee = {};
+  $scope.formUpdateEm = {};
   $scope.formUpdateAccount = {};
+  $scope.updatePassword = {};
   formInputAccountPassword = {};
   const emailAccount = null;
   // Hàm hiển thị thông báo thành công
@@ -170,71 +171,89 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
     }
   };
 
-  //Sửa Nhân Viên
+  // // //Sửa Nhân Viên
   $scope.uploadBtnUpdate = async function () {
+    console.log($scope.formUpdateEm.avatar);
+    
     const fileInputupdate = document.getElementById("image-update");
     const file = fileInputupdate.files[0];
 
     if (!file) {
       $scope.showError = true;
-      //submit form khi ảnh ko được thay đổi
-      if ($scope.updateEmployee.$valid) {
-        const addAccountData = await $scope.suaAccount();
-        console.log(addAccountData);
-        if (addAccountData) {
-          const dataObject = {
-            code: $scope.formUpdate.code,
-            avata: $scope.formUpdate.avata,
-            account: {
-              id: addAccountData.id,
-            },
-
-            avatar: $scope.formUpdate.avatar, // Add the image data here
-            fullName: $scope.formUpdate.fullName,
-            password: $scope.formUpdate.password,
-            gender: $scope.formUpdate.gender,
-            birthDate: $scope.formUpdate.birthDate,
-            address: $scope.formUpdate.address,
-            createdAt: $scope.formUpdate.createdAt,
-            updatedAt: $scope.formUpdate.updatedAt,
-            createdBy: $scope.formUpdate.createdBy,
-            updatedBy: $scope.formUpdate.updatedBy,
-            status: $scope.formUpdate.status,
-          };
-          console.log(dataObject);
-          const updateEmployeesData = await $scope.updateEmployee(dataObject);
-          $scope.showSuccessNotification("Sửa thông tin thành công");
-          $scope.detailEmployee();
-          console.log("updateEmployeesData = ", updateEmployeesData);
-          $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
-        }
-        // $uibModalInstance.close(); // Đóng modal
+      // Submit form when no image is selected
+      const addAccountData = await $scope.suaAccount();
+      if (addAccountData) {
+        const dataObject = {
+          code: $scope.formUpdate.code,
+          account: {
+            id: addAccountData.id,
+          },
+          avatar: $scope.formUpdateEm.avatar, // Add the image data here
+          fullName: $scope.getDetailEmployee.fullName,
+          gender: $scope.getDetailEmployee.gender,
+          birthDate: $scope.getDetailEmployee.birthDate,
+          address: $scope.getDetailEmployee.address,
+          createdAt: $scope.getDetailEmployee.createdAt,
+          updatedAt: $scope.getDetailEmployee.updatedAt,
+          createdBy: $scope.getDetailEmployee.createdBy,
+          updatedBy: $scope.getDetailEmployee.updatedBy,
+          status: $scope.getDetailEmployee.status,
+        };
+        const updateEmployeesData = await $scope.updateEmployee(dataObject);
+        $scope.showSuccessNotification("Sửa thông tin thành công");
+        $scope.getEmployee(0);
+        $scope.resetFormUpdate();
+        $("#modalUpdate").modal("hide");
       }
       $scope.$apply();
       return;
     } else {
       $scope.showError = false;
-      $scope.uploading = true; // Đang trong quá trình upload
 
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = function () {
+      reader.onload = async function () {
         const data = reader.result.split(",")[1];
         const postData = {
           name: file.name,
           type: file.type,
           data: data,
         };
-        $scope.postFile(postData).then(function () {
-          $scope.uploading = false; // Hoàn thành quá trình upload
-          $scope.$apply(); // Áp dụng thay đổi vào scope
-          if (!$scope.uploading) {
-            $scope.submitFormUpdate();
-          }
-        });
+
+        await $scope.postFile(postData); // Ensure this completes and updates $scope.uploadedImageData
+
+        // Check if image data is available
+        if ($scope.uploadedImageData) {
+          await $scope.submitFormUpdate(); // Proceed with form submission
+        } else {
+          $scope.showErrorNotification("Lỗi khi tải ảnh lên.");
+        }
       };
     }
   };
+
+  // Hàm xử lý sự kiện thay đổi tệp ảnh
+$scope.handleFileChange = function () {
+  const fileInputupdate = document.getElementById("image-update");
+  const file = fileInputupdate.files[0];
+
+  if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+          // Đọc dữ liệu ảnh dưới dạng URL
+          const imageDataUrl = e.target.result;
+          // Cập nhật $scope.formUpdateEm.avatar với dữ liệu URL ảnh
+          $scope.$apply(function () {
+              $scope.formUpdateEm.avatar = imageDataUrl;
+          });
+      };
+      reader.readAsDataURL(file);
+  }
+};
+
+// Thêm sự kiện lắng nghe sự thay đổi tệp ảnh
+document.getElementById("image-update").addEventListener("change", $scope.handleFileChange);
+
 
   $scope.updateAccount = async (objectAccount) => {
     // let email = $scope.edit(employee.account.email);
@@ -261,9 +280,9 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
         account: $scope.formInputAccount.account,
         email: email,
         phoneNumber: $scope.formInputAccount.phoneNumber,
-        role: $scope.formInputAccount.role,
-        password: $scope.formInputAccount.password,
-        // status: status
+        role: $scope.getDetailEmployee.account.role,
+        password: $scope.getDetailEmployee.account.password,
+        status: $scope.getDetailEmployee.account.status,
       };
 
       try {
@@ -282,10 +301,35 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
     }
   };
 
-  // Thêm mới nhân viên
+  //đổi password
+  $scope.suaAccountPassword = function () {
+    const email = $scope.getDetailEmployee.account.email;
+    if (email) {
+      const dataAccount = {
+        account: $scope.getDetailEmployee.account.account,
+        email: email,
+        phoneNumber: $scope.getDetailEmployee.account.phoneNumber,
+        role: $scope.getDetailEmployee.account.role,
+        password: $scope.updatePassword.password,
+        status: $scope.getDetailEmployee.account.status,
+      };
+
+      try {
+        const responseData = $scope.updateAccount(dataAccount);
+        if (responseData) {
+          const getByEmail = $scope.getByEmailAccount(responseData.email);
+          return getByEmail;
+        }
+      } catch (error) {
+        console.error("Error updating account:", error);
+        return false;
+      }
+    }
+  };
+
+  // // Thêm mới nhân viên
   $scope.updateEmployee = async (objectData) => {
-    let item = angular.copy($scope.formUpdate);
-    console.log(item);
+    let item = angular.copy($scope.formUpdateEm);
     try {
       const result = await $http.put(`${apiEmployee}/${item.id}`, objectData);
       console.log("Sửa account thành công", result.data);
@@ -296,32 +340,33 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
     }
   };
 
-  // Form submit update
-  $scope.submitFormUpdate = async function () {
+  // // Form submit update
+  
+$scope.submitFormUpdate = async function () {
     // Đánh dấu form đã được submit để ng-show hoạt động
-    $scope.updateEmployee.$submitted = true;
+    $scope.formUpdateEmployee.$submitted = true;
 
     // Kiểm tra tính hợp lệ của form
-    if ($scope.updateEmployee.$valid) {
+    if ($scope.formUpdateEmployee.$valid) {
       const addAccountData = await $scope.suaAccount();
       console.log(addAccountData);
       if (addAccountData) {
         const dataObject = {
-          code: $scope.formUpdate.code,
-          avata: $scope.formUpdate.avata,
+          code: $scope.getDetailEmployee.code,
+          // avatar: $scope.getDetailEmployee.avatar,
           account: {
             id: addAccountData.id,
           },
-          avatar: $scope.uploadedImageData, // Add the image data here
-          fullName: $scope.formUpdate.fullName,
-          gender: $scope.formUpdate.gender,
-          birthDate: $scope.formUpdate.birthDate,
-          address: $scope.formUpdate.address,
-          createdAt: $scope.formUpdate.createdAt,
-          updatedAt: $scope.formUpdate.updatedAt,
-          createdBy: $scope.formUpdate.createdBy,
-          updatedBy: $scope.formUpdate.updatedBy,
-          status: $scope.formUpdate.status,
+          avatar: $scope.formUpdateEm.avatar,
+          fullName: $scope.formUpdateEm.fullName,
+          gender: $scope.formUpdateEm.gender,
+          birthDate: $scope.formUpdateEm.birthDate,
+          address: $scope.formUpdateEm.address,
+          createdAt: $scope.getDetailEmployee.createdAt,
+          updatedAt: $scope.getDetailEmployee.updatedAt,
+          createdBy: $scope.getDetailEmployee.createdBy,
+          updatedBy: $scope.getDetailEmployee.updatedBy,
+          status: $scope.getDetailEmployee.status,
         };
         console.log(dataObject);
         const updateEmployeesData = await $scope.updateEmployee(dataObject);
@@ -332,19 +377,20 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
     } else {
       // Hiển thị lỗi
       $scope.showErrorNotification("Không thành công");
-      console.log($scope.updateEmployee.$error);
+      console.log($scope.formUpdateEmployee.$error);
     }
   };
+
 
   $scope.detailEmployee = function () {
     $http.get(apiEmployee + "/detail-employee").then(function (response) {
       $scope.getDetailEmployee = response.data;
-      $scope.formUpdate = angular.copy(response.data); // Sử dụng angular.copy để tránh tham chiếu trực tiếp
+      $scope.formUpdateEm = angular.copy(response.data); // Sử dụng angular.copy để tránh tham chiếu trực tiếp
       $scope.formInputAccount = angular.copy(response.data.account);
       $scope.emailAccount = response.data.account.email;
 
       // Định dạng ngày tháng
-      $scope.formUpdate.birthDate = new Date(response.data.birthDate);
+      $scope.formUpdateEm.birthDate = new Date(response.data.birthDate);
 
       // Đặt mật khẩu từ cơ sở dữ liệu
       $scope.dbPassword = response.data.account.password;
@@ -362,22 +408,22 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
   };
 
 
-  app.directive('passwordMatch', [function() {
+  app.directive('passwordMatch', [function () {
     return {
-        require: 'ngModel',
-        scope: {
-            otherModelValue: '=passwordMatch'
-        },
-        link: function(scope, element, attributes, ngModel) {
-            ngModel.$validators.match = function(modelValue) {
-                return modelValue === scope.otherModelValue;
-            };
+      require: 'ngModel',
+      scope: {
+        otherModelValue: '=passwordMatch'
+      },
+      link: function (scope, element, attributes, ngModel) {
+        ngModel.$validators.match = function (modelValue) {
+          return modelValue === scope.otherModelValue;
+        };
 
-            scope.$watch('otherModelValue', function() {
-                ngModel.$validate();
-            });
-        }
+        scope.$watch('otherModelValue', function () {
+          ngModel.$validate();
+        });
+      }
     };
-}]);
+  }]);
 
 });
