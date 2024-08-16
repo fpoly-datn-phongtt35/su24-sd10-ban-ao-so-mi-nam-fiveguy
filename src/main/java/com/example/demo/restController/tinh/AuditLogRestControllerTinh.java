@@ -70,6 +70,26 @@ public class AuditLogRestControllerTinh {
 
     }
 
+    @PostMapping(value = "/save-auditLog", produces = "application/json")
+    public AuditLogs createAudigLog(@RequestHeader("Authorization")String token, @RequestBody AuditLogs bill){
+        AuditLogs bill1 = new AuditLogs();
+        Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
+
+        bill1.setEmpCode(employee.get().getCode());
+        bill1.setImplementer(employee.get().getFullName());
+//        bill1.setActionType("Tạo hoa đơn");
+//        bill1.setDetailedAction("Nhân viên " + employee.get().getFullName() + " dã tạo hóa đơn ");
+//        bill1.setEmpCode(bill.getEmpCode());
+//        bill1.setImplementer(bill.getImplementer());
+        bill1.setActionType(bill.getActionType());
+        bill1.setDetailedAction(bill.getDetailedAction());
+        bill1.setTime(new Date());
+        bill1.setStatus(1);
+
+        return auditLogRepositoryTinh.save(bill1);
+
+    }
+
     //Xuất file excel lich sử nhân viên
     @GetMapping("/exce-lich-su")
     public void fileExcelAuditLog() {

@@ -1,8 +1,10 @@
 app.controller("tinh-detail-employee-controller", function ($scope, $http) {
   $scope.getDetailEmployee = {};
+  $scope.formUpdate = {};
   $scope.formUpdateEm = {};
   $scope.formUpdateAccount = {};
   $scope.updatePassword = {};
+  $scope.currentPassword = {};
   formInputAccountPassword = {};
   const emailAccount = null;
   // Hàm hiển thị thông báo thành công
@@ -17,6 +19,16 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
 
   $scope.showWarningNotification = function (message) {
     toastr["warning"](message);
+  };
+
+  $scope.uploading = false; // Thêm biến trạng thái
+
+  $scope.showLoading = function () {
+    $scope.uploading = true; // Hiển thị spinner
+  };
+
+  $scope.hideLoading = function () {
+    $scope.uploading = false; // Ẩn spinner
   };
 
   const apiEmployee = "http://localhost:8080/api/admin/employee";
@@ -117,26 +129,34 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
 
   //Hàm check trùng số điện thoại
   $scope.checkPhoneNumber = function () {
-    var phoneNumber = $scope.formInputAccount.phoneNumber;
+    const phoneNumber = $scope.formUpdateAccount.phoneNumber;
+    console.log("Checking phone number:", phoneNumber); // Debugging log
+
+    // Check if phone number is valid according to the pattern
+    const isValidPhoneNumber = /^(\+84|0)[2|3|5|7|8|9][0-9]{8}$/.test(phoneNumber);
+
+    if (!isValidPhoneNumber) {
+      $scope.phoneNumberError = "Số điện thoại không hợp lệ";
+      return; // Exit if the phone number is invalid
+    }
+
+    // If phone number is valid, check if it exists in the database
     $http
       .get(apiAccount + "/check-phone-number", {
-        params: { phoneNumber: phoneNumber },
+        params: { phoneNumber: phoneNumber }
       })
       .then(function (response) {
+        console.log("API Response:", response.data); // Debugging log
         if (response.data) {
-          // Email bị trùng
           $scope.phoneNumberError = "Số điện thoại đã tồn tại";
-          return false;
         } else {
-          // Email hợp lệ và không bị trùng
           $scope.phoneNumberError = "";
           return true;
         }
       })
       .catch(function (error) {
-        // Xử lý lỗi khi gọi API
+        console.error('API Error:', error); // Handle errors from API
         $scope.phoneNumberError = "Có lỗi xảy ra khi kiểm tra số điện thoại";
-        return false;
       });
   };
 
@@ -173,86 +193,93 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
 
   // // //Sửa Nhân Viên
   $scope.uploadBtnUpdate = async function () {
-    console.log($scope.formUpdateEm.avatar);
-    
+    $scope.loading = true; // Bật trạng thái loading khi bắt đầu
+
     const fileInputupdate = document.getElementById("image-update");
     const file = fileInputupdate.files[0];
 
-    if (!file) {
-      $scope.showError = true;
-      // Submit form when no image is selected
-      const addAccountData = await $scope.suaAccount();
-      if (addAccountData) {
-        const dataObject = {
-          code: $scope.formUpdate.code,
-          account: {
-            id: addAccountData.id,
-          },
-          avatar: $scope.formUpdateEm.avatar, // Add the image data here
-          fullName: $scope.getDetailEmployee.fullName,
-          gender: $scope.getDetailEmployee.gender,
-          birthDate: $scope.getDetailEmployee.birthDate,
-          address: $scope.getDetailEmployee.address,
-          createdAt: $scope.getDetailEmployee.createdAt,
-          updatedAt: $scope.getDetailEmployee.updatedAt,
-          createdBy: $scope.getDetailEmployee.createdBy,
-          updatedBy: $scope.getDetailEmployee.updatedBy,
-          status: $scope.getDetailEmployee.status,
-        };
-        const updateEmployeesData = await $scope.updateEmployee(dataObject);
-        $scope.showSuccessNotification("Sửa thông tin thành công");
-        $scope.getEmployee(0);
-        $scope.resetFormUpdate();
-        $("#modalUpdate").modal("hide");
-      }
-      $scope.$apply();
-      return;
-    } else {
-      $scope.showError = false;
-
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = async function () {
-        const data = reader.result.split(",")[1];
-        const postData = {
-          name: file.name,
-          type: file.type,
-          data: data,
-        };
-
-        await $scope.postFile(postData); // Ensure this completes and updates $scope.uploadedImageData
-
-        // Check if image data is available
-        if ($scope.uploadedImageData) {
-          await $scope.submitFormUpdate(); // Proceed with form submission
-        } else {
-          $scope.showErrorNotification("Lỗi khi tải ảnh lên.");
+    try {
+      if (!file) {
+        $scope.showError = true;
+        // Nếu không có ảnh được chọn, tiếp tục quy trình cập nhật mà không có ảnh
+        const addAccountData = await $scope.suaAccount();
+        if (addAccountData) {
+          const dataObject = {
+            code: $scope.formUpdate.code,
+            account: {
+              id: addAccountData.id,
+            },
+            avatar: $scope.formUpdateEm.avatar, // Sử dụng ảnh hiện tại
+            fullName: $scope.getDetailEmployee.fullName,
+            gender: $scope.getDetailEmployee.gender,
+            birthDate: $scope.getDetailEmployee.birthDate,
+            address: $scope.getDetailEmployee.address,
+            createdAt: $scope.getDetailEmployee.createdAt,
+            updatedAt: $scope.getDetailEmployee.updatedAt,
+            createdBy: $scope.getDetailEmployee.createdBy,
+            updatedBy: $scope.getDetailEmployee.updatedBy,
+            status: $scope.getDetailEmployee.status,
+          };
+          const updateEmployeesData = await $scope.updateEmployee(dataObject);
+          $scope.showSuccessNotification("Sửa thông tin thành công");
+          $scope.getEmployee(0);
+          $scope.resetFormUpdate();
+          $("#modalUpdate").modal("hide");
         }
-      };
+      } else {
+        $scope.showError = false;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async function () {
+          const data = reader.result.split(",")[1];
+          const postData = {
+            name: file.name,
+            type: file.type,
+            data: data,
+          };
+
+          await $scope.postFile(postData); // Đảm bảo quá trình upload ảnh hoàn tất và cập nhật $scope.uploadedImageData
+
+          // Kiểm tra xem dữ liệu ảnh đã có chưa
+          if ($scope.uploadedImageData) {
+            await $scope.submitFormUpdate(); // Tiếp tục quá trình submit form
+          } else {
+            $scope.showErrorNotification("Lỗi khi tải ảnh lên.");
+          }
+        };
+      }
+    } catch (error) {
+      console.error("Error during upload or update:", error);
+      $scope.showErrorNotification("Có lỗi xảy ra.");
+    } finally {
+      $scope.loading = false; // Tắt trạng thái loading khi hoàn tất
+      $scope.$apply(); // Áp dụng thay đổi vào scope
     }
   };
 
-  // Hàm xử lý sự kiện thay đổi tệp ảnh
-$scope.handleFileChange = function () {
-  const fileInputupdate = document.getElementById("image-update");
-  const file = fileInputupdate.files[0];
 
-  if (file) {
+  // Hàm xử lý sự kiện thay đổi tệp ảnh
+  $scope.handleFileChange = function () {
+    const fileInputupdate = document.getElementById("image-update");
+    const file = fileInputupdate.files[0];
+
+    if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
-          // Đọc dữ liệu ảnh dưới dạng URL
-          const imageDataUrl = e.target.result;
-          // Cập nhật $scope.formUpdateEm.avatar với dữ liệu URL ảnh
-          $scope.$apply(function () {
-              $scope.formUpdateEm.avatar = imageDataUrl;
-          });
+        // Đọc dữ liệu ảnh dưới dạng URL
+        const imageDataUrl = e.target.result;
+        // Cập nhật $scope.formUpdateEm.avatar với dữ liệu URL ảnh
+        $scope.$apply(function () {
+          $scope.formUpdateEm.avatar = imageDataUrl;
+        });
       };
       reader.readAsDataURL(file);
-  }
-};
+    }
+  };
 
-// Thêm sự kiện lắng nghe sự thay đổi tệp ảnh
-document.getElementById("image-update").addEventListener("change", $scope.handleFileChange);
+  // Thêm sự kiện lắng nghe sự thay đổi tệp ảnh
+  document.getElementById("image-update").addEventListener("change", $scope.handleFileChange);
 
 
   $scope.updateAccount = async (objectAccount) => {
@@ -302,30 +329,75 @@ document.getElementById("image-update").addEventListener("change", $scope.handle
   };
 
   //đổi password
+  $scope.passwordMatched = true; // Biến để kiểm tra mật khẩu hiện tại
   $scope.suaAccountPassword = function () {
-    const email = $scope.getDetailEmployee.account.email;
-    if (email) {
-      const dataAccount = {
-        account: $scope.getDetailEmployee.account.account,
-        email: email,
-        phoneNumber: $scope.getDetailEmployee.account.phoneNumber,
-        role: $scope.getDetailEmployee.account.role,
-        password: $scope.updatePassword.password,
-        status: $scope.getDetailEmployee.account.status,
-      };
+    $scope.formUpdatePassword.$submitted = true; // Đánh dấu form đã được submit
 
-      try {
-        const responseData = $scope.updateAccount(dataAccount);
-        if (responseData) {
-          const getByEmail = $scope.getByEmailAccount(responseData.email);
-          return getByEmail;
+    // Kiểm tra tính hợp lệ của form trước khi tiếp tục
+    if ($scope.formUpdatePassword.$valid && $scope.passwordMatched && ($scope.updatePassword.password === $scope.formUpdate.confirmPassword)) {
+      const email = $scope.getDetailEmployee.account.email;
+      if (email) {
+        const dataAccount = {
+          account: $scope.getDetailEmployee.account.account,
+          email: email,
+          phoneNumber: $scope.getDetailEmployee.account.phoneNumber,
+          role: $scope.getDetailEmployee.account.role,
+          password: $scope.updatePassword.password, // Mật khẩu mới
+          status: $scope.getDetailEmployee.account.status,
+        };
+
+        try {
+          const responseData = $scope.updateAccount(dataAccount);
+          if (responseData) {
+            const getByEmail = $scope.getByEmailAccount(responseData.email);
+            $scope.showSuccessNotification("Cập nhật mật khẩu thành công");
+            $scope.resetFormUpdatePassword();
+            return getByEmail;
+          }
+        } catch (error) {
+          console.error("Error updating account:", error);
+          $scope.showErrorNotification("Có lỗi xảy ra khi cập nhật mật khẩu.");
+          return false;
         }
-      } catch (error) {
-        console.error("Error updating account:", error);
-        return false;
+      }
+    } else {
+      // Hiển thị lỗi nếu mật khẩu hiện tại không đúng hoặc mật khẩu mới không khớp
+      if (!$scope.passwordMatched) {
+        $scope.showErrorNotification("Mật khẩu hiện tại không đúng.");
+      } else if ($scope.updatePassword.password !== $scope.formUpdate.confirmPassword) {
+        $scope.showErrorNotification("Mật khẩu mới không khớp với xác nhận mật khẩu.");
       }
     }
   };
+  $scope.resetFormUpdatePassword = function () {
+    $scope.formUpdatePassword.$setPristine();
+    $scope.formUpdatePassword.$setValidity();
+    $scope.passwordMatched = true;
+    $scope.formUpdate.confirmPassword = {}
+    $scope.updatePassword = {};
+    $scope.currentPassword = {};
+  }
+
+  // kiểm tra mật khẩu xác nhận
+  app.directive('passwordMatch', function () {
+    return {
+      require: 'ngModel',
+      scope: {
+        otherModelValue: '=passwordMatch'
+      },
+      link: function (scope, element, attributes, ngModel) {
+
+        ngModel.$validators.match = function (modelValue) {
+          return modelValue === scope.otherModelValue;
+        };
+
+        scope.$watch('otherModelValue', function () {
+          ngModel.$validate();
+        });
+      }
+    };
+  });
+
 
   // // Thêm mới nhân viên
   $scope.updateEmployee = async (objectData) => {
@@ -341,8 +413,8 @@ document.getElementById("image-update").addEventListener("change", $scope.handle
   };
 
   // // Form submit update
-  
-$scope.submitFormUpdate = async function () {
+
+  $scope.submitFormUpdate = async function () {
     // Đánh dấu form đã được submit để ng-show hoạt động
     $scope.formUpdateEmployee.$submitted = true;
 
@@ -399,31 +471,6 @@ $scope.submitFormUpdate = async function () {
 
   $scope.detailEmployee();
 
-  $scope.passwordMatched = true;
-  $scope.currentPassword = {};
 
-  $scope.checkPassword = function () {
-    // So sánh mật khẩu người dùng nhập vào với mật khẩu từ cơ sở dữ liệu
-    $scope.passwordMatched = $scope.formInputAccount.password === $scope.dbPassword;
-  };
-
-
-  app.directive('passwordMatch', [function () {
-    return {
-      require: 'ngModel',
-      scope: {
-        otherModelValue: '=passwordMatch'
-      },
-      link: function (scope, element, attributes, ngModel) {
-        ngModel.$validators.match = function (modelValue) {
-          return modelValue === scope.otherModelValue;
-        };
-
-        scope.$watch('otherModelValue', function () {
-          ngModel.$validate();
-        });
-      }
-    };
-  }]);
 
 });

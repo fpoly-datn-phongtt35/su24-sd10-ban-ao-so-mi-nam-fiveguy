@@ -4,8 +4,14 @@
         <center>
             <h3>Thông tin nhân viên</h3>
         </center>
+        
         <div class="row">
             <div class="col-4">
+                <div class="overlay" ng-show="loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
                 <div>
                     <label for="image-update">
                         <img id="image-preview-update" style="width: 250px; height: 250px"
@@ -54,16 +60,12 @@
                                 <label for="inputphonenumber" class="col-sm-3 col-form-label">SĐT</label>
                                 <div class="col-sm-9">
                                     <input name="phoneNumber" id="inputphonenumber" type="text" class="form-control"
-                                        ng-model="formInputAccount.phoneNumber" ng-change="checkPhoneNumber()" required
-                                        ng-pattern="/^(\+84|0)[2|3|5|7|8|9][0-9]{8}$/" />
+                                        ng-model="formInputAccount.phoneNumber" ng-change="checkPhoneNumber()"
+                                        required />
                                     <span ng-show="formUpdateEmployee.$submitted">
                                         <div ng-show="formUpdateEmployee.phoneNumber.$error.required"
                                             class="error-message text-danger form-text">
                                             Không được để trống
-                                        </div>
-                                        <div ng-show="!formUpdateEmployee.phoneNumber.$error.required && formUpdateEmployee.phoneNumber.$error.pattern"
-                                            class="error-message text-danger form-text">
-                                            Số điện thoại không hợp lệ
                                         </div>
                                         <div ng-show="phoneNumberError" class="error-message text-danger form-text">
                                             {{phoneNumberError}}
@@ -129,17 +131,15 @@
                                 <label for="currentPassword" class="col-sm-3 col-form-label">Mật khẩu hiện tại</label>
                                 <div class="col-sm-9">
                                     <input name="currentPassword" id="currentPassword" type="password"
-                                        class="form-control" ng-model="currentPassword" ng-change="checkPassword()" required />
-                                    <span ng-show="formUpdatePassword.$submitted">
-                                        <div ng-show="formUpdatePassword.currentPassword.$invalid"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
+                                        class="form-control" ng-model="currentPassword" ng-change="checkPassword()"
+                                        required />
+                                    <span ng-show="formUpdatePassword.$submitted && formUpdatePassword.currentPassword.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
                                     </span>
-                                    <span ng-show="!passwordMatched && formUpdatePassword.$submitted">
-                                        <div class="error-message text-danger form-text">
-                                            Mật khẩu hiện tại không đúng
-                                        </div>
+                                    <span ng-show="!passwordMatched && formUpdatePassword.$submitted"
+                                        class="error-message text-danger form-text">
+                                        Mật khẩu hiện tại không đúng
                                     </span>
                                 </div>
                             </div>
@@ -147,13 +147,11 @@
                             <div class="row mb-3">
                                 <label for="newPassword" class="col-sm-3 col-form-label">Mật khẩu mới</label>
                                 <div class="col-sm-9">
-                                    <input name="password" id="newPassword" type="password" class="form-control"
-                                        ng-model="formUpdateEm.password" required />
-                                    <span ng-show="formUpdatePassword.$submitted">
-                                        <div ng-show="formUpdatePassword.newPassword.$invalid"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
+                                    <input name="newPassword" id="newPassword" type="password" class="form-control"
+                                        ng-model="updatePassword.password" required />
+                                    <span ng-show="formUpdatePassword.$submitted && formUpdatePassword.newPassword.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
                                     </span>
                                 </div>
                             </div>
@@ -163,18 +161,14 @@
                                 <div class="col-sm-9">
                                     <input name="confirmPassword" id="confirmPassword" type="password"
                                         class="form-control" ng-model="formUpdate.confirmPassword"
-                                        password-match="formUpdate.newPassword" required />
-                                    <span ng-show="formUpdatePassword.$submitted">
-                                        <div ng-show="formUpdatePassword.confirmPassword.$invalid"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
+                                        password-match="updatePassword.password" required />
+                                    <span ng-show="formUpdatePassword.$submitted && formUpdatePassword.confirmPassword.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
                                     </span>
-                                    <span ng-show="formUpdatePassword.$submitted || formUpdate.confirmPassword.$touched">
-                                        <div ng-show="formUpdatePassword.confirmPassword.$error.match"
-                                            class="error-message text-danger form-text">
-                                            Mật khẩu không khớp
-                                        </div>
+                                    <span ng-show="formUpdatePassword.$submitted || formUpdate.confirmPassword.$touched"
+                                        class="error-message text-danger form-text">
+                                        Mật khẩu không khớp
                                     </span>
                                 </div>
                             </div>
@@ -183,6 +177,7 @@
                             </div>
                         </form>
                         
+
                     </div>
                 </div>
             </div>
