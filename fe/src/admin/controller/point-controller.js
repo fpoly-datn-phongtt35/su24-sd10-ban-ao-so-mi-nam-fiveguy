@@ -77,7 +77,7 @@ app.controller('pointAdminController', ['$scope', '$http', '$routeParams', '$tim
 
      // Initialize the controller
      $scope.currentPage = 0;
-     $scope.pageSize = 2;
+     $scope.pageSize = 10;
      $scope.totalPages = 0;
      $scope.customerTypes = [];
      $scope.desiredPage = 1;
@@ -114,42 +114,76 @@ app.controller('pointAdminController', ['$scope', '$http', '$routeParams', '$tim
          }
      };
  
-     // View customer type details in modal
-     $scope.viewCustomerTypeDetails = function(customerType) {
-         $scope.selectedCustomerType = angular.copy(customerType);
-         $('#customerTypeModal').modal('show');
-     };
- 
-     // Save customer type (create or update)
-     $scope.saveCustomerType = function() {
-         if ($scope.selectedCustomerType.id) {
-             $http.put(apiCustomerType, $scope.selectedCustomerType).then(function(response) {
-                 $scope.showSuccessNotification('Customer type updated successfully');
-                 $('#customerTypeModal').modal('hide');
-                 loadCustomerTypes();
-             }, function(error) {
-                 $scope.showErrorNotification('Failed to update customer type');
-             });
-         } else {
-             $http.post(apiCustomerType, $scope.selectedCustomerType).then(function(response) {
-                 $scope.showSuccessNotification('Customer type created successfully');
-                 $('#customerTypeModal').modal('hide');
-                 loadCustomerTypes();
-             }, function(error) {
-                console.log(error);
-                if (error.status === 400 && error.data.message === 'Code already exists') {
-                    $scope.codeExists = true;
-                } else {
-                    $scope.showErrorNotification('Failed to save Customer Type.');
-                }
-            });
-         }
-     };
+// View customer type details in modal for update
+// View customer type details in modal for update
+$scope.viewCustomerTypeDetails = function(customerType) {
+    $scope.selectedCustomerType = angular.copy(customerType);
+    $('#editCustomerTypeModal').modal('show');
+};
+
+// Open modal for adding a new customer type
+$scope.showAddCustomerTypeModal = function() {
+    $scope.newCustomerType = {}; // Reset new customer type form
+    $('#addCustomerTypeModal').modal('show');
+};
+
+
+// Update an existing customer type
+$scope.updateCustomerType = function() {
+    $http.put(apiCustomerType, $scope.selectedCustomerType).then(function(response) {
+        $scope.showSuccessNotification('Customer type updated successfully');
+        $('#editCustomerTypeModal').modal('hide');
+        loadCustomerTypes();
+    }, function(error) {
+        $scope.showErrorNotification('Failed to update customer type');
+    });
+};
+
+
+// Add a new customer type
+$scope.addCustomerType = function() {
+    $scope.newCustomerType.status = 1; // Set default status for new customer type
+    $http.post(apiCustomerType, $scope.newCustomerType).then(function(response) {
+        $scope.showSuccessNotification('Customer type created successfully');
+        $('#addCustomerTypeModal').modal('hide');
+        loadCustomerTypes();
+    }, function(error) {
+        if (error.status === 400 && error.data.message === 'Code already exists') {
+            $scope.codeExists = true;
+        } else {
+            $scope.showErrorNotification('Failed to save Customer Type.');
+        }
+    });
+};
+
+
  
      // Handle search input
      $scope.searchCustomerTypes = function() {
          $scope.currentPage = 0;
          loadCustomerTypes();
      };
+
+     $scope.getStatusText = function(status) {
+        switch (status) {
+            case 1:
+                return "Đang hoạt động";
+            case 0:
+                return "Không hoạt động";
+            default:
+                return "Không xác định"; 
+        }
+    };
+
+    $scope.getStatusClass = function(status) {
+        switch(status) {
+            case 1:
+                return 'ongoing';
+            case 0:
+                return 'expired';
+            default:
+                return '';
+        }
+    };
 
 }]);

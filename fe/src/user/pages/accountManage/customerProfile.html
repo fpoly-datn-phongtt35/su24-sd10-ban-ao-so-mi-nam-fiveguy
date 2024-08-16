@@ -144,6 +144,11 @@
             width: 120px;
             height: 120px;
         }
+        .popover-body {
+ 
+}
+
+        
     }
 </style>
 <section style="margin-top: 82px;" class="container-fluid">
@@ -189,6 +194,10 @@
             </div>
       
         </div>
+
+
+
+
         <div class="col-lg-9 col-md-6 col-sm-6 mb-4">
             <div class="column-main">
                 <div class="page-title-wrapper">
@@ -200,15 +209,46 @@
                     <!-- Form 1: Cập nhật ảnh và mật khẩu -->
                     <div class="block-account-information col-lg-6 col-md-6 col-sm-12 mb-4">
                         <!-- Hiển thị ảnh đại diện -->
+                            <div class="info-customer" style="    font-style: normal;
+                            font-size: 24px;
+                            line-height: 23px;">
+                                <p>Khách hàng: {{user.fullName}}</p>
+                           
+                                
+                                <div style="margin-bottom: 1rem;" class="row align-items-center">
+                                    <div class="col-auto">
+                                      <p class="mb-0">Điểm: {{user.point}}</p>
+                                    </div>
+                                    <div class="col-auto">
+                                      <button type="button" class="btn " ng-click="openPointsHistoryModal()">
+                                        <i class="fa-solid fa-eye"></i> 
+                                      </button>
+                                    </div>
+                                  </div>
+                                  
 
 
-                        <img id="image-preview-update"
-                            style="width: 168px; height: 200px; margin: auto; margin-bottom: 30px;"
-                            ng-src="{{user.avatar ? user.avatar : '/src/admin/common/img/no-img.png'}}"
-                            class="rounded-4 fit" />
-
-                        <input type="file" id="image-update" style="display: none;" />
-                        <button class="btn btn-primary" ng-click="uploadBtnUpdate()">Cập nhật ảnh</button>
+                                <div class="d-flex align-items-center">
+                                    <p class="mb-0 me-3">{{user.customerType.name}}</p>
+                                    <!-- Icon with popover -->
+                                    <i class="fa-solid fa-circle-exclamation"
+                                    data-bs-toggle="popover"
+                                    title="Loại khách hàng"
+                                    data-bs-html="true"
+                                    data-bs-placement="bottom" 
+                                    ng-init="initializePopover()"
+                                    class="fs-3"> <!-- Adjust the icon size if needed -->
+                                 </i>
+                                 
+                                </div>
+                                <img id="image-preview-update"
+                                    style="width: 168px; height: 200px; margin: auto; margin-bottom: 30px;"
+                                    ng-src="{{user.avatar ? user.avatar : '/src/admin/common/img/no-img.png'}}"
+                                    class="rounded-4 fit" />
+        
+                                <input type="file" id="image-update" style="display: none;" />
+                                <button class="btn btn-primary" ng-click="uploadBtnUpdate()">Cập nhật ảnh</button>
+                            </div>
 
                         <form class="form-edit-account" style="margin-top: 40px;">
                             <div class="mb-3">
@@ -283,7 +323,43 @@
             </div>
         </div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="pointsHistoryModal" tabindex="-1" role="dialog" aria-labelledby="pointsHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pointsHistoryModalLabel">Lịch sử Điểm </h5>
+        </div>
+        <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Ngày</th>
+                <th>Mô tả</th>
+                <th>Số Điểm</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="(index, entry) in pointsHistory">
+                <td>{{index + 1}}</td>
+                <td>{{entry.date | date: 'dd/MM/yyyy HH:mm'}}</td>
+                <td>{{entry.note}}</td>
+                <td>{{entry.points}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+  </div>
+  
+        
+
+    </div>
+
+
 </section>
 
 <!-- <div class="form-group mb-3">

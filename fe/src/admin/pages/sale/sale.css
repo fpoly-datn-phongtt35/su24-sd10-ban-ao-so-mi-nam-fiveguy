@@ -44,6 +44,8 @@
     margin-top: 20px;
     border-radius: 8px;
     overflow: hidden; 
+    width: 100%;
+
 }
 
 .table-container table {
