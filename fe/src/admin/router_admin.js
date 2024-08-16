@@ -7,7 +7,12 @@ app.config(function ($routeProvider, $locationProvider) {
    // <!-- Hiếu -->
    .when("/admin/customer", {
     templateUrl: "pages/customer/customer.html",
-    controller: 'customerCtrl'
+    controller: 'customerCtrl',
+    resolve: {
+      auth: function (AuthService) {
+        return AuthService.authorize(['ADMIN']);
+      }
+    }
 
   })
 
@@ -15,26 +20,51 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/employee", {
       templateUrl: "pages/employee/employee.html",
       controller: "tinh-employee-controller",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN']);
+        }
+      }
     })
 
     .when("/admin/bil-tinh/create", {
       templateUrl: "pages/bill-tinh/bill-tinh-create.html",
       controller: "tinh-bill-controller",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
 
     .when("/admin/bil-history-tinh", {
       templateUrl: "pages/bill-tinh/bill-history-tinh.html",
       controller: "tinh-bill-history-controller",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
 
     .when("/admin/dashboard", {
       templateUrl: "pages/dashboard.html",
       controller: "DashboardController",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN']);
+        }
+      }
     })
 
     .when("/admin/detailEmployee", {
       templateUrl: "pages/employee/detailEmployee.html",
       controller: "tinh-detail-employee-controller",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN']);
+        }
+      }
     })
     // end Tinh
     // <!-- Thưởng -->
@@ -76,35 +106,75 @@ app.config(function ($routeProvider, $locationProvider) {
     })
     .when("/admin/voucher", {
       templateUrl: "pages/voucher/voucher2.html",
-      controller: "nguyen-voucher2-ctrl"
+      controller: "nguyen-voucher2-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN']);
+        }
+      }
     })
     .when("/admin/bill", {
       templateUrl: "pages/bill-nguyen/bill.html",
-      controller: "nguyen-bill-ctrl"
+      controller: "nguyen-bill-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
     .when("/admin/bill/create", {
       templateUrl: "pages/bill-nguyen/bill-create.html",
-      controller: "nguyen-bill-create-ctrl"
+      controller: "nguyen-bill-create-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
     .when("/admin/bill/:idBill", {
       templateUrl: "pages/bill-nguyen/bill-detail.html",
-      controller: "nguyen-bill-detail-ctrl"
+      controller: "nguyen-bill-detail-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
     .when("/admin/billtest/:idBill", {
       templateUrl: "pages/bill-nguyen/testbill.html",
-      controller: "test-bill-detail-ctrl"
+      controller: "test-bill-detail-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
     .when("/admin/return-order", {
       templateUrl: "pages/return-order-nguyen/return-order.html",
-      controller: "nguyen-return-order-ctrl"
+      controller: "nguyen-return-order-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
     .when("/admin/return-order/:idBill", {
       templateUrl: "pages/return-order-nguyen/return-order-detail.html",
-      controller: "nguyen-return-order-detail-ctrl"
+      controller: "nguyen-return-order-detail-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
     .when("/admin/sell", {
       templateUrl: "pages/sell-nguyen/sell.html",
-      controller: "nguyen-sell-ctrl"
+      controller: "nguyen-sell-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
     })
 
 
@@ -129,11 +199,21 @@ app.config(function ($routeProvider, $locationProvider) {
     })
     .when("/admin/rating", {
       templateUrl : "pages/rating/rating.html",
-      controller : "ratingAdminController"
+      controller : "ratingAdminController",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN']);
+        }
+      }
     })
     .when("/admin/point", {
       templateUrl : "pages/point/point.html",
-      controller : "pointAdminController"
+      controller : "pointAdminController",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN']);
+        }
+      }
     })
 
     .when("/unauthorized", {
