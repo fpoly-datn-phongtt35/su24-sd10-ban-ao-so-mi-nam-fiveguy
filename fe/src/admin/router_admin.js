@@ -131,6 +131,10 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl : "pages/rating/rating.html",
       controller : "ratingAdminController"
     })
+    .when("/admin/point", {
+      templateUrl : "pages/point/point.html",
+      controller : "pointAdminController"
+    })
 
     .when("/unauthorized", {
       templateUrl: "pages/Notification/unauthorized.html"

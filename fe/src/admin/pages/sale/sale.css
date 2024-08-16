@@ -44,6 +44,8 @@
     margin-top: 20px;
     border-radius: 8px;
     overflow: hidden; 
+    width: 100%;
+
 }
 
 .table-container table {
@@ -62,7 +64,6 @@
 
 
 .table-container th {
-    padding: 22px 8px;
 
     background-color: #353b48;
     color: white;

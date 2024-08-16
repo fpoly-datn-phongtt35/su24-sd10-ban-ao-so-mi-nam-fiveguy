@@ -1072,40 +1072,108 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     //Hàm submit bộ lọc
+    $scope.loading = false;
+
+
+    $scope.showLoading = function () {
+        $scope.loading = true;
+    };
+
+    $scope.hideLoading = function () {
+        $scope.loading = false;
+    };
+
     $scope.hihi = "";
 
     $scope.submitNgay = function () {
         $scope.selectedButton = "ngay";
-        $scope.getSanPhamBanChayNgay();
-        $scope.getTongBillStatusNgay();
-        $scope.getKhachHangMuaNhieuNhatNgay(0);
-        $scope.hihi = "Theo Ngày";
+        $scope.showLoading(); // Hiển thị loading khi bắt đầu xử lý
+
+        Promise.all([
+            $scope.getSanPhamBanChayNgay(),
+            $scope.getTongBillStatusNgay(),
+            $scope.getKhachHangMuaNhieuNhatNgay(0)
+        ])
+            .then(function (results) {
+                // Xử lý kết quả
+                $scope.hihi = "Theo Ngày";
+            })
+            .catch(function (error) {
+                // Xử lý lỗi nếu có
+                console.error("Error occurred:", error);
+            })
+            .finally(function () {
+                $scope.hideLoading(); // Ẩn loading khi hoàn tất xử lý
+            });
     };
 
+    // Làm tương tự cho các phương thức submit khác
     $scope.submitTuan = function () {
         $scope.selectedButton = "tuan";
-        $scope.getSanPhamBanChayTuan();
-        $scope.getTongBillStatusTuan();
-        $scope.getKhachHangMuaNhieuNhatTuan(0);
-        $scope.hihi = "Theo Tuần";
+        $scope.showLoading();
+
+        Promise.all([
+            $scope.getSanPhamBanChayTuan(),
+            $scope.getTongBillStatusTuan(),
+            $scope.getKhachHangMuaNhieuNhatTuan(0)
+        ])
+            .then(function (results) {
+                $scope.hihi = "Theo Tuần";
+            })
+            .catch(function (error) {
+                console.error("Error occurred:", error);
+            })
+            .finally(function () {
+                $scope.hideLoading();
+            });
     };
 
     $scope.submitThang = function () {
         $scope.selectedButton = "thang";
-        $scope.getSanPhamBanChayThang();
-        $scope.getTongBillStatusThang();
-        $scope.getKhachHangMuaNhieuNhatThang();
-        $scope.hihi = "Theo Tháng";
+        $scope.showLoading(); // Hiển thị loading khi bắt đầu xử lý
+
+        Promise.all([
+            $scope.getSanPhamBanChayThang(),
+            $scope.getTongBillStatusThang(),
+            $scope.getKhachHangMuaNhieuNhatThang(0)
+        ])
+            .then(function (results) {
+                // Xử lý kết quả
+                $scope.hihi = "Theo Thang";
+            })
+            .catch(function (error) {
+                // Xử lý lỗi nếu có
+                console.error("Error occurred:", error);
+            })
+            .finally(function () {
+                $scope.hideLoading(); // Ẩn loading khi hoàn tất xử lý
+            });
     };
 
+    // Làm tương tự cho các phương thức submit khác
     $scope.submitNam = function () {
         $scope.selectedButton = "nam";
-        $scope.getSanPhamBanChayNam();
-        $scope.getTongBillStatusNam();
-        $scope.getKhachHangMuaNhieuNhatNam();
-        $scope.hihi = "Theo Năm";
+        $scope.showLoading();
+
+        Promise.all([
+            $scope.getSanPhamBanChayNam(),
+            $scope.getTongBillStatusNam(),
+            $scope.getKhachHangMuaNhieuNhatNam(0)
+        ])
+            .then(function (results) {
+                $scope.hihi = "Theo Nam";
+            })
+            .catch(function (error) {
+                console.error("Error occurred:", error);
+            })
+            .finally(function () {
+                $scope.hideLoading();
+            });
     };
     $scope.submitNam();
+
+    // Và làm tương tự cho submitThang và submitNam
+
 
     //List sản phẩm
     // $scope.filterProductDetall = function () {
@@ -1117,7 +1185,8 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
 
     //===================================Sản phẩm gần hết=============================================================
-    $scope.filterProductDetall = [];
+    $scope.filterProductDetall = {};
+    $scope.filterProductDetallImage = {};
     $scope.totalPages = 0;
     $scope.currentPage = 0;
     $scope.desiredPage = 1;
@@ -1142,11 +1211,21 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                 if (response.data && response.data.content) {
                     $scope.filterProductDetall = response.data.content;
 
+                    // Xử lý ảnh Base64
                     $scope.filterProductDetall.forEach(function (product) {
+                        product.images = product.images || []; // Đảm bảo images là mảng, tránh lỗi khi không có ảnh
+
+                        // Lấy ảnh đầu tiên từ danh sách ảnh
+                        if (product.images.length > 0) {
+                            product.mainImage = product.images[0]; // Lấy ảnh đầu tiên
+                        } else {
+                            product.mainImage = null; // Nếu không có ảnh, đặt giá trị mặc định
+                        }
+
                         product.inputQuantity = 1;
                         product.remainingQuantity = product.quantity || 0;
-                        // $scope.initializeEmployee(product);
                     });
+
                     $scope.totalPages = response.data.totalPages || 0;
                     $scope.currentPage = pageNumber;
                     $scope.desiredPage = pageNumber + 1;

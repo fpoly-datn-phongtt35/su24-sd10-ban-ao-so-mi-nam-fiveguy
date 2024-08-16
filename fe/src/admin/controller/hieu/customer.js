@@ -358,7 +358,8 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
     $http
       .put(apiCustomer + "/status" + `/${item.id}`, item)
       .then(function (resp) {
-        $scope.getAll();
+        $scope.getCustomer(0);
+        $scope.showSuccessNotification("Cập nhật thông tin thành công");
       })
       .catch(function (error) {
         console.log("Error", error);

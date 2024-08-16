@@ -815,4 +815,85 @@ app.controller("accountManage", function ($scope, $http, $window) {
         resolve(response.data);
       });
   };
+
+
+
+  // customerType         -----------------------------
+
+
+  $scope.customerTypes = [];
+
+  // Function to load customer types from the API
+  $scope.loadCustomerTypes = function() {
+      $http.get('http://localhost:8080/api/home/customer-types').then(function(response) {
+          // Successfully retrieved data
+          $scope.customerTypes = response.data;
+          $scope.initializePopover(); // Initialize popover after loading data
+      }, function(error) {
+          // Handle error
+          console.error('Failed to fetch customer types', error);
+          $scope.showErrorNotification('Failed to load customer types.');
+      });
+  };
+
+  // Call the load function on controller initialization
+  $scope.loadCustomerTypes();
+
+  // Initialize popover with customer types
+  $scope.initializePopover = function() {
+      var popoverContent = '<ul class="list-group">';
+      $scope.customerTypes.forEach(function(type) {
+          popoverContent += '<li class="list-group-item">' + type.name + ' (' + type.minPoints + ' - ' + type.maxPoints + ')</li>';
+      });
+      popoverContent += '</ul>';
+
+      // Initialize Bootstrap popover
+      var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+      popoverTriggerList.forEach(function (popoverTriggerEl) {
+          new bootstrap.Popover(popoverTriggerEl, {
+              content: popoverContent,
+              html: true,
+              trigger: 'hover'
+          });
+      });
+  };
+
+
+//   $scope.loadCustomerPointsHistory = function() {
+//     // Make the HTTP GET request to the API
+//     $http.get('http://localhost:8080/api/home/points-history/customer').then(function(response) {
+//         // Successfully retrieved customer points history
+//         $scope.pointsHistory = response.data;
+//         console.log($scope.pointsHistory)
+//         console.log('Customer points history loaded successfully');
+//         $scope.showSuccessNotification('Customer points history loaded successfully.');
+//     }, function(error) {
+//         // Handle error
+//         console.error('Failed to fetch customer points history', error);
+//         if (error.status === 404) {
+//             $scope.showErrorNotification('Customer not found.');
+//         } else {
+//             $scope.showErrorNotification('Failed to load customer points history.');
+//         }
+//     });
+// };
+
+// $scope.loadCustomerPointsHistory();
+
+
+$scope.loadCustomerPointsHistory = function() {
+  $http.get('http://localhost:8080/api/home/points-history/customer')  // Update this URL as needed
+    .then(function(response) {
+      $scope.pointsHistory = response.data;  // Assume response.data contains the points history
+      $('#pointsHistoryModal').modal('show');  // Open the modal
+    })
+    .catch(function(error) {
+      console.error('Error loading points history:', error);
+    });
+};
+
+// Function to open the modal
+$scope.openPointsHistoryModal = function() {
+  $scope.loadCustomerPointsHistory();  // Load data and open the modal
+};
 });

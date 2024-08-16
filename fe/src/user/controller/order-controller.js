@@ -109,6 +109,7 @@ $scope.refreshDataBillCustomer = function() {
 $scope.desiredPage3 = 1;
 
 $scope.loadBillsForCustomer = function(page) {
+    console.log(page)
     var params = {
         search: $scope.searchText || "",
         page: page,
@@ -133,6 +134,7 @@ $scope.loadBillsForCustomer = function(page) {
     });
 };
 
+$scope.loadBillsForCustomer(0);
 
 // Gọi hàm này để thay đổi trang
 $scope.setCurrentPageBill = function(page) {

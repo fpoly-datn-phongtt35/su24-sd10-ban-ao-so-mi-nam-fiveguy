@@ -15,27 +15,28 @@
                 <hr />  
                 <div ng-repeat="item in cartItems" class="row gy-3 mb-4">
                   <div class="col-lg-5">
-                      <div class="me-lg-5">
-                          <div class="d-flex" style="align-items: center;">
-                              <a href="#home/product/product-detail/{{item.productDetail.product.id}}">
-                                  <img ng-src="{{ item.path }}" class="border rounded me-3" style="width: 96px; height: 100px" />
-                              </a>
-                              <div class="title-name">
-                                  <p href="#" class="nav-link">
-                                      {{ item.productDetail.product.name }} {{ item.productDetail.product.category.name }} {{ item.productDetail.product.material.name }} {{ item.productDetail.product.code }}
-                                  </p>
-                                  <div class="title-detail" style="display: flex">
-                                      <p style="margin-right: 8px">
-                                        Màu sắc: {{item.nameColor}}
-                                      </p>
-                                      <p>
-                                        Kích cỡ: {{item.nameSize}}
-                                      </p>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
+                    <div class="me-lg-5">
+                        <div class="d-flex align-items-center">
+                            <a href="#home/product/product-detail/{{item.productDetail.product.id}}">
+                                <img ng-src="{{item.path}}" class="border rounded me-3" style="width: 100px; height: 100px;" />
+                            </a>
+                            <div class="d-flex flex-column fs-6 text-start">
+                                <div class="fw-bold" style="font-size: 1.2em;">
+                                    {{item.productDetail.product.name}} {{item.productDetail.product.category.name}} {{item.productDetail.product.material.name}} {{item.productDetail.product.code}}
+                                </div>
+                                <div class="d-flex align-items-center mt-1">
+                                    <span class="me-2">Màu sắc:</span>
+                                    <span class="btn" style="width: 50px; height: 25px; " ng-style="{'background-color' : item.productDetail.color.colorCode}"></span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="me-2">Kích cỡ:</span>
+                                    <span class="fw-bold" style="text-decoration: underline;">{{item.nameSize}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                   <div class="col-lg-5 col-sm-6 col-6 d-flex align-items-center">
                       <div class="text-price me-3">
                           <span class="h6" ng-if="!item.promotionalPrice || item.promotionalPrice == 0">
@@ -271,25 +272,25 @@
   
             <div class="card-body">
               <div class="d-flex justify-content-between">
-                <p class="mb-2">Tạm tính:</p>
-                <p class="mb-2">{{ formatCurrency(totalAmount) }} đ</p>
+                  <p class="mb-2 fw-bold">Tạm tính:</p>
+                  <p class="mb-2">{{ formatCurrency(totalAmount) }} đ</p>
               </div>
               <div class="d-flex justify-content-between">
-                <p class="mb-2">Giảm giá:</p>
-                <p class="mb-2">{{formatCurrency(valueVoucher)  }} đ</p>
+                  <p class="mb-2 fw-bold">Giảm giá:</p>
+                  <p class="mb-2">{{ formatCurrency(valueVoucher) }} đ</p>
               </div>
               <div class="d-flex justify-content-between">
-                <p class="mb-2">Phí giao hàng:</p>
-                <p class="mb-2">{{formatCurrency(shippingFee)  }} đ</p>
+                  <p class="mb-2 fw-bold">Phí giao hàng:</p>
+                  <p class="mb-2">{{ formatCurrency(shippingFee) }} đ</p>
               </div>
-            
+          
               <hr />
               <div class="d-flex justify-content-between">
-                <p class="mb-2">Tổng tiền:</p>
-                <p class="mb-2 fw-bold">{{formatCurrency(totalAmountAfterDiscount + shippingFee)  }} đ</p>
+                  <p class="mb-2 fw-bold">Tổng tiền:</p>
+                  <p class="mb-2 fw-bold">{{ formatCurrency(totalAmountAfterDiscount + shippingFee) }} đ</p>
               </div>
-  
-            </div>
+          </div>
+          
   
             <div class="card-footer">
               <div class="d-flex align-items-center">

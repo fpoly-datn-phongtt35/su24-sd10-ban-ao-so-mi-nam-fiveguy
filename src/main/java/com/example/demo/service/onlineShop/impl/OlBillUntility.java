@@ -261,6 +261,7 @@ public static String encodeId(long id) {
         BillHistory billCreate = new BillHistory();
         billCreate.setStatus(20);
         billCreate.setCreatedBy(customer.getFullName());
+        billCreate.setCreatedAt(new Date());
         billCreate.setBill(bill);
         billCreate.setType(1);
 
@@ -268,6 +269,7 @@ public static String encodeId(long id) {
         BillHistory billHistory = new BillHistory();
         billHistory.setStatus(statusBillHistory);
         billHistory.setCreatedBy(customer.getFullName());
+        billHistory.setCreatedAt(new Date());
         billHistory.setType(1);
         billHistory.setBill(bill);
         olBillHistoryService2.save(billHistory);
