@@ -60,7 +60,7 @@
                             </p>
                             <p class="m-0" ng-if="bd.promotionalPrice == bd.price">{{formatCurrency(bd.price)}}</p>
                         </td>
-                        <td class="col-3">{{bd.promotionalPrice * (1 - billDetailSummary.tiLeGiam)  | number:0}} VND</td>
+                        <td class="col-3">{{formatCurrency(bd.promotionalPrice * (1 - billDetailSummary.tiLeGiam))}} </td>
                     </tr>
                 </tbody>
             </table>
@@ -87,7 +87,7 @@
                         <tr ng-repeat="ro in returnOrders">
                             <td class="col-6">
                                 <div class="d-flex align-items-center">
-                                    <img ng-src="{{ro.billDetail.productDetail.imagePath}}" width="60px" height="60px"
+                                    <img ng-src="{{ro.billDetail.imagePath}}" width="60px" height="60px"
                                         class="me-3">
                                     <div class="d-flex flex-column text-start">
                                         <div class="fw-bold" ng-init="product = ro.billDetail.productDetail.product">
@@ -107,8 +107,8 @@
                                 </div>
                             </td>
                             <td class="col-2">{{ro.quantity}}</td>
-                            <td class="col-2">{{ro.billDetail.promotionalPrice  * (1 - billDetailSummary.tiLeGiam)| number:0}} VND</td>
-                            <td class="col-2">{{ro.billDetail.promotionalPrice * ro.quantity * (1 - billDetailSummary.tiLeGiam)| number:0}} VND</td>
+                            <td class="col-2">{{formatCurrency(ro.billDetail.promotionalPrice  * (1 - billDetailSummary.tiLeGiam))}}</td>
+                            <td class="col-2">{{formatCurrency(ro.billDetail.promotionalPrice * ro.quantity * (1 - billDetailSummary.tiLeGiam))}}</td>
                         </tr>
                         <td colspan="12" ng-show="returnOrders.length <= 0">Không có sản phẩm</td>
                     </tbody>
@@ -146,23 +146,26 @@
             </div>
             <div class="row my-2 py-2 border rounded bg-body">
                 <div class="row">
-                    <div class="col-6">Tổng tiền hoá đơn:</div>
-                    <div class="col-6 text-end text-danger fw-bold fs-5">{{bill.totalAmount | number:0}} VND</div>
+                    <div class="col-6">Tổng tiền hàng:</div>
+                    <div class="col-6 text-end text-danger fw-bold fs-5">{{formatCurrency(bill.totalAmount)}}</div>
                 </div>
                 <div class="row">
                     <div class="col-6">Giảm giá:</div>
-                    <div class="col-6 text-end text-danger fw-bold fs-5">{{bill.totalAmount -
-                        bill.totalAmountAfterDiscount | number:0}} VND</div>
+                    <div class="col-6 text-end text-danger fw-bold fs-5">{{formatCurrency(bill.totalAmount -
+                        bill.totalAmountAfterDiscount)}}</div>
                 </div>
                 <div class="row">
                     <div class="col-6">Tổng tiền thanh toán:</div>
-                    <div class="col-6 text-end text-danger fw-bold fs-5">{{bill.totalAmountAfterDiscount | number:0}} VND</div>
+                    <div class="col-6 text-end text-danger fw-bold fs-5">{{formatCurrency(bill.totalAmountAfterDiscount)}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-6">Tỉ lệ giảm:</div>
+                    <div class="col-6 text-end text-danger fw-bold fs-5">{{billDetailSummary.tiLeGiam | number:2}}</div>
                 </div>
                 <hr>
                 <div class="row">
                     <div class="col-6">Số tiền hoàn trả:</div>
-                    <div class="col-6 text-end text-danger fw-bold fs-5">{{returnOrdersSummary.tongTienTra | number:0}}
-                        VND</div>
+                    <div class="col-6 text-end text-danger fw-bold fs-5">{{formatCurrency(returnOrdersSummary.tongTienTra)}}</div>
                 </div>
             </div>
             <div class="row mt-4 d-flex justify-content-center">

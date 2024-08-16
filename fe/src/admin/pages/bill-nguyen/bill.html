@@ -262,7 +262,7 @@
         </li>
     </ul>
 
-    <div class="tab-content">
+    <div class="tab-content" style="text-transform: none;">
         <div class="table-responsive">
             <table class="  table-container ">
                 <thead>
@@ -283,7 +283,7 @@
                         <td>{{$index + 1}}</td>
                         <td>{{order.code}}</td>
                         <td>{{order.quantity}}</td>
-                        <td ng-class="{'text-danger': order.paidAmount == 0}">{{order.totalAmount | currency}}</td>
+                        <td ng-class="{'text-danger': order.paidAmount == 0}">{{formatCurrency(order.totalAmount)}}</td>
                         <td>{{order.nameCustomer}}</td>
                         <td>{{order.createdAt | date: "HH:mm dd-MM-yyyy"}}</td>
                         <td ng-switch="order.typeBill" style="font-size: 20px;">

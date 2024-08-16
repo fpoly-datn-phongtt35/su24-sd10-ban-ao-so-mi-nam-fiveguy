@@ -162,10 +162,10 @@ public class NVoucherServiceImpl implements NVoucherService {
 
         for (Bill bill : billsToUpdate) {
             //neu status = 1 ms sua
-//            if(bill.getStatus() == 1){
+            if(bill.getStatus() == 1){
                 Voucher bestVoucher = findBestVoucher(bill);
                 updateBillWithNewVoucher(bill, bestVoucher);
-//            }
+            }
         }
     }
 

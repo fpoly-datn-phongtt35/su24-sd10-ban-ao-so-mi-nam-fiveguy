@@ -189,6 +189,9 @@ public class NBillServiceImpl implements NBillService {
     public Bill updateShippingFee(Long id, BigDecimal shippingFee) {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
+
+        if(bill.getStatus() != 1 && bill.getStatus() != 1)
+
         bill.setShippingFee(shippingFee);
 
         return billRepository.save(bill);
@@ -709,7 +712,7 @@ public class NBillServiceImpl implements NBillService {
         BillResponse response = new BillResponse();
         response.setId(bill.getId());
         response.setCode(bill.getCode());
-        response.setTotalAmount(bill.getTotalAmount());
+        response.setTotalAmount(bill.getTotalAmountAfterDiscount());
 
         // Set other fields as needed
         response.setNameCustomer(
