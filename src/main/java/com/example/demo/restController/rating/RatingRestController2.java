@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/rate")
 public class RatingRestController2 {
 
 

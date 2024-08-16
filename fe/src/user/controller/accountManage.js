@@ -832,7 +832,6 @@ app.controller("accountManage", function ($scope, $http, $window) {
       }, function(error) {
           // Handle error
           console.error('Failed to fetch customer types', error);
-          $scope.showErrorNotification('Failed to load customer types.');
       });
   };
 
