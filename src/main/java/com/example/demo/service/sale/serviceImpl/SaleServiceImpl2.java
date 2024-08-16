@@ -84,6 +84,10 @@ public class SaleServiceImpl2 implements SaleService2 {
             }
         }
 
+        if (sale.getMaximumDiscountAmount() == null){
+            sale.setMaximumDiscountAmount(0);
+        }
+
         return saleRepository2.save(sale);
     }
 

@@ -321,14 +321,14 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
 
     $scope.updateDiscountTypeAdd = function () {
         if ($scope.saleDetail.discountType === '1' || $scope.saleDetail.discountType === 1) {
-            $scope.saleDetail.maximumDiscountAmount = null;
+            $scope.saleDetail.maximumDiscountAmount = 0;
         }
         $scope.checkDiscountValueAdd();
     };
 
     $scope.updateDiscountTypeUpdate = function () {
         if ($scope.saleDetail.discountType === '1' || $scope.saleDetail.discountType === 1) {
-            $scope.saleDetail.maximumDiscountAmount = null;
+            $scope.saleDetail.maximumDiscountAmount = 0;
         }
         $scope.checkDiscountValueUpdate();
     };
@@ -501,11 +501,20 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
     // Function to save sale data
     $scope.saveSale = function() {
         if ($scope.saleForm.$valid && $scope.isImageUploaded) {
+            console.log($scope.saleDetail.discountType );
     
             // Kiểm tra value chỉ khi discountType là 2
-            if ($scope.saleDetail.discountType === 2 && $scope.saleDetail.value > 100) {
+            if ($scope.saleDetail.discountType === '2' && $scope.saleDetail.value > 100) {
                 $scope.saleForm.value.$setValidity('max', false); // Đánh dấu input value là không hợp lệ
                 return;
+            }
+    
+            // Kiểm tra maximumDiscountAmount chỉ khi discountType là 2 và phải lớn hơn 0
+            if ($scope.saleDetail.discountType === '2') {
+                if (!$scope.saleDetail.maximumDiscountAmount || $scope.saleDetail.maximumDiscountAmount < 1) {
+                    $scope.saleForm.maximumDiscountAmount.$setValidity('min', false);
+                    return;
+                }
             }
     
             var saleData = $scope.saleDetail;
@@ -516,7 +525,8 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
                 .then(function(response) {
                     $('#saleModal').modal('hide');
                     $scope.showSuccessNotification("Thêm đợt giảm giá thành công");
-                    $scope.fetchAllSales();
+                    // $scope.fetchAllSales();
+                    $scope.getSalesByConditions();
                 })
                 .catch(function(error) {
                     $scope.showErrorNotification("Thêm đợt giảm giá thất bại");
@@ -530,12 +540,18 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
     
     
     
+    
 
  // Hàm cập nhật sale
  $scope.updateSale = function() {
-    if ($scope.saleFormUpdate.$valid ) {
-        if ($scope.saleDetail.value >= 100 && $scope.saleDetail.discountType === 2) {
-            $scope.saleFormUpdate.value.$setValidity('max', false); // Đánh dấu input value là không hợp lệ
+    if ($scope.saleFormUpdate.$valid) {
+        if ($scope.saleDetail.value >= 100 && $scope.saleDetail.discountType === '2') {
+            $scope.saleFormUpdate.value.$setValidity('max', false);
+            return;
+        }
+
+        if ($scope.saleDetail.discountType === '2' && $scope.saleDetail.maximumDiscountAmount < 1) {
+            $scope.saleFormUpdate.maximumDiscountAmount.$setValidity('min', false);
             return;
         }
 
@@ -554,6 +570,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
         $scope.showErrorNotification("Vui lòng điền đầy đủ thông tin.");
     }
 };
+
 
     
 

@@ -1316,6 +1316,7 @@ $scope.dataCity.ProvinceID;
     $scope.selectedVoucher.selected = true;
     $scope.valueVoucher = bestVoucher.valueVoucher;
     $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
+    $scope.applyVoucher();
   
     console.log("Chọn voucher tốt nhất:", bestVoucher);
   };

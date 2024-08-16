@@ -28,111 +28,138 @@ public interface SaleRepository2 extends JpaRepository<Sale, Long> , JpaSpecific
     List<Sale> findAllByStatusNot(int status);
 
     // Hàm thực hiện truy vấn đầu tiên: Tổng quan về doanh số của mỗi sale
-    @Query("SELECT " +
+    @Query(value = "SELECT " +
             "    s.id AS saleId, " +
-            "    SUM(bd.quantity) AS totalProductsSold, " +
-            "    SUM(bd.promotionalPrice * bd.quantity) AS totalRevenue " +
+            "    SUM(bd.quantity - ISNULL(ro.returnQuantity, 0)) AS totalProductsSold, " +
+            "    SUM(bd.promotionalPrice * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalRevenue " +
             "FROM " +
-            "    Sale s " +
-            "    JOIN ProductSale ps ON s.id = ps.sale.id " +
-            "    JOIN ProductDetail pd ON ps.product.id = pd.product.id " +
-            "    JOIN BillDetail bd ON pd.id = bd.productDetail.id " +
-            "    JOIN Product p ON pd.product.id = p.id " +
-            "    JOIN Bill b ON bd.bill.id = b.id " +
+            "    Sales s " +
+            "    JOIN ProductSales ps ON s.id = ps.IdSale " +
+            "    JOIN ProductDetails pd ON ps.IdProduct = pd.IdProduct " +
+            "    JOIN BillDetails bd ON pd.id = bd.IdProductDetail " +
+            "    JOIN Bills b ON bd.IdBill = b.id " +
+            "    LEFT JOIN (" +
+            "        SELECT " +
+            "            r.IdBillDetail, " +
+            "            SUM(r.Quantity) AS returnQuantity " +
+            "        FROM " +
+            "            ReturnOrders r " +
+            "            JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+            "        WHERE " +
+            "            p.PaymentType = 4 " +
+            "        GROUP BY " +
+            "            r.IdBillDetail " +
+            "    ) ro ON bd.id = ro.IdBillDetail " +
             "WHERE " +
-            "    s.id = :saleId AND (" +
-            "    EXISTS (" +
-            "        SELECT 1 FROM BillHistory bh " +
-            "        WHERE bh.bill.id = b.id AND bh.status = 32" +
-            "    ) OR (" +
-            "        EXISTS (" +
-            "            SELECT 1 FROM BillHistory bh " +
-            "            WHERE bh.bill.id = b.id AND bh.status = 21" +
-            "        ) AND NOT EXISTS (" +
-            "            SELECT 1 FROM BillHistory bh2 " +
-            "            WHERE bh2.bill.id = b.id AND bh2.status = 32" +
-            "        )" +
-            "    )) " +
+            "    s.id = :saleId " +
+            "    AND EXISTS (" +
+            "        SELECT 1 FROM BillHistories bh " +
+            "        WHERE bh.BillId = b.id AND bh.Status = 21 " +
+            "    ) " +
             "GROUP BY " +
-            "    s.id")
+            "    s.id", nativeQuery = true)
     SaleSummaryResponse findSaleSummaryById(@Param("saleId") Long saleId);
 
 
-    @Query("SELECT " +
+
+    @Query(value = "SELECT " +
             "    s.id AS saleId, " +
             "    c.id AS customerId, " +
             "    c.fullName AS customerName, " +
             "    a.phoneNumber AS customerPhone, " +
             "    a.email AS customerEmail, " +
-            "    SUM(bd.quantity) AS numberOfPurchases, " +
-            "    SUM(bd.quantity * bd.price) AS totalAmountBeforeDiscount, " +
-            "    SUM(bd.quantity * bd.promotionalPrice) AS totalAmountAfterDiscount, " +
-            "    SUM(bd.quantity * (bd.price - bd.promotionalPrice)) AS totalDiscountAmount " +
+            "    SUM(bd.quantity - ISNULL(ro.returnQuantity, 0)) AS numberOfPurchases, " +
+            "    SUM(bd.price * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalAmountBeforeDiscount, " +
+            "    SUM(bd.promotionalPrice * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalAmountAfterDiscount, " +
+            "    SUM((bd.price - bd.promotionalPrice) * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalDiscountAmount, " +
+            "    SUM(bd.promotionalPrice * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalRevenue " +
             "FROM " +
-            "    Sale s " +
-            "    JOIN ProductSale ps ON s.id = ps.sale.id " +
-            "    JOIN ProductDetail pd ON ps.product.id = pd.product.id " +
-            "    JOIN BillDetail bd ON pd.id = bd.productDetail.id " +
-            "    JOIN Product p ON pd.product.id = p.id " +
-            "    JOIN Bill b ON bd.bill.id = b.id " +
-            "    JOIN Customer c ON b.customer.id = c.id " +
-            "    JOIN Account a ON c.account.id = a.id " +
+            "    Sales s " +
+            "    JOIN ProductSales ps ON s.id = ps.IdSale " +
+            "    JOIN ProductDetails pd ON ps.IdProduct = pd.IdProduct " +
+            "    JOIN BillDetails bd ON pd.id = bd.IdProductDetail " +
+            "    JOIN Bills b ON bd.IdBill = b.id " +
+            "    JOIN Customers c ON b.IdCustomer = c.id " +
+            "    JOIN Accounts a ON c.IdAccount = a.id " +
+            "    LEFT JOIN (" +
+            "        SELECT " +
+            "            r.IdBillDetail, " +
+            "            SUM(r.Quantity) AS returnQuantity " +
+            "        FROM " +
+            "            ReturnOrders r " +
+            "            JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+            "        WHERE " +
+            "            p.PaymentType = 4 " +
+            "        GROUP BY " +
+            "            r.IdBillDetail " +
+            "    ) ro ON bd.id = ro.IdBillDetail " +
             "WHERE " +
-            "    s.id = :saleId AND (" +
-            "    EXISTS (" +
-            "        SELECT 1 FROM BillHistory bh " +
-            "        WHERE bh.bill.id = b.id AND bh.status = 32" +
-            "    ) OR (" +
-            "        EXISTS (" +
-            "            SELECT 1 FROM BillHistory bh " +
-            "            WHERE bh.bill.id = b.id AND bh.status = 21" +
-            "        ) AND NOT EXISTS (" +
-            "            SELECT 1 FROM BillHistory bh2 " +
-            "            WHERE bh2.bill.id = b.id AND bh2.status = 32" +
-            "        )" +
-            "    )) AND bd.promotionalPrice > 0 " +
+            "    s.id = :saleId " +
+            "    AND EXISTS (" +
+            "        SELECT 1 " +
+            "        FROM BillHistories bh " +
+            "        WHERE bh.BillId = b.id " +
+            "        AND bh.Status = 21 " +
+            "    ) " +
+            "    AND bd.promotionalPrice > 0 " +
             "GROUP BY " +
-            "    s.id, c.id, c.fullName, a.phoneNumber, a.email")
+            "    s.id, c.id, c.fullName, a.phoneNumber, a.email",
+            nativeQuery = true)
     List<SaleDetailResponse> findSaleDetailsById(@Param("saleId") Long saleId);
 
 
 
     // Hàm thực hiện lấy thông tin sản phẩm của khách hàng
-    @Query("SELECT " +
+    @Query(value = "SELECT " +
             "    p.name AS productName, " +
-            "    SUM(bd.quantity) AS totalQuantityBought, " +
+            "    SUM(bd.quantity - ISNULL(ro.returnQuantity, 0)) AS totalQuantityBought, " +
             "    bd.price AS originalPrice, " +
             "    bd.promotionalPrice AS promotionalPrice, " +
-            "    SUM(bd.quantity * bd.price) AS totalAmountBeforeDiscount, " +
-            "    SUM(bd.quantity * bd.promotionalPrice) AS totalAmountAfterDiscount " +
+//            "    SUM(bd.price * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalAmountBeforeDiscount, " +
+//            "    SUM(bd.promotionalPrice * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalAmountAfterDiscount, " +
+//            "    SUM((bd.price - bd.promotionalPrice) * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalDiscountAmount, " +
+            "    SUM((bd.price - bd.promotionalPrice) * (bd.quantity - ISNULL(ro.returnQuantity, 0))) AS totalDiscountAmount " +
             "FROM " +
-            "    Sale s " +
-            "    JOIN ProductSale ps ON s.id = ps.sale.id " +
-            "    JOIN ProductDetail pd ON ps.product.id = pd.product.id " +
-            "    JOIN BillDetail bd ON pd.id = bd.productDetail.id " +
-            "    JOIN Product p ON pd.product.id = p.id " +
-            "    JOIN Bill b ON bd.bill.id = b.id " +
-            "    JOIN Customer c ON b.customer.id = c.id " +
-            "    JOIN Account a ON c.account.id = a.id " +
+            "    Sales s " +
+            "    JOIN ProductSales ps ON s.id = ps.IdSale " +
+            "    JOIN ProductDetails pd ON ps.IdProduct = pd.IdProduct " +
+            "    JOIN BillDetails bd ON pd.id = bd.IdProductDetail " +
+            "    JOIN Products p ON pd.IdProduct = p.id " +
+            "    JOIN Bills b ON bd.IdBill = b.id " +
+            "    JOIN Customers c ON b.IdCustomer = c.id " +
+            "    JOIN Accounts a ON c.IdAccount = a.id " +
+            "    LEFT JOIN (" +
+            "        SELECT " +
+            "            r.IdBillDetail, " +
+            "            SUM(r.Quantity) AS returnQuantity " +
+            "        FROM " +
+            "            ReturnOrders r " +
+            "            JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+            "        WHERE " +
+            "            p.PaymentType = 4 " +
+            "        GROUP BY " +
+            "            r.IdBillDetail " +
+            "    ) ro ON bd.id = ro.IdBillDetail " +
             "WHERE " +
-            "    s.id = :saleId AND c.id = :customerId AND (" +
-            "    EXISTS (" +
-            "        SELECT 1 FROM BillHistory bh " +
-            "        WHERE bh.bill.id = b.id AND bh.status = 32" +
-            "    ) OR (" +
-            "        EXISTS (" +
-            "            SELECT 1 FROM BillHistory bh " +
-            "            WHERE bh.bill.id = b.id AND bh.status = 21" +
-            "        ) AND NOT EXISTS (" +
-            "            SELECT 1 FROM BillHistory bh2 " +
-            "            WHERE bh2.bill.id = b.id AND bh2.status = 32" +
-            "        )" +
-            "    )) " +
+            "    s.id = :saleId " +
+            "    AND c.id = :customerId " +
+            "    AND EXISTS (" +
+            "        SELECT 1 " +
+            "        FROM BillHistories bh " +
+            "        WHERE bh.BillId = b.id " +
+            "        AND bh.Status = 21 " +
+            "    ) " +
+            "    AND bd.promotionalPrice > 0 " +
             "GROUP BY " +
             "    p.name, bd.price, bd.promotionalPrice " +
             "ORDER BY " +
-            "    p.name")
-    List<ProductDetailResponse> findProductDetailsBySaleAndCustomer(@Param("saleId") Long saleId, @Param("customerId") Long customerId);
+            "    p.name",
+            nativeQuery = true)
+    List<ProductDetailResponse> findProductDetailsBySaleAndCustomer(
+            @Param("saleId") Long saleId,
+            @Param("customerId") Long customerId
+    );
+
 
 
 

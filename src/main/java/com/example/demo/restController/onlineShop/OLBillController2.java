@@ -175,7 +175,6 @@ public class OLBillController2 {
             else if (codePayment.equals(100)) {
                 billData.setStatus(1);
                 billData.setCustomer(customer.get());
-                billData.setPaidAmount(billData.getTotalAmountAfterDiscount().add(billData.getShippingFee()));
                 Bill bill = olBillService.save(billData);
                 olBillUntility.newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
                 bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
