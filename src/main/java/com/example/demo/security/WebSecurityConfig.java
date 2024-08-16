@@ -81,7 +81,73 @@ public PasswordEncoder passwordEncoder() {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+//                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+//                        .requestMatchers("/api/admin/rate/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+
+
+//                        product
+                        .requestMatchers("/api/admin/bill-th/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/brand-th/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/category/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/collar/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/color/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/customer-th/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/material/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/product/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/product-detail/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/size/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/wrist/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+
+
+//                            thống kê
+                        .requestMatchers("/api/admin/bill-tinh/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/bill-history-tinh/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/billdetail-tinh/**").hasAuthority("ADMIN")
+
+
+//                        customer
+                        .requestMatchers("/api/admin/account/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/address/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/customer/**").hasAuthority("ADMIN")
+
+//                            employee
+                        .requestMatchers("/api/admin/audit-log/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/employee/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/customer/**").hasAuthority("ADMIN")
+
+//                        Bill
+                        .requestMatchers("/api/admin/billDetail/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/billHistory/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/bill/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/productProperty/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/productDetail/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/productDetail/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/product/maxPrice").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/admin/product/minPrice").hasAnyAuthority("ADMIN", "EMPLOYEE")
+
+//                        Voucher
+                        .requestMatchers("/api/admin/customerTypeN/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/customerTypeVoucher/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/voucher/**").hasAuthority("ADMIN")
+
+//                        point
+                        .requestMatchers("/api/admin/point-settings/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/customer-types/**").hasAuthority("ADMIN")
+
+
+//                        sale
+//                        .requestMatchers("/api/admin/image/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/sales/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/sales/products/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/admin/sales/product-sales/**").hasAuthority("ADMIN")
+
+//                        rate
+                        .requestMatchers("/api/admin/rate/**").hasAuthority("ADMIN")
+
+
+
+
+  
 
 //                        .requestMatchers("/api/ol/authenticated/**").authenticated()
                         .anyRequest().permitAll()

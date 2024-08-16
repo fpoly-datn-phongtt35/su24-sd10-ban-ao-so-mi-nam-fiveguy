@@ -95,7 +95,6 @@ app.controller('pointAdminController', ['$scope', '$http', '$routeParams', '$tim
              $scope.totalPages = response.data.totalPages;
          }, function(error) {
             console.log(error)
-             $scope.showErrorNotification('Failed to load customer types');
          });
      }
  
