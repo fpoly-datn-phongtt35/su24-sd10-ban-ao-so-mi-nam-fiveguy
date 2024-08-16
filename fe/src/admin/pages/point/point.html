@@ -7,18 +7,18 @@
         <!-- Existing Content -->
 
         <!-- New Row: Thiết lập điểm -->
-        <div class="row mb-4">
+        <div class="row mb-4 align-items-center">
             <div class="col-md-6 d-flex align-items-center">
-                <label for="pointConversionRate" class="form-label me-2">Tỉ lệ quy đổi điểm thưởng</label>
-                <input type="text" class="form-control text-end me-2" id="pointConversionRate" ng-model="pointConversionRate"  readonly>
+                <label for="pointConversionRate" class="form-label me-2 mb-0">Tỉ lệ quy đổi điểm thưởng</label>
+                <input type="text" class="form-control text-end me-2" id="pointConversionRate" ng-model="pointConversionRate" style="width: 100px;" >
                 <span class="badge bg-success me-2">VND</span>
-                <span>= 1 điểm thưởng</span>
-                <i class="fa fa-info-circle ms-2"></i>
+                <span class="mb-0">= 1 điểm thưởng</span>
             </div>
-            <div class="col-md-6 d-flex align-items-end">
-                <button class="btn btn-success ms-auto" ng-click="savePointConversionRate()">Lưu</button>
+            <div class="col-md-6 d-flex align-items-center ">
+                <button class="btn btn-success" ng-click="savePointConversionRate()">Lưu</button>
             </div>
         </div>
+        
         
 
         <!-- New Table: CustomerType -->
