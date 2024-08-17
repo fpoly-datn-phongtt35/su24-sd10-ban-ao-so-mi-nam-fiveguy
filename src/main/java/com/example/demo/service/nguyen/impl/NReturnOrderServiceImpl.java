@@ -271,6 +271,15 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         return summary;
     }
 
+    @Override
+    public Bill findAllReturnOrdersByBillCode(String code) {
+        Optional<Bill> bill = billRepository.findBillByCode(code);
+
+        if(bill.isEmpty()) return null;
+
+        return bill.get();
+    }
+
 
     //Cách tính theo tỉ lệ
     @Override

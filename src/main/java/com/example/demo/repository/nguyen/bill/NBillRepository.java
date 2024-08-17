@@ -15,12 +15,15 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecificationExecutor<Bill> {
 
     @Query("SELECT b FROM Bill b WHERE b.voucher.id = :voucherId")
     List<Bill> findByVoucherId(@Param("voucherId") Long voucherId);
+
+    Optional<Bill> findBillByCode(String code);
 
     @Query("SELECT b FROM Bill b " +
             "JOIN b.customer c " +

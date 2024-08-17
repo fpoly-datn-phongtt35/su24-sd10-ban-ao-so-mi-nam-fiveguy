@@ -45,21 +45,21 @@
     }
 </style>
 
-<div class="container">
+<div class="container" style="min-height: 500px;">
     <div class="search-section">
         <h1 class="return-heading">Trả Hàng</h1>
         <div class="search-input-group fs-5">
             <label for="order-code">Mã hóa đơn:</label>
             <input type="text" id="order-code" class="form-control me-2 fs-5"
-                placeholder="Nhập mã hóa đơn cần trả hàng..." ng-model="idBill">
+                placeholder="Nhập mã hóa đơn cần trả hàng..." ng-model="code">
             <div class="btn-container">
                 <button class="btn btn-warning btn-custom" style="width: 110px; height: 45px;" type="button"
-                    ng-click="findById(idBill)">
+                    ng-click="findById(code)">
                     Tìm Kiếm</button>
-                <button class="btn btn-outline-secondary btn-custom" style="width: 110px; height: 45px;"
-                    type="button">Quét Mã</button>
+                <!-- <button class="btn btn-outline-secondary btn-custom" style="width: 110px; height: 45px;"
+                    type="button">Quét Mã</button> -->
             </div>
         </div>
-        <img src="/src/admin/pages/return-order-nguyen/return-order.jpg" alt="Trả hàng" class="return-image">
+        <!-- <img src="/src/admin/pages/return-order-nguyen/return-order.jpg" alt="Trả hàng" class="return-image"> -->
     </div>
 </div>
