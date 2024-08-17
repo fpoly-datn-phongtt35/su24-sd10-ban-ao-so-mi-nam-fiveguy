@@ -5,6 +5,7 @@ import com.example.demo.model.response.nguyen.BillDetailSummary;
 import com.example.demo.repository.nguyen.NCustomerTypeVoucherRepository;
 import com.example.demo.repository.nguyen.NVoucherRepository;
 import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
+import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.NPaymentStatusRepository;
 import com.example.demo.repository.nguyen.product.NProductDetailRepository;
@@ -30,6 +31,9 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 
     @Autowired
     NBillRepository billRepository;
+
+    @Autowired
+    NBillHistoryRepository billHistoryRepository;
 
     @Autowired
     NProductDetailRepository productDetailRepository;
@@ -114,7 +118,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 
     @Transactional
     public BillDetail addProductDetailToBill(Long billId, Long productDetailId, int quantity,
-                                             BigDecimal price, BigDecimal promotionalPrice) {
+                                             BigDecimal price, BigDecimal promotionalPrice, String createBy) {
         // Fetch the bill
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new RuntimeException("Bill not found with id: " + billId));
@@ -156,6 +160,17 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 //            bill.setTotalAmount(bill.getTotalAmount().add(totalPriceIncrement));
 //            Bill returnBill = billRepository.save(bill);
 
+            BillHistory newHistory = new BillHistory();
+            newHistory.setBill(bill);
+            newHistory.setStatus(bill.getStatus());
+            newHistory.setDescription("Cập nhật số lượng sản phẩm "
+                    + existingBillDetail.getProductDetail().getProduct().getName());
+            newHistory.setCreatedBy(createBy);
+            newHistory.setType(2);
+            newHistory.setReason(0);
+            newHistory.setCreatedAt(new Date());
+            billHistoryRepository.save(newHistory);
+
             autoSetVoucher(bill.getId());
             // Update the ProductDetail quantity
 //            productDetail.setQuantity(productDetail.getQuantity() - quantity);
@@ -186,6 +201,17 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 //            bill.setTotalAmount(bill.getTotalAmount().add(totalPriceIncrement));
 //            Bill returnBill = billRepository.save(bill);
 
+            BillHistory newHistory = new BillHistory();
+            newHistory.setBill(bill);
+            newHistory.setStatus(bill.getStatus());
+            newHistory.setDescription("Thêm sản phẩm "
+                    + billDetail.getProductDetail().getProduct().getName());
+            newHistory.setCreatedBy(createBy);
+            newHistory.setType(2);
+            newHistory.setReason(0);
+            newHistory.setCreatedAt(new Date());
+            billHistoryRepository.save(newHistory);
+
             autoSetVoucher(bill.getId());
 
             // Update the ProductDetail quantity
@@ -197,7 +223,7 @@ public class NBillDetailServiceImpl implements NBillDetailService {
     }
 
     @Transactional
-    public void removeProductDetailFromBill(Long billDetailId) {
+    public void removeProductDetailFromBill(Long billDetailId, String createBy) {
         // Fetch the BillDetail
         BillDetail billDetail = billDetailRepository.findById(billDetailId)
                 .orElseThrow(() -> new RuntimeException(
@@ -224,11 +250,22 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         // Delete the BillDetail
         billDetailRepository.delete(billDetail);
 
+        BillHistory newHistory = new BillHistory();
+        newHistory.setBill(bill);
+        newHistory.setStatus(bill.getStatus());
+        newHistory.setDescription("Xoá sản phẩm "
+                + billDetail.getProductDetail().getProduct().getName());
+        newHistory.setCreatedBy(createBy);
+        newHistory.setType(2);
+        newHistory.setReason(0);
+        newHistory.setCreatedAt(new Date());
+        billHistoryRepository.save(newHistory);
+
         autoSetVoucher(bill.getId());
     }
 
     @Transactional
-    public BillDetail updateBillDetailQuantity(Long billDetailId, int newQuantity) {
+    public BillDetail updateBillDetailQuantity(Long billDetailId, int newQuantity, String createBy) {
         // Fetch the BillDetail
         BillDetail billDetail = billDetailRepository.findById(billDetailId)
                 .orElseThrow(() -> new RuntimeException(
@@ -255,6 +292,17 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 //        Bill returnBill = billRepository.save(bill);
 
         BillDetail returnBill = billDetailRepository.save(billDetail);
+
+        BillHistory newHistory = new BillHistory();
+        newHistory.setBill(bill);
+        newHistory.setStatus(bill.getStatus());
+        newHistory.setDescription("Cập nhật số lượng sản phẩm "
+                + billDetail.getProductDetail().getProduct().getName());
+        newHistory.setCreatedBy(createBy);
+        newHistory.setType(2);
+        newHistory.setReason(0);
+        newHistory.setCreatedAt(new Date());
+        billHistoryRepository.save(newHistory);
 
         autoSetVoucher(bill.getId());
 

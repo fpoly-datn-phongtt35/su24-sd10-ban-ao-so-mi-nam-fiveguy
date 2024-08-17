@@ -15,9 +15,9 @@ public interface NBillDetailService {
     BillDetailSummary getBillDetailSummaryByBillId(Long billId);
 
     BillDetail addProductDetailToBill(Long billId, Long productDetailId, int quantity,
-                                      BigDecimal price, BigDecimal promotionalPrice);
+                                      BigDecimal price, BigDecimal promotionalPrice, String createBy);
 
-    void removeProductDetailFromBill(Long billDetailId);
+    void removeProductDetailFromBill(Long billDetailId, String createBy);
 
-    BillDetail updateBillDetailQuantity(Long billDetailId, int newQuantity);
+    BillDetail updateBillDetailQuantity(Long billDetailId, int newQuantity, String createBy);
 }

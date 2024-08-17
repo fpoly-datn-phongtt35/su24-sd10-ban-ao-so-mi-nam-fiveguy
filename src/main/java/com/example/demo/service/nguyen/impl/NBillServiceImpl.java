@@ -220,7 +220,7 @@ public class NBillServiceImpl implements NBillService {
     //region Chọn voucher từ trong list Voucher có thể dùng
     @Override
     @Transactional
-    public Bill setVoucherToBill(Long id, Voucher voucherRequest) {
+    public Bill setVoucherToBill(Long id, Voucher voucherRequest, String createBy) {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
         Voucher voucher = voucherRepository.findById(voucherRequest.getId())
@@ -239,6 +239,16 @@ public class NBillServiceImpl implements NBillService {
         }
 
         bill.setVoucher(voucher);
+
+        BillHistory newHistory = new BillHistory();
+        newHistory.setBill(bill);
+        newHistory.setStatus(bill.getStatus());
+        newHistory.setDescription("Thay đổi mã khuyến mãi " + voucher.getCode());
+        newHistory.setCreatedBy(createBy);
+        newHistory.setType(2);
+        newHistory.setReason(0);
+        newHistory.setCreatedAt(new Date());
+        billHistoryRepository.save(newHistory);
 
         return billRepository.save(bill);
     }
