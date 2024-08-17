@@ -6,5 +6,5 @@ public interface  SaleSummaryResponse {
     Long getSaleId();
     Long getTotalProductsSold();
     Double getTotalRevenue();
-    Double getTotalProfit();
+//    Double getTotalProfit();
 }

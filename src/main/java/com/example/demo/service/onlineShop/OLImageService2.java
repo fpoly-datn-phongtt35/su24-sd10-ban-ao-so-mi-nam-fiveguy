@@ -8,6 +8,6 @@ public interface OLImageService2 {
     List<String> getImagesByProductIdAndColorId(Long idProduct, Long idColor);
 
 
-    public String getImagePathByProductId(Long id);
+    public String findImagesByProductId(Long id);
 
 }

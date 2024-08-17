@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -21,6 +22,9 @@ public class ReturnOrder {
 
     @Column(name = "Quantity")
     private Integer quantity;
+
+    @Column(name = "RefundPrice")
+    private BigDecimal refundPrice;
 
     @Column(name = "Type")
     private int type;

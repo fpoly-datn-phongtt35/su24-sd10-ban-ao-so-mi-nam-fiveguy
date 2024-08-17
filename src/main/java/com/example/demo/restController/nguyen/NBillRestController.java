@@ -1,10 +1,14 @@
 package com.example.demo.restController.nguyen;
 
 import com.example.demo.entity.*;
+import com.example.demo.entity.AuditLogs;
+import com.example.demo.entity.Bill;
+import com.example.demo.entity.BillDetail;
 import com.example.demo.model.request.nguyen.BillRequest;
 import com.example.demo.model.request.nguyen.PaymentStatusRequest;
 import com.example.demo.model.response.nguyen.BillResponse;
 import com.example.demo.security.service.SCAccountService;
+import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.nguyen.NBillDetailService;
 import com.example.demo.service.nguyen.NBillService;
 import com.example.demo.service.nguyen.NPaymentStatusService;
@@ -40,6 +44,9 @@ public class NBillRestController {
 
     @Autowired
     private SCAccountService accountService;
+
+    @Autowired //tinh
+    private SCEmployeeService acScEmployeeService; //tinh
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {

@@ -17,7 +17,8 @@ public interface OLCategoryRepository2 extends JpaRepository<Category, Long> {
     @Query("SELECT c FROM Category c WHERE c.status = 1")
     List<Category> findAllActiveCategories();
 
-
+    @Query(value = "SELECT p.category FROM Product p WHERE p.id = :productId")
+    Category findCategoryByProductId(@Param("productId") Long productId);
 
 
 }

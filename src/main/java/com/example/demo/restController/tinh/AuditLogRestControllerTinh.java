@@ -193,7 +193,7 @@ public class AuditLogRestControllerTinh {
             @RequestParam(required = false) String implementer,
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String actionType,
-            @RequestParam(required = false) Date time,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date time,
             @RequestParam(required = false) String detailAction,
             @RequestParam(required = false) Integer status,
             @RequestParam(defaultValue = "5") int size,
@@ -201,8 +201,9 @@ public class AuditLogRestControllerTinh {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(pageNumber, size,sort);
-        Page<AuditLogs> page = auditLogServiceTinh.findAuditLog(implementer, code, actionType, time, detailAction, status, pageable);
+        Pageable pageable = PageRequest.of(pageNumber, size, sort);
+        Page<AuditLogs> page = auditLogServiceTinh.findAuditLog(implementer, code, actionType, time, detailAction, pageable);
         return new PaginationResponse<>(page);
     }
+
 }

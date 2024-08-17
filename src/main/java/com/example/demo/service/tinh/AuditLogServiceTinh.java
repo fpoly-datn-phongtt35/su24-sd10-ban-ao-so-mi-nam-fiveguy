@@ -17,5 +17,6 @@ public interface AuditLogServiceTinh {
 
     void createAuditLoginCustomer(String name, String text, String text2);
 
-    Page<AuditLogs> findAuditLog(String implementer, String code, String actionType, Date time, String detailedAction, Integer status, Pageable pageable);
+//    Page<AuditLogs> findAuditLog(String implementer, String code, String actionType, Date time, String detailedAction, Integer status, Pageable pageable);
+Page<AuditLogs> findAuditLog(String implementer, String code, String actionType, Date time, String detailedAction, Pageable pageable);
 }

@@ -17,13 +17,11 @@ public class OLAddressServiceImpl2 implements OLAddressService2 {
 
     @Override
     public List<Address> getAddressListByUsername(Customer customer) {
-
                 return repository.findAllByCustomer_IdAndStatus(customer.getId(),1);
     }
 
     @Override
     public Address findByDefaultAddressTrue(Customer customer) {
-
                 List<Address> addressEntities = repository.findByCustomer_Id(customer.getId());
                 for (Address addressEntity : addressEntities) {
                     if ((addressEntity.getDefaultAddress())) {

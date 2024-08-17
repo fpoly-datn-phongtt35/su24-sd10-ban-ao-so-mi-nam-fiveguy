@@ -1,5 +1,6 @@
 package com.example.demo.repository.onlineShop;
 
+import com.example.demo.entity.Category;
 import com.example.demo.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,13 +55,13 @@ List<Object[]> findProductsWithImages();
 
 
     //    get  promotionalPrice  hiển thị cart
-@Query("SELECT ps.promotionalPrice " +
-        "FROM Product p " +
-        "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
-        "WHERE p.id = :productId " +
-        "AND p.status = 1 " +
-        "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")
-Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
+    @Query("SELECT ps.promotionalPrice " +
+            "FROM Product p " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "WHERE p.id = :productId " +
+            "AND p.status = 1 " +
+            "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")
+    Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
 
     @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
             "MIN(i.path) AS imagePath " +  // Selecting the first image path per product
@@ -71,7 +72,7 @@ Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
             "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
             "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
             "LEFT JOIN p.images i ON i.product.id = p.id " +
-            "WHERE p.status = 1 AND b.status = 4 " +
+            "WHERE p.status = 1 AND b.status = 21 " +
             "GROUP BY p.id, p.name, p.price, ps.discountPrice, s.value, s.discountType " +  // Grouping by all selected columns
             "ORDER BY COALESCE(SUM(bd.quantity), 0) DESC")
     List<Object[]> findAllProductsOrderedByTotalQuantitySold();
@@ -107,7 +108,17 @@ Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
             "ORDER BY p.id")
     List<Object[]> search(@Param("search") String search);
 
-
-
+//    Lấy product với category
+@Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
+        "MIN(i.path) AS imagePath " +
+        "FROM Product p " +
+        "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+        "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
+        "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1 " +
+        "WHERE p.category = :category " +
+        "AND p.status = 1 " +
+        "GROUP BY p.id, p.name, ps.discountPrice, s.value, s.discountType " +
+        "ORDER BY p.id")
+List<Object[]> findProductsByCategory(@Param("category") Category category);
 
 }

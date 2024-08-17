@@ -6,6 +6,14 @@ import com.example.demo.repository.nguyen.NCustomerTypeVoucherRepository;
 import com.example.demo.repository.nguyen.NVoucherRepository;
 import com.example.demo.repository.nguyen.bill.*;
 import com.example.demo.repository.nguyen.product.NProductDetailRepository;
+import com.example.demo.entity.AuditLogs;
+import com.example.demo.entity.Bill;
+import com.example.demo.entity.BillHistory;
+import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
+import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
+import com.example.demo.repository.nguyen.bill.NBillRepository;
+import com.example.demo.repository.nguyen.bill.BillSpecification;
+
 import com.example.demo.service.nguyen.NBillService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

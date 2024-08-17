@@ -21,4 +21,9 @@ public class OLCategoryServiceImpl2 implements OLCategoryService2 {
     public List<Category> getAllActiveCategories() {
         return olCategoryRepository2.findAllActiveCategories();
     }
+
+    @Override
+    public Category findCategoryByProductId(Long productId) {
+        return olCategoryRepository2.findCategoryByProductId(productId);
+    }
 }

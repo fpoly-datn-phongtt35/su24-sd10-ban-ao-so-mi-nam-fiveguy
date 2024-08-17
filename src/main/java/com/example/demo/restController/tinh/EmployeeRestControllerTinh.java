@@ -5,6 +5,7 @@ package com.example.demo.restController.tinh;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Employee;
 import com.example.demo.repository.tinh.EmployeeRepositoryTinh;
+import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.tinh.EmployeeServiceTinh;
 import com.example.demo.untility.tinh.PaginationResponse;
 import org.apache.poi.ss.usermodel.*;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
@@ -41,6 +43,9 @@ public class EmployeeRestControllerTinh {
 
     @Autowired
     EmployeeRepositoryTinh employeeRepository;
+
+    @Autowired
+    SCEmployeeService scEmployeeService;
 
 
     @GetMapping("")
@@ -300,7 +305,12 @@ public class EmployeeRestControllerTinh {
 
     }
 
+    @GetMapping(value = "/detail-employee", produces = "application/json")
+    public Optional<Employee> getDetailEmployye(@RequestHeader("Authorization") String token){
 
+        Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
+        return employee;
+    }
 
 
 }

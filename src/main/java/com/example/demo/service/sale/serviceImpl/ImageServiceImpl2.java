@@ -21,8 +21,8 @@ public class ImageServiceImpl2 implements ImageService2 {
 
     @Override
     public String findImagesByProductId(Long productId) {
-        List<Image> images = imageRepository.findImagesByProductId(productId);
-        return images.isEmpty() ? null : images.get(0).getPath();
+        List<String> paths = imageRepository.findImagePathsByProductId(productId);
+        return paths.isEmpty() ? null : paths.get(0);
     }
 
 }

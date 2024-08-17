@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,13 +43,13 @@ public class CustomerRestControllerH {
     @Autowired
     CustomerRepositoryH customerRepositoryH;
 
-
     @GetMapping("")
     public ResponseEntity<List<Customer>> getAll() {
         List<Customer> customers = customerService.getAll();
         return ResponseEntity.ok(customers);
 
     }
+
     @GetMapping("/account/{account}")
     public ResponseEntity<Customer> getByAccount(@PathVariable String account) {
         Customer account1 = customerService.getByAccount(account);
@@ -67,9 +68,10 @@ public class CustomerRestControllerH {
         Customer customer = customerService.getById(id);
         return ResponseEntity.ok(customer);
     }
+
     @GetMapping("/search-status/{id}")
     public ResponseEntity<List<Customer>> getAllstatus(@PathVariable Integer id) {
-        List<Customer> customers =  customerService.getAllStatus(id);
+        List<Customer> customers = customerService.getAllStatus(id);
         return ResponseEntity.ok(customers);
     }
 
@@ -80,13 +82,14 @@ public class CustomerRestControllerH {
 
         return ResponseEntity.ok(customers);
     }
+
     @PutMapping("/update-status-nhan-vien/{id}")
-    public void updateStatus(@PathVariable Long id){
+    public void updateStatus(@PathVariable Long id) {
         customerRepositoryH.updateStatusCustomer(id);
     }
 
 
-    //Thêm Employee
+    //Thêm customer
 
     @PostMapping("/save")
     public ResponseEntity<?> create(@RequestBody Customer customers) {
@@ -99,14 +102,14 @@ public class CustomerRestControllerH {
 
     }
 
-    // delete Employee
+    // delete customer
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         customerService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    //update employee
+    //update customer
     @PutMapping("/{id}")
     public ResponseEntity<Customer> update(@PathVariable Long id, @RequestBody Customer customers) {
         customerService.update(id, customers);
@@ -116,6 +119,7 @@ public class CustomerRestControllerH {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PutMapping("/status/{id}")
     public ResponseEntity<Customer> updatestatus(@PathVariable Long id, @RequestBody Customer customers) {
         customerService.updateRole(id, customers);
@@ -139,11 +143,13 @@ public class CustomerRestControllerH {
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) Long idCustomerType,
             @RequestParam(required = false) Integer status,
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "5") int size,
-//            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(required = true, defaultValue = "0") Integer pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber, 5);
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = true, defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber, size, sort);
         Page<Customer> page = customerService.findCustomer(fullName, code, avatar, birthDate, gender, address, account, email, phoneNumber, idCustomerType, status, pageable);
         return new PaginationResponse<>(page);
     }

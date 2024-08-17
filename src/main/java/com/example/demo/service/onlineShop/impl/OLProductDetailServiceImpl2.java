@@ -17,8 +17,8 @@ public class OLProductDetailServiceImpl2 implements OLProductDetailService2 {
     private OLProductDetailRepository2 olProductDetailRepository2;
 
     @Override
-    public List<ProductDetail> findByProduct(Product product) {
-        return olProductDetailRepository2.findByProductAndStatus(product,1);
+    public List<ProductDetail> findByProduct(Long id) {
+        return olProductDetailRepository2.findByProductIdAndStatus(id,1);
     }
 
     @Override

@@ -58,6 +58,8 @@ public interface AccountServiceH {
 
     Account updateAccountEmail(Account accountEntity, String email);
 
+    Account updateAccountEmailDetailEmployee(Account accountEntity, String email);
+
     boolean checkEmailExists(String email);
 
     boolean checkAccountExists(String account);

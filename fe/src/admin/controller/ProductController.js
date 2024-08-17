@@ -43,14 +43,14 @@ app.controller("ProductController", function($scope, $http, $timeout){
     $scope.page = 0;
     $scope.size = 5;
     
-    $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
-    $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
+    $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
+    $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
     $scope.products = [];
     $scope.collars = [];
     $scope.wrists = [];
     $scope.materials = [];
     $scope.categories = [];
-    $scope.suppliers = [];
+    $scope.brands = [];
     $scope.colors = [];
     $scope.sizes = [];
     $scope.sizeSelected = [];
@@ -212,31 +212,31 @@ app.controller("ProductController", function($scope, $http, $timeout){
     // End category
 
     // Begin Supplier
-    $scope.getAllSuppliers = () => {
-        $http.get(`${config.host}/supplier/all`).then(response => {
-            $scope.suppliers = response.data;
+    $scope.getAllBrands = () => {
+        $http.get(`${config.host}/brand-th/all`).then(response => {
+            $scope.brands = response.data;
         }).catch(error => {
             console.log("Error", error);
         })
     }
 
-    $scope.getAllSuppliers();
+    $scope.getAllBrands();
 
-    $('#id-label-supplier').select2( {
+    $('#id-label-brand').select2( {
         theme: "bootstrap-5",
         placeholder: $(this).data('placeholder'),
-        dropdownParent: $("#box-supplier")
+        dropdownParent: $("#box-brand")
     }).on("select2:select", function (e) { 
-        $scope.product.supplier.id = e.params.data.id;  
+        $scope.product.brand.id = e.params.data.id;  
         $scope.$apply(); 
     });
 
-    $('#id-update-supplier').select2( {
+    $('#id-update-brand').select2( {
         theme: "bootstrap-5",
         placeholder: $(this).data('placeholder'),
-        dropdownParent: $("#box-update-supplier")
+        dropdownParent: $("#box-update-brand")
     }).on("select2:select", function (e) { 
-        $scope.productUpdate.supplier.id = e.params.data.id;  
+        $scope.productUpdate.brand.id = e.params.data.id;  
         $scope.$apply(); 
     });
     // End Supplier
@@ -519,18 +519,19 @@ app.controller("ProductController", function($scope, $http, $timeout){
                         barcode: $scope.createBarcode(),
                         isNew: true
                     });
-                return color; 
+                    return color; 
                 });
                 $scope.sizeSelect.push(size);
             }
         });
     }).on("select2:unselecting", function (e) {
-        const sizeExistsInColor = $scope.colorSelect.some(color =>
+        let sizeExistsInColor = $scope.colorSelect.some(color => 
             color.productDetails.some(detail =>
-                detail.isNew === true
+                detail.size.id.toString() === e.params.args.data.id && !detail.isNew
             )
         );
-        if (!sizeExistsInColor) {
+    
+        if (sizeExistsInColor) {
             e.preventDefault();
         } else {
             $scope.$apply(() => {
@@ -543,9 +544,8 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 $scope.sizeSelect = $scope.sizeSelect.filter(size =>
                     size.id.toString() !== e.params.args.data.id
                 );
-            })
+            });
         }
-     
     });
     // End Size
 
@@ -658,14 +658,14 @@ app.controller("ProductController", function($scope, $http, $timeout){
     $scope.getAllProducts();
 
     $scope.resetFormUpdate = () => {
-        $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
+        $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
         $scope.errorsUpdate = [];
         $timeout(() => {
             $('#id-update-collar').val(null).trigger('change');
             $('#id-update-wrist').val(null).trigger('change');
             $('#id-update-material').val(null).trigger('change');
             $('#id-update-category').val(null).trigger('change');
-            $('#id-update-supplier').val(null).trigger('change');
+            $('#id-update-brand').val(null).trigger('change');
             $('#id-update-color').val(null).trigger('change');
             $('#id-update-size').val(null).trigger('change');
             $scope.colorSelect = [];
@@ -674,10 +674,11 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.editProduct = (key) => {
+        $('#loading-edit').css('display', 'flex');
         $http.get(`${config.host}/product/${key}`).then((response) => {
             $scope.productUpdate = response.data;
             $timeout(() => {
-                ['collar', 'wrist', 'material', 'category', 'supplier'].forEach(field => {
+                ['collar', 'wrist', 'material', 'category', 'brand'].forEach(field => {
                     $(`#id-update-${field}`).val($scope.productUpdate[field].id).trigger('change');
                 });
             });
@@ -727,6 +728,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
                     $scope.sizeSelect = objIdSize.map(id => $scope.sizes.find(size => size.id.toString() === id));
                 });  
                 $('#id-update-color').val($scope.getColorCodes()).trigger('change');
+                $('#loading-edit').css('display', 'none');
             }).catch(error => console.error("Error", error));
         }).catch(error => console.error("Error", error));
     };
@@ -791,7 +793,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
         } else if (!$scope.product.category.id) {
             toastr["warning"]("Vui lòng chọn nhóm sản phẩm");
             return false;
-        } else if (!$scope.product.supplier.id) {
+        } else if (!$scope.product.brand.id) {
             toastr["warning"]("Vui lòng chọn nhà cung cấp");
             return false;
         } else if ($scope.sizeSelected.length == 0 && $scope.colorSelected.length > 0) {
@@ -821,7 +823,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
         } else if (!$scope.productUpdate.category.id) {
             toastr["warning"]("Vui lòng chọn nhóm sản phẩm");
             return false;
-        } else if (!$scope.productUpdate.supplier.id) {
+        } else if (!$scope.productUpdate.brand.id) {
             toastr["warning"]("Vui lòng chọn nhà cung cấp");
             return false;
         } else if ($scope.sizeSelect.length == 0 && $scope.colorSelect.length > 0) {
@@ -844,8 +846,8 @@ app.controller("ProductController", function($scope, $http, $timeout){
             toastr["error"](err.name);
         } else if (err.price) {
             toastr["error"](err.price);
-        } else if (err.supplier) {
-            toastr["error"](err.supplier);
+        } else if (err.brand) {
+            toastr["error"](err.brand);
         } else if (err.material) {
             toastr["error"](err.material);
         } else if (err.wrist) {
@@ -858,14 +860,14 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.resetForm = () => {
-        $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
+        $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
         $scope.errors = [];
         $timeout(() => {
             $('#id-label-collar').val(null).trigger('change');
             $('#id-label-wrist').val(null).trigger('change');
             $('#id-label-material').val(null).trigger('change');
             $('#id-label-category').val(null).trigger('change');
-            $('#id-label-supplier').val(null).trigger('change');
+            $('#id-label-brand').val(null).trigger('change');
             $('#id-label-color').val([]).trigger('change');
             $('#id-label-size').val([]).trigger('change');
             $scope.colorSelected = [];
@@ -1006,13 +1008,6 @@ app.directive('customOnChange', function() {
     };
   });
 
-  app.filter('vndCurrency', function() {
-    return function(input) {
-      if (isNaN(input)) {
-        return input;
-      }
-      return parseInt(input).toLocaleString('vi-VN') + ' VND';
-    };
-  });
+
   
 

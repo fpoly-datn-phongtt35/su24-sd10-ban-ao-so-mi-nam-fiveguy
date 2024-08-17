@@ -379,3 +379,27 @@ dd {
 .input-group{
     width: 30%;
 }
+
+
+/* star */
+
+.star-container{
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+
+  .checked {
+    color: orange;
+  }
+
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Khoảng cách giữa các phần tử là 20px */
+  }
+  
+  /* Cho các nút trong footer có khoảng cách đều nhau */
+  .modal-footer {
+    display: flex;
+    justify-content: space-evenly;
+  }
