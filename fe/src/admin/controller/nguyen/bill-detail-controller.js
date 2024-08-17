@@ -76,6 +76,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.updateBill = angular.copy($scope.billResponse)
             $scope.getAllBillDetailByBillId($scope.idBill)
 
+            $scope.getBillHistoryByBillId()
             //Hiển thị sản phẩm trả
             $http.get(apiReturnOrder + "/" + $scope.idBill).then(function (response) {
                 $scope.returnOrders = response.data;
@@ -110,7 +111,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             }, 0);
         });
     };
-    $scope.getBillHistoryByBillId()
+    // $scope.getBillHistoryByBillId()
 
     $scope.showModalStatus = function (nextStatus) {
         $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {

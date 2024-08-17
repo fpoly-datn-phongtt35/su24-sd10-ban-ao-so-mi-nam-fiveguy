@@ -31,7 +31,7 @@ public interface NBillService {
 
     Integer isQuantityExceedsProductDetail(Long idBill);
 
-    Bill setVoucherToBill(Long id, Voucher voucher);
+    Bill setVoucherToBill(Long id, Voucher voucher, String createBy);
 
     Bill updateShippingFee(Long id, BigDecimal shippingFee);
 

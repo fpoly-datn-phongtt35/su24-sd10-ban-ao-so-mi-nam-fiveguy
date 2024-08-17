@@ -76,7 +76,9 @@ public class NBillRestController {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return billService.getBillsByFilters(statuses, searchTerm, typeBill, parsedStartDate, parsedEndDate, pageable);
+        return billService
+                .getBillsByFilters(statuses, searchTerm, typeBill, parsedStartDate, parsedEndDate,
+                        pageable);
     }
 
 
@@ -138,7 +140,8 @@ public class NBillRestController {
         Optional<String> fullName = accountService.getFullNameByToken(token);
 
         BillDetail billDetail = billDetailService
-                .addProductDetailToBill(billId, productDetailId, quantity, price, promotionalPrice);
+                .addProductDetailToBill(billId, productDetailId, quantity, price, promotionalPrice,
+                        fullName.get());
         return ResponseEntity.ok(billDetail);
     }
 
@@ -148,7 +151,7 @@ public class NBillRestController {
 
         Optional<String> fullName = accountService.getFullNameByToken(token);
 
-        billDetailService.removeProductDetailFromBill(billDetailId);
+        billDetailService.removeProductDetailFromBill(billDetailId, fullName.get());
         return ResponseEntity.noContent().build();
     }
 
@@ -161,7 +164,7 @@ public class NBillRestController {
         Optional<String> fullName = accountService.getFullNameByToken(token);
 
         BillDetail updatedBillDetail = billDetailService
-                .updateBillDetailQuantity(billDetailId, newQuantity);
+                .updateBillDetailQuantity(billDetailId, newQuantity, fullName.get());
         return ResponseEntity.ok(updatedBillDetail);
     }
 
@@ -208,9 +211,11 @@ public class NBillRestController {
     }
 
     @PutMapping("/{billId}/setVoucherToBill")
-    public ResponseEntity<?> setVoucherToBill(@PathVariable Long billId,
+    public ResponseEntity<?> setVoucherToBill(@RequestHeader("Authorization") String token,
+                                              @PathVariable Long billId,
                                               @RequestBody Voucher voucher) {
-        return ResponseEntity.ok(billService.setVoucherToBill(billId, voucher));
+        Optional<String> fullName = accountService.getFullNameByToken(token);
+        return ResponseEntity.ok(billService.setVoucherToBill(billId, voucher, fullName.get()));
     }
 
 }
