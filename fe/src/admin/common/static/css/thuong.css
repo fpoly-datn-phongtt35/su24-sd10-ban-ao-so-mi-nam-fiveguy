@@ -284,6 +284,10 @@
 			display: none;
 		  }
 
+		  .payment::-webkit-scrollbar {
+			display: none;
+		  }
+
 		.product {
 			padding: 10px;
 			display: flex;
@@ -323,4 +327,9 @@
 		.product .p-details h3 {
 			font-size: 15px;
 			color: #1d1d1d;
+		}
+
+		.list-address:hover {
+			cursor: pointer;
+			background: #F3F6F9;
 		}

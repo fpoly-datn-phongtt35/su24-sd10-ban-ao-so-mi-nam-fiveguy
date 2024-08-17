@@ -6,7 +6,6 @@ import com.example.demo.model.request.thuong.CategoryRequestTH;
 import com.example.demo.model.response.thuong.BillResponseTH;
 import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.thuong.BillServiceTH;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +67,12 @@ public class BillControllerTH {
     @PutMapping
     public ResponseEntity<?> updateBill(@RequestHeader("Authorization") String token, @RequestBody BillResponseTH bill) {
         Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
-        return new ResponseEntity<>(billService.update(employee.get(), bill), HttpStatus.CREATED);
+        return new ResponseEntity<>(billService.update(employee.get(), bill), HttpStatus.OK);
+    }
+
+    @PutMapping("/payment")
+    public ResponseEntity<?> payment(@RequestHeader("Authorization") String token, @RequestBody BillResponseTH bill) {
+        Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
+        return new ResponseEntity<>(billService.paymentBill(employee.get(), bill), HttpStatus.OK);
     }
 }

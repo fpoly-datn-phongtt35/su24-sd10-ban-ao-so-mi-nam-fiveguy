@@ -1,10 +1,7 @@
 package com.example.demo.service.thuong.serviceImpl;
 
 import com.example.demo.advice.DuplicateException;
-import com.example.demo.entity.Bill;
-import com.example.demo.entity.BillDetail;
-import com.example.demo.entity.Employee;
-import com.example.demo.entity.ProductDetail;
+import com.example.demo.entity.*;
 import com.example.demo.model.response.thuong.BillResponseTH;
 import com.example.demo.repository.thuong.*;
 import com.example.demo.service.thuong.BillServiceTH;
@@ -34,6 +31,9 @@ public class BillServiceTHImpl implements BillServiceTH {
 
     @Autowired
     private ProductRepositoryTH productRepository;
+
+    @Autowired
+    private BillHistoryRepositoryTH billHistoryRepository;
 
     @Override
     public List<BillResponseTH> findAllByStatusAndTypeBill(Integer status, Integer typeBill) {
@@ -91,7 +91,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         if (pd.getQuantity() < 1 ) {
             throw new DuplicateException("Không đủ số lượng tồn kho cho " + pd.getProduct().getName() + " " + pd.getColor().getName(), "alert");
 
-        } else if (pd.getStatus() == 0) {
+        } else if (pd.getStatus() == 0 || pd.getProduct().getStatus() == 0) {
 
             throw new DuplicateException(pd.getProduct().getName() + " " + pd.getColor().getName() + " đã ngừng kinh doanh", "alert");
         }
@@ -112,7 +112,7 @@ public class BillServiceTHImpl implements BillServiceTH {
 
         if (pd == null) return null;
         if (bd.getQuantity() < updateQty) {
-            if (pd.getStatus() == 0) {
+            if (pd.getStatus() == 0  || pd.getProduct().getStatus() == 0) {
                 throw new DuplicateException(pd.getProduct().getName() + " " + pd.getColor().getName() + " đã ngừng kinh doanh", "alert");
             }
             else if (pd.getQuantity() < (updateQty - bd.getQuantity())) {
@@ -283,6 +283,39 @@ public class BillServiceTHImpl implements BillServiceTH {
         Bill bill = billOptional.get();
         bill.setEmployee(employee);
         bill.setCustomer(billRequest.getCustomer());
+        Optional<PaymentMethod> paymentMethodOptional = paymentMethodRepository.findById(billRequest.getPaymentMethod().getId());
+        if (paymentMethodOptional.isEmpty()) {
+            return null;
+        }
+        bill.setPaymentMethod(paymentMethodOptional.get());
         return setBillResponse(billRepository.save(bill));
+    }
+
+    @Override
+    public BillResponseTH paymentBill(Employee employee, BillResponseTH billRequest) {
+        Optional<Bill> billOptional = billRepository.findById(billRequest.getId());
+        if (billOptional.isEmpty()) {
+            return null;
+        }
+        Bill bill = billOptional.get();
+        bill.setCustomer(billRequest.getCustomer());
+        bill.setEmployee(employee);
+        Optional<PaymentMethod> paymentMethodOptional = paymentMethodRepository.findById(billRequest.getPaymentMethod().getId());
+        if (paymentMethodOptional.isEmpty()) {
+            return null;
+        }
+        bill.setStatus(21);
+        bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
+        bill.setPaidShippingFee(bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
+        bill.setPaymentMethod(paymentMethodOptional.get());
+        Bill bill2 = billRepository.save(bill);
+        BillHistory billHistory = new BillHistory();
+        billHistory.setBill(bill2);
+        billHistory.setStatus(21);
+        billHistory.setType(1);
+        billHistory.setCreatedAt(new Date());
+        billHistory.setCreatedBy(employee.getFullName());
+        billHistoryRepository.save(billHistory);
+        return setBillResponse(bill2);
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface CustomerServiceTH {
     CustomerResponseTH create(CustomerResponseTH customer, String name);
+    CustomerResponseTH update(CustomerResponseTH customer, String name);
     List<Customer> searchCustomer(String keyword);
     CustomerResponseTH getOne(Long id);
 }

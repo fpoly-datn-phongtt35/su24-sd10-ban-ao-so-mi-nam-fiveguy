@@ -1,3 +1,121 @@
+<style>
+    .voucher-status {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.ongoing .voucher-status {
+  color: green;
+  border: 1px solid green;
+}
+
+.upcoming .voucher-status {
+  color: orange;
+  border: 1px solid orange;
+}
+
+.modal-dialogVoucher {
+  max-width: 600px;
+  margin: 30px auto;
+}
+
+.modal-content {
+  padding: 15px;
+}
+
+.voucher-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.voucher-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background-color: #fff;
+  position: relative;
+}
+
+.voucher-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.voucher-left {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.voucher-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #dcdcdc;
+  color: #4caf50;
+  font-size: 20px;
+  text-align: center;
+}
+.voucher-right-contain {
+  display: flex;
+  align-items: center;
+
+}
+.voucher-left p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.voucher-left h5 {
+  font-size: 16px;
+  color: #001f5d;
+  margin: 10px 0 5px;
+}
+
+.selected-voucher .voucher-right {
+  border-color: #4caf50;
+  background-color: #e8f5e9;
+}
+
+.addmark {
+  color: #dcdcdc;
+}
+
+.modal-header h5 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.modal-footer {
+  text-align: center;
+}
+
+.modal-footer .btn {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+}
+
+.limit-message {
+  color: red;
+  text-align: center;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+</style>
 <div class="main-content p-0" ng-controller="SellQuicklyController">
     <div class="row">
         <div class="col-md-12">
@@ -50,7 +168,7 @@
                             <nav>
                                 <div style="height: 102px; border: none;" class="nav nav-tabs" id="nav-tab" role="tablist">
                                     <button ng-repeat="bill in bills" ng-click="getBill(bill.id)" data-bs-toggle="tab" class="nav-link nav-bill d-flex align-items-center" ng-class="{'active' : bill.id === selectedBill.id}" type="button" role="tab">{{bill.code}}
-                                        <span ng-click="removeBill(bill)" type="button" class="icon-bill material-icons">
+                                        <span ng-click="removeBill(!loadingRemove && bill)" type="button" class="icon-bill material-icons">
                                             close
                                             </span>
                                     </button>
@@ -116,11 +234,12 @@
                                             paid
                                         </span> Thanh toán
                                       </div>
-                                    <div class="card-body d-flex flex-column">
-                                        <div class="ms-auto">{{timeCurrent | date : " dd-MM-yyyy hh:mm" : 0}}</div>
+                                    <div class="card-body d-flex flex-column" style="height: 450px">
+                                       <div class="payment" style="height: 400px; overflow-y: scroll; ">
+                                        <div class="d-flex flex-row-reverse">{{timeCurrent | date : " dd-MM-yyyy hh:mm" : 0}}</div>
                                         <div class="box-container">
                                             <div ng-if="selectedBill.customer != null" class="customer-current" style="position: relative;">
-                                                <span class="btn btn-outline-primary w-100 text-start" ng-click="showCustomerUpdate()">
+                                                <span class="btn btn-outline-primary w-100 text-start" data-bs-toggle="modal" data-bs-target="#customerUpdateModal" ng-click="showCustomerUpdate()">
                                                     <i class="ri-user-3-fill"></i>
                                                     {{selectedBill.customer.fullName}}
                                                 </span>
@@ -147,7 +266,7 @@
                                                     <div ng-repeat="customer in customers" class="product" ng-click="setCustomerBill(customer)">
                                                         <div class="col-sm-3">
                                                             <div class="d-flex justify-content-center">
-                                                                <img id="selectedImage" class="rounded-circle" ng-src="{{customer.path ? customer.path : 'common/img/no-image.png'}}"
+                                                                <img id="selectedImage" class="rounded-circle" ng-src="{{customer.avatar ? customer.avatar : 'common/img/no-image.png'}}"
                                                                 alt="example placeholder" style="width: 60px; height: 60px;" />
                                                             </div>
                                                         </div>
@@ -165,17 +284,96 @@
                                             <div class="d-flex">
                                                 <p>Tổng tiền hàng</p>
                                                 <p class="ms-4">{{totalQuantity}}</p>
-                                                <p class="ms-auto">{{selectedBill.totalAmount | number:'0':'symbol':'short'}} VND</p>
+                                                <p class="ms-auto">{{selectedBill.totalAmount | number:'0':'symbol':'short'}}</p>
                                             </div>
-                                           
+                                        </div>
+                                        <div ng-if="selectedBill.billDetail.length > 0" class="card-header">
+                                            <div class="discount">
+                                              <h5>Mã giảm giá / Quà tặng</h5>
+                                              <!-- Modal -->
+                                              <div class="modal fade" id="voucherModal" tabindex="-1" role="dialog" aria-labelledby="voucherModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialogVoucher" role="document">
+                                                  <div class="modal-content">
+                                                    <div class="modal-header">
+                                                      <h5 class="modal-title" id="voucherModalLabel">Mã ưu đãi</h5>
+                                                      <input type="text" class="form-control" ng-model="voucherSearch" ng-change="searchVoucher()" placeholder="Tìm kiếm mã ưu đãi" />
+                                                    </div>
+                                                    <div class="modal-body">
+                                                      <div class="voucher-list mt-3 mb-4">
+                                                        <div class="voucher-item" ng-repeat="voucher in customerVouchers" ng-click="voucher.show !== 2 && selectVoucher(voucher)" ng-class="{ 'selected-voucher': voucher.selected }">
+                                                          <div class="voucher-content">
+                                                            <div class="voucher-left">
+                                                              <h5>{{ voucher.code }}</h5>
+                                                              <h5>{{ voucher.name }}</h5>
+                                                              <p>Giảm {{ formatCurrency(voucher.value) }}{{ voucher.discountType === 2 ? ' đ' : ' %' }} cho đơn từ {{ formatCurrency(voucher.minimumTotalAmount)  }} đ
+                                                                <br/>Tối đa {{ formatCurrency(voucher.maximumReductionValue)  }} đ
+                                                              </p>
+                                                              <p>HSD: {{ voucher.endDate | date:'dd-MM-yyyy HH:mm' }}</p>
+                                                              <span ng-if="voucher.show === 2" class="limit-message">Bạn đã sử dụng hết lượt giảm giá</span>
+                                                              <span ng-if="voucher.quantity <= 0" class="limit-message">Giảm giá này đã hết số lượng</span>
+                              
+                                                            </div>
+                                                            <div class="voucher-right-contain">
+                                                              <div class="voucher-right">
+                                                                <span ng-if="voucher.quantity > 0 && voucher.show !== 2 && voucher.selected" class="checkmark">&#10003;</span>
+                                                                <span ng-if="voucher.quantity > 0 && voucher.show !== 2 && !voucher.selected" class="addmark">+</span>
+                                                              </div>
+                                                            </div>
+                                                            
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      
+                                                    </div>
+                                                
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              
+                                              
+
+                                              
+
+                                              <hr />
+                                              <i class="fa-solid fa-tags"></i>
+                                             <a  ng-click="openVoucherModal()">Chọn mã giảm giá</a>
+                                              <p style="margin-top: 8px;" ng-style="voucherMessage === 'Mã giảm giá đã được áp dụng' ? {'color': 'green'} : {'color': 'red'}">{{voucherMessage}}</p>
+                                            </div>
+
                                         </div>
                                         <div class="d-flex flex-column" style="font-size: 16px;">
                                             <div class="d-flex">
                                                 <p>Khách cần trả</p>
-                                                <p class="ms-auto">{{selectedBill.totalAmount | number:'0':'symbol':'short'}} VND</p>
+                                                <p class="ms-auto">{{selectedBill.totalAmountAfterDiscount | number:'0':'symbol':'short'}}</p>
                                             </div>
                                            
                                         </div>
+                                        <div ng-if="selectedBill.billDetail.length > 0" class="d-flex flex-column" style="font-size: 16px;">
+                                            <div class="d-flex align-items-center">
+                                                <p class="w-75">Khách thanh toán</p>
+                                                <div class="ms-auto">
+                                                    <input ng-model="inputPrice" ng-change="changeInputPrice(inputPrice)" ng-value="selectedBill.totalAmountAfterDiscount" class="form-control text-end" type="number" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div ng-if="excessMoney != 0" class="d-flex flex-column" style="font-size: 16px;">
+                                            <div class="d-flex">
+                                                <p>Tiền thừa trả khách</p>
+                                                <p class="ms-auto">{{excessMoney | number:'0':'symbol':'short'}}</p>
+                                            </div>
+                                           
+                                        </div>
+                                        <div ng-if="selectedBill.billDetail.length > 0" class="d-flex flex-row mt-3" style="font-size: 16px;">
+                                            <div class="d-flex align-items-center me-3" ng-repeat="paymentMethod in paymentMethods">
+                                                <input ng-model="selectedBill.paymentMethod.id" class="form-check-input" type="radio" ng-change="updateBill()" name="paymethod" ng-value="{{paymentMethod.id}}">
+                                                <label class="form-check-label ms-2">{{paymentMethod.name}}</label>
+                                              </div>
+                                        </div>
+                                        <div ng-show="selectedBill.billDetail.length > 0"  class="d-flex flex-column" ng-if="selectedBill.paymentMethod.name == 'Chuyển khoản'">
+                                            <img class="m-auto" style="width: 15rem;" ng-src="{{qr}}" />
+                                        </div>
+                                       </div>
+                                       <button ng-click="paymentBill()" type="button" class="btn btn-primary" ng-class="{'disabled' : !selectedBill}">Thanh toán</button>
                                     </div>
                                 </div>
                             </div>
@@ -208,7 +406,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">Thêm khách hàng</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button ng-click="resetCustomer()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form name="customerForm" ng-submit="createCustomer()" novalidate>
                 <div class="modal-body">
@@ -251,8 +449,8 @@
                                 </div>
                             </div>
                             <div class="form-group mt-3">
-                                <label>Số điện thoại</label>
-                                <input type="text" ng-model="phoneNumber" class="form-control" placeholder="Số điện thoại">
+                                <label>Số điện thoại <span ng-if="!phoneNumber" class="text-danger">*</span></label>
+                                <input type="text" ng-model="phoneNumber" class="form-control" placeholder="Số điện thoại" required>
                                 <p class="text-danger" ng-if="errors.phoneNumber">{{errors.phoneNumber}}</p>
 
                             </div>
@@ -260,7 +458,7 @@
                                 <label>Địa chỉ cụ thể <span ng-if="!addressDetail" class="text-danger">*</span></label>
                                 <input type="text" ng-model="addressDetail" class="form-control" placeholder="Số nhà, tòa nhà, ngõ, đường" required>
                             </div>
-                            <div id="box-province" class="form-group mt-3">
+                            <div class="form-group mt-3">
                                 <label for="id-label-province">Tỉnh thành <span ng-if="!provinceValue" class="text-danger">*</span></label>
                                 <div class="mt-2">
                                     <select class="province" id="id-label-province" data-placeholder="Chọn tỉnh thành">
@@ -271,7 +469,7 @@
                                 <p class="text-danger" ng-if="errors.provice">{{errors.provice}}</p>
 
                             </div>
-                            <div id="box-district" class="form-group mt-3">
+                            <div class="form-group mt-3">
                                 <label for="id-label-district">Quận/huyện <span ng-if="!districtValue" class="text-danger">*</span></label>
                                 <div class="mt-2">
                                     <select class="district" id="id-label-district" data-placeholder="Chọn quận/huyện">
@@ -282,7 +480,7 @@
                                 <p class="text-danger" ng-if="errors.district">{{errors.district}}</p>
 
                             </div>
-                            <div id="box-ward" class="form-group mt-3">
+                            <div class="form-group mt-3">
                                 <label for="id-label-ward">Phường/xã <span ng-if="!wardValue" class="text-danger">*</span></label>
                                 <div class="mt-2">
                                     <select class="ward" id="id-label-ward" data-placeholder="Chọn phường/xã">
@@ -297,12 +495,252 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                  <button type="submit" ng-disabled="customerForm.$invalid" class="btn btn-success">Thêm</button>
+                  <button ng-click="resetCustomer()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                  <button id="addCustomer" type="submit" ng-disabled="customerForm.$invalid" class="btn btn-success">Thêm</button>
+                  <button id="loadingAdd" class="btn btn-success" style="display: none;" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                </button>   
                 </div>
             </form>
 
             
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="customerUpdateModal" tabindex="-1" aria-labelledby="updateModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="updateModal">Cập nhật khách hàng</h5>
+              <button ng-click="resetCustomer()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form name="customerUpdateForm" ng-submit="updateCustomer()" novalidate>
+                <div class="modal-body">
+                    <div class="row m-0">
+                        <div class="col-sm-3">
+                            <div class="mb-4 d-flex justify-content-center">
+                                <img id="selectedImage" class="rounded-circle" ng-src="{{customerUpdate.avatar ? customerUpdate.avatar : 'common/img/no-image.png'}}"
+                                alt="example placeholder" style="width: 100%;" />
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <div data-mdb-ripple-init class="btn btn-primary btn-rounded">
+                                    <label class="form-label text-white m-1" style="cursor: pointer;" for="customUpdateFile">Chọn ảnh</label>
+                                    <input id="customUpdateFile" type="file" class="form-control d-none" custom-on-change="uploadUpdateFile"  />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="form-group mt-3">
+                                <label>Tên khách hàng <span ng-if="!customerUpdate.fullName" class="text-danger">*</span></label>
+                                <input type="text" ng-model="customerUpdate.fullName" class="form-control" placeholder="Tên khách hàng" required>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label>Ngày sinh</label>
+                                <input type="date" ng-model="customerUpdate.birthDate" class="form-control" >
+                                <p class="text-danger" ng-if="errorsUpdate.birthDate">{{errorsUpdate.birthDate}}</p>
+                            </div>
+                            <div class="form-group mt-3 d-flex">
+                                <label class="me-3">Giới tính:</label>
+                                <div class="form-check d-flex align-items-center">
+                                    <input ng-model="customerUpdate.gender" class="form-check-input" type="radio" name="gioiTinh" id="updateRadioMan" ng-value="true">
+                                    <label class="form-check-label" for="addRadioMan" style="padding: 0 15px 0px 5px;">
+                                        Nam
+                                    </label>
+                                </div>
+                                <div class="form-check d-flex align-items-center">
+                                    <input ng-model="customerUpdate.gender" class="form-check-input" type="radio" name="gioiTinh" id="updateRadioFemale" ng-value="false">
+                                    <label class="form-check-label" for="addRadioFemale" style="padding: 0 15px 0px 5px;">
+                                        Nữ
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="me-3">Địa chỉ:</label>
+                                <div class="card">
+                                    <div class="card-body p-0">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item list-address d-flex align-items-center p-2" ng-repeat="address in customerUpdate.addresses" data-bs-toggle="modal" data-bs-target="#addressUpdateModal" ng-click="showUpdateAddress(address)">
+                                                <div class="d-flex flex-column">
+                                                    <p class="m-0" style="font-size: 16px;">{{address.name}}, {{address.address}}</p>
+                                                    <p class="m-0" style="font-size: 14px; font-weight: 400;">Số điện thoại: {{address.phoneNumber}}</p>
+                                                </div>
+                                                <div class="ms-auto" ng-if="address.defaultAddress">
+                                                    <span class="badge bg-danger">Mặc định</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <button data-bs-toggle="modal" data-bs-target="#addressModal" type="button" class="btn d-flex align-items-center justify-content-center mt-2 w-50 btn-outline-success"><span class="material-icons">
+                                        add
+                                        </span>Thêm địa chỉ</button>
+                                </div>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button ng-click="resetCustomer()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                  <button id="updateCustomer" type="submit" ng-disabled="customerUpdateForm.$invalid" class="btn btn-success">Cập nhật</button>
+                  <button id="loadingUpdate" class="btn btn-success" style="display: none;" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                </button>   
+                </div>
+            </form>
+
+            
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="updateAddress" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addAddress">Thêm địa chỉ</h5>
+              <button ng-click="resetAddress()" type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#customerUpdateModal" aria-label="Close"></button>
+            </div>
+            <form name="addressAddForm" ng-submit="addAddress()" novalidate>
+            <div class="modal-body">
+                <div class="form-group mt-3">
+                    <label>Số điện thoại <span ng-if="!phoneNumber" class="text-danger">*</span></label>
+                    <input type="text" ng-model="phoneNumber" class="form-control" placeholder="Số điện thoại" required>
+                    <p class="text-danger" ng-if="errors.phoneNumber">{{errors.phoneNumber}}</p>
+                </div>
+                <div class="form-group mt-3">
+                    <label>Địa chỉ cụ thể <span ng-if="!addressDetail" class="text-danger">*</span></label>
+                    <input type="text" ng-model="addressDetail" class="form-control" placeholder="Số nhà, tòa nhà, ngõ, đường" required>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="id-add-province">Tỉnh thành <span ng-if="!provinceValue" class="text-danger">*</span></label>
+                    <div class="mt-2">
+                        <select class="province" id="id-add-province" data-placeholder="Chọn tỉnh thành">
+                            <option></option>
+                            <option ng-repeat="province in provinces" value="{{province.ProvinceID}}">{{province.ProvinceName}}</option>
+                        </select>
+                    </div>
+                    <p class="text-danger" ng-if="errors.provice">{{errors.provice}}</p>
+
+                </div>
+                <div class="form-group mt-3">
+                    <label for="id-add-district">Quận/huyện <span ng-if="!districtValue" class="text-danger">*</span></label>
+                    <div class="mt-2">
+                        <select class="district" id="id-add-district" data-placeholder="Chọn quận/huyện">
+                            <option></option>
+                            <option ng-repeat="district in districts" value="{{district.DistrictID}}">{{district.DistrictName}}</option>
+                        </select>
+                    </div>
+                    <p class="text-danger" ng-if="errors.district">{{errors.district}}</p>
+
+                </div>
+                <div class="form-group mt-3">
+                    <label for="id-add-ward">Phường/xã <span ng-if="!wardValue" class="text-danger">*</span></label>
+                    <div class="mt-2">
+                        <select class="ward" id="id-add-ward" data-placeholder="Chọn phường/xã">
+                            <option></option>
+                            <option ng-repeat="ward in wards" value="{{ward.WardCode}}">{{ward.WardName}}</option>
+                        </select>
+                    </div>
+                    <p class="text-danger" ng-if="errors.ward">{{errors.ward}}</p>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="form-check form-switch">
+                        <input ng-model="defaultAddress" class="form-check-input" style="margin-top: 8px;" type="checkbox" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Địa chỉ mặc định</label>
+                      </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button ng-click="resetAddress()" type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#customerUpdateModal">Đóng</button>
+              <button type="submit" ng-disabled="addressAddForm.$invalid"  class="btn btn-success">Thêm</button>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="addressUpdateModal" tabindex="-1" aria-labelledby="addAddress" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="updateAddress">Cập nhật địa chỉ</h5>
+              <button ng-click="resetAddress()" type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#customerUpdateModal" aria-label="Close"></button>
+            </div>
+            <form name="addressUpdateForm" ng-submit="updateAddress()" novalidate>
+            <div class="modal-body">
+                <div class="form-group mt-3">
+                    <label>Số điện thoại <span ng-if="!phoneNumber" class="text-danger">*</span></label>
+                    <input type="text" ng-model="phoneNumber" class="form-control" placeholder="Số điện thoại" required>
+                    <p class="text-danger" ng-if="errors.phoneNumber">{{errors.phoneNumber}}</p>
+                </div>
+                <div class="form-group mt-3">
+                    <label>Địa chỉ cụ thể <span ng-if="!addressDetail" class="text-danger">*</span></label>
+                    <input type="text" ng-model="addressDetail" class="form-control" placeholder="Số nhà, tòa nhà, ngõ, đường" required>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="id-update-province">Tỉnh thành <span ng-if="!provinceValue" class="text-danger">*</span></label>
+                    <div class="mt-2">
+                        <select ng-model="provinceCode" class="province" id="id-update-province" data-placeholder="Chọn tỉnh thành">
+                            <option></option>
+                            <option ng-repeat="province in provinces" value="{{province.ProvinceID}}">{{province.ProvinceName}}</option>
+                        </select>
+                    </div>
+                    <p class="text-danger" ng-if="errors.provice">{{errors.provice}}</p>
+
+                </div>
+                <div class="form-group mt-3">
+                    <label for="id-update-district">Quận/huyện <span ng-if="!districtValue" class="text-danger">*</span></label>
+                    <div class="mt-2">
+                        <select ng-model="districtCode" class="district" id="id-update-district" data-placeholder="Chọn quận/huyện">
+                            <option></option>
+                            <option ng-repeat="district in districts" value="{{district.DistrictID}}">{{district.DistrictName}}</option>
+                        </select>
+                    </div>
+                    <p class="text-danger" ng-if="errors.district">{{errors.district}}</p>
+
+                </div>
+                <div class="form-group mt-3">
+                    <label for="id-update-ward">Phường/xã <span ng-if="!wardValue" class="text-danger">*</span></label>
+                    <div class="mt-2">
+                        <select ng-model="wardCode" class="ward" id="id-update-ward" data-placeholder="Chọn phường/xã">
+                            <option></option>
+                            <option ng-repeat="ward in wards" value="{{ward.WardCode}}">{{ward.WardName}}</option>
+                        </select>
+                    </div>
+                    <p class="text-danger" ng-if="errors.ward">{{errors.ward}}</p>
+                </div>
+                <div class="form-group mt-3" ng-show="!defaultAddress">
+                    <div class="form-check form-switch">
+                        <input ng-model="defaultAddressUpdate" ng-change="changeDefaultUpdate()" class="form-check-input" style="margin-top: 8px;" type="checkbox" id="updateDefaultAddress">
+                        <label class="form-check-label" for="updateDefaultAddress">Địa chỉ mặc định</label>
+                      </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button ng-click="resetAddress()" type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#customerUpdateModal">Đóng</button>
+              <button ng-if="!defaultAddress" type="button" class="btn btn-danger"  data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#addressDeleteModal">Xóa</button>
+              <button type="submit" ng-disabled="addressUpdateForm.$invalid"  class="btn btn-success">Cập nhật</button>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="addressDeleteModal" tabindex="-1" aria-labelledby="deleteAddress" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteAddress">Xóa địa chỉ</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#customerUpdateModal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Bạn có chắc muốn xóa địa chỉ?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#customerUpdateModal">Hủy</button>
+              <button ng-click="deleteAddress()" type="button" class="btn btn-danger">Xóa</button>
+            </div>
           </div>
         </div>
       </div>

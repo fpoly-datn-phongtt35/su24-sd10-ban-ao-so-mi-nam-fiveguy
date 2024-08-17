@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerSerivceTHImpl implements CustomerServiceTH {
@@ -48,6 +49,24 @@ public class CustomerSerivceTHImpl implements CustomerServiceTH {
         customerRequest.getAddresses().forEach(d -> d.setCustomer(customer));
         customer.setAddresses(customerRequest.getAddresses());
         return setBillResponse(customerRepository.save(customer));
+    }
+
+    @Override
+    public CustomerResponseTH update(CustomerResponseTH customerRequest, String name) {
+        Optional<Customer> customerOptional = customerRepository.findById(customerRequest.getId());
+        if (customerOptional.isPresent()) {
+            Customer customer = customerOptional.get();
+            customer.setFullName(customerRequest.getFullName());
+            customer.setAvatar(customerRequest.getAvatar());
+            customer.setBirthDate(customerRequest.getBirthDate());
+            customer.setGender(customerRequest.getGender());
+            customer.setUpdatedAt(new Date());
+            customer.setUpdatedBy(name);
+            customer.setStatus(1);
+            customer.setAddresses(customerRequest.getAddresses());
+            return setBillResponse(customerRepository.save(customer));
+        }
+        return null;
     }
 
     @Override
