@@ -87,10 +87,10 @@
 
                         <button class="btn btn-outline-danger me-3"
                             ng-if="[81, 12, 13, 60].includes(status) && paidOrRefundObject.paidOrRefund == 3"
-                            ng-click="showModalStatus(6)">Hủy (test1)</button>
+                            ng-click="showModalStatus(6)">Hủy</button>
 
                         <button class="btn btn-outline-danger me-3" ng-if="[1, 2].includes(status)"
-                            ng-click="showModalStatus(6)">Hủy (test2)</button>
+                            ng-click="showModalStatus(6)">Hủy</button>
 
 
                         <button class="btn btn-outline-danger me-3"
@@ -910,16 +910,17 @@
                 <thead class="sticky-top">
                     <tr>
                         <th class="">STT</th>
-                        <th class="col-6">Sản phẩm</th>
+                        <th class="col-4">Sản phẩm</th>
                         <th class="col-2">Số lượng</th>
                         <th class="col-2">Đơn giá hoàn</th>
                         <th class="col-2">Thành tiền</th>
+                        <th class="col-2">Lý do</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="ro in returnOrders">
                         <td>{{$index + 1}}</td>
-                        <td class="col-6">
+                        <td class="col-4">
                             <div class="d-flex align-items-center">
                                 <img ng-src="{{ro.imagePath}}" width="60px" height="60px" class="me-3">
                                 <div class="d-flex flex-column text-start">
@@ -944,6 +945,7 @@
                         </td>
                         <td class="col-2">{{formatCurrency(ro.billDetail.promotionalPrice * ro.quantity * (1 -
                             returnOrdersSummary.tiLeGiam))}}</td>
+                        <td class="col-2">{{ro.returnReason}}</td>
                     </tr>
                     <td colspan="12" ng-show="returnOrders.length <= 0">Không có sản phẩm</td>
                 </tbody>

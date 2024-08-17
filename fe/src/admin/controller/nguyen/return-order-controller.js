@@ -14,12 +14,12 @@ app.controller('nguyen-return-order-ctrl', function ($scope, $http, $location) {
         toastr["warning"](message);
     };
 
-    $scope.idBill = null
+    $scope.code = null
 
-    $scope.findById = function (id){
-        if(id == undefined || id == null || id == "") return;
+    $scope.findById = function (code){
+        if(code == undefined || code == null || code == "") return;
         
-        $http.get($scope.apiReturnOrder + "/" + id).then(function (response) {
+        $http.get($scope.apiReturnOrder + "/findByBillCode/" + code).then(function (response) {
 
             console.log(response.data);
             if(response.data == ""){
@@ -33,9 +33,8 @@ app.controller('nguyen-return-order-ctrl', function ($scope, $http, $location) {
             }
 
             console.log(response.data);
-            $scope.idBill = null
 
-            $location.path('/admin/return-order/' + id);
+            $location.path('/admin/return-order/' + response.data.id);
 
         }).catch(function () {
             console.log("err");

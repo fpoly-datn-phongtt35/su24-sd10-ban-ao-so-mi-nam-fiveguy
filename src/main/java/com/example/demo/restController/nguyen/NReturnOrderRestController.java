@@ -59,7 +59,8 @@ public class NReturnOrderRestController {
 
     @PutMapping("/{billId}/calculateSummary")
     public ResponseEntity<?> calculateReturnOrderSummary(@PathVariable Long billId,
-            @RequestBody List<ReturnOrder> returnOrders) {
+                                                         @RequestBody
+                                                                 List<ReturnOrder> returnOrders) {
 
         return ResponseEntity
                 .ok(returnOrderService.calculateReturnOrderSummary(billId, returnOrders));
@@ -67,7 +68,7 @@ public class NReturnOrderRestController {
 
     @PutMapping("/{billId}/calculateSummaryBillDetail")
     public ResponseEntity<?> calculateBillDetailSummary(@PathVariable Long billId,
-                                                         @RequestBody List<BillDetail> billDetails) {
+                                                        @RequestBody List<BillDetail> billDetails) {
 
         return ResponseEntity
                 .ok(returnOrderService.calculateBillDetailSummary(billId, billDetails));
@@ -80,12 +81,20 @@ public class NReturnOrderRestController {
         response.setType(returnOrder.getType()); // You can set the appropriate type if needed
         response.setBill(returnOrder.getBill());
         response.setBillDetail(returnOrder.getBillDetail());
-        response.setReturnReason(returnOrder.getReturnReason()); // You can set the appropriate return reason if needed
-        response.setReturnStatus(returnOrder.getReturnStatus()); // You can set the appropriate return status if needed
+        response.setReturnReason(returnOrder
+                .getReturnReason()); // You can set the appropriate return reason if needed
+        response.setReturnStatus(returnOrder
+                .getReturnStatus()); // You can set the appropriate return status if needed
         response.setCreatedAt(returnOrder.getCreatedAt()); // Assuming current date as createdAt
         response.setUpdatedAt(returnOrder.getUpdatedAt()); // Assuming current date as updatedAt
         response.setImagePath(imagePath);
         return response;
+    }
+
+    @GetMapping("/findByBillCode/{code}")
+    public ResponseEntity<?> getReturnOrderByBillCode(@PathVariable String code) {
+        System.out.println(code);
+        return ResponseEntity.ok(returnOrderService.findAllReturnOrdersByBillCode(code));
     }
 
 }

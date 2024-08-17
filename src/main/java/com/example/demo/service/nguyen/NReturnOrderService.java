@@ -18,4 +18,6 @@ public interface NReturnOrderService {
     ReturnOrderSummary calculateReturnOrderSummary(Long billId, List<ReturnOrder> returnOrders);
 
     ReturnOrderSummary calculateBillDetailSummary(Long billId, List<BillDetail> billDetails);
+
+    Bill findAllReturnOrdersByBillCode(String code);
 }
