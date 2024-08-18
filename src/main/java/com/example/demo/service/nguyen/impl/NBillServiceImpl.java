@@ -6,6 +6,7 @@ import com.example.demo.repository.nguyen.NCustomerTypeVoucherRepository;
 import com.example.demo.repository.nguyen.NVoucherRepository;
 import com.example.demo.repository.nguyen.bill.*;
 import com.example.demo.repository.nguyen.product.NProductDetailRepository;
+import com.example.demo.repository.tinh.AuditLogRepositoryTinh;
 import com.example.demo.service.nguyen.NBillService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,7 +147,6 @@ public class NBillServiceImpl implements NBillService {
         if (returnBill.getStatus() == 32 || returnBill.getStatus() == 12) {
             refundProductDetailsQuantities(returnBill);
         }
-
 
         return returnBill;
     }
@@ -736,4 +736,57 @@ public class NBillServiceImpl implements NBillService {
         return response;
     }
 
+    @Autowired
+    AuditLogRepositoryTinh auditLogRepositoryTinh;
+
+    public AuditLogs addAuditlogs(String code, String fullName, int status){
+        AuditLogs auditLogs = new AuditLogs();
+
+        String detailedAction = null;
+        if(status == 1){
+            detailedAction = "Chờ xác nhận";
+        }else if(status == 2){
+            detailedAction = "Chờ giao hàng";
+        }else if(status == 3){
+            detailedAction = "Đang giao hàng";
+        }else if(status == 4){
+            detailedAction = "Đã giao hàng";
+        }else if(status == 5){
+            detailedAction = "Khách hủy";
+        }else if(status == 6 ){
+            detailedAction = "Đã hủy";
+        }else if(status == 7 | status == 8 | status == 81){
+            detailedAction = "Thất bại";
+        }else if(status == 9){
+            detailedAction = "Chờ giao lại";
+        }else if(status == 10){
+            detailedAction = "Đang giao lại";
+        }else if(status == 11){
+            detailedAction = "Đang hoàn hàng";
+        }else if(status == 12){
+            detailedAction = "Đã hoàn hàng";
+        }else if(status == 13){
+            detailedAction = "Hoàn hàng thất bại";
+        }else if(status == 21){
+            detailedAction = "Hoàn thành";
+        }else if(status == 22){
+            detailedAction = "Thành công";
+        }else if(status == 30 | status == 31){
+            detailedAction = "Trả hàng";
+        }else if(status == 32){
+            detailedAction = "Đã trả hàng";
+        }else if(status == 33){
+            detailedAction = "Trả hàng thất bại";
+        }else if(status == 20){
+            detailedAction = "Tạo đơn hàng";
+        }
+
+        auditLogs.setEmpCode(code);
+        auditLogs.setImplementer(fullName);
+        auditLogs.setActionType("Cập nhật đơn hàng");
+        auditLogs.setDetailedAction("Đã cập nhật đơn hàng thành: " + detailedAction);
+        auditLogs.setTime(new Date());
+        auditLogs.setStatus(1);
+        return auditLogRepositoryTinh.save(auditLogs);
+    }
 }

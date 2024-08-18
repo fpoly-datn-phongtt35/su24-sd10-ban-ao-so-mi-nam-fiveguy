@@ -1,9 +1,6 @@
 package com.example.demo.service.nguyen;
 
-import com.example.demo.entity.Bill;
-import com.example.demo.entity.BillDetail;
-import com.example.demo.entity.BillHistory;
-import com.example.demo.entity.Voucher;
+import com.example.demo.entity.*;
 import com.example.demo.model.response.nguyen.BillResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,4 +33,6 @@ public interface NBillService {
     Bill updateShippingFee(Long id, BigDecimal shippingFee);
 
     Page<BillResponse> getBillsByFilters(List<Integer> statuses, String searchTerm, Integer typeBill, Date fromDate, Date toDate, Pageable pageable);
+
+    AuditLogs addAuditlogs(String code, String fullName, int status);
 }

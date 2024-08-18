@@ -74,7 +74,7 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
             bill.setPaidShippingFee(paymentStatusRequest.getBill().getShippingFee());
 
             billRepository.save(bill);
-        } else if(paymentStatusRequest.getPayOrRefund() == 10) {
+        } else if (paymentStatusRequest.getPayOrRefund() == 10) {
             // thêm chữ đã hoàn tiền
             setReasonBillHistory(bill, 22);
         }
@@ -100,9 +100,10 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
 
 //        if(bill.getStatus() != 32) return 0;
 
-        List<PaymentStatus> paymentStatuses = paymentStatusRepository.findAllByBillIdAndPaymentTypeAndBillStatus(id, 4, 32);
+        List<PaymentStatus> paymentStatuses = paymentStatusRepository
+                .findAllByBillIdAndPaymentTypeAndBillStatus(id, 4, 32);
 
-        if(paymentStatuses.isEmpty()) return 0;
+        if (paymentStatuses.isEmpty()) return 0;
 
         return 1; //nếu đã hoàn
     }
@@ -112,7 +113,9 @@ public class NPaymentStatusServiceImpl implements NPaymentStatusService {
                 .findAllByBillIdAndStatus(bill.getId(), bill.getStatus());
         if (bill.getStatus() == 32) {
             billHistory.setReason(reason);
-        } else if (bill.getStatus() == 4){
+        } else if (bill.getStatus() == 12) {
+            billHistory.setReason(reason);
+        } else if (bill.getStatus() == 4) {
             billHistory.setReason(reason);
         }
         billHistoryRepository.save(billHistory);

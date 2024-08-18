@@ -179,7 +179,6 @@
 </style>
 
 <div class="container-fluid">
-
     <div style="justify-content: space-between;" class="title d-flex align-items-center">
         <div class="d-flex align-items-center">
             <span class="material-icons fs-4 me-2">view_headline</span>
@@ -187,14 +186,14 @@
         </div>
         <!-- <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createBillModal">Thêm hóa đơn</button> -->
 
-        <div class="row justify-content-end">
+        <!-- <div class="row justify-content-end">
             <div class="col-auto d-flex align-items-center">
                 <button class="button-submit btn btn-success" data-bs-toggle="modal" data-bs-target="#createBillModal"
                     data-bs-whatever="@mdo">
                     <span class="material-icons align-middle">add</span> Thêm hóa đơn
                 </button>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <div class="row">
@@ -309,7 +308,7 @@
                             </span>
                         </td>
                         <td><span ng-repeat="s in status">
-                                <div class="badge text-wrap bg-info" ng-show="s.status == order.status"
+                                <div class="badge text-wrap status-{{order.status}}" ng-show="s.status == order.status"
                                     style="width: 65%;" ng-style="{'background-color': s.color}">
                                     {{s.title}}
                                 </div>

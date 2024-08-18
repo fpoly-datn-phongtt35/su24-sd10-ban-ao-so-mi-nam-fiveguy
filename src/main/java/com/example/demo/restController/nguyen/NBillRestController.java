@@ -5,6 +5,7 @@ import com.example.demo.model.request.nguyen.BillRequest;
 import com.example.demo.model.request.nguyen.PaymentStatusRequest;
 import com.example.demo.model.response.nguyen.BillResponse;
 import com.example.demo.security.service.SCAccountService;
+import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.nguyen.NBillDetailService;
 import com.example.demo.service.nguyen.NBillService;
 import com.example.demo.service.nguyen.NPaymentStatusService;
@@ -40,6 +41,9 @@ public class NBillRestController {
 
     @Autowired
     private SCAccountService accountService;
+
+    @Autowired
+    private com.example.demo.security.service.SCEmployeeService SCEmployeeService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
@@ -123,6 +127,9 @@ public class NBillRestController {
 
         Optional<String> fullName = accountService.getFullNameByToken(token);
         billRequest.getBillHistory().setCreatedBy(fullName.get());
+
+        Optional<Employee> employee = SCEmployeeService.getEmployeeByToken(token);
+        billService.addAuditlogs(employee.get().getCode(), employee.get().getFullName(), billRequest.getBill().getStatus());
 
         return billService
                 .updateStatusAndBillStatus(billRequest.getBill(), id, billRequest.getBillHistory());
