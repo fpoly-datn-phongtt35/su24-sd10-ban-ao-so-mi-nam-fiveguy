@@ -250,8 +250,16 @@
                     <input type="text" class="form-control" ng-model="filterAuditlog.implementer"
                         placeholder="Nhập người thực hiện " />
 
+                        <select class="form-select" ng-model="filterAuditlog.actionType">
+                        <option selected value=""> Chọn loại hành động</option>
+                        <option value="Đăng nhập">Đăng nhập</option>
+                        <option value="Cập nhật đơn hàng">Cập nhật đơn hàng</option>
+                        <option value="Thêm sản phẩm">Thêm sản phẩm</option>
+                    </select>
+
                     <!-- <label>Thời gian:</label> -->
-                    <input type="date" class="form-control" ng-model="filterAuditlog.time" />
+                    <input type="text" class="form-control" ng-model="filterAuditlog.time" placeholder="Nhập mã"
+                    onfocus="(this.type='date')"/>
                     <!-- <label>Loại tài khoản:</label> -->
                     <!-- <select class="form-select" ng-model="filterAuditlog.status">
                         <option selected value=""> Chọn loại tài khoản</option>
@@ -302,15 +310,15 @@
                                     <td scope="col-4" class="css-text-overfolow">{{employee.detailedAction}}</td>
                                     <td scope="col-1" class="css-text-overfolow">{{formatDateTime(employee.time)}}
                                     </td>
-                                    <td class="col-2" ng-switch="employee.status">
-                                        <span ng-switch-when="1">
+                                    <td class="col-2" ng-switch="employee.role">
+                                        <span ng-switch-when="3">
                                             <div class="badge bg-success text-wrap">
                                                 Nhân viên
                                             </div>
                                         </span>
                                         <span ng-switch-when="2">
-                                            <div class="badge bg-danger text-wrap">
-                                                Khach hàng
+                                            <div class="badge bg-success text-wrap">
+                                                Quản lý
                                             </div>
                                         </span>
                                     </td>

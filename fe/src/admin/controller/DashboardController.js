@@ -51,7 +51,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.getTongBillStatusNgay = function () {
-        let promises = [1, 2, 3, 4, 5, 6, 21, 32, 8, 9].map((status) =>
+        let promises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 21, 22, 30, 31, 32, 33, 50, 81].map((status) =>
             $scope.getTongBillStatus(
                 "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-ngay",
                 status
@@ -61,7 +61,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.getTongBillStatusTuan = function () {
-        let promises = [5, 6, 21, 32].map((status) =>
+        let promises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 21, 22, 30, 31, 32, 33, 50, 81].map((status) =>
             $scope.getTongBillStatus(
                 "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-tuan",
                 status
@@ -71,7 +71,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.getTongBillStatusThang = function () {
-        let promises = [1, 2, 3, 4, 5, 6, 21, 32, 8, 9].map((status) =>
+        let promises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 21, 22, 30, 31, 32, 33, 50, 81].map((status) =>
             $scope.getTongBillStatus(
                 "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-thang",
                 status
@@ -81,7 +81,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.getTongBillStatusNam = function () {
-        let promises = [1, 2, 3, 4, 5, 6, 21, 32, 8, 9].map((status) =>
+        let promises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 30, 31, 32, 33, 50, 81].map((status) =>
             $scope.getTongBillStatus(
                 "http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-nam",
                 status
@@ -104,7 +104,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             const formattedEndDate = $filter("date")(new Date(endDate), "yyyy-MM-dd");
 
             // Tạo một mảng các promises để gọi API cho từng trạng thái
-            const statusPromises = [1, 2, 3, 4, 5, 6, 21, 32, 8, 9].map((status) =>
+            const statusPromises = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22, 30, 31, 32, 33, 50, 81].map((status) =>
                 $scope.getTongBillStatus(
                     `http://localhost:8080/api/admin/bill-tinh/tong-hoa-don-trang-thai-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
                     status
@@ -124,14 +124,20 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
         data: {
             labels: [
                 "Chờ Xác nhận",
-                "Chờ Vận chuyển",
-                "Đang giao",
-                "Thành công",
+                "Chờ Vận chuyển", 
+                "Đang giao hàng", 
+                "Đã giao hàng",
                 "Đã hủy",
                 "Thất bại",
                 "Chờ giao lại",
                 "Đang giao lại",
+                "Đang hoàn hàng",
+                "Đã hoàn hàng",
+                "Hoàn hàng thất bại",
+                "Thành công",
                 "Đơn trả",
+                "Đã trả hàng",
+                "Trả hàng thất bại"
             ],
             datasets: [
                 {
@@ -140,13 +146,19 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                     backgroundColor: [
                         "#eca147",
                         "rgb(54, 162, 235)",
-                        "#45e144",
+                        "#33FFFF",
                         "#459446",
                         "#dc3545",
                         "#ff7c4e",
                         "rgb(255, 205, 86)",
                         "#0dcaf0",
                         "rgb(255, 99, 132)",
+                        "#FFCCFF",
+                        "#FF0066",
+                        "#00FF00",
+                        "#CC3366",
+                        "#00CC99",
+                        "#CC0033"
                     ],
                     hoverOffset: 4,
                 },
@@ -174,12 +186,18 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             $scope.tongBillStatuses[1] || 0,
             $scope.tongBillStatuses[2] || 0,
             $scope.tongBillStatuses[3] || 0,
-            $scope.tongBillStatuses[21] || 0,
-            ($scope.tongBillStatuses[5] || 0) + ($scope.tongBillStatuses[6] || 0),
-            ($scope.tongBillStatuses[7] || 0) + ($scope.tongBillStatuses[8] || 0),
+            $scope.tongBillStatuses[4] || 0,
+            ($scope.tongBillStatuses[5] || 0) + ($scope.tongBillStatuses[6] || 0) + ($scope.tongBillStatuses[50] || 0),
+            ($scope.tongBillStatuses[7] || 0) + ($scope.tongBillStatuses[8] || 0) + ($scope.tongBillStatuses[81] || 0),
             $scope.tongBillStatuses[9] || 0,
             $scope.tongBillStatuses[10] || 0,
+            $scope.tongBillStatuses[11] || 0,
+            $scope.tongBillStatuses[12] || 0,
+            $scope.tongBillStatuses[13] || 0,
+            $scope.tongBillStatuses[21] || 0,
+            ($scope.tongBillStatuses[30] || 0) + ($scope.tongBillStatuses[31] || 0),
             $scope.tongBillStatuses[32] || 0,
+            $scope.tongBillStatuses[33] || 0,
         ];
 
         // Cập nhật dữ liệu của biểu đồ

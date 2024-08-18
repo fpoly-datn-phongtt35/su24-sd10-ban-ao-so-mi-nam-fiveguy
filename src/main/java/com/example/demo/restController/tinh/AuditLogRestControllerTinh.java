@@ -64,7 +64,7 @@ public class AuditLogRestControllerTinh {
         bill1.setActionType(bill.getActionType());
         bill1.setDetailedAction(bill.getDetailedAction());
         bill1.setTime(new Date());
-        bill1.setStatus(1);
+        bill1.setRole(employee.get().getAccount().getRole().getId());
 
         return auditLogRepositoryTinh.save(bill1);
 
@@ -84,7 +84,7 @@ public class AuditLogRestControllerTinh {
         bill1.setActionType(bill.getActionType());
         bill1.setDetailedAction(bill.getDetailedAction());
         bill1.setTime(new Date());
-        bill1.setStatus(1);
+        bill1.setRole(employee.get().getAccount().getRole().getId());
 
         return auditLogRepositoryTinh.save(bill1);
 
@@ -141,7 +141,7 @@ public class AuditLogRestControllerTinh {
             cell.setCellStyle(headerStyle);
 
             cell = row.createCell(6, CellType.STRING);
-            cell.setCellValue("Trạng thái");
+            cell.setCellValue("Chức vụ");
             cell.setCellStyle(headerStyle);
 
             // Adjust column widths
@@ -190,7 +190,7 @@ public class AuditLogRestControllerTinh {
                     }
 
                     cell = row.createCell(6, CellType.NUMERIC);
-                    cell.setCellValue(hd.getStatus());
+                    cell.setCellValue(hd.getRole());
 
                 }
                 File e = new File("E:\\"+"AuditLogs"+" "+date.format(getDate)+".xlsx");

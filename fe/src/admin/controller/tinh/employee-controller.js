@@ -938,6 +938,7 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
     code: null,
     implementer: null,
     time: null,
+    actionType: null,
   };
   // $scope.filterAuditlog.time = $scope.filterAuditlog.time ? $scope.filterAuditlog.time.toISOString().split('T')[0] : null;
 
@@ -986,6 +987,7 @@ app.controller("tinh-employee-controller", function ($scope, $http, $timeout) {
       code: null,
       implementer: null,
       time: null,
+      actionType: null,
     };
     $scope.getAllAuditLog(0);
   };

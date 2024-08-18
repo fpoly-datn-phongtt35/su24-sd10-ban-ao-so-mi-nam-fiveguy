@@ -76,20 +76,20 @@ public class AuditLogSpecificationTinh {
         };
     }
 
-    public static Specification<AuditLogs> hasStatus(Integer status) {
-        return (root, query, criteriaBuilder) ->
-                status == null ? criteriaBuilder.conjunction() :
-                        criteriaBuilder.equal(root.get("status"), status);
-    }
-
-        public static Specification<AuditLogs> hasStatusIn(List<Integer> statuses) {
-            return (root, query, criteriaBuilder) -> {
-                if (statuses == null || statuses.isEmpty()) {
-                    return criteriaBuilder.conjunction(); // Return all records if no statuses provided
-                }
-                return root.get("status").in(statuses);
-            };
-        }
-
+//    public static Specification<AuditLogs> hasStatus(Integer status) {
+//        return (root, query, criteriaBuilder) ->
+//                status == null ? criteriaBuilder.conjunction() :
+//                        criteriaBuilder.equal(root.get("status"), status);
+//    }
+//
+//        public static Specification<AuditLogs> hasStatusIn(List<Integer> statuses) {
+//            return (root, query, criteriaBuilder) -> {
+//                if (statuses == null || statuses.isEmpty()) {
+//                    return criteriaBuilder.conjunction(); // Return all records if no statuses provided
+//                }
+//                return root.get("status").in(statuses);
+//            };
+//        }
+//
 
 }
