@@ -239,7 +239,7 @@ if ($scope.idBill != undefined) {
     $scope.description= '';
     $scope.confirmChangeStatus = function () {
         if (!$scope.isReasonSelected() && $scope.reasonSuggestions.length > 0) {
-            $scope.showError("Vui lòng chọn một lý do hoặc nhập lý do khác.");
+            $scope.showErrorNotification("Vui lòng lý do để hủy.");
             return;
         }
         let description = $scope.description || "";
@@ -359,8 +359,8 @@ if ($scope.idBill != undefined) {
             3: { title: "Đang giao hàng", icon: "directions_car", status: 3 },
             4: { title: "Đã giao hàng", icon: "check_circle", status: 4 },
 
-            5: { title: "Khách hủy", icon: "person_cancel", status: 5 },
-            6: { title: "Đã hủy", icon: "block", status: 6 },
+            5: { title: "Hủy", icon: "person_cancel", status: 5 },
+            6: { title: "Hủy", icon: "block", status: 6 },
 
             7: { title: "Thất bại", icon: "cancel", status: 7 },
             8: { title: "Thất bại", icon: "cancel", status: 8 },    //giao lại
@@ -389,8 +389,8 @@ if ($scope.idBill != undefined) {
             3: { title: "Đang giao hàng", icon: "local_shipping", status: 3 },
             4: { title: "Đã giao hàng", icon: "check_circle", status: 4 },
 
-            5: { title: "Khách hủy", icon: "cancel", status: 5 },
-            6: { title: "Đã hủy", icon: "not_interested", status: 6 },
+            5: { title: "Hủy", icon: "cancel", status: 5 },
+            6: { title: "Hủy", icon: "not_interested", status: 6 },
 
             7: { title: "Thất bại", icon: "error", status: 7 },
             8: { title: "Thất bại", icon: "error", status: 8 }, //Lại - thiếu
@@ -654,4 +654,54 @@ $scope.rating = {
         stars[i].classList.remove('checked');
     }
   };
+
+  $scope.getStatusText = function(status) {
+    try {
+        switch (status) {
+            case 1:
+                return "Chờ xác nhận";
+            case 2:
+                return "Chờ giao hàng";
+            case 3:
+                return "Đang giao hàng";
+            case 4:
+                return "Đã giao hàng";
+            case 5:
+            case 6:
+                return "Hủy";
+            case 7:
+            case 8:
+            case 81:
+                return "Thất bại";
+            case 9:
+                return "Chờ giao lại";
+            case 10:
+                return "Đang giao lại";
+            case 11:
+                return "Đang hoàn hàng";
+            case 12:
+                return "Đã hoàn hàng";
+            case 20:
+                return "Tạo đơn hàng";
+            case 21:
+                return "Hoàn thành";
+            case 30:
+            case 31:
+                return "Trả hàng";
+            case 32:
+                return "Đã trả hàng";
+            case 50:
+                return "Khách yêu cầu hủy";
+            default:
+                return "Unknown Status"; // Default text if status is not found
+        }
+    } catch (error) {
+        console.error("Error fetching status text: ", error);
+        return "Error"; // Return a fallback text in case of an error
+    }
+};
+
+
+
+
 });

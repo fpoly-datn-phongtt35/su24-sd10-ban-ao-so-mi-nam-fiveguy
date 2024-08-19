@@ -526,6 +526,7 @@ $scope.valueVoucher = 0;
         $rootScope.countProduct = $scope.cartItems.reduce((total, item) => total + item.quantity, 0);
         $scope.totalAmount = countTotalPrice($scope.cartItems);
         $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
+        $scope.calculatePoints($scope.totalAmountAfterDiscount);
         // $scope.getBestVoucher($scope.totalAmount)
 
         if (typeof $scope.dataDistrict !== 'undefined' && typeof $scope.dataDistrict.DistrictID !== 'undefined' && 
@@ -600,7 +601,7 @@ $scope.province1 = function () {
           return city.ProvinceID == cityId;
         });
         $scope.dataCity = selectedCity;
-        console.log($scope.dataCity)
+        // console.log($scope.dataCity)
         // $scope.billAddressCity = cityId;
       }
     });
@@ -645,7 +646,7 @@ $scope.province1 = function () {
         });
         // $scope.billAddressDistrict = districtId;
         $scope.dataDistrict = selectedDistrict;
-        console.log($scope.dataDistrict)
+        // console.log($scope.dataDistrict)
         
       }
     });
@@ -685,7 +686,7 @@ $scope.province1 = function () {
         if (selectedWard) {
           // $scope.billAddressWard = selectedWard.WardCode;
         $scope.dataWard = selectedWard;
-        console.log($scope.dataWard)
+        // console.log($scope.dataWard)
   
         } else {
           console.log("Không tìm thấy phường/xã với WardCode: " + wardId);
@@ -758,7 +759,7 @@ $scope.province1 = function () {
       $scope.selectPaymentMethod = function(paymentMethod) {
           $scope.selectedPayment = paymentMethod; 
           $scope.selectedPaymentCode = paymentMethod.code
-          console.log($scope.selectedPaymentCode)
+          // console.log($scope.selectedPaymentCode)
       };
 
 
@@ -887,7 +888,7 @@ $scope.dataCity.ProvinceID;
           .then(resp => {
            // Xử lý phản hồi từ server
               let body = resp.data;
-              console.log(body);
+              // console.log(body);
               if (body != null && body.hasOwnProperty("redirect") ) {
                   window.location.href = body.redirect; 
               }
@@ -915,12 +916,12 @@ $scope.dataCity.ProvinceID;
                   
                   else {
                     $scope.showWarningNotification("Có lỗi xảy ra!");
-                    console.log(3);
+                    // console.log(3);
 
                   }
               } else {
                 $scope.showWarningNotification("Có lỗi xảy ra!");
-                console.log(3);
+                // console.log(3);
 
               }
           })
@@ -1122,7 +1123,7 @@ $scope.dataCity.ProvinceID;
           if (response.data) {
             $scope.productsByTotalQuantitySold = response.data.slice(0, 12); // Lấy chỉ 12 đối tượng đầu tiên
   
-            console.log($scope.productsByTotalQuantitySold)
+            // console.log($scope.productsByTotalQuantitySold)
           }
         })
         .catch(function(error) {
@@ -1262,7 +1263,7 @@ $scope.dataCity.ProvinceID;
       return voucher.quantity > 1 && $scope.totalAmount >= voucher.minimumTotalAmount && voucher.show == 1;
     });
   
-    console.log(validVouchers);
+    // console.log(validVouchers);
   
     if (validVouchers.length === 0) {
       console.log("Không tìm được voucher phù hợp.");
@@ -1312,6 +1313,10 @@ $scope.dataCity.ProvinceID;
     if ($scope.selectedVoucher) {
       $scope.selectedVoucher.selected = false; // Bỏ chọn voucher trước đó
     }
+
+
+    $scope.selectedVoucherOld = $scope.selectedVoucher;
+
     $scope.selectedVoucher = bestVoucher;
     $scope.selectedVoucher.selected = true;
     $scope.valueVoucher = bestVoucher.valueVoucher;
@@ -1369,7 +1374,7 @@ $scope.dataCity.ProvinceID;
   // $scope.originalTotalAmount = $scope.totalAmount; // Store the original total amount
   
   $scope.selectVoucher = function(selectedVoucher) {
-    console.log(selectedVoucher);
+    // console.log(selectedVoucher);
     if (selectedVoucher.quantity > 1) {
       if ($scope.selectedVoucher === selectedVoucher) {
         $scope.selectedVoucher = null;
@@ -1420,6 +1425,12 @@ $scope.dataCity.ProvinceID;
           }
   
           $scope.voucherMessage = 'Mã giảm giá đã được áp dụng';
+
+          if ($scope.selectedVoucherOld && $scope.selectedVoucherOld.id == $scope.selectedVoucher.id) {
+            return;
+          }
+
+
           $scope.showSuccessNotification($scope.voucherMessage);
         } else {
           // $scope.voucherData = null;
@@ -1468,7 +1479,7 @@ $scope.dataCity.ProvinceID;
       .then(function(response) {
         if (response.data) {
             $scope.productCate = response.data.slice(0, 6);
-            console.log( $scope.productCate)
+            // console.log( $scope.productCate)
         }
       })
       .catch(function(error) {
@@ -1495,14 +1506,16 @@ $scope.productId = $routeParams.idProduct;
 var productId = $routeParams.idProduct; 
 
 $scope.getRates = function() {
-  
+
+  if ($routeParams.idProduct == undefined) {
+    return;
+  }
     $http({
       method: 'GET',
       url: 'http://localhost:8080/api/home/listRate',
       params: { productId: $routeParams.idProduct, page: $scope.currentPageRate }
   }) .then(function(response) {
             $scope.ratings = response.data; 
-            console.log($scope.ratings)
         })
         .catch(function(error) {
             console.error('Error fetching ratings:', error);
@@ -1522,6 +1535,23 @@ $scope.getRates = function() {
 
     return new Array((num));
   };
+
+
+
+
+
+  // point ----------------------------
+
+  $scope.calculatePoints = function(totalAmount) {
+
+    $http.get('http://localhost:8080/api/calculate-points', { params: { totalAmount: totalAmount } })
+        .then(function(response) {
+            $scope.calculatedPoints = response.data;
+        }, function() {
+            $scope.errorMessage = "Error calculating points.";
+        });
+};
+
   
 
 });

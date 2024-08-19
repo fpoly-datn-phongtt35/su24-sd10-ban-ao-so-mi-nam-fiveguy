@@ -66,7 +66,7 @@ app.controller("ratingAdminController", function ($scope, $http, $window, $route
             size: $scope.size
         };
     
-        $http.get('http://localhost:8080/api/admin/ratings', { params: params })
+        $http.get('http://localhost:8080/api/admin/rate/ratings', { params: params })
             .then(function(response) {
                 // Update scope variables
                 $scope.ratings = response.data.content; // Assuming response data is a Page object
@@ -76,7 +76,6 @@ app.controller("ratingAdminController", function ($scope, $http, $window, $route
             })
             .catch(function(error) {
                 console.log(error);
-                $scope.showErrorNotification("Failed to fetch ratings");
             });
     };
     
@@ -125,7 +124,7 @@ app.controller("ratingAdminController", function ($scope, $http, $window, $route
     rate.approvalStatus = newStatus; // Update the approval status based on the button clicked
 
     // Send the updated rating to the server
-    $http.post('http://localhost:8080/api/admin/update', rate)
+    $http.post('http://localhost:8080/api/admin/rate/update', rate)
         .then(function(response) {
             $scope.getRatings(); // Refresh the ratings list
             $scope.showSuccessNotification("Cập nhật đánh giá thành công");

@@ -6,6 +6,9 @@ import com.example.demo.service.point.PointSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Service
 public class PointSettingsServiceImpl implements PointSettingsService {
 
@@ -37,5 +40,15 @@ public class PointSettingsServiceImpl implements PointSettingsService {
         } else {
             throw new IllegalArgumentException("PointSettings record not found");
         }
+    }
+
+    @Override
+    public Integer calculatePoints(BigDecimal totalAmount) {
+        PointSettings settings = getPointSettings();
+        BigDecimal pointsPerAmount = new BigDecimal(settings.getPointsPerAmount());
+        Integer newPoints = totalAmount
+                .divide((pointsPerAmount), RoundingMode.HALF_UP)
+                .intValue();
+        return newPoints;
     }
 }
