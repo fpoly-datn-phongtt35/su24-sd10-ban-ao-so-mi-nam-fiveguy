@@ -124,9 +124,9 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
         data: {
             labels: [
                 "Chờ Xác nhận",
-                "Chờ Vận chuyển", 
-                "Đang giao hàng", 
-                "Đã giao hàng",
+                "Chờ Vận chuyển",
+                "Đang giao hàng",
+                // "Đã giao hàng",
                 "Đã hủy",
                 "Thất bại",
                 "Chờ giao lại",
@@ -134,8 +134,8 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                 "Đang hoàn hàng",
                 "Đã hoàn hàng",
                 "Hoàn hàng thất bại",
-                "Thành công",
-                "Đơn trả",
+
+                "Đơn trả", "Thành công",
                 "Đã trả hàng",
                 "Trả hàng thất bại"
             ],
@@ -147,7 +147,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                         "#eca147",
                         "rgb(54, 162, 235)",
                         "#33FFFF",
-                        "#459446",
+                        // "#459446",
                         "#dc3545",
                         "#ff7c4e",
                         "rgb(255, 205, 86)",
@@ -186,8 +186,8 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             $scope.tongBillStatuses[1] || 0,
             $scope.tongBillStatuses[2] || 0,
             $scope.tongBillStatuses[3] || 0,
-            $scope.tongBillStatuses[4] || 0,
-            ($scope.tongBillStatuses[5] || 0) + ($scope.tongBillStatuses[6] || 0) + ($scope.tongBillStatuses[50] || 0),
+            // $scope.tongBillStatuses[4] || 0,
+            ($scope.tongBillStatuses[5] || 0) + ($scope.tongBillStatuses[6] || 0),
             ($scope.tongBillStatuses[7] || 0) + ($scope.tongBillStatuses[8] || 0) + ($scope.tongBillStatuses[81] || 0),
             $scope.tongBillStatuses[9] || 0,
             $scope.tongBillStatuses[10] || 0,
