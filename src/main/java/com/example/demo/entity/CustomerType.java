@@ -23,8 +23,17 @@ public class CustomerType {
     @Column(name = "Id")
     private Long id;
 
+    @Column(name = "Code")
+    private Integer code;
+
     @Column(name = "Name", columnDefinition = "nvarchar(300)")
     private String name;
+
+    @Column(name = "MinPoints")
+    private Integer minPoints;
+
+    @Column(name = "MaxPoints")
+    private Integer maxPoints;
 
     @Column(name = "CreatedAt")
     private Date createdAt;

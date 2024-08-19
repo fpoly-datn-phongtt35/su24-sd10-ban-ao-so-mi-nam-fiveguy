@@ -60,6 +60,12 @@ public class Bill {
     @Column(name = "TotalAmountAfterDiscount")
     private BigDecimal totalAmountAfterDiscount;
 
+    @Column(name = "PaidAmount")
+    private BigDecimal paidAmount;
+
+    @Column(name = "PaidShippingFee ")
+    private BigDecimal paidShippingFee ;
+
     @Column(name = "CreatedAt")
     private Date createdAt;
 
@@ -106,4 +112,8 @@ public class Bill {
     @JsonIgnore
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
     private List<ReturnOrder> returnOrders;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
+    private List<CustomerPointsHistory> customerPointsHistories;
 }
