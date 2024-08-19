@@ -450,19 +450,34 @@ public class NBillDetailServiceImpl implements NBillDetailService {
         }
 
         // Check the number of uses limit using repository
-        if (voucher.getNumberOfUses() != null && customer != null) {
+//        if (voucher.getNumberOfUses() != null && customer != null) {
+//            long usedCount = billRepository
+//                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
+//                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+//
+//            // Check if the voucher is already used in the current bill
+//            boolean isCurrentBillUsingVoucher =
+//                    bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
+//
+//            if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
+//                return false; // Voucher usage limit reached
+//            }
+//        }
+
+        if (voucher.getApplyfor() != 0 && voucher.getNumberOfUses() != null && customer != null) {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+                            List.of(5, 6, 1));  // Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
 
-            // Check if the voucher is already used in the current bill
+            // Kiểm tra nếu voucher đang được sử dụng trong bill hiện tại
             boolean isCurrentBillUsingVoucher =
                     bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
 
             if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
-                return false; // Voucher usage limit reached
+                return false; // Giới hạn số lần sử dụng voucher đã đạt
             }
         }
+
 
         // Check the number of uses limit using repository
 //        if (voucher.getNumberOfUses() != null && customer != null) {

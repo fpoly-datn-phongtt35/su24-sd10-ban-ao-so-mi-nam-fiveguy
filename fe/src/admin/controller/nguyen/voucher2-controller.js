@@ -176,6 +176,10 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
         $scope.formInputVoucher.startDate = formattedStartDate
         $scope.formInputVoucher.endDate = formattedEndDate
 
+        if ($scope.formInputVoucher.numberOfUses == undefined || $scope.formInputVoucher.numberOfUses == null || $scope.formInputVoucher.numberOfUses == "") {
+            $scope.formInputVoucher.numberOfUses = 0;
+        }
+
         let data = {
             voucher: $scope.formInputVoucher, customerTypeList: $scope.entitiesCustomerType
         }
