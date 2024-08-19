@@ -14,8 +14,18 @@ public class ProductDetailControllerTH {
     @Autowired
     private ProductDetailServiceTH productDetailService;
 
+    @GetMapping
+    public ResponseEntity<?> getAll( @RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(productDetailService.getAll(keyword));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productDetailService.findAllByProduct_Id(id));
+    }
+
+    @GetMapping("/one/{id}")
+    public ResponseEntity<?> getOneProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productDetailService.findById(id));
     }
 }

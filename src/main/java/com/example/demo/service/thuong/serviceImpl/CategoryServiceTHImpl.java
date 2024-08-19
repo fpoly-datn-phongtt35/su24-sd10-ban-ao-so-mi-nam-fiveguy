@@ -22,17 +22,18 @@ public class CategoryServiceTHImpl implements CategoryServiceTH {
     private CategoryRepositoryTH repository;
 
     @Override
-    public Page<Category> getCategories(int page, int size, String name, String sortField, String sortDirection) {
+    public Page<Category> getCategories(int page, int size, String name, String sortField, String sortDirection, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
         } else {
             sort = sort.ascending();
         }
+
         Pageable pageable = PageRequest.of(page, size, sort);
         if (name == null || name.isEmpty())
-        return repository.findAll(pageable);
-        else return repository.findByNameContainingIgnoreCase(name,pageable);
+            return repository.findAllAndStatus(status, pageable);
+        return repository.findByNameContainingIgnoreCaseAndStatus(name, status, pageable);
     }
 
     @Override
@@ -64,7 +65,6 @@ public class CategoryServiceTHImpl implements CategoryServiceTH {
             Category category = categoryOptional.get();
             category.setName(request.getName());
             category.setUpdatedAt(new Date());
-            category.setStatus(1);
             return repository.save(category);
         }
         return null;

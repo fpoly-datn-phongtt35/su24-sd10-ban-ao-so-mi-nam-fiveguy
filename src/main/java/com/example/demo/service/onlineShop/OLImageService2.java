@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface OLImageService2 {
     List<String> getImagesByProductIdAndColorId(Long idProduct, Long idColor);
+
+
+    public String findImagesByProductId(Long id);
+
 }

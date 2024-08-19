@@ -1,8 +1,8 @@
 package com.example.demo.service.onlineShop.impl;
 
 import com.example.demo.entity.*;
-import com.example.demo.model.response.onlineShop.OlBillDTO;
-import com.example.demo.repository.common.OLVoucherRepository2;
+import com.example.demo.repository.common.VoucherCommonRepository;
+import com.example.demo.repository.onlineShop.OLBillHistoryRepository2;
 import com.example.demo.repository.onlineShop.OLBillRepository2;
 import com.example.demo.service.onlineShop.OLBillDetailService2;
 import com.example.demo.service.onlineShop.OLBillService2;
@@ -11,12 +11,17 @@ import com.example.demo.service.onlineShop.OLProductService2;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -31,84 +36,54 @@ public class OLBillServiceImpl2 implements OLBillService2 {
     private OLProductDetailService2 olProductDetailService;
 
     @Autowired
-    private OLVoucherRepository2 olVouchersRepository;
+    private VoucherCommonRepository olVouchersRepository;
 
     @Autowired
     private OLBillRepository2 olBillRepository;
 
-//    @Autowired
-//    private OlRatingService olRatingService;
+    @Autowired
+    private VoucherCommonRepository voucherRepository;
 
     @Autowired
-    private OLProductService2 olProductService;
+    private OLBillHistoryRepository2 billHistoryRepository;
 
-
-//    public OlBillDetailResponse convertToOlBillDetailResponse(BillDetail billDetail) {
-//        OlBillDetailResponse response = new OlBillDetailResponse();
-//        response.setId(billDetail.getId());
-//        response.setQuantity(billDetail.getQuantity());
-//        response.setPrice(billDetail.getPrice());
-//        response.setBill(billDetail.getBill());
-//        response.setProductDetail(billDetail.getProductDetail());
-//        response.setStatus(billDetail.getStatus());
-//        List<RatingEntity> list = olRatingService.findByBillDetail_Id(billDetail.getId());
-//
-//        if (list.isEmpty() || (!list.get(0).isRated())) {
-//            response.setRated(false); // Thiết lập thuộc tính 'rated' dựa trên điều kiện
-//        } else {
-//            response.setRated(true);
-//        }
-//
-//        return response;
-//    }
 
     private boolean isQuantityAvailable(ProductDetail productDetail, int quantityToRemove) {
         int currentQuantity = productDetail.getQuantity() - 1;
         return currentQuantity >= quantityToRemove;
     }
 
-    private void updateProductQuantity(BillDetail billDetail) {
+    private void checkProductQuantity(BillDetail billDetail) {
         Optional<ProductDetail> productDetail = olProductDetailService.findById(billDetail.getProductDetail().getId());
-        if (productDetail.isPresent()){
+        if (productDetail.isPresent()) {
+
             int quantityToRemove = billDetail.getQuantity();
             if (isQuantityAvailable(productDetail.get(), quantityToRemove)) {
-//                int currentQuantity = productDetail.get().getQuantity();
-//                productDetail.get().setQuantity(currentQuantity - quantityToRemove);
-//
-//                // Kiểm tra xem số lượng của chi tiết sản phẩm đã hết hay chưa
-//                if (currentQuantity - quantityToRemove == 0) {
-//                    productDetail.get().setStatus(2);  // Đặt status = 2 nếu số lượng hết
-//                }
-//
-//                olProductDetailService.save(productDetail.get());
-
-                // Kiểm tra tất cả ProductDetail của Product có status = 2 không
-//                checkAndUpdateProductStatus(productDetail.get().getProduct());
+                // Xử lý khi số lượng sản phẩm đủ
+            } else if (productDetail.get().getQuantity() == 1) {
+                throw new IllegalArgumentException("Sản phẩm: " + productDetail.get().getProduct().getName() + " "
+                        + productDetail.get().getProduct().getCategory().getName() + " "
+                        + productDetail.get().getProduct().getMaterial().getName() + " " +
+                        productDetail.get().getProduct().getCode() + " Màu sắc: "
+                        + productDetail.get().getColor().getName() + " Kích cỡ: "
+                        + productDetail.get().getSize().getName() + " dã hết hàng");
             } else {
                 throw new IllegalArgumentException("Sản phẩm: " + productDetail.get().getProduct().getName() + " "
                         + productDetail.get().getProduct().getCategory().getName() + " "
                         + productDetail.get().getProduct().getMaterial().getName() + " " +
                         productDetail.get().getProduct().getCode() + " Màu sắc: "
                         + productDetail.get().getColor().getName() + " Kích cỡ: "
-                        + productDetail.get().getSize().getName() + " ");
+                        + productDetail.get().getSize().getName() + " Số lượng còn lại: " + (productDetail.get().getQuantity() - 1));
             }
         }
     }
 
-//    private void checkAndUpdateProductStatus(Product product) {
-//        List<ProductDetail> productDetails = olProductDetailService.findAllByProduct(product);
-//        boolean allProductDetailsAreStatus2 = productDetails.stream().allMatch(pd -> pd.getStatus() == 2);
-//
-//        if (allProductDetailsAreStatus2) {
-//            product.setStatus(2);  // Đặt status = 2 nếu tất cả ProductDetail đều có status = 2
-//            olProductService.save(product);
-//        }
-//    }
-
-
-
-
-
+    private String generateCode() {
+        long currentTimeMillis = System.currentTimeMillis();
+        SimpleDateFormat formatter = new SimpleDateFormat("HHmm");
+        String formattedTime = formatter.format(new Date(currentTimeMillis));
+        return "HD" + formattedTime;
+    }
 
     @Override
     public ResponseEntity<?> creatBill(JsonNode orderData, Customer customer) {
@@ -118,21 +93,15 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
         ObjectMapper mapper = new ObjectMapper();
         Bill bill = mapper.convertValue(orderData, Bill.class);
-
+        bill.setCreatedAt(new Date());
+        bill.setCode(generateCode());
 // Kiểm tra số lượng tồn của voucher trước khi sử dụng
-        if (bill.getVoucher() != null){
+        if (bill.getVoucher() != null) {
             Voucher existingVoucher = olVouchersRepository.findById(bill.getVoucher().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
 
-            if (existingVoucher != null && existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 0) {
-//                existingVoucher.setQuantity(existingVoucher.getQuantity() - 1);
-//
-//                // Kiểm tra xem số lượng của voucher đã hết hay chưa
-//                if (existingVoucher.getQuantity() == 0) {
-//                    existingVoucher.setStatus(2);  // Đặt status = 2 nếu số lượng hết
-//                }
-//
-//                olVouchersRepository.save(existingVoucher);
+            if ( existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 1) {
+
             } else {
                 return ResponseEntity.ok(3);
             }
@@ -140,12 +109,13 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
 
         // Kiểm tra và xử lý số lượng sản phẩm trước khi thanh toán
-        List<BillDetail> billDetails = mapper.convertValue(orderData.get("billDetail"), new TypeReference<List<BillDetail>>() {});
+        List<BillDetail> billDetails = mapper.convertValue(orderData.get("billDetail"), new TypeReference<List<BillDetail>>() {
+        });
         List<String> insufficientQuantityProducts = new ArrayList<>();
 
         for (BillDetail detail : billDetails) {
             try {
-                updateProductQuantity(detail);
+                checkProductQuantity(detail);
                 detail.setBill(bill);
             } catch (IllegalArgumentException e) {
                 insufficientQuantityProducts.add(e.getMessage());
@@ -165,13 +135,6 @@ public class OLBillServiceImpl2 implements OLBillService2 {
     }
 
 
-
-//    @Override
-//    public Page<Bill> findLatestBillsByCustomerId(Long customerId, int page, int size) {
-//        PageRequest pageRequest = PageRequest.of(page, size);
-//        return   olBillRepository.findLatestBillByCustomerId(customerId, pageRequest);
-//    }
-
     @Override
     public boolean updatePaymentStatus(Long billId, int paymentStatus) {
         Optional<Bill> optionalBill = olBillRepository.findById(billId);
@@ -184,61 +147,6 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         return false;
     }
 
-//    private OlBillResponse mapBillToOlBillResponse(Bill bill) {
-//        OlBillResponse olBillResponse = new OlBillResponse();
-//        olBillResponse.setId(bill.getId());
-//        olBillResponse.setCode(bill.getCode());
-//        olBillResponse.setCreatedAt(bill.getCreatedAt());
-//        olBillResponse.setPaymentDate(bill.getPaymentDate());
-//        olBillResponse.setTotalAmount(bill.getTotalAmount());
-//        olBillResponse.setTotalAmountAfterDiscount(bill.getTotalAmountAfterDiscount());
-//        olBillResponse.setReciverName(bill.getReciverName());
-//        olBillResponse.setDeliveryDate(bill.getDeliveryDate());
-//        olBillResponse.setShippingFee(bill.getShippingFee());
-//        olBillResponse.setAddress(bill.getAddress());
-//        olBillResponse.setPhoneNumber(bill.getPhoneNumber());
-//        olBillResponse.setNote(bill.getNote());
-//        olBillResponse.setCustomerEntity(bill.getCustomerEntity());
-//        olBillResponse.setEmployee(bill.getEmployee());
-//        olBillResponse.setPaymentMethod(bill.getPaymentMethod());
-//        olBillResponse.setVoucher(bill.getVoucher());
-//        olBillResponse.setTypeBill(bill.getTypeBill());
-//        olBillResponse.setStatus(bill.getStatus());
-//        olBillResponse.setReason(bill.getReason());
-//
-//
-//
-//        List<BillDetail> billDetails = olBillDetailService.findByBill_IdAndStatus(bill.getId());
-//        List<OlBillDetailResponse> responses = new ArrayList<>();
-//
-//        for (BillDetail billDetail : billDetails) {
-//            OlBillDetailResponse response = convertToOlBillDetailResponse(billDetail);
-//            List<RatingEntity> list = olRatingService.findByBillDetail_Id(billDetail.getId());
-//
-//            if (list.isEmpty() || (!list.get(0).isRated())) {
-//                response.setRated(false); // Thiết lập thuộc tính 'rated' dựa trên điều kiện
-//            } else {
-//                response.setRated(true);
-//            }
-//
-//            responses.add(response);
-//        }
-//        olBillResponse.setBillDetail(responses);
-//
-//
-//// responses là danh sách đã được chuyển đổi và thiết lập 'rated' tương ứng
-//
-//        return olBillResponse;
-//    }
-
-//    @Override
-//    public OlBillDTO findBYId(Long id) {
-//        Optional<Bill> bill = olBillRepository.findById(id);
-//        if (bill.isPresent()){
-//            return mapBillToOlBillResponse(bill.get());
-//        }
-//        return null;
-//    }
 
     @Override
     public Bill save(Bill bill) {
@@ -248,20 +156,86 @@ public class OLBillServiceImpl2 implements OLBillService2 {
     @Override
     public Bill findById(Long id) {
         Optional<Bill> bill = olBillRepository.findById(id);
-        if (bill.isPresent()){
+        if (bill.isPresent()) {
             return bill.get();
         }
         return null;
     }
 
-//    @Override
-//    public List<Bill> findByPhoneNumber(String pn) {
-//
-//        List<Bill> bill = olBillRepository.findByPhoneNumberOrderByCreatedAtDesc(pn);
-//        if (bill.size() > 0){
-//            return bill;
-//        }
-//
-//        return Collections.emptyList();
-//    }
+    @Override
+    public Page<Bill> getBillsByCustomerId(Long customerId, String search, Pageable pageable) {
+        return olBillRepository.findByCustomer_Id(customerId, search, pageable);
+    }
+
+    @Override
+    public Page<Bill> getBillsByPhoneNumber(String phoneNumber, String search, int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return olBillRepository.findByPhoneNumber(phoneNumber, search, pageable);
+    }
+
+
+    private void addBillHistoryStatus(Long billId, int status, String description, int type,
+                                      int reason,
+                                      String createdBy) {
+        Bill bill = olBillRepository.findById(billId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
+
+        BillHistory newHistory = new BillHistory();
+        newHistory.setBill(bill);
+        newHistory.setStatus(status);
+        newHistory.setDescription(description);
+        newHistory.setCreatedBy(createdBy);
+        newHistory.setType(type);
+        newHistory.setReason(reason);
+        newHistory.setCreatedAt(new Date());
+
+        billHistoryRepository.save(newHistory);
+    }
+
+    @Override
+    public Bill updateStatusAndBillStatus(Bill bill, Long id, BillHistory billHistory) {
+        Optional<Bill> optionalBill = olBillRepository.findById(id);
+        if (!optionalBill.isPresent()) {
+            throw new EntityNotFoundException("Bill not found with id " + id);
+        }
+        if (optionalBill.get().getStatus() == 2 || optionalBill.get().getStatus() == 1) {
+            Bill existingBill = optionalBill.get();
+            existingBill.setStatus(bill.getStatus());
+            existingBill.setReason(bill.getStatus());
+
+            addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
+                    billHistory.getDescription(), 1, billHistory.getReason(), billHistory.getCreatedBy());
+//            List<BillDetail> billDetails = olBillDetailService.findAllByBillIdOrderByIdDesc(id);
+//            if (bill.getStatus() == 5 && optionalBill.get().getStatus() == 2) {
+//                for (BillDetail billDetail : billDetails) {
+//                    ProductDetail productDetail = billDetail.getProductDetail();
+//                    int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
+//                    productDetail.setQuantity(newQuantity);
+//                    olProductDetailService.save(productDetail);
+//                }
+//                updateVoucherOnBillCancellation(id);
+//            }
+
+            return olBillRepository.save(existingBill);
+        }
+        return null;
+    }
+
+    @Transactional
+    public void updateVoucherOnBillCancellation(Long billId) {
+        Bill bill = olBillRepository.findById(billId)
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
+
+
+        Voucher usedVoucher = bill.getVoucher();
+        if (usedVoucher != null) {
+            // Tăng số lượng voucher lên 1
+            usedVoucher.setQuantity(usedVoucher.getQuantity() + 1);
+            voucherRepository.save(usedVoucher);
+
+        }
+
+
+    }
 }

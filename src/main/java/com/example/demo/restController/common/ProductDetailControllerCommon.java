@@ -1,8 +1,7 @@
 package com.example.demo.restController.common;
 
-import com.example.demo.entity.ProductDetail;
 import com.example.demo.model.response.common.ProductDetailDTO;
-import com.example.demo.service.common.ProductDetailServiceCommon;
+import com.example.demo.service.common.ProductDetailCommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +18,7 @@ public class ProductDetailControllerCommon {
 
 
     @Autowired
-    private ProductDetailServiceCommon productDetailService;
+    private ProductDetailCommonService productDetailService;
 
     @GetMapping
     public Page<ProductDetailDTO> getFilteredProductDetails(

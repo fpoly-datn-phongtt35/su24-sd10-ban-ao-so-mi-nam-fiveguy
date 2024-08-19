@@ -68,6 +68,7 @@ public class SCSCUserServiceImpl implements SCUserService {
     private SCEmailService scEmailService;
 
 
+
     private final ModelMapper mapper;
     private final PasswordEncoder bcryptEncoder;
     private final Helper helper;

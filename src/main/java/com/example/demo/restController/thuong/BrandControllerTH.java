@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/admin/brand")
+@RequestMapping("/api/admin/brand-th")
 public class BrandControllerTH {
     @Autowired
     private BrandServiceTH brandServiceTH;
@@ -20,10 +20,16 @@ public class BrandControllerTH {
                                            @RequestParam(defaultValue = "5") int size,
                                            @RequestParam(required = false) String keyword,
                                            @RequestParam String sortField,
-                                           @RequestParam String sortDirection
+                                           @RequestParam String sortDirection,
+                                            @RequestParam(required = false) Integer status
     ) {
 
-        return ResponseEntity.ok(brandServiceTH.getBrands(page, size, keyword, sortField, sortDirection));
+        return ResponseEntity.ok(brandServiceTH.getBrands(page, size, keyword, sortField, sortDirection, status));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllCategories() {
+        return ResponseEntity.ok(brandServiceTH.findAllByStatus(1));
     }
 
     @GetMapping("/{id}")

@@ -18,9 +18,9 @@ public class ProductInfoDTO {
         private Integer value;
         private Integer totalQuantitySold;
         private String brandName;
-//        private String supplierName;
+        private String describe;
 
-        public ProductInfoDTO(Long id, String productName, BigDecimal price, String wristName, String materialName, String categoryName, String collarName, Integer promotionalPrice, Integer discountType, Integer value, Integer totalQuantitySold, String brandName) {
+        public ProductInfoDTO(Long id, String productName, BigDecimal price, String wristName, String materialName, String categoryName, String collarName, Integer promotionalPrice, Integer discountType, Integer value, Integer totalQuantitySold, String brandName, String describe) {
                 this.id = id;
                 this.productName = productName;
                 this.price = price;
@@ -33,6 +33,6 @@ public class ProductInfoDTO {
                 this.value = value;
                 this.totalQuantitySold = totalQuantitySold;
                 this.brandName = brandName;
-//                this.supplierName = supplierName;
+                this.describe = describe;
         }
 }

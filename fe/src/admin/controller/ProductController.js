@@ -1,20 +1,56 @@
+
 app.controller("ProductController", function($scope, $http, $timeout){
-    $scope.page = 0;
-    $scope.size = 5;
-    
     $scope.filter = {
         keyword: '',
         sortField: 'createdAt',
-        sortDirection: 'ASC'
+        sortDirection: 'ASC',
+        min: 500,
+        max: 10000000
     };
-    $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
-    $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
+
+    $scope.priceGap = 1000;
+
+    $scope.updateRange = function(type) {
+        if (type === 'min' && ($scope.filter.max - $scope.filter.min) < $scope.priceGap) {
+            $scope.filter.min = $scope.filter.max - $scope.priceGap;
+        } else if (type === 'max' && ($scope.filter.max - $scope.filter.min) < $scope.priceGap) {
+            $scope.filter.max = $scope.filter.min + $scope.priceGap;
+        }
+        $scope.updateProgressStyle();
+    };
+
+    $scope.updateInput = function(type) {
+        if (type === 'min' && ($scope.filter.max - $scope.filter.min) < $scope.priceGap) {
+            $scope.filter.min = $scope.filter.max - $scope.priceGap;
+        } else if (type === 'max' && ($scope.filter.max - $scope.filter.min) < $scope.priceGap) {
+            $scope.filter.max = $scope.filter.min + $scope.priceGap;
+        }
+        $scope.updateProgressStyle();
+    };
+
+    $scope.updateProgressStyle = function() {
+        var minPercentage = (($scope.filter.min - 500) / (10000000 - 500)) * 100;
+        var maxPercentage = 100 - (($scope.filter.max - 500) / (10000000 - 500)) * 100;
+        $scope.progressStyle = {
+            left: minPercentage + '%',
+            right: maxPercentage + '%'
+        };
+    };
+
+    // Initialize progress style
+    $scope.updateProgressStyle();
+
+    $scope.page = 0;
+    $scope.size = 5;
+    
+    $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
+    $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
     $scope.products = [];
     $scope.collars = [];
     $scope.wrists = [];
     $scope.materials = [];
     $scope.categories = [];
-    $scope.suppliers = [];
+    $scope.brands = [];
     $scope.colors = [];
     $scope.sizes = [];
     $scope.sizeSelected = [];
@@ -34,16 +70,22 @@ app.controller("ProductController", function($scope, $http, $timeout){
         if ($scope.size <= 0 || !Number.isInteger($scope.size)) {
             $scope.size = 5;
         }
+        $('#loading').css('display', 'flex');
         $http.get(`${config.host}/product`, 
                 {params: {page: $scope.page, size: $scope.size, keyword: $scope.filter.keyword,
                 sortField: $scope.filter.sortField,
-                sortDirection: $scope.filter.sortDirection
+                sortDirection: $scope.filter.sortDirection,
+                minPrice: $scope.filter.min,
+                maxPrice: $scope.filter.max,
+                status: $scope.filter.status
                 }})
             .then((response) => {
+                $('#loading').css('display', 'none');
                 $scope.products = response.data;
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage = response.data.pageable.pageNumber;
             }).catch(error => {
+                $('#loading').css('display', 'none');
                 console.log("Error", error)
             })
     }
@@ -170,31 +212,31 @@ app.controller("ProductController", function($scope, $http, $timeout){
     // End category
 
     // Begin Supplier
-    $scope.getAllSuppliers = () => {
-        $http.get(`${config.host}/supplier/all`).then(response => {
-            $scope.suppliers = response.data;
+    $scope.getAllBrands = () => {
+        $http.get(`${config.host}/brand-th/all`).then(response => {
+            $scope.brands = response.data;
         }).catch(error => {
             console.log("Error", error);
         })
     }
 
-    $scope.getAllSuppliers();
+    $scope.getAllBrands();
 
-    $('#id-label-supplier').select2( {
+    $('#id-label-brand').select2( {
         theme: "bootstrap-5",
         placeholder: $(this).data('placeholder'),
-        dropdownParent: $("#box-supplier")
+        dropdownParent: $("#box-brand")
     }).on("select2:select", function (e) { 
-        $scope.product.supplier.id = e.params.data.id;  
+        $scope.product.brand.id = e.params.data.id;  
         $scope.$apply(); 
     });
 
-    $('#id-update-supplier').select2( {
+    $('#id-update-brand').select2( {
         theme: "bootstrap-5",
         placeholder: $(this).data('placeholder'),
-        dropdownParent: $("#box-update-supplier")
+        dropdownParent: $("#box-update-brand")
     }).on("select2:select", function (e) { 
-        $scope.productUpdate.supplier.id = e.params.data.id;  
+        $scope.productUpdate.brand.id = e.params.data.id;  
         $scope.$apply(); 
     });
     // End Supplier
@@ -477,18 +519,19 @@ app.controller("ProductController", function($scope, $http, $timeout){
                         barcode: $scope.createBarcode(),
                         isNew: true
                     });
-                return color; 
+                    return color; 
                 });
                 $scope.sizeSelect.push(size);
             }
         });
     }).on("select2:unselecting", function (e) {
-        const sizeExistsInColor = $scope.colorSelect.some(color =>
+        let sizeExistsInColor = $scope.colorSelect.some(color => 
             color.productDetails.some(detail =>
-                detail.isNew === true
+                detail.size.id.toString() === e.params.args.data.id && !detail.isNew
             )
         );
-        if (!sizeExistsInColor) {
+    
+        if (sizeExistsInColor) {
             e.preventDefault();
         } else {
             $scope.$apply(() => {
@@ -501,9 +544,8 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 $scope.sizeSelect = $scope.sizeSelect.filter(size =>
                     size.id.toString() !== e.params.args.data.id
                 );
-            })
+            });
         }
-     
     });
     // End Size
 
@@ -616,14 +658,14 @@ app.controller("ProductController", function($scope, $http, $timeout){
     $scope.getAllProducts();
 
     $scope.resetFormUpdate = () => {
-        $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
+        $scope.productUpdate = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
         $scope.errorsUpdate = [];
         $timeout(() => {
             $('#id-update-collar').val(null).trigger('change');
             $('#id-update-wrist').val(null).trigger('change');
             $('#id-update-material').val(null).trigger('change');
             $('#id-update-category').val(null).trigger('change');
-            $('#id-update-supplier').val(null).trigger('change');
+            $('#id-update-brand').val(null).trigger('change');
             $('#id-update-color').val(null).trigger('change');
             $('#id-update-size').val(null).trigger('change');
             $scope.colorSelect = [];
@@ -632,10 +674,11 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.editProduct = (key) => {
+        $('#loading-edit').css('display', 'flex');
         $http.get(`${config.host}/product/${key}`).then((response) => {
             $scope.productUpdate = response.data;
             $timeout(() => {
-                ['collar', 'wrist', 'material', 'category', 'supplier'].forEach(field => {
+                ['collar', 'wrist', 'material', 'category', 'brand'].forEach(field => {
                     $(`#id-update-${field}`).val($scope.productUpdate[field].id).trigger('change');
                 });
             });
@@ -685,6 +728,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
                     $scope.sizeSelect = objIdSize.map(id => $scope.sizes.find(size => size.id.toString() === id));
                 });  
                 $('#id-update-color').val($scope.getColorCodes()).trigger('change');
+                $('#loading-edit').css('display', 'none');
             }).catch(error => console.error("Error", error));
         }).catch(error => console.error("Error", error));
     };
@@ -699,12 +743,18 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.updateStatus = () => {
+        $('#updateStatus').css('display', 'none');
+        $('#loadingStatus').css('display', 'inline-block');
         $http.put(`${config.host}/product/status/${$scope.product.id}`).then(response => {
+            $('#updateStatus').css('display', 'inline-block');
+            $('#loadingStatus').css('display', 'none');
+            $('#updateStatusModel').modal('hide');
             $scope.getAllProducts();
             $scope.product = {};
-            $('#updateStatusModel').modal('hide');
             toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
         }).catch(error => {
+            $('#updateStatus').css('display', 'none');
+            $('#loadingStatus').css('display', 'inline-block');
             console.log("Error", error);
         })
     }
@@ -743,7 +793,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
         } else if (!$scope.product.category.id) {
             toastr["warning"]("Vui lòng chọn nhóm sản phẩm");
             return false;
-        } else if (!$scope.product.supplier.id) {
+        } else if (!$scope.product.brand.id) {
             toastr["warning"]("Vui lòng chọn nhà cung cấp");
             return false;
         } else if ($scope.sizeSelected.length == 0 && $scope.colorSelected.length > 0) {
@@ -751,6 +801,10 @@ app.controller("ProductController", function($scope, $http, $timeout){
             return false;
         } else if ($scope.colorSelected.length == 0 && $scope.sizeSelected.length > 0) {
             toastr["warning"]("Vui lòng chọn màu sắc");
+            return false;
+        } 
+        else if ($scope.product.importPrice >= $scope.product.price) {
+            toastr["warning"]("Giá nhập phải nhỏ hơn giá bán");
             return false;
         } 
         return true;
@@ -769,7 +823,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
         } else if (!$scope.productUpdate.category.id) {
             toastr["warning"]("Vui lòng chọn nhóm sản phẩm");
             return false;
-        } else if (!$scope.productUpdate.supplier.id) {
+        } else if (!$scope.productUpdate.brand.id) {
             toastr["warning"]("Vui lòng chọn nhà cung cấp");
             return false;
         } else if ($scope.sizeSelect.length == 0 && $scope.colorSelect.length > 0) {
@@ -778,7 +832,10 @@ app.controller("ProductController", function($scope, $http, $timeout){
         } else if ($scope.colorSelect.length == 0 && $scope.sizeSelect.length > 0) {
             toastr["warning"]("Vui lòng chọn màu sắc");
             return false;
-        } 
+        } else if ($scope.productUpdate.importPrice >= $scope.productUpdate.price) {
+            toastr["warning"]("Giá nhập phải nhỏ hơn giá bán");
+            return false;
+        }
         return true;
     }
 
@@ -789,8 +846,8 @@ app.controller("ProductController", function($scope, $http, $timeout){
             toastr["error"](err.name);
         } else if (err.price) {
             toastr["error"](err.price);
-        } else if (err.supplier) {
-            toastr["error"](err.supplier);
+        } else if (err.brand) {
+            toastr["error"](err.brand);
         } else if (err.material) {
             toastr["error"](err.material);
         } else if (err.wrist) {
@@ -803,14 +860,14 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.resetForm = () => {
-        $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, supplier: {}, images: [], productDetails: [], status: 1};
+        $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
         $scope.errors = [];
         $timeout(() => {
             $('#id-label-collar').val(null).trigger('change');
             $('#id-label-wrist').val(null).trigger('change');
             $('#id-label-material').val(null).trigger('change');
             $('#id-label-category').val(null).trigger('change');
-            $('#id-label-supplier').val(null).trigger('change');
+            $('#id-label-brand').val(null).trigger('change');
             $('#id-label-color').val([]).trigger('change');
             $('#id-label-size').val([]).trigger('change');
             $scope.colorSelected = [];
@@ -847,13 +904,18 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 if (!$scope.checkListImage()) return;
                
             }
+            $('#addProduct').css('display', 'none');
+            $('#loadingAdd').css('display', 'inline-block');
            $http.post(`${config.host}/product`, $scope.product).then((response) => {
-
+                $('#addProduct').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
+                $('#addProductModel').modal('hide');
                 $scope.getAllProducts();
                 $scope.resetForm();
-                $('#addProductModel').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
            }).catch(error => {
+                $('#addProduct').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
                 if (error.status === 400) {
                     $scope.errors = error.data;
                     $scope.err(error.data);
@@ -891,12 +953,18 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 });
                 if (!$scope.checkListImageUpdate()) return;
             }
+            $('#updateProduct').css('display', 'none');
+            $('#loadingUpdate').css('display', 'inline-block');
             $http.put(`${config.host}/product/${$scope.productUpdate.id}`, $scope.productUpdate).then((response) => {
+                $('#updateProduct').css('display', 'inline-block');
+                $('#loadingUpdate').css('display', 'none');
+                $('#editProductModel').modal('hide');
                 $scope.getAllProducts();
                 $scope.resetFormUpdate();
-                $('#editProductModel').modal('hide');
                 toastr["success"]("Cập nhật " + response.data.name + " thành công");
            }).catch(error => {
+            $('#updateProduct').css('display', 'inline-block');
+            $('#loadingUpdate').css('display', 'none');
                 if (error.status === 400) {
                     $scope.errorsUpdate = error.data;
                     $scope.err(error.data);
@@ -907,12 +975,18 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.delete = () => {
+        $('#deleteProduct').css('display', 'none');
+        $('#loadingDelete').css('display', 'inline-block');
         $http.delete(`${config.host}/product/${$scope.product.id}`).then(response => {
+            $('#deleteProduct').css('display', 'inline-block');
+            $('#loadingDelete').css('display', 'none');
+            $('#deleteProductModel').modal('hide');
             $scope.getAllProducts();
             $scope.product = {};
-            $('#deleteProductModel').modal('hide');
-            toastr["success"]("Xóa " + response.data.name + " thành công");
+            toastr["success"]("Ngừng kinh doanh " + response.data.name + " thành công");
         }).catch(error => {
+            $('#deleteProduct').css('display', 'inline-block');
+            $('#loadingDelete').css('display', 'none');
             toastr["error"](error);
         })
     }
@@ -934,13 +1008,6 @@ app.directive('customOnChange', function() {
     };
   });
 
-  app.filter('vndCurrency', function() {
-    return function(input) {
-      if (isNaN(input)) {
-        return input;
-      }
-      return parseInt(input).toLocaleString('vi-VN') + '₫';
-    };
-  });
+
   
 

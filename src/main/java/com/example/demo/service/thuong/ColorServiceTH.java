@@ -7,9 +7,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface ColorServiceTH {
-    Page<Color> getColor(int page, int size, String keyword, String sortField, String sortDirection);
+    Page<Color> getColor(int page, int size, String keyword, String sortField, String sortDirection, Integer status);
     List<Color> findAllByStatus(Integer status);
-
     Color findById(Long id);
     Color create(ColorRequestTH request);
     Color update(ColorRequestTH request, Long id);

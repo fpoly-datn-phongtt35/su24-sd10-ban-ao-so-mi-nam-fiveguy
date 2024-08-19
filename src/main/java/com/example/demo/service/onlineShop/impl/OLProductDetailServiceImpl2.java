@@ -17,14 +17,18 @@ public class OLProductDetailServiceImpl2 implements OLProductDetailService2 {
     private OLProductDetailRepository2 olProductDetailRepository2;
 
     @Override
-    public List<ProductDetail> findByProduct(Product product) {
-        return olProductDetailRepository2.findByProductAndStatus(product,1);
+    public List<ProductDetail> findByProduct(Long id) {
+        return olProductDetailRepository2.findByProductIdAndStatus(id,1);
     }
 
     @Override
     public ProductDetail getProductDetail(Long productId, Long sizeId, Long colorId) {
         ProductDetail productDetail = olProductDetailRepository2.findByProductIdAndSizeIdAndColorId(productId, sizeId, colorId);
-        productDetail.setQuantity(productDetail.getQuantity() -1);
+        if (productDetail != null){
+            productDetail.setQuantity(productDetail.getQuantity() -1);
+
+        }
+
         return productDetail;
     }
 

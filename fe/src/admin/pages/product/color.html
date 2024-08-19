@@ -17,81 +17,83 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mx-0 mt-3 mb-3 align-items-end">
-                    <div class="col-sm-4">                        
-                        <input type="text" id="name" ng-model="filter.keyword" class="form-control" placeholder="Tìm kiếm...">
+                <div class="row mx-0 mt-3 mb-2">
+                    <div class="col-sm-3 d-flex flex-column">   
+                        <label for="search">Tìm kiếm</label>                     
+                        <input type="text" id="search" ng-model="filter.keyword" class="form-control" placeholder="Tên màu sắc...">
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 d-flex flex-column">
                         <label for="sortField">Sắp xếp theo</label>
                         <select ng-model="filter.sortField" class="form-select" id="sortField">
-                          <option value="createdAt">Thời gian tạo</option>
-                          <option value="updatedAt">Thời gian cập nhật</option>
-                        </select>
+                            <option value="createdAt">Thời gian tạo</option>
+                            <option value="updatedAt">Thời gian cập nhật</option>
+                          </select>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-3 d-flex flex-column">
                         <label for="sortDirection">Thứ tự</label>
                         <select ng-model="filter.sortDirection" class="form-select" id="sortDirection">
-                          <option value="ASC">Tăng dần</option>
-                          <option value="DESC">Giảm dần</option>
-                        </select>
+                            <option value="ASC">Tăng dần</option>
+                            <option value="DESC">Giảm dần</option>
+                          </select>
                     </div>
-                    <div class="col-sm-2">
-                            <button ng-click="searchColors()" class="btn btn-primary" type="submit" id="button-addon2">
-                                Tìm kiếm
-                            </button>
+                    <div class="col-sm-3 d-flex flex-column">   
+                        <label>Trạng thái</label>                     
+                        <select ng-model="filter.status" class="form-select">
+                            <option value="">Tất cả</option>
+                            <option value="1">Hoạt động</option>
+                            <option value="0">Ngừng hoạt động</option>
+                          </select>
                     </div>
                 </div>
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên màu sắc</th>
-                            <th>Màu</th>
-                            <th>Thời gian tạo</th>
-                            <th>Thời gian cập nhật</th>
-                            <th>Trạng thái</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr class="text-center" ng-if="colors.content.length === 0">
-
-                            <th colspan="7">Không có dữ liệu</th>
-
-                        </tr>
-                        <tr ng-repeat="color in colors.content">
-                            <th>{{color.id}}</th>
-                            <th>{{color.name}}</th>
-                            <th><input type="color" class="form-control form-control-color" ng-value="color.colorCode" id="exampleColorInput" title="{{color.colorCode}}" disabled></th>
-                            <th>{{color.createdAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
-                            <th>{{color.updatedAt | date : "dd-MM-yyyy hh:mm:ss" : 0}}</th>
-                            <th>
-                                <span class="badge rounded-pill" ng-class="{'bg-success': color.status === 1, 'bg-danger': color.status === 0}">
-                                    {{ color.status === 1 ? 'Hiển thị' : 'Không hiển thị' }}
-                                </span>
-                            </th>   
-                            <th>
-                                <a ng-click="editColor(color.id)" data-bs-target="#editColorModal" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
-                                    <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
-                                </a>
-                                <a ng-click="handleDelete(color)" ng-if="color.status === 1" data-bs-target="#deleteColorModel" class="delete" data-bs-toggle="modal">
-                                    <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
-                                </a>
-                                <a ng-click="handleStatus(color)" ng-if="color.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
-                                    <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
-                                </a>
-                            </th>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="clearfix">
-                    <div class="hint-text">Trang hiện tại <b>{{currentPage + 1}}</b> / <b>{{totalPages}}</b></div>
-                    <div class="ms-4 me-3 hint-text">Số lượng hiển thị: 
+                <div class="row mx-0 justify-content-end px-3 mb-4">
+                    <button ng-click="searchColors()" style="width: 150px;" class="btn btn-primary d-flex justify-content-center" type="submit" id="button-addon2">
+                        <span class="material-icons">
+                            search
+                        </span>Tìm kiếm
+                    </button>
+                </div>
+                <div class="position-relative">
+                    <table class="table table-striped table-hover text-center">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên</th>
+                                <th>Màu</th>
+                                <th>Thời gian</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+    
+                        <tbody>
+                            <tr ng-if="colors.content.length === 0">
+                                <th colspan="5">Không có dữ liệu</th>
+                            </tr>
+                            <tr ng-repeat="(index, color) in colors.content">
+                                <th>{{index + 1}}</th>
+                                <th>{{color.name}}</th>
+                                <th><div class="d-flex justify-content-center"><input type="color" class="form-control form-control-color" ng-value="color.colorCode" id="exampleColorInput" title="{{color.colorCode}}" disabled></div></th>
+                                <th class="d-flex align-items-center flex-column">
+                                    <button type="button" class="btn btn-sm" ng-class="{'btn-success': color.status === 1, 'btn-danger': color.status === 0}">{{ color.status === 1 ? 'Hoạt động' : 'Ngừng hoạt động' }}</button>
+                                    <span>{{color.createdAt | date : "hh:mm dd-MM-yyyy" : 0}} - {{color.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span>
+                                </th>   
+                                <th>
+                                    <a ng-click="editColor(color.id)" data-bs-target="#editColorModal" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
+                                    </a>
+                                    <a ng-click="handleDelete(color)" ng-if="color.status === 1" data-bs-target="#deleteColorModel" class="delete" data-bs-toggle="modal">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                    </a>
+                                    <a ng-click="handleStatus(color)" ng-if="color.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
+                                        <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
+                                    </a>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="d-flex align-items-center pb-2"><div class="hint-text m-0 me-2">Số lượng hiển thị: 
                     </div>
-                    <input id="size" ng-model="size" ng-change="getAllColors()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
-                    <ul class="pagination">
+                    <input id="color" ng-model="size" ng-change="getAllColors()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
+                    <ul class="pagination m-0 ms-auto">
                         <li class="page-item" ng-class="{disabled: currentPage === 0}">
                             <a class="page-link" ng-click="changePage(0)">Trang đầu</a>
                         </li>
@@ -109,8 +111,12 @@
                         </li>
                     </ul>
                 </div>
-
-                <!----add-modal start--------->
+                <div id="loading" class="overlay-loading">
+                    <div class="loader"></div>
+                  </div>
+                </div>
+              
+               
                 <div class="modal fade" tabindex="-1" id="addColorModel" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -133,15 +139,17 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                    <button type="submit" ng-disabled="colorForm.$invalid" class="btn btn-success">Thêm</button>
+                                    <button id="addColor" type="submit" ng-disabled="colorForm.$invalid" class="btn btn-success">Thêm</button>
+                                    <button id="loadingAdd" class="btn btn-success" style="display: none;" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        Loading...
+                                    </button>   
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-                <!----add-modal end--------->
 
-                <!----edit-modal start--------->
                 <div class="modal fade" tabindex="-1" id="editColorModal" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -164,34 +172,38 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button ng-click="resetFormUpdate()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                    <button type="submit" ng-disabled="colorFormUpdate.$invalid" class="btn btn-success">Cập nhật</button>
+                                    <button id="updateColor" type="submit" ng-disabled="colorFormUpdate.$invalid" class="btn btn-success">Cập nhật</button>
+                                    <button id="loadingUpdate" class="btn btn-success" style="display: none;" type="button" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        Loading...
+                                    </button>   
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-                <!----edit-modal end--------->
 
-                <!----delete-modal start--------->
                 <div class="modal fade" tabindex="-1" id="deleteColorModel" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Xóa</h5>
+                                <h5 class="modal-title">Ngừng hoạt động</h5>
                                 <button ng-click="resetForm()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Bạn có chắc muốn xóa {{color.name}} không?</p>
+                                <p>Bạn có chắc muốn ngừng hoạt động {{color.name}} không?</p>
                             </div>
                             <div class="modal-footer">
                                 <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                <button ng-click="delete()" type="button" class="btn btn-success">Xóa</button>
+                                <button id="deleteColor" ng-click="delete()" type="button" class="btn btn-success">Xác nhận</button>
+                                <button id="loadingDelete" class="btn btn-success" style="display: none;" type="button" disabled>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Loading...
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!----delete-modal end--------->
- <!----update-status-modal start--------->
  <div class="modal fade" tabindex="-1" id="updateStatusModel" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -204,13 +216,17 @@
             </div>
             <div class="modal-footer">
                 <button ng-click="resetForm()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button ng-click="updateStatus()" type="button" class="btn btn-success">Khôi phục</button>
+                <button id="updateStatus" ng-click="updateStatus()" type="button" class="btn btn-success">Khôi phục</button>
+                <button id="loadingStatus" class="btn btn-success" style="display: none;" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                </button>
             </div>
         </div>
     </div>
 </div>
-<!----update-status-modal end--------->
             </div>
         </div>
     </div>
 </div>
+

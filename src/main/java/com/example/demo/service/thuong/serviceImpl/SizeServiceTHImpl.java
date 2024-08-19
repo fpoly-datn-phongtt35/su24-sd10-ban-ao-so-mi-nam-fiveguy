@@ -22,7 +22,7 @@ public class SizeServiceTHImpl implements SizeServiceTH {
     private SizeRepositoryTH repository;
 
     @Override
-    public Page<Size> getSizes(int page, int size, String name, String sortField, String sortDirection) {
+    public Page<Size> getSizes(int page, int size, String name, String sortField, String sortDirection, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
@@ -31,8 +31,8 @@ public class SizeServiceTHImpl implements SizeServiceTH {
         }
         Pageable pageable = PageRequest.of(page, size, sort);
         if (name == null || name.isEmpty())
-            return repository.findAll(pageable);
-        else return repository.findByNameContainingIgnoreCase(name,pageable);
+            return repository.findAllAndStatus(status, pageable);
+        else return repository.findByNameContainingIgnoreCaseAndStatus(name, status, pageable);
     }
 
     @Override

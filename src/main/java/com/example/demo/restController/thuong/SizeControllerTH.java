@@ -21,10 +21,12 @@ public class SizeControllerTH {
                                           @RequestParam(defaultValue = "5") int size,
                                           @RequestParam(required = false) String name,
                                           @RequestParam String sortField,
-                                          @RequestParam String sortDirection
+                                          @RequestParam String sortDirection,
+                                        @RequestParam(required = false) Integer status
+
     ) {
 
-        return ResponseEntity.ok(sizeServiceTH.getSizes(page, size, name, sortField, sortDirection));
+        return ResponseEntity.ok(sizeServiceTH.getSizes(page, size, name, sortField, sortDirection, status));
     }
 
     @GetMapping("/all")

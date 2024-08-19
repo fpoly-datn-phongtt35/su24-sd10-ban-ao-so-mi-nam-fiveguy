@@ -36,8 +36,8 @@ public class ProductRequestTH {
 
     private Integer status;
 
-    @NotNull(message = "Nhà cung cấp không được để trống")
-    private Supplier supplier;
+    @NotNull(message = "Thương hiệu không được để trống")
+    private Brand brand;
 
     @NotNull(message = "Chất liệu không được để trống")
     private Material material;

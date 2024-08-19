@@ -1,7 +1,7 @@
 
 
 
-<section style="margin-top: 82px;"  class="bg-light " ng-init="loadProductsByTotalQuantitySold();loadProductsByCreatedAt();getAllVouchers();">
+<section style="margin-top: 82px;"  class="bg-light " ng-init="getAllVouchers();">
 
   
   <div class="search-container">
@@ -14,7 +14,7 @@
     </div>
 
     <div class="overlay" id="overlay" ng-show="overlaySearchActive">
-    <div class="header-search">
+    <!-- <div class="header-search">
         <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
             <i class="fa-solid fa-xmark fa-lg"></i>
         </button>
@@ -31,14 +31,14 @@
           </div>
       </form>
       
-    </div>
+    </div> -->
     <div class="overlay" id="overlay" ng-click="closeOverlay($event)">
       <div class="header-search">
           <button type="button" class="btn btn-light shadow-0 closeBtn" ng-click="toggleOverlaySearch()">
               <i class="fa-solid fa-xmark fa-lg"></i>
           </button>
           <form class="form-search">
-              <div class="input-group">
+              <div style="width: 100%;" class="input-group">
                   <div class="form-outline w-100">
                       <input style="border-bottom: 1px solid #cdcdcd;" type="search" id="form1" class="form-control" ng-model="searchTerm" ng-change="searchProducts(searchTerm)" />
                   </div>
@@ -96,17 +96,13 @@
 </div>
 
 <div id="coolmatePromotionCarousel" class="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=100,format=auto/uploads/November2023/28BANNER_CARESHARE.png" loading="lazy" class="d-block w-100" alt="...">
+  <div id="carouselExample" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item" ng-repeat="path in salePaths" ng-class="{'active': $index === 0}">
+        <img ng-src="{{path}}" loading="lazy" class="d-block w-100" alt="...">
+      </div>
     </div>
-    <div class="carousel-item">
-      <img src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=90,format=auto/uploads/November2023/27FALL_WINTER_(1).png" loading="lazy" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="https://media.coolmate.me/cdn-cgi/image/width=1920,quality=90,format=auto/uploads/November2023/28BANNER_CARESHARE.png" loading="lazy" class="d-block w-100" alt="...">
-    </div>
-
+    
     <!-- Button previous -->
     <button class="carousel-control-prev" ng-click="prevSlide()">
       <i style="font-size: 34px;" class="fa-solid fa-circle-chevron-left fa-lg"></i>
@@ -116,6 +112,7 @@
       <i style="font-size: 34px;" class="fa-solid fa-circle-chevron-right fa-lg"></i>
     </button>
   </div>
+  
 
   <!-- Category list positioned over the carousel -->
   <div class="category-data" id="categoryDataContainer">
@@ -198,7 +195,7 @@
   
   
   
-      <div style="padding: 46px 0;" class="row">
+      <!-- <div style="padding: 46px 0;" class="row">
         <div class="heading-bar__title">
           DANH MỤC SẢN PHẨM
         </div>
@@ -213,19 +210,20 @@
                 </div>
                 <div class="category-info">
                   <h5>{{category.name}}</h5>
-                  <!-- <p>Số lượng</p> -->
                 </div>
               </a>
             </div>
           </div>
   
         </div>
-      </div>
+      </div> -->
   
   
       <div style="padding: 46px;" class="row">
         <div style="margin-top: 24px;" class="col-md-3" ng-repeat="voucher in displayedVouchers">
           <div class="voucher-container" ng-class="{'ongoing': voucher.status === 1, 'upcoming': voucher.status === 3}">
+       
+
             <div class="voucher2-name">
               <span>{{ voucher.name }}</span>
             </div>
@@ -245,12 +243,20 @@
                     cho đơn hàng {{ voucher.minimumTotalAmount | number }} đ
                   </p>
                   <p>Giảm tối đa {{ voucher.maximumReductionValue | number }} đ</p>
+                  
+                  <!-- Flexbox to align items in the same row -->
+                  <div style="display: flex; justify-content: space-between;">
+                    <p>Lượt sử dụng: {{voucher.numberOfUses}}</p>
+                    <p>Còn lại: {{voucher.quantity}}</p>
+                  </div>
+                  
                   <div class="date-info">
                     <p>NBD: {{ voucher.startDate | date:'dd/MM/yyyy' }}</p>
                     <p>HSD: {{ voucher.endDate | date:'dd/MM/yyyy' }}</p>
                   </div>
                 </div>
               </div>
+              
             </div>
             <div class="voucher-status" ng-if="voucher.status === 1">
               Đang diễn ra
@@ -260,50 +266,58 @@
             </div>
           </div>
         </div>
-        <div class="col-md-12 text-center" ng-if="!showAllVouchers">
+        <div class="col-md-12 text-center" ng-if="showAllVouchers" style="margin-top: 22px;">
           <button class="btn btn-primary" ng-click="viewMoreVouchers()">Xem thêm</button>
         </div>
+        
+
       </div>
       
       
       
       
   
-      <p class="mb-0">({{product.totalQuantity}})</p>
+      <!-- <p class="mb-0">({{product.totalQuantity}})</p> -->
   
   
       <div style="padding: 46px;" class="row">
        
-          <div class="product-title">Bán chạy nhất</div>
-          <div ng-repeat="product in productsByTotalQuantitySold" class="col-lg-2 col-md-6 col-sm-6 mb-4">
-            <div class="card w-100 my-2 shadow-2-strong product">
-              <!-- <img ng-src="{{ product.path }}"class="card-img-top" /> -->
-              <a ng-href="#home/product/product-detail/{{product.productId}}">
-                <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy"
-                ng-src="{{ product.imagePath }}" />
-                <h3 class="product-grid__title">
-                    <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }}
-                        {{ product.product.category.name }}
-                    </a>
-                </h3>
-          
-            </a>
-                  <!-- Displaying prices -->
-                  <div class="price-info">
-                    <div ng-if="product.promotionalPrice">
-                        <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
-                    </div>
-                    <div ng-if="product.saleValue">
-                        <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
-                        <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
-                        <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
-                    </div>
-                    <div ng-if="!product.promotionalPrice && !product.saleValue">
-                        <span>{{ formatCurrency(product.productPrice) }}₫</span>
-                    </div>
+        <div class="product-title">Bán chạy nhất</div>
+        <div ng-repeat="product in productsByTotalQuantitySold" class="col-lg-2 col-md-6 col-sm-6 mb-4">
+          <div class="card w-100 my-2 shadow-2-strong product">
+            <a ng-href="#home/product/product-detail/{{product.productId}}" style="text-decoration: none;">
+              <div class="d-flex align-items-center info-product_header">
+                <div class="d-flex align-items-center">
+                  <p style="color: black; text-decoration: none;" class="mb-0 me-1">{{product.rate}}</p>
+                  <i style="margin: 0 2px; color: black; font-size: 10px;" class="fa-solid fa-star"></i>
                 </div>
+                <p style="text-decoration: none;" class="mb-0">({{product.totalRate}})</p>
+              </div>
+              
+              <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy" ng-src="{{ product.imagePath }}" />
+              <h3 class="product-grid__title">
+                <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}" style="text-decoration: none;">
+                  {{ product.productName }} {{ product.product.category.name }}
+                </a>
+              </h3>
+            </a>
+            <!-- Displaying prices -->
+            <div class="price-info">
+              <div ng-if="product.promotionalPrice">
+                <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
+              </div>
+              <div ng-if="product.saleValue">
+                <span class="sale-value" ng-if="product.discountType === 1"> -{{formatCurrency( product.saleValue) }}₫</span>
+                <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
+                <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
+              </div>
+              <div ng-if="!product.promotionalPrice && !product.saleValue">
+                <span>{{ formatCurrency(product.productPrice) }}₫</span>
+              </div>
             </div>
           </div>
+        </div>
+        
   
    
   
@@ -317,23 +331,29 @@
         <div ng-repeat="product in productsByCreatedAt" class="col-lg-2 col-md-6 col-sm-6 mb-4">
           <div class="card w-100 my-2 shadow-2-strong product">
             <!-- <img ng-src="{{ product.path }}"class="card-img-top" /> -->
-            <a ng-href="#home/product/product-detail/{{product.productId}}">
-              <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy"
-              ng-src="{{ product.imagePath }}" />
+            <a ng-href="#home/product/product-detail/{{product.productId}}" style="text-decoration: none;">
+              <div class="d-flex align-items-center info-product_header">
+                <div class="d-flex align-items-center">
+                  <p style="color: black; text-decoration: none;" class="mb-0 me-1">{{product.rate }}</p>
+                  <i style="margin: 0 2px; color: black; font-size: 10px;" class="fa-solid fa-star"></i>
+                </div>
+                <p style="text-decoration: none;" class="mb-0">({{product.totalRate}})</p>
+              </div>
+              
+              <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy" ng-src="{{ product.imagePath }}" />
               <h3 class="product-grid__title">
-                  <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }}
-                      {{ product.product.category.name }}
-                  </a>
+                <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}" style="text-decoration: none;">
+                  {{ product.productName }} {{ product.product.category.name }}
+                </a>
               </h3>
-        
-          </a>
+            </a>
                 <!-- Displaying prices -->
                 <div class="price-info">
                   <div ng-if="product.promotionalPrice">
                       <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
                   </div>
                   <div ng-if="product.saleValue">
-                      <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
+                      <span class="sale-value" ng-if="product.discountType === 1"> -{{ formatCurrency(product.saleValue) }}₫</span>
                       <span class="sale-value" ng-if="product.discountType === 2"> -{{ product.saleValue }}%</span>
                       <span class="original-price">{{ formatCurrency(product.productPrice) }}₫</span>
                   </div>
@@ -375,8 +395,8 @@
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
       </button>
-  </div>
-   -->
+  </div> -->
+  
   
   
     

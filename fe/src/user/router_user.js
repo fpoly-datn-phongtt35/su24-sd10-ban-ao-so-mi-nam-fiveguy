@@ -9,10 +9,15 @@ app.config(function ($routeProvider, $locationProvider) {
     
   })
     // <!-- Hiếu -->
-    .when("/home/customer", {
-      templateUrl: "pages/accountManage/customer.html",
+    .when("/home/customerProfile", {
+      templateUrl: "pages/accountManage/customerProfile.html",
       
-      controller: 'thongKeController'
+      controller: 'accountManage'
+    })
+    .when("/home/account-address", {
+      templateUrl: "pages/accountManage/address.html",
+      
+      controller: 'accountManage'
     })
     // <!-- Thưởng -->
  
@@ -41,11 +46,30 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/onlineShop/paymentFailed.html",
       controller: 'productController'
     })
+    .when("/home/order", {
+      templateUrl : "pages/accountManage/order.html",
+      controller : "orderController"
+    })
+    .when("/home/orderTrack", {
+      templateUrl : "pages/accountManage/orderTrack.html",
+      controller : "orderController"
+    })
+    .when("/home/orderDetail/:idBill", {
+      templateUrl : "pages/accountManage/orderDetail.html",
+      controller : "orderController"
+    })
+    .when("/home/rating", {
+      templateUrl : "pages/accountManage/rating.html",
+      controller : "ratingController"
+    })
 
-
+    .when("/unauthorized", {
+      templateUrl: "pages/Notification/unauthorized.html"
+    })
     .otherwise({
-      redirectTo: "/",
-    });
+      templateUrl: "pages/Notification/notFound.html"
+
+    })
 });
 
 
@@ -133,6 +157,29 @@ app.factory('AuthService', function($http) {
   authService.isAuthenticated = function() {
     var token = localStorage.getItem('token');
     return !!token;
+  };
+
+  authService.getUserRole = function () {
+    var token = localStorage.getItem('token');
+    if (token) {
+      var decodedToken = jwt_decode(token);
+      return decodedToken.role[0].authority;
+    }
+    return null;
+  };
+
+  authService.authorize = function (allowedRoles) {
+    var deferred = $q.defer();
+    var userRole = authService.getUserRole();
+
+    if (allowedRoles.indexOf(userRole) !== -1) {
+      deferred.resolve();
+    } else {
+      deferred.reject();
+      window.location.href = "http://127.0.0.1:5555/src/admin/index.html#/unauthorized";
+    }
+
+    return deferred.promise;
   };
 
   authService.refreshToken = function(refreshToken) {

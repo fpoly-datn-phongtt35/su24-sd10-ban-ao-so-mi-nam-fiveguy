@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+
 @Service
 public class OLBillHistoryServiceImpl2 implements OLBillHistoryService2 {
 
@@ -22,5 +24,10 @@ public class OLBillHistoryServiceImpl2 implements OLBillHistoryService2 {
     public BillHistory save(BillHistory billHistory) {
         billHistory.setCreatedAt(new Date());
         return olBillHistoryRepository2.save(billHistory);
+    }
+
+    @Override
+    public List<BillHistory> getBillHistoriesByBillId(Long billId) {
+        return olBillHistoryRepository2.findByBillId(billId);
     }
 }

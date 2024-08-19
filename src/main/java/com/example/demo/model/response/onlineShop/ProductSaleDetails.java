@@ -2,10 +2,13 @@ package com.example.demo.model.response.onlineShop;
 
 import com.example.demo.entity.Product;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
-@Data
+@Getter
+@Setter
 public class ProductSaleDetails {
     private Long productId;
     private String productName;
@@ -16,8 +19,10 @@ public class ProductSaleDetails {
     private Integer discountType;
     private String imagePath;
     private Product product;
+    private Float rate;
+    private Integer totalRate;
 
-    public ProductSaleDetails(Long productId, String productName, BigDecimal productPrice, Integer discountPrice, Integer promotionalPrice, Integer saleValue, Integer discountType, String imagePath, Product product) {
+    public ProductSaleDetails(Long productId, String productName, BigDecimal productPrice, Integer discountPrice, Integer promotionalPrice, Integer saleValue, Integer discountType, String imagePath, Product product, Float rate, Integer totalRate) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
@@ -27,8 +32,9 @@ public class ProductSaleDetails {
         this.discountType = discountType;
         this.imagePath = imagePath;
         this.product = product;
+        this.rate = rate;
+        this.totalRate = totalRate;
     }
-
 
 // Getters and setters
 }

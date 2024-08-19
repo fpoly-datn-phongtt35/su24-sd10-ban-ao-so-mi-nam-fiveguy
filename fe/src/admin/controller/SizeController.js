@@ -15,16 +15,20 @@ app.controller("SizeController", function($scope, $http){
         if ($scope.num <= 0 || !Number.isInteger($scope.num)) {
             $scope.num = 5;
         }
+        $('#loading').css('display', 'flex');
         $http.get(`${config.host}/size`, 
                 {params: {page: $scope.page, size: $scope.num, name: $scope.filter.name,
                 sortField: $scope.filter.sortField,
-                sortDirection: $scope.filter.sortDirection
+                sortDirection: $scope.filter.sortDirection,
+                status: $scope.filter.status
                 }})
             .then((response) => {
+                $('#loading').css('display', 'none');
                 $scope.sizes = response.data;
                 $scope.totalPages = response.data.totalPages;
                 $scope.currentPage = response.data.pageable.pageNumber;
             }).catch(error => {
+                $('#loading').css('display', 'none');
                 console.log("Error", error)
             })
     }
@@ -70,25 +74,36 @@ app.controller("SizeController", function($scope, $http){
     }
 
     $scope.updateStatus = () => {
+        $('#updateStatus').css('display', 'none');
+        $('#loadingStatus').css('display', 'inline-block');
         $http.put(`${config.host}/size/status/${$scope.size.id}`).then(response => {
+            $('#updateStatus').css('display', 'inline-block');
+            $('#loadingStatus').css('display', 'none');
+            $('#updateStatusModel').modal('hide');
             $scope.getAllSizes();
             $scope.size = {};
-            $('#updateStatusModel').modal('hide');
             toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
         }).catch(error => {
+            $('#updateStatus').css('display', 'inline-block');
+            $('#loadingStatus').css('display', 'none');
             console.log("Error", error);
         })
     }
 
     $scope.createSize = () => {
         if ($scope.sizeForm.$valid) {
+            $('#addSize').css('display', 'none');
+            $('#loadingAdd').css('display', 'inline-block');
            $http.post(`${config.host}/size`, $scope.size).then((response) => {
+                $('#addSize').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
+                $('#addSizeModel').modal('hide');
                 $scope.getAllSizes();
                 $scope.resetForm();
-                $('#addSizeModel').modal('hide');
                 toastr["success"]("Thêm mới " + response.data.name + " thành công");
            }).catch(error => {
-                console.log(error);
+                $('#addSize').css('display', 'inline-block');
+                $('#loadingAdd').css('display', 'none');
                 if (error.status === 400) $scope.errors = error.data
                 else toastr["error"](error);
            })
@@ -97,12 +112,18 @@ app.controller("SizeController", function($scope, $http){
 
     $scope.updateSize = () => {
         if ($scope.sizeFormUpdate.$valid) {
+            $('#updateSize').css('display', 'none');
+            $('#loadingUpdate').css('display', 'inline-block');
             $http.put(`${config.host}/size/${$scope.sizeUpdate.id}`, $scope.sizeUpdate).then(response => {
+                $('#updateSize').css('display', 'inline-block');
+                $('#loadingUpdate').css('display', 'none');
+                $('#editSizeModal').modal('hide');
                 $scope.getAllSizes();
                 $scope.resetFormUpdate();
-                $('#editSizeModal').modal('hide');
                 toastr["success"]("Cập nhật " + response.data.name + " thành công");
             }). catch(error => {
+                $('#updateSize').css('display', 'inline-block');
+                $('#loadingUpdate').css('display', 'none');
                 if (error.status === 400) $scope.errorsUpdate = error.data;
                 else toastr["error"](error);
             })
@@ -110,12 +131,18 @@ app.controller("SizeController", function($scope, $http){
     }
 
     $scope.delete = () => {
+        $('#deleteSize').css('display', 'none');
+        $('#loadingSize').css('display', 'inline-block');
         $http.delete(`${config.host}/size/${$scope.size.id}`).then(response => {
+            $('#deleteSize').css('display', 'inline-block');
+            $('#loadingSize').css('display', 'none');
+            $('#deleteSizeModel').modal('hide');
             $scope.getAllSizes();
             $scope.size = {};
-            $('#deleteSizeModel').modal('hide');
-            toastr["success"]("Xóa " + response.data.name + " thành công");
+            toastr["success"]("Ngừng hoạt động " + response.data.name + " thành công");
         }).catch(error => {
+            $('#deleteSize').css('display', 'inline-block');
+            $('#loadingSize').css('display', 'none');
             toastr["error"](error);
         })
     }

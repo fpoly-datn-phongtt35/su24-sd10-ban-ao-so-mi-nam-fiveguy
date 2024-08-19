@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface OLProductDetailService2 {
 
-     List<ProductDetail> findByProduct(Product product);
+     List<ProductDetail> findByProduct(Long id);
 
      ProductDetail getProductDetail( Long productId,Long sizeId,Long colorId);
 

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface CategoryServiceTH {
-    Page<Category> getCategories(int page, int size, String name, String sortField, String sortDirection);
+    Page<Category> getCategories(int page, int size, String name, String sortField, String sortDirection, Integer status);
     List<Category> findAllByStatus(Integer status);
     Category findById(Long id);
     Category create(CategoryRequestTH request);

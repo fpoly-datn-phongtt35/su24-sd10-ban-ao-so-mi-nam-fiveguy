@@ -20,10 +20,11 @@ public class ColorControllerTH {
                                         @RequestParam(defaultValue = "5") int size,
                                         @RequestParam(required = false) String keyword,
                                         @RequestParam String sortField,
-                                        @RequestParam String sortDirection
+                                        @RequestParam String sortDirection,
+                                       @RequestParam(required = false) Integer status
     ) {
 
-        return ResponseEntity.ok(colorServiceTH.getColor(page, size, keyword, sortField, sortDirection));
+        return ResponseEntity.ok(colorServiceTH.getColor(page, size, keyword, sortField, sortDirection, status));
     }
 
     @GetMapping("/all")

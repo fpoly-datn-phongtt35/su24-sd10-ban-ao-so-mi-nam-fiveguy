@@ -59,7 +59,6 @@ public class OLBillController2 {
         Optional<Customer> customer = SCCustomerService.getCustomerByToken(token);
         if (customer.isPresent()) {
 
-//            System.out.println(orderData);
 
         ResponseEntity<?> newBill = olBillService.creatBill(orderData,customer.get());
         Object body = newBill.getBody();
@@ -161,16 +160,38 @@ public class OLBillController2 {
 //            COD
              else if (codePayment.equals(10)) {
                 billData.setStatus(1);
-                 billData.setCustomer(customer.get());
+                billData.setCustomer(customer.get());
+                billData.setPaidAmount(new BigDecimal(0));
+                billData.setPaidShippingFee(new BigDecimal(0));
                Bill bill = olBillService.save(billData);
-               olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1);
+               olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,3);
                     Cart cart = olCartService.findByCustomerId(customer.get().getId());
                     if (cart != null) {
                         olCartDetailService.deleteAllByCart_Id(cart.getId());
                     }
                 return ResponseEntity.ok(333);
             }
+//                test thanh toán ol
+            else if (codePayment.equals(100)) {
+                billData.setStatus(1);
+                billData.setCustomer(customer.get());
+                Bill bill = olBillService.save(billData);
+                olBillUntility.newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
+                bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
+                bill.setPaidShippingFee((bill.getShippingFee()));
+                olBillService.save(billData);
 
+            }
+//            test thanh toán cod
+            else if (codePayment.equals(102)) {
+                billData.setStatus(1);
+                billData.setCustomer(customer.get());
+                billData.setPaidAmount(new BigDecimal(0));
+                billData.setPaidShippingFee(new BigDecimal(0));
+                Bill bill = olBillService.save(billData);
+                olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,3);
+
+            }
         } else if (body instanceof Integer) {
             int intValue = (int) body;
             if (intValue == 3) {

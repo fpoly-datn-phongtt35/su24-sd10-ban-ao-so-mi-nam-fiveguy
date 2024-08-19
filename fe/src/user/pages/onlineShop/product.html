@@ -121,13 +121,14 @@
 <header class="d-sm-flex align-items-center border-bottom mb-4 pb-3">
     <strong class="d-block py-2">{{ totalProducts }} Kết quả</strong>
 
-  <div class="ms-auto">
-    <select class="form-select d-inline-block w-auto border pt-1" ng-model="selectedSortType" ng-change="filterProducts(0)">
-      <option value="0">Mới nhất</option>
-      <option value="1">Giá thấp đến cao</option>
-      <option value="2">Giá cao đến thấp</option>
-    </select>
-  </div>
+    <div class="ms-auto">
+        <select class="form-select d-inline-block w-auto border pt-1" ng-model="selectedSortType" ng-change="filterProducts(0)">
+          <option value="0">Mới nhất</option>
+          <option value="1">Giá thấp đến cao</option>
+          <option value="2">Giá cao đến thấp</option>
+        </select>
+      </div>
+      
 </header>
 
     

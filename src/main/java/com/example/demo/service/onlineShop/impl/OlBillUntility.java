@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.DataOutputStream;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -64,7 +65,7 @@ public class OlBillUntility {
             Environment environment = Environment.selectEnv("dev");
             QueryStatusTransactionResponse response = QueryTransactionStatus.process(environment, orderId, orderId);
             if (response != null) {
-                System.out.println(response.getResultCode());
+//                System.out.println(response.getResultCode());
                 return response.getResultCode() == 0;
             }
         } catch (Exception e) {
@@ -219,16 +220,20 @@ public static String encodeId(long id) {
                         if (bill.getPaymentMethod().getName().equals("MoMo")) {
                             if (authenticationCheckMoMo(encodeId(bill.getId()))) {
                                 bill.setStatus(1);
-                                 newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2);
+                                 newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
+
+                                bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
 
 
-                                    olBillService.save(bill);
+                                olBillService.save(bill);
                                 return;
                             }
                         } else if (bill.getPaymentMethod().getName().equals("VNPAY")) {
                             if (authenticationCheckVnPay(encodeId(bill.getId()),req)) {
                                 bill.setStatus(1);
-                                newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2);
+                                newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
+                                bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+
 
 
                                 olBillService.save(bill);
@@ -239,29 +244,58 @@ public static String encodeId(long id) {
 //                        if (bill.getVoucher() != null){
 //                            increaseVoucherQuantity(bill.getVoucher().getId());
 //                        }
-                        bill.setStatus(6);
+                        bill.setStatus(5);
 //                        huyPaymentStatus
+                        newPaymentStatusAndBillHistory( bill, bill.getCustomer(),5,3,0);
+                        bill.setPaidAmount(new BigDecimal(0));
+
+
                         olBillService.save(bill);
                     }
                 }
             }
         };
-        timer.schedule(task, 960000); // 60000 1200000 milliseconds = 1 minute
+        timer.schedule(task, 960000); // 60000  milliseconds = 1 minute --- test 2p 1200000
     }
-    public void newPaymentStatusAndBillHistory(Bill bill, Customer customer,Integer statusBillHistory,Integer statusPaymentStatus){
+    public void newPaymentStatusAndBillHistory(Bill bill, Customer customer,Integer statusBillHistory,Integer statusPaymentStatus,Integer paymentType){
+        BillHistory billCreate = new BillHistory();
+        billCreate.setStatus(20);
+        billCreate.setCreatedBy(customer.getFullName());
+        billCreate.setCreatedAt(new Date());
+        billCreate.setBill(bill);
+        billCreate.setType(1);
 
+        olBillHistoryService2.save(billCreate);
         BillHistory billHistory = new BillHistory();
         billHistory.setStatus(statusBillHistory);
         billHistory.setCreatedBy(customer.getFullName());
+        billHistory.setCreatedAt(new Date());
         billHistory.setType(1);
         billHistory.setBill(bill);
         olBillHistoryService2.save(billHistory);
-            PaymentStatus paymentStatus = new PaymentStatus();
-            paymentStatus.setBill(bill);
-            paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
-            olPaymentStatusService2.save(paymentStatus);
 
-    }
+            if (paymentType == 1){
+                PaymentStatus paymentStatus = new PaymentStatus();
+                paymentStatus.setBill(bill);
+                paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
+                paymentStatus.setPaymentMethod(2);
+                paymentStatus.setPaymentType(1);
+               paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+                olPaymentStatusService2.save(paymentStatus);
+
+
+            }
+
+//        if (paymentType == 3){
+//            PaymentStatus paymentStatus = new PaymentStatus();
+//            paymentStatus.setBill(bill);
+//            paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
+//            paymentStatus.setPaymentMethod(1);
+//            paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+//            olPaymentStatusService2.save(paymentStatus);
+//        }
+
+        }
 
 //    private final String EXCHANGE_RATE_API = "https://openexchangerates.org/api/latest.json?base=USD&symbols=VND&app_id=8bbe0880013e4460b9b81960a33980ed";
 //

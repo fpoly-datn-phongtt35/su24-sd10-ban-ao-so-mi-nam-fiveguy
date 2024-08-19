@@ -75,8 +75,8 @@ public class ProductSaleRestController2 {
     @PostMapping("/addList")
     public ResponseEntity<List<ProductSale>> addProductSales(@RequestBody List<ProductSale> productSales) {
         List<ProductSale> savedProductSales = productSaleService2.addProductSales(productSales);
-        System.out.println(savedProductSales);
-        System.out.println(productSales);
+//        System.out.println(savedProductSales);
+//        System.out.println(productSales);
         return ResponseEntity.ok(savedProductSales);
     }
 

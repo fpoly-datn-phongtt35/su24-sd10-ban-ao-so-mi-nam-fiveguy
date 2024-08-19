@@ -29,6 +29,6 @@ public class OLPaymentStatusServiceImpl2 implements OLPaymentStatusService2 {
         long currentTimeMillis = System.currentTimeMillis();
         SimpleDateFormat formatter = new SimpleDateFormat("HHmm");
         String formattedTime = formatter.format(new Date(currentTimeMillis));
-        return "PS" + formattedTime;
+        return "TT" + formattedTime;
     }
 }

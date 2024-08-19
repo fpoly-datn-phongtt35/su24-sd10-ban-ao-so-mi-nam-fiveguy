@@ -23,7 +23,7 @@ public class CollarServiceTHImpl implements CollarServiceTH {
     private CollarRepositoryTH repository;
 
     @Override
-    public Page<Collar> getCollars(int page, int size, String name, String sortField, String sortDirection) {
+    public Page<Collar> getCollars(int page, int size, String name, String sortField, String sortDirection, Integer status) {
         Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
@@ -32,8 +32,8 @@ public class CollarServiceTHImpl implements CollarServiceTH {
         }
         Pageable pageable = PageRequest.of(page, size, sort);
         if (name == null || name.isEmpty())
-            return repository.findAll(pageable);
-        else return repository.findByNameContainingIgnoreCase(name,pageable);
+            return repository.findAllAndStatus(status, pageable);
+        else return repository.findByNameContainingIgnoreCaseAndStatus(name, status, pageable);
     }
 
     @Override
@@ -55,7 +55,6 @@ public class CollarServiceTHImpl implements CollarServiceTH {
         Collar collar = new Collar();
         collar.setName(request.getName());
         collar.setCreatedAt(new Date());
-        collar.setStatus(1);
         return repository.save(collar);
     }
 
@@ -70,7 +69,6 @@ public class CollarServiceTHImpl implements CollarServiceTH {
             Collar collar = collarOptional.get();
             collar.setName(request.getName());
             collar.setUpdatedAt(new Date());
-            collar.setStatus(1);
             return repository.save(collar);
         }
         return null;
