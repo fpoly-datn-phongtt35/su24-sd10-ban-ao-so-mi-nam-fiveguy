@@ -22,10 +22,6 @@ public class ProductRequestTH {
 
     @NotNull(message = "Giá không được để trống")
     @DecimalMin(value = "500.00", message = "Giá phải lớn hơn hoặc bằng 500 VNĐ")
-    private BigDecimal importPrice;
-
-    @NotNull(message = "Giá không được để trống")
-    @DecimalMin(value = "500.00", message = "Giá phải lớn hơn hoặc bằng 500 VNĐ")
     private BigDecimal price;
 
     private String describe;
@@ -40,8 +36,8 @@ public class ProductRequestTH {
 
     private Integer status;
 
-    @NotNull(message = "Nhà cung cấp không được để trống")
-    private Supplier supplier;
+    @NotNull(message = "Thương hiệu không được để trống")
+    private Brand brand;
 
     @NotNull(message = "Chất liệu không được để trống")
     private Material material;

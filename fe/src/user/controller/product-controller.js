@@ -35,12 +35,12 @@ app.controller("productController", function ($scope, $http, $window,$routeParam
     toastr["error"](message);
   };
   
-  
-  $scope.selectedVoucher = null;
-
   $scope.showWarningNotification = function(message) {
     toastr["warning"](message);
   };
+
+  $scope.selectedVoucher = null;
+
     $scope.sections = {
         colors: false,
         sizes: false,
@@ -278,7 +278,6 @@ $scope.getPageRange = function() {
 
     //   ProductDetail -----------------------------------
 
-      var productId = $routeParams.idProduct;
 
       $scope.productDetailInfo = {};
       $scope.selectedColor = null;
@@ -289,7 +288,7 @@ $scope.getPageRange = function() {
       $scope.imagesD = [];
   
       $scope.loadProductDetails = function() {
-          $http.get('http://localhost:8080/api/home/product/viewProduct/' + productId)
+          $http.get('http://localhost:8080/api/home/product/viewProduct/' + $routeParams.idProduct)
               .then(function(response) {
                   $scope.productDetailInfo  = response.data;
                   $scope.colorD = response.data.colors;
@@ -308,7 +307,12 @@ $scope.getPageRange = function() {
       };
   
       // Example usage
-    //   $scope.loadProductDetails(productId);
+      if ($routeParams.idProduct != undefined) {
+      $scope.loadProductDetails();
+        
+      }
+
+
     $scope.fetchProductDetails = function() {
         if ($scope.selectedColor && $scope.selectedSize) {
             $scope.getProductDetail(productId, $scope.selectedSize, $scope.selectedColor);
@@ -388,7 +392,10 @@ $scope.getPageRange = function() {
                                 loadCart();
                             } else if (response.data === 2) {
                                 $scope.showErrorNotification("Sản phẩm không có đủ số lượng trong kho!");
-                            } else {
+                            } else if (response.data === 3) {
+                              $scope.showErrorNotification("Số lượng không hợp lệ!");
+                            } 
+                            else {
                                 $scope.showErrorNotification("Thêm vào giỏ thất bại!");
                             }
                         })
@@ -398,24 +405,35 @@ $scope.getPageRange = function() {
                         });
             },
             update(cartDetailId, quantity) {
-                    $http.post('http://localhost:8080/api/home/cart/update', { cartDetailId: cartDetailId, quantity: quantity, username: $scope.username })
-                        .then(function (response) {
-                            if (response.data === 1) {
-                                $scope.showSuccessNotification("Cập nhật giỏ thành công!");
-                            } else if (response.data === 2) {
-                                $scope.showErrorNotification("Sản phẩm không có đủ số lượng trong kho!");
-                            } else {
-                                $scope.showErrorNotification("Cập nhật giỏ thất bại!");
-                            }
-                            if (response.data) {
-                                loadCart();
-                            }
-                        })
-                        .catch(function (error) {
-                            $scope.showWarningNotification("Có lỗi xảy ra!");
-                            console.error(error);
-                        });
-            },
+              $http.post('http://localhost:8080/api/home/cart/update', {
+                      cartDetailId: cartDetailId,
+                      quantity: quantity,
+                      username: $scope.username
+                  })
+                  .then(function(response) {
+                      let data = response.data;
+                      if (data.status === 1) {
+                          $scope.showSuccessNotification("Cập nhật giỏ thành công!");
+                      } else if (data.status === 2) {
+                          $scope.showErrorNotification("Sản phẩm '" + data.productName +" Số lượng còn lại: " + data.availableQuantity);
+                      } else if (data.status === 3) {
+                          $scope.showErrorNotification("Số lượng không hợp lệ!");
+                      } else if (data.status === 4) {
+                          $scope.showErrorNotification("Sản phẩm "+ data.productName  +" đã hết hàng!");
+                      } else {
+                          $scope.showErrorNotification("Cập nhật giỏ thất bại!");
+                      }
+                      if (data.status === 1) {
+                          loadCart();
+                      }
+                  })
+                  .catch(function(error) {
+                      $scope.showWarningNotification("Có lỗi xảy ra!");
+                      console.error(error);
+                  });
+          }
+          
+          ,
             remove(id) {
                     $http.post('http://localhost:8080/api/home/cart/remove', { cartDetailId: id })
                         .then(function (response) {
@@ -508,6 +526,7 @@ $scope.valueVoucher = 0;
         $rootScope.countProduct = $scope.cartItems.reduce((total, item) => total + item.quantity, 0);
         $scope.totalAmount = countTotalPrice($scope.cartItems);
         $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
+        $scope.calculatePoints($scope.totalAmountAfterDiscount);
         // $scope.getBestVoucher($scope.totalAmount)
 
         if (typeof $scope.dataDistrict !== 'undefined' && typeof $scope.dataDistrict.DistrictID !== 'undefined' && 
@@ -582,7 +601,7 @@ $scope.province1 = function () {
           return city.ProvinceID == cityId;
         });
         $scope.dataCity = selectedCity;
-        console.log($scope.dataCity)
+        // console.log($scope.dataCity)
         // $scope.billAddressCity = cityId;
       }
     });
@@ -627,7 +646,7 @@ $scope.province1 = function () {
         });
         // $scope.billAddressDistrict = districtId;
         $scope.dataDistrict = selectedDistrict;
-        console.log($scope.dataDistrict)
+        // console.log($scope.dataDistrict)
         
       }
     });
@@ -667,7 +686,7 @@ $scope.province1 = function () {
         if (selectedWard) {
           // $scope.billAddressWard = selectedWard.WardCode;
         $scope.dataWard = selectedWard;
-        console.log($scope.dataWard)
+        // console.log($scope.dataWard)
   
         } else {
           console.log("Không tìm thấy phường/xã với WardCode: " + wardId);
@@ -693,7 +712,7 @@ $scope.province1 = function () {
         // Body data for the POST request
         var requestData = {
             "service_id": 53321,
-            "insurance_value": $scope.totalAmountAfterDiscount,
+            "insurance_value": 1,
             "coupon": null,
             "from_district_id": 1482,
             "to_district_id": numericDistrictId,
@@ -707,7 +726,8 @@ $scope.province1 = function () {
         // Gọi API với phương thức POST và thân yêu cầu (body)
         $http.post('https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee', requestData, config)
             .then(function (response) {
-              $scope.shippingFee = response.data.data.total;
+             $scope.shippingFee = response.data.data.total ;
+
             })
             .catch(function (error) {
                 // Xử lý lỗi nếu có
@@ -728,7 +748,7 @@ $scope.province1 = function () {
             }
           })
           .catch(function(error) {
-            alert("Có lỗi xảy ra khi gọi API!");
+            // alert("Có lỗi xảy ra khi gọi API!");
             console.error(error);
           });
       };
@@ -739,7 +759,7 @@ $scope.province1 = function () {
       $scope.selectPaymentMethod = function(paymentMethod) {
           $scope.selectedPayment = paymentMethod; 
           $scope.selectedPaymentCode = paymentMethod.code
-          console.log($scope.selectedPaymentCode)
+          // console.log($scope.selectedPaymentCode)
       };
 
 
@@ -757,7 +777,7 @@ $scope.checkPhoneNumber= true;
     $scope.address = "";
     // paymentMethod voucher
     $scope.bill = {
-      code: 'HD' + Number(String(new Date().getTime()).slice(-6)),
+      // code: "",
       totalAmount: 0,
       totalAmountAfterDiscount: 0,
       reciverName: "",
@@ -770,7 +790,8 @@ $scope.checkPhoneNumber= true;
       note: "",
       paymentMethod: "",
       voucher: null,
-      createdAt: new Date(),
+      // // createdAt: new Date()
+      // ,
       get billDetail(){
      if ($scope.cartItems && $scope.cartItems.length > 0) {
       return $scope.cartItems.map(item => {
@@ -867,7 +888,7 @@ $scope.dataCity.ProvinceID;
           .then(resp => {
            // Xử lý phản hồi từ server
               let body = resp.data;
-              console.log(body);
+              // console.log(body);
               if (body != null && body.hasOwnProperty("redirect") ) {
                   window.location.href = body.redirect; 
               }
@@ -878,14 +899,14 @@ $scope.dataCity.ProvinceID;
                     // Hiển thị thông báo cho từng sản phẩm không đủ số lượng
                     let insufficientQuantityProducts = body.insufficientQuantityProducts;
                     insufficientQuantityProducts.forEach(product => {
-                        $scope.showErrorNotification( product + "không có đủ số lượng trong kho");
+                        $scope.showErrorNotification( product );
                     });
                 }
                 // Xử lý logic tương ứng với resultCode khác
             } 
             else if (typeof body === 'number') {
                  if (body === 3) {
-                    $scope.showErrorNotification("Mã giảm giá không có đủ số lượng trong kho vui lòng chọn mã giảm giá kho")
+                    $scope.showErrorNotification("Mã giảm giá đã hết vui lòng chọn mã giảm giá khác")
                       // Xử lý logic tương ứng
                   } else if(body == 333){
                     $location.path('/home/paymentSuccess');
@@ -895,12 +916,12 @@ $scope.dataCity.ProvinceID;
                   
                   else {
                     $scope.showWarningNotification("Có lỗi xảy ra!");
-                    console.log(3);
+                    // console.log(3);
 
                   }
               } else {
                 $scope.showWarningNotification("Có lỗi xảy ra!");
-                console.log(3);
+                // console.log(3);
 
               }
           })
@@ -1072,7 +1093,7 @@ $scope.dataCity.ProvinceID;
               }
             })
             .catch(function(error) {
-              alert("Có lỗi xảy ra khi gọi API!");
+              // alert("Có lỗi xảy ra khi gọi API!");
               console.error(error);
             });
       };
@@ -1089,7 +1110,7 @@ $scope.dataCity.ProvinceID;
             }
           })
           .catch(function(error) {
-            alert("Có lỗi xảy ra khi gọi API!");
+            // alert("Có lỗi xảy ra khi gọi API!");
             console.error(error);
           });
     };
@@ -1102,11 +1123,11 @@ $scope.dataCity.ProvinceID;
           if (response.data) {
             $scope.productsByTotalQuantitySold = response.data.slice(0, 12); // Lấy chỉ 12 đối tượng đầu tiên
   
-            console.log($scope.productsByTotalQuantitySold)
+            // console.log($scope.productsByTotalQuantitySold)
           }
         })
         .catch(function(error) {
-          alert("Có lỗi xảy ra khi gọi API lấy sản phẩm theo tổng số lượng bán!");
+          // alert("Có lỗi xảy ra khi gọi API lấy sản phẩm theo tổng số lượng bán!");
           console.error(error);
         });
   };
@@ -1121,7 +1142,7 @@ $scope.dataCity.ProvinceID;
           }
         })
         .catch(function(error) {
-          alert("Có lỗi xảy ra khi gọi API lấy sản phẩm theo ngày tạo!");
+          // alert("Có lỗi xảy ra khi gọi API lấy sản phẩm theo ngày tạo!");
           console.error(error);
         });
   };
@@ -1173,7 +1194,7 @@ $scope.dataCity.ProvinceID;
           }
       })
       .catch(function(error) {
-          alert("Có lỗi xảy ra khi tìm kiếm sản phẩm!");
+          // alert("Có lỗi xảy ra khi tìm kiếm sản phẩm!");
           console.error(error);
       });
   };
@@ -1196,19 +1217,20 @@ $scope.dataCity.ProvinceID;
       .then(function(response) {
         if (response.data) {
           $scope.vouchers = response.data;
-          $scope.displayedVouchers = $scope.vouchers.slice(0, 4); // Hiển thị 6 vouchers ban đầu
+          $scope.displayedVouchers = $scope.vouchers.slice(0, 4); // Hiển thị 4 vouchers ban đầu
+          $scope.showAllVouchers = $scope.vouchers.length > 4; // Kiểm tra nếu số lượng vouchers lớn hơn 4
         }
       })
       .catch(function(error) {
-        alert("Có lỗi xảy ra khi gọi API để lấy danh sách vouchers!");
         console.error(error);
       });
   };
   
   $scope.viewMoreVouchers = function() {
-    $scope.showAllVouchers = true;
-    $scope.displayedVouchers = $scope.vouchers;
+    $scope.displayedVouchers = $scope.vouchers; // Hiển thị tất cả vouchers
+    $scope.showAllVouchers = false; // Ẩn nút "Xem thêm" sau khi tất cả vouchers đã được hiển thị
   };
+  
 
   // $scope.getAllVouchers();
   // $scope.getBestVoucher = function(totalAmount) {
@@ -1235,10 +1257,13 @@ $scope.dataCity.ProvinceID;
       console.log("Không có vouchers để chọn.");
       return;
     }
+  
     // Bước 1: Lọc danh sách voucher còn số lượng và đủ điều kiện áp dụng
     var validVouchers = $scope.customerVouchers.filter(function(voucher) {
-      return voucher.quantity > 0 && $scope.totalAmount >= voucher.minimumTotalAmount && voucher.show == 1;
+      return voucher.quantity > 1 && $scope.totalAmount >= voucher.minimumTotalAmount && voucher.show == 1;
     });
+  
+    // console.log(validVouchers);
   
     if (validVouchers.length === 0) {
       console.log("Không tìm được voucher phù hợp.");
@@ -1259,35 +1284,48 @@ $scope.dataCity.ProvinceID;
         // Percentage discount
         var discountPercentage = voucher.value / 100;
         valueVoucher = $scope.totalAmount * discountPercentage;
-        if (valueVoucher >= voucher.maximumReductionValue) {
+        if (voucher.maximumReductionValue && valueVoucher > voucher.maximumReductionValue) {
           valueVoucher = voucher.maximumReductionValue;
         }
       } else if (voucher.discountType === 2) {
         // Fixed amount discount
         valueVoucher = voucher.value;
-        if (valueVoucher >= voucher.maximumReductionValue) {
+        if (voucher.maximumReductionValue && valueVoucher > voucher.maximumReductionValue) {
           valueVoucher = voucher.maximumReductionValue;
         }
       }
       voucher.valueVoucher = valueVoucher;
     });
   
-    // Bước 3: Tìm voucher có giá trị giảm giá cao nhất
+    // Bước 3: Tìm voucher có giá trị giảm giá cao nhất hoặc giá trị giảm tối ưu nhất
     var bestVoucher = validVouchers.reduce(function(prev, current) {
-      return (prev.valueVoucher > current.valueVoucher) ? prev : current;
+      if (prev.valueVoucher > current.valueVoucher) {
+        return prev;
+      } else if (prev.valueVoucher === current.valueVoucher) {
+        // Compare by maximum reduction value or other criteria if discount values are equal
+        return (prev.maximumReductionValue > current.maximumReductionValue) ? prev : current;
+      } else {
+        return current;
+      }
     });
   
     // Áp dụng voucher tốt nhất
     if ($scope.selectedVoucher) {
       $scope.selectedVoucher.selected = false; // Bỏ chọn voucher trước đó
     }
+
+
+    $scope.selectedVoucherOld = $scope.selectedVoucher;
+
     $scope.selectedVoucher = bestVoucher;
     $scope.selectedVoucher.selected = true;
     $scope.valueVoucher = bestVoucher.valueVoucher;
     $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
+    $scope.applyVoucher();
   
     console.log("Chọn voucher tốt nhất:", bestVoucher);
   };
+  
   
 
 
@@ -1317,7 +1355,7 @@ $scope.dataCity.ProvinceID;
         }
       })
       .catch(function(error) {
-        alert("Có lỗi xảy ra khi gọi API để lấy vouchers cho khách hàng!");
+        // alert("Có lỗi xảy ra khi gọi API để lấy vouchers cho khách hàng!");
         console.error(error);
       });
   };
@@ -1336,8 +1374,8 @@ $scope.dataCity.ProvinceID;
   // $scope.originalTotalAmount = $scope.totalAmount; // Store the original total amount
   
   $scope.selectVoucher = function(selectedVoucher) {
-    console.log(selectedVoucher);
-    if (selectedVoucher.quantity > 0) {
+    // console.log(selectedVoucher);
+    if (selectedVoucher.quantity > 1) {
       if ($scope.selectedVoucher === selectedVoucher) {
         $scope.selectedVoucher = null;
         selectedVoucher.selected = false;
@@ -1358,7 +1396,7 @@ $scope.dataCity.ProvinceID;
 
   $scope.applyVoucher = function() {
     if ($scope.selectedVoucher != null) {
-      if ($scope.selectedVoucher.quantity > 0) {
+      if ($scope.selectedVoucher.quantity > 1) {
         if ($scope.totalAmount >= $scope.selectedVoucher.minimumTotalAmount) {
           var voucherCopy = angular.copy($scope.selectedVoucher);
           delete voucherCopy.selected;
@@ -1387,6 +1425,12 @@ $scope.dataCity.ProvinceID;
           }
   
           $scope.voucherMessage = 'Mã giảm giá đã được áp dụng';
+
+          if ($scope.selectedVoucherOld && $scope.selectedVoucherOld.id == $scope.selectedVoucher.id) {
+            return;
+          }
+
+
           $scope.showSuccessNotification($scope.voucherMessage);
         } else {
           // $scope.voucherData = null;
@@ -1426,6 +1470,87 @@ $scope.dataCity.ProvinceID;
 // Đoạn mã AngularJS
 
 
+  //Các sản phẩm cùng thể loại ở chi tiết sản phẩm
+  $scope.loadProductsByCategory = function() {
+    var params = {
+      productId: $routeParams.idProduct
+    };
+    $http.get('http://localhost:8080/api/home/products/category', { params: params })
+      .then(function(response) {
+        if (response.data) {
+            $scope.productCate = response.data.slice(0, 6);
+            // console.log( $scope.productCate)
+        }
+      })
+      .catch(function(error) {
+        console.error('Error fetching products:', error);
+      });
+  };
+  // console.log($scope.productDetailInfo.olViewProductDetailRespone.nameCategory )
+  $scope.loadProductsByCategory();
+  
+
+
+
+
+
+
+
+  // ------------Rate-------------
+
+  $scope.currentPageRate = 0;
+$scope.pageSizeRate = 7;
+
+
+$scope.productId = $routeParams.idProduct; 
+var productId = $routeParams.idProduct; 
+
+$scope.getRates = function() {
+
+  if ($routeParams.idProduct == undefined) {
+    return;
+  }
+    $http({
+      method: 'GET',
+      url: 'http://localhost:8080/api/home/listRate',
+      params: { productId: $routeParams.idProduct, page: $scope.currentPageRate }
+  }) .then(function(response) {
+            $scope.ratings = response.data; 
+        })
+        .catch(function(error) {
+            console.error('Error fetching ratings:', error);
+        });
+  };
+  
+  $scope.getRates();
+  
+  $scope.setCurrentPageRateProduct = function(page) {
+    if (page >= 0 && page < $scope.ratings.totalPages) {
+        $scope.currentPageRate = page;
+        $scope.getRates();
+    }
+  };
+
+  $scope.getNumber = function(num) {
+
+    return new Array((num));
+  };
+
+
+
+
+
+  // point ----------------------------
+
+  $scope.calculatePoints = function(totalAmount) {
+
+    $http.get('http://localhost:8080/api/calculate-points', { params: { totalAmount: totalAmount } })
+        .then(function(response) {
+            $scope.calculatedPoints = response.data;
+        }, function() {
+            $scope.errorMessage = "Error calculating points.";
+        });
+};
 
   
 

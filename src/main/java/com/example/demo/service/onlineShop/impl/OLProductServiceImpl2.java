@@ -1,8 +1,6 @@
 package com.example.demo.service.onlineShop.impl;
 
-import com.example.demo.entity.BillDetail;
-import com.example.demo.entity.Product;
-import com.example.demo.entity.ProductDetail;
+import com.example.demo.entity.*;
 import com.example.demo.model.response.onlineShop.BillDetailResponse2;
 import com.example.demo.model.response.onlineShop.ProductDetailsDTO;
 import com.example.demo.model.response.onlineShop.ProductInfoDTO;
@@ -31,6 +29,9 @@ public class OLProductServiceImpl2 implements OLProductService2 {
     private OLSizeService2 olSizeService2;
 
     @Autowired
+    private OLCategoryService2 olCategoryService2;
+
+    @Autowired
     private OLProductDetailService2 olProductDetailService2;
 
     @Autowired
@@ -38,6 +39,9 @@ public class OLProductServiceImpl2 implements OLProductService2 {
 
     @Autowired
     private OLImageService2 olImageService2;
+
+    @Autowired
+    private OlRatingService2 olRatingService2;
 
     // Phương thức để lọc sản phẩm dựa trên các thuộc tính và phân trang, sắp xếp
 
@@ -66,14 +70,14 @@ public class OLProductServiceImpl2 implements OLProductService2 {
                     saleValue,
                     discountType,
                     imagePath,
-                    product // Pass the retrieved product object
+                    product,
+                    getAverageRateSold(productId),
+                    getRatingCountByProduct(productId)
             );
         }).collect(Collectors.toList());
 
         return productSaleDetails;
     }
-
-
 
 
     @Override
@@ -143,8 +147,6 @@ public class OLProductServiceImpl2 implements OLProductService2 {
     }
 
 
-
-
     private ProductInfoDTO convertToProductInfoDTO(Object[] productInfoArray) {
         if (productInfoArray != null && productInfoArray.length > 0) {
             Long productId = (productInfoArray[0] instanceof Long) ? (Long) productInfoArray[0] : null;
@@ -161,7 +163,7 @@ public class OLProductServiceImpl2 implements OLProductService2 {
             String brandName = "Thương hiệu";
 //            String supplierName = (String) productInfoArray[11];
 
-            return new ProductInfoDTO(productId, productName, price, wristName, materialName, categoryName, collarName, promotionalPrice, discountType,value,getTotalQuantitySold(productId),brandName,"mô tả");
+            return new ProductInfoDTO(productId, productName, price, wristName, materialName, categoryName, collarName, promotionalPrice, discountType, value, getTotalQuantitySold(productId), brandName, "mô tả");
         }
         return null;
     }
@@ -180,31 +182,70 @@ public class OLProductServiceImpl2 implements OLProductService2 {
         List<String> listImage = colors.isEmpty() ? Collections.emptyList()
                 : olImageService2.getImagesByProductIdAndColorId(idProduct, (idColorFirst));
 
-        return new ProductDetailsDTO(productInfo, colors, sizes,listImage,0);
+        return new ProductDetailsDTO(productInfo, colors, sizes, listImage, 0,getAverageRateSold(idProduct),getRatingCountByProduct(idProduct));
     }
 
 
+    public int getRatingCountByProduct(long idProduct) {
+        List<ProductDetail> productDetailList = olProductDetailService2.findByProduct(idProduct);
+
+        List<Rating> list = new ArrayList<>();
+
+        for (ProductDetail productDetail : productDetailList) {
+            List<BillDetail> billDetails = olBillDetailServiceImpl2.findByProductDetail(productDetail);
+            for (BillDetail billDetail : billDetails) {
+                List<Rating> ratingEntitiesForDetail = olRatingService2.findByBillDetail(billDetail);
+                list.addAll(ratingEntitiesForDetail);
+            }
+        }
+
+        return list.size();
+    }
 
 
-    private int getTotalQuantitySold(Long idProduct) {
-        Optional<Product> product1 = productRepository.findById(idProduct);
-        if (product1.isPresent()){
-            List<ProductDetail> productDetails = olProductDetailService2.findByProduct(product1.get());
-            int totalQuantity = 0;
-            for (ProductDetail detail : productDetails) {
-                List<BillDetail> billDetails = olBillDetailServiceImpl2.findByProductDetail(detail);
+    private float getAverageRateSold(Long idProduct) {
+        Optional<Product> product = productRepository.findById(idProduct);
+
+        if (product.isPresent()) {
+            List<ProductDetail> productDetails = olProductDetailService2.findByProduct(product.get().getId());
+            float totalRate = 0;
+            int totalRatings = 0;
+
+            for (ProductDetail productDetail : productDetails) {
+                List<BillDetail> billDetails = productDetail.getBillDetails(); // Assuming BillDetail is a list associated with ProductDetail
+
                 for (BillDetail billDetail : billDetails) {
-                    if (billDetail.getBill().getStatus() == 5){
-                        totalQuantity += billDetail.getQuantity();
+                    List<Rating> ratingEntities = olRatingService2.findByBillDetail(billDetail); // Assuming you have a method to find ratings by BillDetail
+
+                    for (Rating ratingEntity : ratingEntities) {
+                        if (ratingEntity.isRated()) {
+                            totalRate += ratingEntity.getRate();
+                            totalRatings++;
+                        }
                     }
                 }
             }
-            return totalQuantity;
+
+            if (totalRatings > 0) {
+                return Math.round(totalRate / totalRatings);
+            } else {
+                return 0;
+            }
+        }
+
+        return 0;
+    }
+
+    public int getTotalQuantitySold(Long idProduct) {
+        Optional<Product> productOptional = productRepository.findById(idProduct);
+        if (productOptional.isPresent()) {
+            Integer totalQuantity = olBillDetailServiceImpl2.getTotalQuantitySold(idProduct);
+            return totalQuantity != null ? totalQuantity : 0;
         }
         return 0;
     }
 
-@Override
+    @Override
     public Integer findPromotionalPriceByProductId(Long productId) {
         return productRepository.findPromotionalPriceByProductId(productId);
     }
@@ -242,7 +283,9 @@ public class OLProductServiceImpl2 implements OLProductService2 {
                     saleValue,
                     discountType,
                     imagePath,
-                    product // Pass the retrieved product object
+                    product,
+                    getAverageRateSold(productId),
+                    getRatingCountByProduct(productId)
             );
         }).collect(Collectors.toList());
     }
@@ -270,7 +313,9 @@ public class OLProductServiceImpl2 implements OLProductService2 {
                     saleValue,
                     discountType,
                     imagePath,
-                    product // Pass the retrieved product object
+                    product,
+                    getAverageRateSold(productId),
+                    getRatingCountByProduct(productId)
             );
         }).collect(Collectors.toList());
     }
@@ -301,9 +346,49 @@ public class OLProductServiceImpl2 implements OLProductService2 {
                     saleValue,
                     discountType,
                     imagePath,
-                    product
+                    product,
+                    getAverageRateSold(productId),
+                    getRatingCountByProduct(productId)
             );
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductSaleDetails> findProductsByCategoryId(Long productId) {
+        List<ProductSaleDetails> responses = new ArrayList<>();
+        Category category = olCategoryService2.findCategoryByProductId(productId);
+        List<Object[]> results = productRepository.findProductsByCategory(category);
+
+        for (Object[] result : results) {
+            Long id = ((Number) result[0]).longValue();
+            String name = (String) result[1];
+            Integer discountPrice = (Integer) result[2];
+            Integer saleValue = (Integer) result[3];
+            Integer discountType = (Integer) result[4];
+            String imagePath = (String) result[5];
+
+            // Only perform additional queries if necessary
+            BigDecimal productPrice = getProductPriceById(id); // Assuming this method is efficient
+            Integer promotionalPrice = findPromotionalPriceByProductId(id); // Assuming this method is efficient
+
+            Product product = productRepository.findById(id).orElse(null);
+
+            ProductSaleDetails response = new ProductSaleDetails(
+                    id,
+                    name,
+                    productPrice,
+                    discountPrice,
+                    promotionalPrice,
+                    saleValue,
+                    discountType,
+                    imagePath,
+                    product,
+                    getAverageRateSold(productId),
+                    getRatingCountByProduct(productId)
+            );
+            responses.add(response);
+        }
+        return responses;
     }
 
 

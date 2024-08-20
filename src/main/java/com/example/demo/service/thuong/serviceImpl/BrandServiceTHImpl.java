@@ -2,6 +2,7 @@ package com.example.demo.service.thuong.serviceImpl;
 
 import com.example.demo.advice.DuplicateException;
 import com.example.demo.entity.Brand;
+import com.example.demo.entity.Category;
 import com.example.demo.model.request.thuong.BrandRequestTH;
 import com.example.demo.repository.thuong.BrandRepositoryTH;
 import com.example.demo.service.thuong.BrandServiceTH;
@@ -13,12 +14,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BrandServiceTHImpl implements BrandServiceTH {
     @Autowired
     private BrandRepositoryTH repository;
+
     @Override
     public Page<Brand> getBrands(int page, int size, String name, String sortField, String sortDirection, Integer status) {
         Sort sort = Sort.by(sortField);
@@ -27,12 +30,17 @@ public class BrandServiceTHImpl implements BrandServiceTH {
         } else {
             sort = sort.ascending();
         }
+
         Pageable pageable = PageRequest.of(page, size, sort);
         if (name == null || name.isEmpty())
             return repository.findAllAndStatus(status, pageable);
-        else return repository.findByNameContainingIgnoreCaseAndStatus(name, status, pageable);
+        return repository.findByNameContainingIgnoreCaseAndStatus(name, status, pageable);
     }
 
+    @Override
+    public List<Brand> findAllByStatus(Integer status) {
+        return repository.findAllByStatus(status);
+    }
 
     @Override
     public Brand findById(Long id) {
@@ -41,7 +49,7 @@ public class BrandServiceTHImpl implements BrandServiceTH {
 
     @Override
     public Brand create(BrandRequestTH request) {
-        Brand existingBrand= repository.findByName(request.getName());
+        Brand existingBrand = repository.findByName(request.getName());
         if (existingBrand != null) {
             throw new DuplicateException("Trùng tên thương hiệu", "name");
         }

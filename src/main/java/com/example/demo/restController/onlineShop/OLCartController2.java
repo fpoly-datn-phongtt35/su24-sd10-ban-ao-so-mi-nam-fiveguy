@@ -1,6 +1,7 @@
 package com.example.demo.restController.onlineShop;
 
 import com.example.demo.entity.*;
+import com.example.demo.model.response.onlineShop.CartResponse2;
 import com.example.demo.model.response.onlineShop.CartResponseDTO;
 import com.example.demo.security.service.SCCustomerService;
 import com.example.demo.security.service.SCEmployeeService;
@@ -110,10 +111,11 @@ public class OLCartController2 {
 
             Long productDetailId = Long.valueOf(orderData.get("productDetailId").asText());
             int quantity = orderData.get("quantity").asInt();
-//            String promotionalPriceString = orderData.get("promotionalPrice").asText();
+            if (quantity < 1) {
+//                System.out.println(quantity);
 
-//            BigDecimal promotionalPrice = new BigDecimal(promotionalPriceString);
-
+                return ResponseEntity.ok(3); // Invalid quantity
+            }
             Optional<ProductDetail> productDetail = olProductDetailService.findById(productDetailId);
 
             if (productDetail.isPresent()) {
@@ -132,8 +134,6 @@ public class OLCartController2 {
                         newCartDetail.setCart(cart);
                         newCartDetail.setProductDetail(productDetail.get());
                         newCartDetail.setQuantity(quantity);
-//                        newCartDetail.setPrice(productDetail.get().getProduct().getPrice());
-//                        newCartDetail.setPromotionalPrice(promotionalPrice);
                         newCartDetail.setStatus(1);
                         olCartDetailService.save(newCartDetail);
                     }
@@ -150,43 +150,47 @@ public class OLCartController2 {
     }
 
     @PostMapping("/cart/update")
-    public ResponseEntity<?> update(@RequestBody JsonNode orderData) {
-        String cartDetailId = orderData.get("cartDetailId").asText();
+    public ResponseEntity<CartResponse2> update(@RequestBody JsonNode orderData) {
+        Long cartDetailId = orderData.get("cartDetailId").asLong();
         int quantity = orderData.get("quantity").asInt();
 
-        if (cartDetailId != null && quantity >= 0) {
-            Optional<CartDetail> cartDetail = olCartDetailService.findById(Long.valueOf(cartDetailId));
-            if (cartDetail.isPresent()) {
-                Optional<ProductDetail> productDetail = olProductDetailService.findById(cartDetail.get().getProductDetail().getId());
-                int availableQuantity = productDetail.get().getQuantity() - 1;
 
-                int totalQuantityInCart = olCartDetailService.getTotalQuantityInCart(cartDetail.get().getCart().getId(), cartDetail.get().getProductDetail().getId());
-                int remainingQuantity = availableQuantity - (totalQuantityInCart - cartDetail.get().getQuantity());
+
+        if (cartDetailId != null ) {
+            Optional<CartDetail> optionalCartDetail = olCartDetailService.findById(cartDetailId);
+            if (optionalCartDetail.isPresent()) {
+                CartDetail cartDetail = optionalCartDetail.get();
+                ProductDetail productDetail = cartDetail.getProductDetail();
+                Product product = productDetail.getProduct();
+                String productName = product.getName() + " " + product.getCategory().getName() + " " + product.getMaterial().getName() + " " + product.getCode() + " Màu sắc " + productDetail.getColor().getName() + " Kích cỡ " + productDetail.getSize().getName();
+
+                if (quantity < 1) {
+                    return ResponseEntity.ok(new CartResponse2(3, productName, 0)); // Số lượng không hợp lệ
+                }
+                // Giảm số lượng truy vấn bằng cách tải trước dữ liệu liên quan
+                int availableQuantity = productDetail.getQuantity() - 1;
+
+                if (availableQuantity < 1) {
+                    return ResponseEntity.ok(new CartResponse2(4, productName, 0)); // Sản phẩm hết
+                }
+
+                int totalQuantityInCart = olCartDetailService.getTotalQuantityInCart(cartDetail.getCart().getId(), productDetail.getId());
+                int remainingQuantity = availableQuantity - (totalQuantityInCart - cartDetail.getQuantity());
 
                 if (remainingQuantity >= quantity) {
-                    // Số lượng đủ, tiến hành cập nhật
-                    int newQuantity = quantity;
-                    if (quantity == 0) {
-                        // Nếu quantity là 0, xóa CartDetail tương ứng
-                        olCartDetailService.deleteById(cartDetail.get().getId());
-                        newQuantity = cartDetail.get().getQuantity();
-                    } else {
-                        cartDetail.get().setQuantity(quantity);
-                        olCartDetailService.save(cartDetail.get());
-                    }
-
-                    return ResponseEntity.ok(1);
-                }  else {
-                    // Số lượng không đủ, cập nhật số lượng hiện có
-                    cartDetail.get().setQuantity(remainingQuantity);
-                    olCartDetailService.save(cartDetail.get());
-                    return ResponseEntity.ok(2);
+                    cartDetail.setQuantity(quantity);
+                    olCartDetailService.save(cartDetail);
+                    return ResponseEntity.ok(new CartResponse2(1, "", 0)); // Cập nhật thành công
+                } else {
+//                    cartDetail.setQuantity(remainingQuantity);
+//                    olCartDetailService.save(cartDetail);
+                    return ResponseEntity.ok(new CartResponse2(2, productName, remainingQuantity)); // Số lượng không đủ
                 }
             }
         }
-        return ResponseEntity.ok(0);
-
+        return ResponseEntity.ok(new CartResponse2(0, "", 0)); // Cập nhật giỏ thất bại
     }
+
 
     @Transactional
     @PostMapping("/cart/remove")

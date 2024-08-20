@@ -9,10 +9,15 @@ app.config(function ($routeProvider, $locationProvider) {
     
   })
     // <!-- Hiếu -->
-    .when("/home/customer", {
-      templateUrl: "pages/accountManage/customer.html",
+    .when("/home/customerProfile", {
+      templateUrl: "pages/accountManage/customerProfile.html",
       
-      controller: 'thongKeController'
+      controller: 'accountManage'
+    })
+    .when("/home/account-address", {
+      templateUrl: "pages/accountManage/address.html",
+      
+      controller: 'accountManage'
     })
     // <!-- Thưởng -->
  
@@ -52,6 +57,10 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/home/orderDetail/:idBill", {
       templateUrl : "pages/accountManage/orderDetail.html",
       controller : "orderController"
+    })
+    .when("/home/rating", {
+      templateUrl : "pages/accountManage/rating.html",
+      controller : "ratingController"
     })
 
     .when("/unauthorized", {

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class AuditLogServiceImplTinh implements AuditLogServiceTinh {
 
 
     @Override
-    public void createAuditLoginEmployee(String name, String text, String text2){
+    public void createAuditLoginEmployee(String name, String text, String text2, Long role){
         Optional<Employee> employee = employeeRepositoryTinh.findByFullName(name);
 
         if(employee.isPresent()){
@@ -49,40 +50,42 @@ public class AuditLogServiceImplTinh implements AuditLogServiceTinh {
             auditLogs1.setActionType(text);
             auditLogs1.setDetailedAction(text2);
             auditLogs1.setTime(new Date());
-            auditLogs1.setStatus(1);
+            auditLogs1.setRole(role);
 
            auditLogRepositoryTinh.save(auditLogs1);
         }
     }
 
-    @Override
-    public void createAuditLoginCustomer(String name, String text, String text2) {
-        Optional<Customer> customer = customerRepositoryH.findByFullName(name);
-        if(customer.isPresent()){
-            AuditLogs auditLogs1= new AuditLogs();
-            auditLogs1.setEmpCode(customer.get().getCode());
-            auditLogs1.setImplementer(customer.get().getFullName());
-            auditLogs1.setActionType(text);
-            auditLogs1.setDetailedAction(text2);
-            auditLogs1.setTime(new Date());
-            auditLogs1.setStatus(2);
+//    @Override
+//    public void createAuditLoginCustomer(String name, String text, String text2) {
+//        Optional<Customer> customer = customerRepositoryH.findByFullName(name);
+//        if(customer.isPresent()){
+//            AuditLogs auditLogs1= new AuditLogs();
+//            auditLogs1.setEmpCode(customer.get().getCode());
+//            auditLogs1.setImplementer(customer.get().getFullName());
+//            auditLogs1.setActionType(text);
+//            auditLogs1.setDetailedAction(text2);
+//            auditLogs1.setTime(new Date());
+//            auditLogs1.setStatus(1);
+//
+//            auditLogRepositoryTinh.save(auditLogs1);
+//        }
+//    }
 
-            auditLogRepositoryTinh.save(auditLogs1);
-        }
-    }
-
     @Override
-    public Page<AuditLogs> findAuditLog(String implementer, String code, String actionType, Date time, String detailedAction,  Integer status, Pageable pageable) {
+    public Page<AuditLogs> findAuditLog(String implementer, String code, String actionType, Date time, String detailedAction, Pageable pageable) {
+        // Định nghĩa các trạng thái bạn muốn lọc
+        List<Integer> statuses = Arrays.asList(1, 3);
 
         Specification<AuditLogs> spec = Specification.where(AuditLogSpecificationTinh.hasEmpCode(code))
                 .and(AuditLogSpecificationTinh.hasImplementer(implementer))
                 .and(AuditLogSpecificationTinh.hasActionType(actionType))
                 .and(AuditLogSpecificationTinh.hasDetailedAction(detailedAction))
-                .and(AuditLogSpecificationTinh.hasTime(time))
-                .and(AuditLogSpecificationTinh.hasStatus(status));
+                .and(AuditLogSpecificationTinh.hasTime(time));
 
         return auditLogRepositoryTinh.findAll(spec, pageable);
     }
+
 
 
 }

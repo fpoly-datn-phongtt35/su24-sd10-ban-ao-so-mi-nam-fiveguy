@@ -93,7 +93,7 @@
     
                     <div class="d-flex align-items-center pb-2"><div class="hint-text m-0 me-2">Số lượng hiển thị: 
                         </div>
-                        <input id="size" ng-model="size" ng-change="getAllSizes()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
+                        <input id="size" ng-model="num" ng-change="getAllSizes()" value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem;" required/>
                         <ul class="pagination m-0 ms-auto">
                             <li class="page-item" ng-class="{disabled: currentPage === 0}">
                                 <a class="page-link" ng-click="changePage(0)">Trang đầu</a>

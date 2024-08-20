@@ -7,6 +7,7 @@ public interface ProductDetailResponse {
      Long getTotalQuantityBought();
      BigDecimal getOriginalPrice();
      BigDecimal getPromotionalPrice();
-     BigDecimal getTotalAmountBeforeDiscount();
-     BigDecimal getTotalAmountAfterDiscount();
+//     BigDecimal getTotalAmountBeforeDiscount();
+//     BigDecimal getTotalAmountAfterDiscount();
+     BigDecimal getTotalDiscountAmount ();
 }

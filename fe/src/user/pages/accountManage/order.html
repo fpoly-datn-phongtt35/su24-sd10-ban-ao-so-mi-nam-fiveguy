@@ -1,13 +1,213 @@
-<div class="container-fluid bg-light" style="    margin-top: 82px;">
 
 
-    <div style="padding: 46px;" class="row m-4"ng-init="loadBillsForCustomer(0);" >
+<style>
+    /* styles.css */
+
+/* Đặt một số kiểu cơ bản cho toàn bộ trang */
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    line-height: 1.6;
+
+    margin: 0;
+    padding: 0;
+}
+
+/* Container chính */
+.container-fluid {
+    background-color: #f9f9f9;
+}
+
+/* Tiêu đề tài khoản */
+.account-page-title {
+    margin-bottom: 20px;
+}
+
+.account-page-title span {
+    font-size: 28px;
+    font-weight: 700;
+    color: #444;
+}
+
+/* Danh sách điều hướng */
+.nav.items {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav.item {
+    margin-bottom: 10px;
+}
+
+.nav.item a {
+    text-decoration: none;
+    color: #007bff;
+    display: block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background-color: #f1f1f1;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.nav.item a:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Nút đăng xuất */
+.nav.item a.ng-click {
+    color: #dc3545;
+}
+
+.nav.item a.ng-click:hover {
+    background-color: #f8d7da;
+}
+
+/* Hình ảnh đại diện */
+img.rounded-4.fit {
+    display: block;
+    margin: 0 auto;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #007bff;
+}
+
+/* Form cập nhật thông tin */
+.form-edit-account {
+    margin-top: 30px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-edit-account .form-label {
+    font-weight: 500;
+    color: #444;
+}
+
+.form-edit-account .form-control {
+    border-radius: 6px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+}
+
+.form-edit-account .form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Thông báo lỗi */
+.form-edit-account .error-message {
+    font-size: 14px;
+    color: #dc3545;
+    margin-top: -10px;
+}
+
+/* Button */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Đáp ứng (Responsive) */
+@media (max-width: 768px) {
+    .col-lg-3, .col-lg-6, .col-lg-9 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-primary {
+        padding: 10px 20px;
+    }
+
+    img.rounded-4.fit {
+        width: 120px;
+        height: 120px;
+    }
+
+
+  
+}
+
+</style>
+
+<section style="margin-top: 82px;" class="container-fluid" ng-init="getAddressList()">
+
+      
+    <div style="margin-bottom: 40px;padding: 46px 64px;" class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+
+            <div class="account-page-title">
+                <span>Tài khoản của bạn</span>
+            </div>
+
+
+            <div class="collapsible-account-content">
+                <div class="block-title">
+                    <strong class="customer-name">{{userData.fullName}}</strong>
+                </div>
+                <div class="block-content block-collapsible-nav-content">
+     
     
-        <div class="page-title-wrapper title">
+                      
+                    <ul class="nav items">
+                        <li class="nav item current"><a href="#/home/customerProfile"><strong>Thông tin tài khoản</strong></a></li>
+                    </ul>
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/order">Lịch sử mua hàng</a></li>
+                    </ul>
+                    <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-address">Sổ địa chỉ</a></li>
+                    </ul>
+                    <!-- <ul  class="nav items">
+                        <li class="nav item current"><a href="#/home/account-favorite">Sản phẩm yêu thích</a></li>
+                    </ul> -->
+                    <ul  class="nav items"><li class="nav item current"><a href="#/home/rating">Đánh giá</a></li>
+                    </ul>
+                <hr>
+    
+                <ul class="nav items">
+                    <li class="nav item current"><a href=""   ng-click="logout()">Đăng xuất</a></li>
+                </ul>
+                </div>
+            </div>
+      
+        </div>
+        <div class="col-lg-9 col-md-6 col-sm-6 mb-4" init="">
+           <div class="column-main">
+            <div class="page-title-wrapper">
+                <h1 class="page-title">
+                    <span class="base">Lịch sử mua hàng</span>
+                </h1>
+            </div>
+
+<!-- <div class="container-fluid bg-light" style="    margin-top: 82px;"> -->
+
+
+    <!-- <div  class="row m-4"ng-init="loadBillsForCustomer(0);" > -->
+    
+        <!-- <div class="page-title-wrapper title">
             <p >Lịch sử mua hàng
             </p>
         </div>
-    
+     -->
     
             <div class="row">
         <div class="search-bar">
@@ -52,7 +252,13 @@
                                 <td>{{ bill.code }}</td>
                                 <!-- <td>{{ bill.paymentDate | date:'dd/MM/yyyy' }}</td> -->
                                 <td>{{ bill.deliveryDate | date:'dd/MM/yyyy' }}</td>
-                                <td><strong>{{(bill.status) }}</strong></td>
+                                <td><span  >
+                                    <div  class="badge text-wrap bg-info" 
+                                        style="width: 65%; font-size: 14px;" ng-style="{'background-color': s.color}">
+                                        {{getStatusText(bill.status)}}
+                                    </div>
+                                </span></td>
+
                                 <td>{{ bill.totalAmountAfterDiscount + bill.shippingFee | number}} đ</td>
     
                         <td>
@@ -96,5 +302,12 @@
                     
                 </div>
                 
+    <!-- </div> -->
+
+
+    <!-- </div> -->
+
+</div>
+        </div>
     </div>
-    </div>
+</section>

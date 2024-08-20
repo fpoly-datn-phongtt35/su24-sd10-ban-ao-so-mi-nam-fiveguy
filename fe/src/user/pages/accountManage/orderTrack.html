@@ -14,7 +14,7 @@
                     <input type="text" ng-model="searchPhoneNumber" class="form-control" placeholder="Nhập số điện thoại để kiểm tra" aria-label="Số điện thoại" aria-describedby="basic-addon2">
                   
                     <div class="input-group-append" >
-                        <button style="padding: 18px;" ng-click="loadBillsByPhoneNumber(0)" class="btn btn-primary" type="button">Kiểm tra</button>
+                        <button style="padding: 8px;" ng-click="loadBillsByPhoneNumber(0)" class="btn btn-primary" type="button">Kiểm tra</button>
                     </div>
                 </div>
          
@@ -43,12 +43,11 @@
                     <span class="base">Lịch sử mua hàng</span>
                 </h1>
             </div>
-            <div class="search-bar">
+            <!-- <div class="search-bar">
                 <div class="input-group">
-                    <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText2" >
+                    <input class="form-control" id="productSearch" type="text" placeholder="Tìm kiếm sản phẩm..." ng-model="searchText2">
                 </div>
-       
-        </div>
+            </div> -->
 
             <div class="row justify-content-end">
                 <div class="col-auto d-flex align-items-center ">
@@ -79,7 +78,12 @@
                             <td>{{ bill.code }}</td>
                             <!-- <td>{{ bill.createdAt | date:'dd/MM/yyyy' }}</td> -->
                             <td>{{ bill.deliveryDate | date:'dd/MM/yyyy' }}</td>
-                            <td><strong>{{(bill.status) }}</strong></td>
+                            <td><span  >
+                                <div  class="badge text-wrap bg-info" 
+                                    style="width: 65%; font-size: 14px;" ng-style="{'background-color': s.color}">
+                                    {{getStatusText(bill.status)}}
+                                </div>
+                            </span></td>
                             <td>{{ bill.totalAmountAfterDiscount + bill.shippingFee | number}} đ</td>
 
                     <td>

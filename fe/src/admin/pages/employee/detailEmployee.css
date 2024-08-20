@@ -1,0 +1,27 @@
+.de-detailemployee-main {
+    width: 100%;
+    /* display: flex; */
+}
+img {
+    
+    height: auto;
+    object-fit: cover;
+    border: 2px solid black;
+    border-radius: 200px;
+    cursor: pointer;
+}
+.de-fontsize{
+    font-size: 30px;
+}
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

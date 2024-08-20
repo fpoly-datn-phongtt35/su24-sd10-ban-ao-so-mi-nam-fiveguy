@@ -3,10 +3,6 @@ app.config(function ($routeProvider, $locationProvider) {
   $locationProvider.hashPrefix("");
 
   $routeProvider
-    .when("/admin/dashboard", {
-      templateUrl: "pages/dashboard.html",
-      controller: 'dashboardController'
-    })
 
    // <!-- Hiếu -->
    .when("/admin/customer", {
@@ -35,6 +31,11 @@ app.config(function ($routeProvider, $locationProvider) {
       templateUrl: "pages/dashboard.html",
       controller: "DashboardController",
     })
+
+    .when("/admin/detailEmployee", {
+      templateUrl: "pages/employee/detailEmployee.html",
+      controller: "tinh-detail-employee-controller",
+    })
     // end Tinh
     // <!-- Thưởng -->
     .when("/admin/category", {
@@ -58,8 +59,8 @@ app.config(function ($routeProvider, $locationProvider) {
     .when("/admin/color", {
       templateUrl: "pages/product/color.html",
     })
-    .when("/admin/supplier", {
-      templateUrl: "pages/product/supplier.html",
+    .when("/admin/brand", {
+      templateUrl: "pages/product/brand.html",
     })
     .when("/admin/sell-quickly", {
       templateUrl: "pages/sell-quickly.html",
@@ -125,6 +126,14 @@ app.config(function ($routeProvider, $locationProvider) {
           return AuthService.authorize(['ADMIN']);
         }
       }
+    })
+    .when("/admin/rating", {
+      templateUrl : "pages/rating/rating.html",
+      controller : "ratingAdminController"
+    })
+    .when("/admin/point", {
+      templateUrl : "pages/point/point.html",
+      controller : "pointAdminController"
     })
 
     .when("/unauthorized", {
