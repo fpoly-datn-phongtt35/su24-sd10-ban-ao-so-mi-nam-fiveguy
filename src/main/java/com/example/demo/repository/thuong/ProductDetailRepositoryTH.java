@@ -15,5 +15,5 @@ public interface ProductDetailRepositoryTH extends JpaRepository<ProductDetail, 
     @Query(value = "SELECT pd FROM ProductDetail pd JOIN pd.product p JOIN pd.color c WHERE pd.status = 1 AND (p.name LIKE %:keyword% OR c.name LIKE %:keyword% OR p.code LIKE %:keyword% OR CONCAT(p.name, ' ', c.name) LIKE %:keyword%)")
     List<ProductDetail> findAllByStatus(@Param("keyword") String keyword);
 
-
+    ProductDetail findByBarcode(String barcode);
 }

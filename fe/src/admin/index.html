@@ -135,26 +135,24 @@
         </li>
 
 
-        <!-------sidebar--design- close----------->
-        <!-------page-content start----------->
-        <li class="dropdown">
-          <a data-bs-toggle="collapse" href="#product" role="button" aria-expanded="false" aria-controls="product"
-            class="dropdown-toggle">
-            <i class="material-icons">style</i>Quản Lý Sản Phẩm
-          </a>
-          <ul class="collapse list-unstyled menu" id="product">
-            <li><a href="#/admin/product">Sản Phẩm</a></li>
-            <li>
-              <a href="#/admin/category">Nhóm Sản Phẩm</a>
-            </li>
-            <li><a href="#/admin/collar">Cổ Áo</a></li>
-            <li><a href="#/admin/wrist">Cổ Tay</a></li>
-            <li><a href="#/admin/material">Chất Liệu</a></li>
-            <li><a href="#/admin/size">Size</a></li>
-            <li><a href="#/admin/color">Màu sắc</a></li>
-            <li><a href="#/admin/supplier">Nhà cung cấp</a></li>
-          </ul>
-        </li>
+				<li class="dropdown">
+					<a data-bs-toggle="collapse" href="#product" role="button" aria-expanded="false" aria-controls="product"
+						class="dropdown-toggle">
+						<i class="material-icons">style</i>Quản Lý Sản Phẩm
+					</a>
+					<ul class="collapse list-unstyled menu" id="product">
+						<li><a href="#/admin/product">Sản Phẩm</a></li>
+						<li>
+							<a href="#/admin/category">Nhóm Sản Phẩm</a>
+						</li>
+						<li><a href="#/admin/collar">Cổ Áo</a></li>
+						<li><a href="#/admin/wrist">Cổ Tay</a></li>
+						<li><a href="#/admin/material">Chất Liệu</a></li>
+						<li><a href="#/admin/size">Size</a></li>
+						<li><a href="#/admin/color">Màu sắc</a></li>
+						<li><a href="#/admin/brand">Thương hiệu</a></li>
+					</ul>
+				</li>
 
         <li class="dropdown">
           <a data-bs-toggle="collapse" href="#voucher" role="button" aria-expanded="false" aria-controls="voucher"
@@ -384,7 +382,12 @@
             'token': '499b0760-b3cf-11ee-a2c1-ca2feb4b63fa'
         	}
 		}
+		let MY_BANK = {
+			BANK_ID: "MB",
+			ACCOUNT_NO: "0346366482"
+		}
 	</script>
+	<script src="/src/admin/controller/qrcode.js"></script>
 	<script src="/src/admin/controller/SellQuicklyController.js"></script>
 	<script src="/src/admin/controller/ProductController.js"></script>
 	<script src="/src/admin/controller/CategoryController.js"></script>
@@ -393,7 +396,7 @@
 	<script src="/src/admin/controller/MaterialController.js"></script>
 	<script src="/src/admin/controller/SizeController.js"></script>
 	<script src="/src/admin/controller/ColorController.js"></script>
-	<script src="/src/admin/controller/SupplierController.js"></script>
+	<script src="/src/admin/controller/BrandController.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.17/angular-filter.min.js"></script>
 
 

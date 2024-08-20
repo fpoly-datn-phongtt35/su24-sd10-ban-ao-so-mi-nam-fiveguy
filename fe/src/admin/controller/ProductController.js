@@ -62,7 +62,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
     $scope.createBarcode = () => {
         var val1 = Math.floor(100000 + Math.random() * 999999);
         var val2 = Math.floor(10000 + Math.random() * 99999);
-        return '7+'+val1+'+'+val2;
+        return '7 '+val1+' '+val2;
     }
     
 
@@ -750,7 +750,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
             $('#loadingStatus').css('display', 'none');
             $('#updateStatusModel').modal('hide');
             $scope.getAllProducts();
-            $scope.product = {};
+            $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
             toastr["success"]("Cập nhật trạng thái " + response.data.name + " thành công");
         }).catch(error => {
             $('#updateStatus').css('display', 'none');
@@ -982,7 +982,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
             $('#loadingDelete').css('display', 'none');
             $('#deleteProductModel').modal('hide');
             $scope.getAllProducts();
-            $scope.product = {};
+            $scope.product = {collar: {}, wrist: {}, material: {}, category: {}, brand: {}, images: [], productDetails: [], status: 1};
             toastr["success"]("Ngừng kinh doanh " + response.data.name + " thành công");
         }).catch(error => {
             $('#deleteProduct').css('display', 'inline-block');

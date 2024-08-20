@@ -55,6 +55,7 @@ public class CollarServiceTHImpl implements CollarServiceTH {
         Collar collar = new Collar();
         collar.setName(request.getName());
         collar.setCreatedAt(new Date());
+        collar.setStatus(1);
         return repository.save(collar);
     }
 

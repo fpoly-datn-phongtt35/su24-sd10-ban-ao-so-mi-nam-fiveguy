@@ -2,6 +2,7 @@ package com.example.demo.model.response.thuong;
 
 import com.example.demo.entity.Address;
 import com.example.demo.entity.Bill;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,9 +14,11 @@ public class CustomerResponseTH {
 
     private String code;
 
+    @NotEmpty(message = "Tên khách hàng không được để trống")
     private String fullName;
 
     private String avatar;
+
 
     private Date birthDate;
 

@@ -445,7 +445,7 @@
                                                         </div>
                                                 </div>
                                             </div>
-                                            <div ng-repeat="color in colorSelect" class="row mt-2 p-0">
+                                            <div ng-repeat="color in colorSelect" ng-if="color.productDetails.length > 0" class="row mt-2 p-0">
                                                 <div class="table-title position-relative d-flex align-items-center">
                                                     <input type="color" class="form-control form-control-color" ng-value="color.colorCode" disabled />
                                                     <h6 class="m-0 ms-3">Danh sách sản phẩm {{color.name}}

@@ -7,6 +7,10 @@ import com.example.demo.service.thuong.CustomerServiceTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class CustomerSerivceTHImpl implements CustomerServiceTH {
 
@@ -32,8 +36,47 @@ public class CustomerSerivceTHImpl implements CustomerServiceTH {
     }
 
     @Override
-    public CustomerResponseTH create(Customer customerRequest) {
-        customerRequest.setStatus(1);
-        return setBillResponse(customerRepository.save(customerRequest));
+    public CustomerResponseTH create(CustomerResponseTH customerRequest, String name) {
+        Customer customer = new Customer();
+        customer.setCode("KH" + Integer.parseInt(Long.toString(System.currentTimeMillis()).substring(7)));
+        customer.setFullName(customerRequest.getFullName());
+        customer.setAvatar(customerRequest.getAvatar());
+        customer.setBirthDate(customerRequest.getBirthDate());
+        customer.setGender(customerRequest.getGender());
+        customer.setCreatedAt(new Date());
+        customer.setCreatedBy(name);
+        customer.setStatus(1);
+        customerRequest.getAddresses().forEach(d -> d.setCustomer(customer));
+        customer.setAddresses(customerRequest.getAddresses());
+        return setBillResponse(customerRepository.save(customer));
+    }
+
+    @Override
+    public CustomerResponseTH update(CustomerResponseTH customerRequest, String name) {
+        Optional<Customer> customerOptional = customerRepository.findById(customerRequest.getId());
+        if (customerOptional.isPresent()) {
+            Customer customer = customerOptional.get();
+            customer.setFullName(customerRequest.getFullName());
+            customer.setAvatar(customerRequest.getAvatar());
+            customer.setBirthDate(customerRequest.getBirthDate());
+            customer.setGender(customerRequest.getGender());
+            customer.setUpdatedAt(new Date());
+            customer.setUpdatedBy(name);
+            customer.setStatus(1);
+            customer.setAddresses(customerRequest.getAddresses());
+            return setBillResponse(customerRepository.save(customer));
+        }
+        return null;
+    }
+
+    @Override
+    public List<Customer> searchCustomer(String keyword) {
+        return customerRepository.findAllByStatus(keyword);
+    }
+
+    @Override
+    public CustomerResponseTH getOne(Long id) {
+        Customer customer = customerRepository.findById(id).orElse(null);
+        return  setBillResponse(customer);
     }
 }

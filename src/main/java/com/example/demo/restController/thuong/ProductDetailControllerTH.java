@@ -28,4 +28,9 @@ public class ProductDetailControllerTH {
     public ResponseEntity<?> getOneProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productDetailService.findById(id));
     }
+
+    @GetMapping("/barcode")
+    public ResponseEntity<?> getOneByBarCode(@RequestParam(required = false) String barcode) {
+        return ResponseEntity.ok(productDetailService.findByBarcode(barcode));
+    }
 }
