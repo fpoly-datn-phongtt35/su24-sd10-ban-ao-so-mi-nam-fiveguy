@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,9 +36,19 @@ public class BillServiceTHImpl implements BillServiceTH {
     @Autowired
     private PaymentStatusRepositoryTH paymentStatusRepository;
 
+    @Autowired
+    private VoucherRepositoryTH voucherRepository;
+
+
+
+
+
     @Override
     public List<BillResponseTH> findAllByStatusAndTypeBill(Integer status, Integer typeBill) {
-        return billRepository.findAllByStatusAndTypeBill(status, typeBill).stream().map(b -> {
+        // If you want to fetch for both typeBill = 1 and typeBill = 2
+        List<Integer> typeBills = Arrays.asList(1, 2);
+
+        return billRepository.findAllByStatusAndTypeBill(status, typeBills).stream().map(b -> {
             b.setBillDetail(billDetailsRepository.findAllByBill_Id(b.getId()));
             return b;
         }).collect(Collectors.toList());
@@ -144,32 +152,41 @@ public class BillServiceTHImpl implements BillServiceTH {
     public BillResponseTH addProductCart(BillResponseTH billRequest, Long id) {
         Optional<Bill> billOptional = billRepository.findById(billRequest.getId());
         if (billOptional.isEmpty()) {
-           return null;
+            return null; // Bill không tồn tại
         }
+
         Bill bill = billOptional.get();
 
-        BillDetail bd = billDetailsRepository.findByBill_Id(bill.getId());
+        // Tìm BillDetail theo Bill ID và ProductDetail ID
+        Optional<BillDetail> billDetailOptional = billDetailsRepository.findByBill_IdAndProductDetail_Id(bill.getId(), id);
 
-        if (bill.getBillDetail() != null && bd != null) {
-            bd.setBill(bill);
-            bd.setProductDetail(checkProductDetail(id));
-            bd.setQuantity(bd.getQuantity() + 1);
-            bd.setPrice(bd.getProductDetail().getProduct().getPrice());
-            Integer promotinalPrice = productRepository.findPromotionalPriceByProductId(bd.getProductDetail().getProduct().getId());
-            bd.setPromotionalPrice(promotinalPrice != null ? BigDecimal.valueOf(promotinalPrice) : bd.getProductDetail().getProduct().getPrice());
-            bill.getBillDetail().add(bd);
+        BillDetail bd;
+        if (billDetailOptional.isPresent()) {
+            // Nếu BillDetail đã tồn tại, lấy nó ra
+            bd = billDetailOptional.get();
+            bd.setQuantity(bd.getQuantity() + 1); // Cộng số lượng
         } else {
-            BillDetail bd2 = new BillDetail();
-            bd2.setBill(bill);
-            bd2.setProductDetail(checkProductDetail(id));
-            bd2.setQuantity(1);
-            bd2.setPrice(bd2.getProductDetail().getProduct().getPrice());
-            Integer promotinalPrice2 = productRepository.findPromotionalPriceByProductId(bd2.getProductDetail().getProduct().getId());
-            bd2.setPromotionalPrice(promotinalPrice2 != null ? BigDecimal.valueOf(promotinalPrice2) : bd2.getProductDetail().getProduct().getPrice());
-            bill.getBillDetail().add(bd2);
+            // Nếu BillDetail chưa tồn tại, tạo mới
+            bd = new BillDetail();
+            bd.setBill(bill);
+            bd.setProductDetail(checkProductDetail(id)); // Kiểm tra và lấy ProductDetail
+            bd.setQuantity(1); // Khởi tạo số lượng là 1
         }
-        total(bill);
-        return setBillResponse(billRepository.save(bill));
+
+        // Cập nhật các thông tin còn lại của BillDetail
+        bd.setPrice(bd.getProductDetail().getProduct().getPrice());
+        Integer promotionalPrice = productRepository.findPromotionalPriceByProductId(bd.getProductDetail().getProduct().getId());
+        bd.setPromotionalPrice(promotionalPrice != null ? BigDecimal.valueOf(promotionalPrice) : bd.getProductDetail().getProduct().getPrice());
+
+        // Thêm hoặc cập nhật BillDetail vào danh sách BillDetail của Bill
+        if (bill.getBillDetail() == null) {
+            bill.setBillDetail(new ArrayList<>());
+        }
+        bill.getBillDetail().removeIf(detail -> detail.getProductDetail().getId().equals(bd.getProductDetail().getId()));
+        bill.getBillDetail().add(bd);
+
+        total(bill); // Cập nhật tổng hóa đơn
+        return setBillResponse(billRepository.save(bill)); // Lưu Bill và trả về response
     }
 
     @Override
@@ -180,7 +197,11 @@ public class BillServiceTHImpl implements BillServiceTH {
         }
         Bill bill = billOptional.get();
 
-        BillDetail bd = billDetailsRepository.findByBill_Id(bill.getId());
+        Optional<BillDetail> billDetail = billDetailsRepository.findByBill_IdAndProductDetail_Id(bill.getId(),id);
+        if (!billDetail.isPresent()){
+            throw new RuntimeException("Bill not found with id " + id);
+        }
+        BillDetail bd = billDetail.get();
 
         if (bill.getBillDetail() != null && bd != null) {
             bd.setProductDetail(checkProductDetailRemove(id));
@@ -208,7 +229,11 @@ public class BillServiceTHImpl implements BillServiceTH {
         }
         Bill bill = billOptional.get();
 
-        BillDetail bd = billDetailsRepository.findByBill_Id(bill.getId());
+        Optional<BillDetail> billDetail = billDetailsRepository.findByBill_IdAndProductDetail_Id(bill.getId(),id);
+        if (!billDetail.isPresent()){
+            throw new RuntimeException("Bill not found with id " + id);
+        }
+        BillDetail bd = billDetail.get();
         if (bd.getQuantity() == updateQty) {
             return billRequest;
         }
@@ -233,7 +258,11 @@ public class BillServiceTHImpl implements BillServiceTH {
         }
         Bill bill = billOptional.get();
 
-        BillDetail bd = billDetailsRepository.findByBill_Id(bill.getId());
+        Optional<BillDetail> billDetail = billDetailsRepository.findByBill_IdAndProductDetail_Id(bill.getId(),id);
+        if (!billDetail.isPresent()){
+            throw new RuntimeException("Bill not found with id " + id);
+        }
+        BillDetail bd = billDetail.get();
 
         checkProductDetailDelete(id, bd);
         billDetailsRepository.delete(bd);
@@ -297,57 +326,192 @@ public class BillServiceTHImpl implements BillServiceTH {
 
     @Override
     public BillResponseTH paymentBill(Employee employee, BillResponseTH billRequest) {
+        // Fetch the Bill entity using the provided ID
         Optional<Bill> billOptional = billRepository.findById(billRequest.getId());
         if (billOptional.isEmpty()) {
-            return null;
+            return null; // Return null if the bill is not found
         }
+
         Bill bill = billOptional.get();
+        // Set the status based on the type of bill
+        int newStatus = (billRequest.getTypeBill() == 1) ? 21 : (billRequest.getTypeBill() == 2) ? 1 : bill.getStatus();
+        bill.setStatus(newStatus);
+
+// Update voucher if provided
+        if (billRequest.getVoucher() != null) {
+            Optional<Voucher> newVoucherOptional = voucherRepository.findById(billRequest.getVoucher().getId());
+            if (!newVoucherOptional.isPresent()) {
+                throw new RuntimeException("Voucher not found");
+            }
+            Voucher newVoucher = newVoucherOptional.get();
+            bill.setVoucher(newVoucher);
+        } else {
+            bill.setVoucher(null); // Optionally handle the case where no voucher is provided by clearing the existing voucher
+        }
+
+
+        // Set other fields of the Bill entity
         bill.setCustomer(billRequest.getCustomer());
         bill.setEmployee(employee);
-        Optional<PaymentMethod> paymentMethodOptional = paymentMethodRepository.findById(billRequest.getPaymentMethod().getId());
-        if (paymentMethodOptional.isEmpty()) {
-            return null;
-        }
-        bill.setStatus(21);
-        bill.setPaidAmount(billRequest.getTotalAmountAfterDiscount());
-        bill.setPaidShippingFee(billRequest.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
-        bill.setPaymentMethod(paymentMethodOptional.get());
         bill.setTotalAmountAfterDiscount(billRequest.getTotalAmountAfterDiscount());
-        total(bill);
-        Bill bill2 = billRepository.save(bill);
 
-        if (bill2.getPaymentMethod().getName().equals("Tiền mặt")) {
-            PaymentStatus paymentStatus = new PaymentStatus();
-            paymentStatus.setBill(bill2);
-            paymentStatus.setCustomerPaymentStatus(2);  
-            paymentStatus.setPaymentMethod(1);
-            paymentStatus.setPaymentType(1);
-            paymentStatus.setPaymentAmount(bill2.getTotalAmountAfterDiscount().add(bill2.getShippingFee()));
-            paymentStatusRepository.save(paymentStatus);
+        // Handle payment amounts based on the payment method
+        if (bill.getPaymentMethod().getCode() == 10) {
+            // Payment method code 10: Set paid amounts to zero
+            bill.setPaidAmount(BigDecimal.valueOf(0));
+            bill.setPaidShippingFee(BigDecimal.valueOf(0));
+        } else if (bill.getPaymentMethod().getCode() == 13 || bill.getPaymentMethod().getCode() == 14) {
+            // Payment method codes 13 or 14: Calculate paid amounts based on total amount after discount and shipping fee
+            bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(
+                    bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0)
+            ));
+            bill.setPaidShippingFee(bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
         } else {
+            // Other payment methods: Set paid amounts based on total amount after discount and shipping fee
+            bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(
+                    bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0)
+            ));
+            bill.setPaidShippingFee(bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
+        }
+
+        bill.setPaymentMethod(billRequest.getPaymentMethod());
+
+        // Save the updated Bill entity
+        Bill savedBill = billRepository.save(bill);
+
+        // Handle payment status if the payment method is provided and valid
+        if (savedBill.getPaymentMethod().getCode() != 10) {
             PaymentStatus paymentStatus = new PaymentStatus();
-            paymentStatus.setBill(bill2);
+            String paymentMethodName = savedBill.getPaymentMethod().getName();
+
+            // Set the payment method type
+            paymentStatus.setPaymentMethod(paymentMethodName.equals("Tiền mặt") ? 1 : paymentMethodName.equals("Chuyển khoản") ? 2 : null);
+            paymentStatus.setBill(savedBill);
             paymentStatus.setCustomerPaymentStatus(2);
-            paymentStatus.setPaymentMethod(2);
             paymentStatus.setPaymentType(1);
-            paymentStatus.setPaymentAmount(bill2.getTotalAmountAfterDiscount().add(bill2.getShippingFee()));
+
+            paymentStatus.setPaymentAmount(savedBill.getTotalAmountAfterDiscount().add(
+                    savedBill.getShippingFee() != null ? savedBill.getShippingFee() : BigDecimal.valueOf(0)
+            ));
+
             paymentStatusRepository.save(paymentStatus);
         }
 
+        // Create and save BillHistory entities
+        BillHistory billHistory1 = createBillHistory(savedBill, employee);
+        BillHistory billHistory2 = createBillHistory(savedBill, employee, newStatus);
+
+        billHistoryRepository.save(billHistory1);
+        billHistoryRepository.save(billHistory2);
+
+        // Return the response
+        return setBillResponse(savedBill);
+    }
+
+
+    private BillHistory createBillHistory(Bill bill, Employee employee) {
+        return createBillHistory(bill, employee, 20);
+    }
+
+    private BillHistory createBillHistory(Bill bill, Employee employee, int status) {
         BillHistory billHistory = new BillHistory();
-        billHistory.setBill(bill2);
-        billHistory.setStatus(20);
+        billHistory.setBill(bill);
         billHistory.setType(1);
+        billHistory.setStatus(status);
         billHistory.setCreatedAt(new Date());
         billHistory.setCreatedBy(employee.getFullName());
-        BillHistory billHistory2 = new BillHistory();
-        billHistory2.setBill(bill2);
-        billHistory2.setStatus(21);
-        billHistory2.setType(1);
-        billHistory2.setCreatedAt(new Date());
-        billHistory2.setCreatedBy(employee.getFullName());
-        billHistoryRepository.save(billHistory);
-        billHistoryRepository.save(billHistory2);
-        return setBillResponse(bill2);
+        return billHistory;
+    }
+
+
+    @Override
+    public Bill updateBill(Long id, String address, String addressId, String reciverName,  String phoneNumber) {
+        Optional<Bill> optionalBill = billRepository.findById(id);
+        if (optionalBill.isPresent()) {
+            Bill bill = optionalBill.get();
+            bill.setAddress(address);
+            bill.setAddressId(addressId);
+            bill.setReciverName(reciverName);
+            bill.setPhoneNumber(phoneNumber);
+
+            return billRepository.save(bill); // Save the updated bill
+        } else {
+            throw new RuntimeException("Bill not found with id " + id);
+        }
+    }
+
+    @Override
+    public Bill updateShippingFee(Long id, BigDecimal shippingFee) {
+        Bill bill = billRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
+        bill.setShippingFee(shippingFee);
+
+        return billRepository.save(bill);
+    }
+
+    @Override
+    public Bill updateTypeBill(Bill bill) {
+        return billRepository.save(bill);
+    }
+
+    @Override
+    public Bill updatePaidAmount(Bill bill) {
+        return billRepository.save(bill);
+    }
+
+    @Override
+    public Bill updateVoucher(Long billId, Long newVoucherId) {
+        // Retrieve the Bill entity
+        Optional<Bill> billOptional = billRepository.findById(billId);
+        if (!billOptional.isPresent()) {
+            throw new RuntimeException("Bill not found");
+        }
+        Bill bill = billOptional.get();
+
+        // Retrieve the new Voucher entity
+        Optional<Voucher> newVoucherOptional = voucherRepository.findById(newVoucherId);
+        if (!newVoucherOptional.isPresent()) {
+            throw new RuntimeException("Voucher not found");
+        }
+        Voucher newVoucher = newVoucherOptional.get();
+        // Check if the bill already has a voucher
+        Voucher currentVoucher = bill.getVoucher();
+
+        if (currentVoucher != null) {
+            // Add back the quantity to the current voucher
+            currentVoucher.setQuantity(currentVoucher.getQuantity() + 1);
+            voucherRepository.save(currentVoucher);
+        }
+
+        // Subtract the quantity from the new voucher
+        newVoucher.setQuantity(newVoucher.getQuantity() - 1);
+        voucherRepository.save(newVoucher);
+
+        // Set the new voucher to the bill
+        bill.setVoucher(newVoucher);
+        return billRepository.save(bill);
+    }
+
+    @Override
+    public Bill removeVoucherFromBill(Long billId) {
+        Optional<Bill> billOptional = billRepository.findById(billId);
+        if (billOptional.isEmpty()) {
+            throw new RuntimeException("Bill not found with id " + billId);
+        }
+        Bill bill = billOptional.get();
+
+        // Nếu bill đã có voucher, tăng số lượng lại cho voucher cũ
+        if (bill.getVoucher() != null) {
+            Voucher voucher = bill.getVoucher();
+            voucher.setQuantity(voucher.getQuantity() + 1);
+            voucherRepository.save(voucher);
+        }
+
+        // Xóa voucher khỏi bill
+        bill.setVoucher(null);
+
+
+        // Lưu lại thay đổi
+        return billRepository.save(bill);
     }
 }

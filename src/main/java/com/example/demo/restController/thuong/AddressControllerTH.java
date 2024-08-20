@@ -30,4 +30,10 @@ public class AddressControllerTH {
     public ResponseEntity<?> deleteAddress(@PathVariable("id") Long id) {
         return new ResponseEntity<>(addressService.deleteAddress(id), HttpStatus.OK);
     }
+
+
+    @GetMapping("/default/{customerId}")
+    public Address getDefaultAddress(@PathVariable Long customerId) {
+        return   addressService.getDefaultAddressByCustomerId(customerId);
+    }
 }

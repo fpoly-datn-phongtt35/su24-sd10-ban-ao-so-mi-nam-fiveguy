@@ -4,6 +4,7 @@ import com.example.demo.entity.Bill;
 import com.example.demo.entity.Employee;
 import com.example.demo.model.response.thuong.BillResponseTH;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface BillServiceTH {
@@ -17,4 +18,12 @@ public interface BillServiceTH {
     BillResponseTH create(Employee employee);
     BillResponseTH update(Employee employee, BillResponseTH bill);
     BillResponseTH paymentBill(Employee employee, BillResponseTH bill);
+
+
+    Bill updateBill(Long id, String address, String addressId, String reciverName,  String phoneNumbe);
+    Bill updateShippingFee(Long id, BigDecimal shippingFee);
+    Bill updateTypeBill(Bill bill);
+    Bill updatePaidAmount(Bill bill);
+    Bill updateVoucher(Long billId, Long newVoucherId);
+    Bill removeVoucherFromBill(Long billId);
 }

@@ -51,4 +51,13 @@ public class AddressServiceTHImpl implements AddressServiceTH {
         repository.delete(address);
         return address;
     }
+
+    @Override
+    public Address getDefaultAddressByCustomerId(Long customerId) {
+        Optional<Address> address =repository.findByCustomerIdAndDefaultAddressTrue(customerId);
+        if (address.isPresent()){
+            return address.get();
+        }
+        return null;
+    }
 }

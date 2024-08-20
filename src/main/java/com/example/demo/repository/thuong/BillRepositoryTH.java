@@ -11,9 +11,15 @@ import java.util.List;
 
 @Repository
 public interface BillRepositoryTH extends JpaRepository<Bill, Long> {
-    @Query(value = "SELECT NEW com.example.demo.model.response.thuong.BillResponseTH(b.id, b.code, b.reciverName, b.deliveryDate, b.shippingFee, b.addressId, b.address, b.phoneNumber, b.totalAmount, b.totalAmountAfterDiscount, b.paidAmount, b.paidShippingFee, b.createdAt, b.customer, b.employee, b.paymentMethod, b.voucher, b.typeBill, b.note, b.status) FROM Bill b LEFT JOIN b.customer LEFT JOIN b.employee LEFT JOIN b.paymentMethod LEFT JOIN b.voucher WHERE b.status = :status AND b.typeBill = :typeBill")
-    List<BillResponseTH> findAllByStatusAndTypeBill(@Param("status") Integer status, @Param("typeBill") Integer typeBill);
+    @Query(value = "SELECT NEW com.example.demo.model.response.thuong.BillResponseTH(b.id, b.code, b.reciverName, b.deliveryDate, b.shippingFee, b.addressId, b.address, b.phoneNumber, b.totalAmount, b.totalAmountAfterDiscount, b.paidAmount, b.paidShippingFee, b.createdAt, b.customer, b.employee, b.paymentMethod, b.voucher, b.typeBill, b.note, b.status) " +
+            "FROM Bill b " +
+            "LEFT JOIN b.customer " +
+            "LEFT JOIN b.employee " +
+            "LEFT JOIN b.paymentMethod " +
+            "LEFT JOIN b.voucher " +
+            "WHERE b.status = :status AND b.typeBill IN (:typeBills)")
+    List<BillResponseTH> findAllByStatusAndTypeBill(@Param("status") Integer status, @Param("typeBills") List<Integer> typeBills);
 
-    @Query("SELECT COUNT(b) FROM Bill b WHERE b.customer.id = :customerId AND b.voucher.id = :voucherId AND b.status NOT IN (5, 6)")
+    @Query("SELECT COUNT(b) FROM Bill b WHERE b.customer.id = :customerId AND b.voucher.id = :voucherId AND b.status NOT IN (5, 6,1)")
     Integer countVoucherUsageByCustomer(@Param("customerId") Long customerId, @Param("voucherId") Long voucherId);
 }

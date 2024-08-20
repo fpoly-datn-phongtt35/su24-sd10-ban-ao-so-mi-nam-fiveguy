@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PaymentMethodServiceTHImpl implements PaymentMethodServiceTH {
@@ -16,6 +17,12 @@ public class PaymentMethodServiceTHImpl implements PaymentMethodServiceTH {
 
     @Override
     public List<PaymentMethod> listPaymentMethod() {
-        return paymentMethodRepository.listPaymentMethod();
+        Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findByCode(10);
+        List<PaymentMethod> paymentMethods = paymentMethodRepository.listPaymentMethod();
+        if (paymentMethod.isPresent()){
+            paymentMethods.add(paymentMethod.get());
+        }
+
+        return paymentMethods;
     }
 }

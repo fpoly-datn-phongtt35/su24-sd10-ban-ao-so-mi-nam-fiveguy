@@ -8,4 +8,7 @@ public interface AddressServiceTH {
     List<Address> saveAll(List<Address> list);
     Address update(Address address);
     Address deleteAddress (Long id);
+
+    Address getDefaultAddressByCustomerId(Long customerId);
+
 }
