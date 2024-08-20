@@ -309,9 +309,11 @@ public class BillServiceTHImpl implements BillServiceTH {
             return null;
         }
         bill.setStatus(21);
-        bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
-        bill.setPaidShippingFee(bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
+        bill.setPaidAmount(billRequest.getTotalAmountAfterDiscount());
+        bill.setPaidShippingFee(billRequest.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
         bill.setPaymentMethod(paymentMethodOptional.get());
+        bill.setTotalAmountAfterDiscount(billRequest.getTotalAmountAfterDiscount());
+        total(bill);
         Bill bill2 = billRepository.save(bill);
 
         if (bill2.getPaymentMethod().getName().equals("Tiền mặt")) {
