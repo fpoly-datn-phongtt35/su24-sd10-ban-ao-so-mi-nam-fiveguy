@@ -246,7 +246,11 @@ public class NBillServiceImpl implements NBillService {
         BillHistory newHistory = new BillHistory();
         newHistory.setBill(bill);
         newHistory.setStatus(bill.getStatus());
-        newHistory.setDescription("Thay đổi mã khuyến mãi " + voucher.getCode());
+        if(voucher != null){
+            newHistory.setDescription("Thay đổi mã giảm giá " + voucher.getCode());
+        }else{
+            newHistory.setDescription("Bỏ mã giảm giá");
+        }
         newHistory.setCreatedBy(createBy);
         newHistory.setType(2);
         newHistory.setReason(0);
@@ -808,7 +812,7 @@ public class NBillServiceImpl implements NBillService {
         auditLogs.setActionType("Cập nhật đơn hàng");
         auditLogs.setDetailedAction("Đã cập nhật đơn hàng thành: " + detailedAction);
         auditLogs.setTime(new Date());
-//        auditLogs.setStatus(1);
+        auditLogs.setRole(2L);
         return auditLogRepositoryTinh.save(auditLogs);
     }
 }

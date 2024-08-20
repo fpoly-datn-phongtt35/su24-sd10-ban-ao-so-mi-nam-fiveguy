@@ -1271,61 +1271,62 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
 
     // #region IN HÓA ĐƠN
-
-    $scope.exportBill = function () {
-        let data = angular.copy($scope.billResponse)
-        $scope.printBill(data)
-    }
-
-    $scope.printBill = resp => {
+    $scope.exportBill = function() {
+        let data = angular.copy($scope.billResponse);
+        $scope.printBill(data);
+      };
+      
+      $scope.printBill = (resp) => {
         const invoiceHTML = generateInvoiceHTML(resp);
         const invoiceWindow = window.open('', '_blank');
         invoiceWindow.document.write(invoiceHTML);
         invoiceWindow.document.close();
-    }
-
-    const formatCurrency = price => {
+      };
+      
+      const formatCurrency = (price) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    }
-
-    const formatDate = dateString => {
+      };
+      
+      const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
         return new Date(dateString).toLocaleString('vi-VN', options);
-    };
-
-    function generateInvoiceHTML(resp) {
-        const listBillDT = Object.values($scope.billDetails).map(billDT => `
-            <tr>
-                <td class="desc">${billDT.productDetail.product.name} ${billDT.productDetail.color.name} ${billDT.productDetail.size.name}</td>
-                <td style="width: 16.67%; text-align: right;">
-                    ${billDT.promotionalPrice < billDT.price ? `
-                        <p style="margin: 0;">
-                            <span>${formatCurrency(billDT.promotionalPrice)}</span>
-                            <br>
-                            <span style="text-decoration: line-through; color: red; font-size: 0.9em;">${formatCurrency(billDT.price)}</span>
-                        </p>
-                    ` : `
-                        <p style="margin: 0;">${formatCurrency(billDT.price)}</p>
-                    `}
-                </td>
-                <td class="qty">${billDT.quantity}</td>
-                <td class="total">${formatCurrency(billDT.promotionalPrice * billDT.quantity)}</td>
-            </tr>
+      };
+      
+      function generateInvoiceHTML(resp) {
+        const listBillDT = Object.values($scope.billDetails).map((billDT) => `
+          <tr>
+            <td class="desc" style="font-size: 1.1em;">${billDT.productDetail.product.name} <div>Color: ${billDT.productDetail.color.name} - Size: ${billDT.productDetail.size.name}</div></td>
+            <td style="width: 16.67%; text-align: right; font-size: 1.1em;">
+              ${billDT.promotionalPrice < billDT.price ? `
+                <p style="margin: 0;">
+                  <span>${formatCurrency(billDT.promotionalPrice)}</span>
+                  <br>
+                  <span style="text-decoration: line-through; color: red; font-size: 0.9em;">${formatCurrency(billDT.price)}</span>
+                </p>
+              ` : `
+                <p style="margin: 0;">${formatCurrency(billDT.price)}</p>
+              `}
+            </td>
+            <td class="qty" style="font-size: 1.1em;">${billDT.quantity}</td>
+            <td class="total" style="font-size: 1.1em;">${formatCurrency(billDT.promotionalPrice * billDT.quantity)}</td>
+          </tr>
         `).join('');
-        const htmlContent = `<!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            .clearfix:after {
+      
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              .clearfix:after {
                 content: "";
                 display: table;
                 clear: both;
-            }
-            a {
+              }
+              a {
                 color: #5D6975;
                 text-decoration: underline;
-            }
-            body {
+              }
+              body {
                 position: relative;
                 width: 21cm;  
                 height: 29.7cm; 
@@ -1333,20 +1334,20 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 color: #001028;
                 background: #FFFFFF; 
                 font-family: Arial, sans-serif; 
-                font-size: 12px; 
-            }
-            header {
+                font-size: 14px; 
+              }
+              header {
                 padding: 10px 0;
                 margin-bottom: 30px;
-            }
-            #logo {
+              }
+              #logo {
                 text-align: center;
                 margin-bottom: 10px;
-            }
-            #logo img {
+              }
+              #logo img {
                 width: 90px;
-            }
-            h1 {
+              }
+              h1 {
                 border-top: 1px solid  #5D6975;
                 border-bottom: 1px solid  #5D6975;
                 color: #5D6975;
@@ -1356,140 +1357,175 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 text-align: center;
                 margin: 0 0 20px 0;
                 background: #F5F5F5;
-            }
-            #project {
+              }
+              #project {
                 float: left;
-            }
-            #project span {
+              }
+              #project span {
                 color: #5D6975;
                 text-align: right;
                 width: 52px;
                 margin-right: 10px;
                 display: inline-block;
                 font-size: 0.8em;
-            }
-            #company {
+              }
+              #company {
                 float: right;
                 text-align: right;
-            }
-            #project div,
-            #company div {
+              }
+              #company div {
                 white-space: nowrap;        
-            }
-            table {
+              }
+              table {
                 width: 100%;
                 border-collapse: collapse;
                 border-spacing: 0;
                 margin-bottom: 20px;
-            }
-            table tr:nth-child(2n-1) td {
+                margin-top: -35px;
+              }
+              table tr:nth-child(2n-1) td {
                 background: #F5F5F5;
-            }
-            table th,
-            table td {
+              }
+              table th,
+              table td {
                 text-align: center;
-            }
-            table th {
+              }
+              table th {
                 padding: 5px 20px;
                 color: #5D6975;
                 border-bottom: 1px solid #C1CED9;
                 white-space: nowrap;        
                 font-weight: normal;
-            }
-            table .service,
-            table .desc {
+              }
+              table .service,
+              table .desc {
                 text-align: left;
-            }
-            table td {
+              }
+              table td {
                 padding: 20px;
                 text-align: right;
-            }
-            table td.service,
-            table td.desc {
+              }
+              table td.service,
+              table td.desc {
                 vertical-align: top;
-            }
-            table td.unit,
-            table td.qty,
-            table td.total {
+              }
+              table td.unit,
+              table td.qty,
+              table td.total {
                 font-size: 1.2em;
-            }
-            table td.grand {
+              }
+              table td.grand {
                 border-top: 1px solid #5D6975;;
-            }
-            .footer {
+              }
+              .footer {
                 color: #5D6975;
                 width: 100%;
                 height: 30px;
                 border-top: 1px solid #C1CED9;
                 padding: 8px 0;
                 text-align: center;
-            }
-            .font-b {
+              }
+              .font-b {
                 font-weight: bold;
+              }
+              /* Flexbox để chia hai phần */
+            .container {
+                display: flex;
+                justify-content: space-between;
             }
-        </style>    
-    </head>
-    <body>
-        <header class="clearfix">
+
+            #company, #project {
+                display: flex;
+                flex-direction: column; /* Sắp xếp các phần tử theo cột */
+                font-size: 16px;
+            }
+
+            #company div, #project div {
+                margin-bottom: 10px; /* Khoảng cách giữa các hàng */
+            }
+
+            #project div {
+                display: flex;
+            }
+
+            #project span {
+                display: inline-block;
+                width: 100px; /* Đảm bảo các nhãn có kích thước đồng nhất */
+                text-align: left;
+                font-size: 16px;
+                font-weight: bold; /* Làm cho nhãn nổi bật hơn */
+            }
+            </style>    
+          </head>
+          <body>
+            <header class="clearfix">
             <div id="logo">
-                <img src="https://res.cloudinary.com/dvtz5mjdb/image/upload/v1701333412/image/h1vzhjzyuuwhrhak1bcr.png">
+            <img src="https://res.cloudinary.com/dvtz5mjdb/image/upload/v1701333412/image/h1vzhjzyuuwhrhak1bcr.png">
             </div>
             <h1>HÓA ĐƠN</h1>
-            <div id="company" class="clearfix">
-                <div>#${resp.code}</div>
-                <div>Ngày tạo: ${formatDate(resp.createdAt)}</div>
-            </div>
+            <div class="container">
             <div id="project">
                 <div><span>Khách hàng:</span> ${resp.reciverName ? resp.reciverName : 'Khách lẻ'}</div>
                 <div><span>SĐT:</span> ${resp ? resp.phoneNumber : ''}</div>
-                <div><span>Địa chỉ:</span> ${resp ? resp.address : ''}</div>
+                <div><span>Địa chỉ:</span> <div style="max-width: 300px;">${resp ? resp.address : ''}</div></div>
             </div>
-        </header>
-        <main>
-            <table>
+
+            <div id="company">
+                <div>#${resp.code}</div>
+                <div>Ngày tạo: ${formatDate(resp.createdAt)}</div>
+            </div>
+            </div>
+              
+            </header>
+            <main>
+              <table>
                 <thead>
-                    <tr>
-                        <th class="desc" style="text-align: center">Sản phẩm</th>
-                        <th style="text-align: end">Đơn giá</th>
-                        <th style="text-align: end">Số lượng</th>
-                        <th style="text-align: end">Thành tiền</th>
-                    </tr>
+                  <tr>
+                    <th class="desc" style="text-align: center; font-size: 1.1em;">Sản phẩm</th>
+                    <th style="text-align: end; font-size: 1.1em;">Đơn giá</th>
+                    <th style="text-align: end; font-size: 1.1em;">Số lượng</th>
+                    <th style="text-align: end; font-size: 1.1em;">Thành tiền</th>
+                  </tr>
                 </thead>
                 <tbody>
-                    ${listBillDT}
-                    <tr>
-                        <td colspan="3" class="font-b">Tổng tiền hàng: </td>
-                        <td class="total font-b">${formatCurrency(resp.totalAmount)}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" class="font-b">Phí giao hàng: </td>
-                        <td class="total font-b">${formatCurrency(resp.shippingFee)}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" class="font-b">Giảm giá</td>
-                        <td class="total font-b">${formatCurrency(resp.totalAmount - resp.totalAmountAfterDiscount)}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" class="grand font-b">Tổng thanh toán</td>
-                        <td class="total grand font-b">${resp.totalAmountAfterDiscount == 0 ? formatCurrency(resp.totalAmount + resp.shippingFee) : formatCurrency(resp.totalAmountAfterDiscount + resp.shippingFee)}</td>
-                    </tr>
+                  ${listBillDT}
+                  <tr>
+                    <td colspan="3" class="font-b" style="font-size: 1.1em;">Tổng tiền hàng: </td>
+                    <td class="total font-b" style="font-size: 1.1em;">${formatCurrency(resp.totalAmount)}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" class="font-b" style="font-size: 1.1em;">Phí giao hàng: </td>
+                    <td class="total font-b" style="font-size: 1.1em;">${formatCurrency(resp.shippingFee)}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" class="font-b" style="font-size: 1.1em;">Giảm giá</td>
+                    <td class="total font-b" style="font-size: 1.1em;">${formatCurrency(resp.totalAmount - resp.totalAmountAfterDiscount)}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" class="grand font-b" style="font-size: 1.1em;">Tổng thanh toán</td>
+                    <td class="total grand font-b" style="font-size: 1.1em;">${resp.totalAmountAfterDiscount == 0 ? formatCurrency(resp.totalAmount + resp.shippingFee) : formatCurrency(resp.totalAmountAfterDiscount + resp.shippingFee)}</td>
+                  </tr>
                 </tbody>
-            </table>
-            <div class="footer">
+              </table>
+              <div class="footer">
                 Cảm ơn và hẹn gặp lại!
-            </div>
-        </main>
-        <script>
-            window.onload = function() {
+              </div>
+            </main>
+            <script>
+              window.onload = function() {
                 window.print();
-            };
-        </script>
-    </body>
-    </html>`;
-    
-
+              };
+            </script>
+          </body>
+          </html>
+        `;
+      
         return htmlContent;
-    }
+      }
+
+
+
+    
     // #endregion
 
 
