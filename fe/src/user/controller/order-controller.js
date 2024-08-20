@@ -22,7 +22,7 @@ app.controller("orderController", function ($scope, $http, $window,$routeParams,
 
 $scope.searchPhoneNumber = null
 $scope.searchText =  "";
-// $scope.searchText2 =  "";
+$scope.searchText2 =  "";
 $scope.currentPage = 0; // Biến để lưu trữ trang hiện tại
 $scope.pageSize = 10; // Biến để lưu trữ kích thước trang
 $scope.totalPages = 0; // Biến để lưu trữ tổng số trang
@@ -35,23 +35,25 @@ $scope.phoneNumberCheckOrder = '';
 $scope.isPhoneNumberCheckOrder = false;
 
 
-$scope.loadBillsByPhoneNumber = function(page) {
+$scope.loadBillsByPhoneNumber = function(page,search) {
     if (page === undefined) {
         page = $scope.currentPage || 0;
     }
+
     $scope.isPhoneNumberCheckOrder = !isValidPhoneNumber($scope.searchPhoneNumber);
-    if ( $scope.isPhoneNumberCheckOrder) {
+    if ($scope.isPhoneNumberCheckOrder) {
         return;
-      }
+    }
+
     var config = {
         params: {
             phoneNumber: $scope.searchPhoneNumber,
-            search: $scope.searchText2,
+            search: $scope.searchText2,  // Ensure this is correct
             page: page,
             size: $scope.pageSize
         }
     };
-
+    console.log(config); // Check if searchText2 appears here
 
     return $http.get('http://localhost:8080/api/home/order/phone', config)
         .then(function(response) {
@@ -68,6 +70,7 @@ $scope.loadBillsByPhoneNumber = function(page) {
             throw error; // Ném lỗi để caller bắt
         });
 };
+
 
 
 // Hàm để thay đổi trang hiện tại

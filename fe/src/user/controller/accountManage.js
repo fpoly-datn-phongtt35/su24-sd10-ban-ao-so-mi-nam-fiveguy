@@ -1,4 +1,4 @@
-app.controller("accountManage", function ($scope, $http, $window) {
+app.controller("accountManage", function ($scope, $http, $window,$rootScope) {
   $scope.logout = function () {
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
@@ -8,6 +8,12 @@ app.controller("accountManage", function ($scope, $http, $window) {
   $scope.user = {};
   const idCustomer = null;
   const emailAccount = null;
+
+
+
+
+
+
 
   // notify
   toastr.options = {
@@ -895,4 +901,10 @@ $scope.loadCustomerPointsHistory = function() {
 $scope.openPointsHistoryModal = function() {
   $scope.loadCustomerPointsHistory();  // Load data and open the modal
 };
+
+
+
+
+
+
 });
