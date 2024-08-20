@@ -1,4 +1,4 @@
-app.controller("SellQuicklyController", function($scope, $http, $filter){
+app.controller("SellQuicklyController", function($scope, $http, $filter, $timeout){
     const inputElement = document.getElementById('search-product');
     const hiddenElement = document.getElementById('item-list');
     
@@ -34,6 +34,42 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
     $scope.timeCurrent = new Date();
     $scope.errors = [];
     $scope.defaultAddressUpdate = false;
+
+    $scope.runCheckPaid = false;
+
+    // Hàm kiểm tra thanh toán sử dụng Promise
+    $scope.checkPaid = async function(price, content) {
+        while (!$scope.runCheckPaid) { // Vòng lặp sẽ chạy liên tục cho đến khi isSuccess = true
+            try {
+                const response = await fetch("https://script.google.com/macros/s/AKfycbzdKN0wLHKHI2LLF85S30OHZIfAIgqxJ0v448_YI3807eXmakDh2KIb3Ev81l4nPfB7/exec");
+                const data = await response.json();
+                
+                if (data && data.data && data.data.length > 0) {
+                    const lastPaid = data.data[data.data.length - 1];
+                    const lastPrice = lastPaid["Giá trị"];
+                    const lastContent = lastPaid["Mô tả"];
+                    
+                    if (lastPrice >= price && lastContent.includes(content)) {
+                        $scope.apiPayment();
+                        $scope.qr = null;
+                        $scope.runCheckPaid = true;
+                        $('#qrModal').modal('hide'); // Đánh dấu là đã thành công để dừng kiểm tra
+                    } 
+                } else {
+                    console.log("Dữ liệu thanh toán không hợp lệ");
+                }
+            } catch (error) {
+                console.error("Lỗi khi kiểm tra thanh toán:", error);
+            }
+
+            // Chờ 1 giây trước khi kiểm tra lại
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    };
+
+    $scope.changeRunCheckPaid = () => {
+        $scope.runCheckPaid = true;
+    }
 
     $http.get('https://online-gateway.ghn.vn/shiip/public-api/master-data/province', {headers: config.headers})
     .then(function(response) {
@@ -147,16 +183,15 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
         if (!$scope.selectedBill || $scope.selectedBill.id != id) {
             $http.get(`${config.host}/bill-th/${id}`).then(resp => {
                 $scope.selectedBill = resp.data;
+                $scope.selectedVoucher = null;
                 $scope.getTotalQuantity();
                 
             }).catch(error => {
                 console.log("Error", error);
             }).finally(() => {
                 $scope.getVouchersForCustomer();
-                if ($scope.selectedBill.paymentMethod.name == 'Chuyển khoản') {
-                    $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${$scope.selectedBill.totalAmountAfterDiscount}&addInfo=${$scope.selectedBill.code}`;
-                }
-            });;
+            });
+            
         }
         
     }
@@ -177,6 +212,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
         $scope.loadingRemove = true;
         $http.delete(`${config.host}/bill-th/delete-bill/${$scope.selectedBill.id}`).then(resp => {
             $scope.selectedBill = null;
+            $scope.selectedVoucher = null;
             $('#deleteBill').modal('hide');
             toastr["success"]("Xóa " + resp.data.code + " thành công");
             $scope.getBills();
@@ -197,7 +233,23 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
         }
         $scope.apiRemoveBill();
     }
-    
+
+    function onScanSuccess(decodedText) {
+        $http.get(`${config.host}/product-detail/barcode`, {params: {barcode: decodedText}}).then(resp => {
+            if (!resp.data) {
+                toastr["warning"]("Không tìm thấy sản phẩm, vui lòng kiểm tra lại!");
+                return;
+            } else {
+                $scope.addProductCart(resp.data);
+                $('#barcode').modal('hide');
+                html5QrcodeScanner.clear();
+            }
+        }) .catch(error => {
+            console.log("Error", error);
+        })
+       
+    }
+
     $scope.loading = false;
 
     $scope.addProductCart = (productDetail) => {
@@ -223,10 +275,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
                 }
             })
             .finally(() => {
-                $scope.selectBestVoucher();
-                if ($scope.selectedBill.paymentMethod.name == 'Chuyển khoản') {
-                    $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${$scope.selectedBill.totalAmountAfterDiscount}&addInfo=${$scope.selectedBill.code}`;
-                }
+                $scope.getVouchersForCustomer();
                 $scope.loading = false; 
             });
     };
@@ -248,10 +297,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
             }
             $scope.add = false;
         }).finally(() => {
-            $scope.selectBestVoucher();  
-            if ($scope.selectedBill.paymentMethod.name == 'Chuyển khoản') {
-                $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${$scope.selectedBill.totalAmountAfterDiscount}&addInfo=${$scope.selectedBill.code}`;
-            }      
+            $scope.getVouchersForCustomer();
         });
     }
 
@@ -273,10 +319,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
             $scope.remove = false;
 
         }).finally(() => {
-            $scope.selectBestVoucher(); 
-            if ($scope.selectedBill.paymentMethod.name == 'Chuyển khoản') {
-                $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${$scope.selectedBill.totalAmountAfterDiscount}&addInfo=${$scope.selectedBill.code}`;
-            }       
+            $scope.getVouchersForCustomer(); 
         });
     }
 
@@ -299,10 +342,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
                 console.log("Error", error);
             }
         }).finally(() => {
-            $scope.selectBestVoucher();      
-            if ($scope.selectedBill.paymentMethod.name == 'Chuyển khoản') {
-                $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${$scope.selectedBill.totalAmountAfterDiscount}&addInfo=${$scope.selectedBill.code}`;
-            }  
+            $scope.getVouchersForCustomer();
         });
     }
 
@@ -320,10 +360,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
                 console.log("Error", error);
             }
         }).finally(() => {
-            $scope.selectBestVoucher(); 
-            if ($scope.selectedBill.paymentMethod.name == 'Chuyển khoản') {
-                $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${$scope.selectedBill.totalAmountAfterDiscount}&addInfo=${$scope.selectedBill.code}`;
-            }       
+            $scope.getVouchersForCustomer();  
         });
     }
 
@@ -501,15 +538,13 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
         }).catch(error => {
             console.log("Error", error);
         }).finally(() => {
-            $scope.selectBestVoucher();  
-            if ($scope.selectedBill.paymentMethod.name == 'Chuyển khoản') {
-                $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${$scope.selectedBill.totalAmountAfterDiscount}&addInfo=${$scope.selectedBill.code}`;
-            }      
+              $scope.getVouchersForCustomer();
         });
     }
 
     $scope.changeInputPrice = (value) => {
-        $scope.excessMoney = value - $scope.selectedBill.totalAmountAfterDiscount;
+        $scope.inputPrice = value;
+        $scope.excessMoney = $scope.inputPrice - $scope.selectedBill.totalAmountAfterDiscount;
     }
 
     $scope.setCustomerBill = (customer) => {
@@ -689,17 +724,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
         });
     }
 
-    $scope.paymentBill = () => {
-        
-        if ($scope.inputPrice < $scope.selectedBill.totalAmount) {
-            toastr["error"]("Số tiền khách thanh toán không đủ");
-            return;
-        }
-        if ($scope.selectedBill.billDetail.length == 0) {
-            toastr["warning"]("Vui lòng thêm sản phẩm vào giỏ hàng");
-            return;
-        }
-        $scope.selectedBill.voucher = $scope.selectedVoucher;
+    $scope.apiPayment = () => {
         $http.put(`${config.host}/bill-th/payment`, $scope.selectedBill).then(resp => {
             $scope.getBills();
             $scope.selectedBill = null;
@@ -707,6 +732,28 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
         }).catch(error => {
             console.log("Error", error);
         });
+    }
+
+    $scope.paymentBill = () => {
+        
+        if ($scope.inputPrice < $scope.selectedBill.totalAmountAfterDiscount) {
+            toastr["error"]("Số tiền khách thanh toán không đủ");
+            return;
+        }
+        if ($scope.selectedBill.billDetail.length == 0) {
+            toastr["warning"]("Vui lòng thêm sản phẩm vào giỏ hàng");
+            return;
+        }
+        if ($scope.selectedBill.paymentMethod.name == "Chuyển khoản") {
+            let paidContent = $scope.selectedBill.code;
+            let paidPrice = $scope.selectedBill.totalAmountAfterDiscount;
+            $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${paidPrice}&addInfo=${paidContent}`;
+            $scope.runCheckPaid = false;
+            $scope.checkPaid(paidPrice, paidContent);
+            $('#qrModal').modal('show');
+        } else {
+            $scope.apiPayment();
+        }
     }
 
     // Voucher
@@ -807,7 +854,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
     
       $scope.applyVoucher = function() {
         if ($scope.selectedVoucher != null) {
-          if ($scope.selectedVoucher.quantity > 1) {
+          if ($scope.selectedVoucher.quantity > 0) {
             if ($scope.selectedBill.totalAmount >= $scope.selectedVoucher.minimumTotalAmount) {
               var voucherCopy = angular.copy($scope.selectedVoucher);
               delete voucherCopy.selected;
@@ -834,7 +881,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
                 }
                 $scope.selectedBill.totalAmountAfterDiscount = $scope.selectedBill.totalAmount - $scope.valueVoucher;
               }
-              console.log(123)
               $scope.voucherMessage = 'Mã giảm giá đã được áp dụng';
               toastr["success"]($scope.voucherMessage)
             } else {
@@ -862,29 +908,26 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
         }
       };
 
-    $scope.getVouchersForCustomer = function() {
+      $scope.getVouchersForCustomer = function() {
         var idCustomer = $scope.selectedBill.customer != null ? $scope.selectedBill.customer.id : null;
         var configVoucher = {
           params: {
             id: idCustomer,
             search: $scope.voucherSearch
           }
-      };
+        };
         $http.get(`${config.host}/voucher-th/customer/vouchers`,configVoucher)
           .then(function(response) {
             if (response.data) {
-              $scope.customerVouchers = response.data;
-              // Thêm khoảng thời gian trễ trước khi thực hiện hành động tiếp theo
-              if ($scope.customerVouchers && $scope.customerVouchers.length > 0) {
-                $scope.selectBestVoucher();
-              } else {
-                console.log("Không có vouchers cho khách hàng.");
+                $scope.customerVouchers = response.data;
+                // Thêm khoảng thời gian trễ trước khi thực hiện hành động tiếp theo
+                if ($scope.customerVouchers && $scope.customerVouchers.length > 0) {
+                  $scope.selectBestVoucher();
+                }
               }
-            }
           })
           .catch(function(error) {
-            // alert("Có lỗi xảy ra khi gọi API để lấy vouchers cho khách hàng!");
-            console.log(error);
+            console.error(error);
           });
       };
 
@@ -892,7 +935,24 @@ app.controller("SellQuicklyController", function($scope, $http, $filter){
         if (!value) return '';
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
+   
+    // Barcode
+    var html5QrcodeScanner = null;
 
+    $scope.createBarcode = () => {
+        if ($scope.selectedBill == null) {
+            toastr["warning"]("Vui lòng chọn hóa đơn");
+            return;
+        }
+        $('#barcode').modal('show');
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    }
+
+    $scope.clearBarCode = () => {
+        html5QrcodeScanner.clear();
+    }
 });
 
 app.directive('customOnChange', function() {

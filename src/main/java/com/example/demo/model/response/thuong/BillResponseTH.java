@@ -56,6 +56,8 @@ public class BillResponseTH {
 
     private List<BillDetail> billDetail;
 
+    private PaymentStatus paymentStatus;
+
     public BillResponseTH(Long id, String code, String reciverName, Date deliveryDate, BigDecimal shippingFee, String addressId, String address, String phoneNumber, BigDecimal totalAmount, BigDecimal totalAmountAfterDiscount, BigDecimal paidAmount, BigDecimal paidShippingFee, Date createdAt, Customer customer, Employee employee, PaymentMethod paymentMethod, Voucher voucher, int typeBill, String note, int status) {
         this.id = id;
         this.code = code;

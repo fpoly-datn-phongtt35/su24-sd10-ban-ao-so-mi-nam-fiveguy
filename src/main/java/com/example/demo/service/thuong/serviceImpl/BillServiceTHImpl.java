@@ -35,6 +35,9 @@ public class BillServiceTHImpl implements BillServiceTH {
     @Autowired
     private BillHistoryRepositoryTH billHistoryRepository;
 
+    @Autowired
+    private PaymentStatusRepositoryTH paymentStatusRepository;
+
     @Override
     public List<BillResponseTH> findAllByStatusAndTypeBill(Integer status, Integer typeBill) {
         return billRepository.findAllByStatusAndTypeBill(status, typeBill).stream().map(b -> {
@@ -66,6 +69,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         billResponse.setNote(bill.getNote());
         billResponse.setStatus(bill.getStatus());
         billResponse.setBillDetail(billDetailsRepository.findAllByBill_Id(bill.getId()));
+        billResponse.setPaymentStatus(paymentStatusRepository.findByPaymentMethodAndBill_Id(2, bill.getId()));
         return billResponse;
     }
 
@@ -144,7 +148,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         }
         Bill bill = billOptional.get();
 
-        BillDetail bd = billDetailsRepository.findByProductDetail_Id(id);
+        BillDetail bd = billDetailsRepository.findByBill_Id(bill.getId());
 
         if (bill.getBillDetail() != null && bd != null) {
             bd.setBill(bill);
@@ -176,7 +180,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         }
         Bill bill = billOptional.get();
 
-        BillDetail bd = billDetailsRepository.findByProductDetail_Id(id);
+        BillDetail bd = billDetailsRepository.findByBill_Id(bill.getId());
 
         if (bill.getBillDetail() != null && bd != null) {
             bd.setProductDetail(checkProductDetailRemove(id));
@@ -204,7 +208,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         }
         Bill bill = billOptional.get();
 
-        BillDetail bd = billDetailsRepository.findByProductDetail_Id(id);
+        BillDetail bd = billDetailsRepository.findByBill_Id(bill.getId());
         if (bd.getQuantity() == updateQty) {
             return billRequest;
         }
@@ -229,7 +233,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         }
         Bill bill = billOptional.get();
 
-        BillDetail bd = billDetailsRepository.findByProductDetail_Id(id);
+        BillDetail bd = billDetailsRepository.findByBill_Id(bill.getId());
 
         checkProductDetailDelete(id, bd);
         billDetailsRepository.delete(bd);
@@ -309,13 +313,39 @@ public class BillServiceTHImpl implements BillServiceTH {
         bill.setPaidShippingFee(bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
         bill.setPaymentMethod(paymentMethodOptional.get());
         Bill bill2 = billRepository.save(bill);
+
+        if (bill2.getPaymentMethod().getName().equals("Tiền mặt")) {
+            PaymentStatus paymentStatus = new PaymentStatus();
+            paymentStatus.setBill(bill2);
+            paymentStatus.setCustomerPaymentStatus(2);  
+            paymentStatus.setPaymentMethod(1);
+            paymentStatus.setPaymentType(1);
+            paymentStatus.setPaymentAmount(bill2.getTotalAmountAfterDiscount().add(bill2.getShippingFee()));
+            paymentStatusRepository.save(paymentStatus);
+        } else {
+            PaymentStatus paymentStatus = new PaymentStatus();
+            paymentStatus.setBill(bill2);
+            paymentStatus.setCustomerPaymentStatus(2);
+            paymentStatus.setPaymentMethod(2);
+            paymentStatus.setPaymentType(1);
+            paymentStatus.setPaymentAmount(bill2.getTotalAmountAfterDiscount().add(bill2.getShippingFee()));
+            paymentStatusRepository.save(paymentStatus);
+        }
+
         BillHistory billHistory = new BillHistory();
         billHistory.setBill(bill2);
-        billHistory.setStatus(21);
+        billHistory.setStatus(20);
         billHistory.setType(1);
         billHistory.setCreatedAt(new Date());
         billHistory.setCreatedBy(employee.getFullName());
+        BillHistory billHistory2 = new BillHistory();
+        billHistory2.setBill(bill2);
+        billHistory2.setStatus(21);
+        billHistory2.setType(1);
+        billHistory2.setCreatedAt(new Date());
+        billHistory2.setCreatedBy(employee.getFullName());
         billHistoryRepository.save(billHistory);
+        billHistoryRepository.save(billHistory2);
         return setBillResponse(bill2);
     }
 }

@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface BillDetailsRepositoryTH extends JpaRepository<BillDetail, Long> {
-    BillDetail findByProductDetail_Id(Long id);
+    BillDetail findByBill_Id(Long id);
     List<BillDetail> findAllByBill_Id(Long id);
 }
