@@ -436,6 +436,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             4: [21],      // Đã giao hàng -> Hoàn thành hoặc Trả hàng (tại quầy) hoặc Trả hàng (ship)
 
             60: [1, 5, 6],        // Chờ nhập hàng -> Chờ xác nhận, khách hủy, đã hủy
+            50: [6],        // Chờ hủy ->  đã hủy
 
             5: [],                // Khách hủy (kết thúc)
             6: [],                // Đã hủy (kết thúc)
