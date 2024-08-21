@@ -17,6 +17,7 @@ import com.example.demo.repository.nguyen.bill.BillSpecification;
 import com.example.demo.repository.tinh.AuditLogRepositoryTinh;
 import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.nguyen.NBillService;
+import com.example.demo.service.point.CustomerPointsHistoryService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -56,6 +57,9 @@ public class NBillServiceImpl implements NBillService {
 
     @Autowired
     NReturnOrderRepository returnOrderRepository;
+
+    @Autowired
+    CustomerPointsHistoryService customerPointsHistoryService;
 
     @Override
     public List<Bill> getAll() {
@@ -134,6 +138,10 @@ public class NBillServiceImpl implements NBillService {
         if (bill.getStatus() == 2) {
             existingBill.setShippingFee(bill.getShippingFee());
         }
+
+        if (bill.getStatus() == 21){
+            existingBill.setDeliveryDate(new Date());
+        }
 //        existingBill.setCustomer(null);
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
@@ -155,6 +163,11 @@ public class NBillServiceImpl implements NBillService {
         }
         if (returnBill.getStatus() == 32 || returnBill.getStatus() == 12) {
             refundProductDetailsQuantities(returnBill);
+        }
+
+        //Tinh diem khi hoan tat don hang
+        if(returnBill.getStatus() == 21){
+            customerPointsHistoryService.addPointsFromBill(returnBill.getId());
         }
 
         return returnBill;

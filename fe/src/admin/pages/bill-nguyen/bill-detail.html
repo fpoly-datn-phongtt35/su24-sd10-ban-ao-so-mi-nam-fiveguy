@@ -68,68 +68,58 @@
                             ng-click="showModalStatus(11)">Hoàn hàng</button>
                     </div> -->
                     <div>
-                        <button class="btn btn-primary me-3"
-                            ng-if="deliveryFlow[status].includes(1) && !errorQuantity"
+                        <button class="btn btn-primary me-3" ng-if="deliveryFlow[status].includes(1) && !errorQuantity"
                             ng-click="showModalStatus(1)">Tiếp tục đơn hàng</button>
-                    
-                        <button class="btn btn-info me-3"
-                            ng-if="deliveryFlow[status].includes(2) && !errorQuantity" 
+
+                        <button class="btn btn-info me-3" ng-if="deliveryFlow[status].includes(2) && !errorQuantity"
                             ng-click="showModalStatus(2)">Xác nhận đơn hàng</button>
-                    
-                        <button class="btn btn-success me-3" 
-                            ng-if="deliveryFlow[status].includes(3)"
+
+                        <button class="btn btn-success me-3" ng-if="deliveryFlow[status].includes(3)"
                             ng-click="showModalStatus(3)">Xác nhận giao hàng</button>
-                    
-                        <button class="btn btn-success me-3" 
-                            ng-if="deliveryFlow[status].includes(4)"
+
+                        <button class="btn btn-success me-3" ng-if="deliveryFlow[status].includes(4)"
                             ng-click="showModalStatus(4)">Xác nhận giao thành công</button>
-                    
+
                         <button class="btn btn-danger me-3"
                             ng-if="[81, 12, 13, 60].includes(status) && paidOrRefundObject.paidOrRefund == 3"
                             ng-click="showModalStatus(6)">Hủy</button>
-                    
-                        <button class="btn btn-danger me-3" 
-                            ng-if="[1, 2].includes(status)"
+
+                        <button class="btn btn-danger me-3" ng-if="[1, 2].includes(status)"
                             ng-click="showModalStatus(6)">Hủy</button>
-                    
-                        <button class="btn btn-warning me-3"
-                            ng-if="deliveryFlow[status].includes(60) && errorQuantity"
+
+                        <button class="btn btn-warning me-3" ng-if="deliveryFlow[status].includes(60) && errorQuantity"
                             ng-click="showModalStatus(60)">Chờ nhập hàng</button>
-                    
-                        <button class="btn btn-secondary me-3" 
-                            ng-if="deliveryFlow[status].includes(7)"
+
+                        <button class="btn btn-secondary me-3" ng-if="deliveryFlow[status].includes(7)"
                             ng-click="showModalStatus(7)">Giao hàng thất bại</button>
-                    
-                        <button class="btn btn-secondary me-3" 
-                            ng-if="deliveryFlow[status].includes(8)"
+
+                        <button class="btn btn-secondary me-3" ng-if="deliveryFlow[status].includes(8)"
                             ng-click="showModalStatus(8)">Giao hàng thất bại</button>
-                    
-                        <button class="btn btn-warning me-3" 
-                            ng-if="deliveryFlow[status].includes(9)"
+
+                        <button class="btn btn-warning me-3" ng-if="deliveryFlow[status].includes(9)"
                             ng-click="showModalStatus(9)">Lên lịch giao lại</button>
-                    
-                        <button class="btn btn-info me-3" 
-                            ng-if="deliveryFlow[status].includes(10)"
+
+                        <button class="btn btn-info me-3" ng-if="deliveryFlow[status].includes(10)"
                             ng-click="showModalStatus(10)">Xác nhận giao lại</button>
-                    
-                        <button class="btn btn-secondary me-3" 
-                            ng-if="deliveryFlow[status].includes(11)"
+
+                        <button class="btn btn-secondary me-3" ng-if="deliveryFlow[status].includes(11)"
                             ng-click="showModalStatus(11)">Hoàn hàng</button>
-                    
-                        <button class="btn btn-success me-3" 
-                            ng-if="deliveryFlow[status].includes(12)"
+
+                        <button class="btn btn-success me-3" ng-if="deliveryFlow[status].includes(12)"
                             ng-click="showModalStatus(12)">Xác nhận hoàn hàng</button>
-                    
+
                         <button class="btn btn-success me-3"
                             ng-if="deliveryFlow[status].includes(21) && paidOrRefundObject.paidOrRefund == 0"
                             ng-click="showModalStatus(21)">Hoàn tất đơn hàng</button>
-                    
-                        <button class="btn btn-warning me-3" 
-                            ng-if="deliveryFlow[status].includes(30)"
+
+                        <!-- <button class="btn btn-warning me-3" ng-if="deliveryFlow[status].includes(30)"
+                            ng-click="goToReturnOrder()">Trả hàng</button> -->
+
+                            <button class="btn btn-warning me-3"
+                            ng-show="deliveryFlow[status].includes(30) && canShowReturnButton(billResponse.deliveryDate)"
                             ng-click="goToReturnOrder()">Trả hàng</button>
-                    
-                        <button class="btn btn-success me-3" 
-                            ng-if="deliveryFlow[status].includes(32)"
+
+                        <button class="btn btn-success me-3" ng-if="deliveryFlow[status].includes(32)"
                             ng-click="showModalStatus(32)">Xác nhận trả hàng</button>
                     </div>
                 </div>
@@ -178,7 +168,8 @@
                             <div class="row"
                                 ng-show="reasonSuggestions.length <= 0 && [1].includes(status) && paidOrRefundObject.paidOrRefund == 2  && !errorQuantity">
                                 <label for="description" class="form-label">Chú ý</label>
-                                <i style="margin-top: -5px;" class="text-danger">Hoàn tiền thừa cho khách khi giao hàng thành công</i>
+                                <i style="margin-top: -5px;" class="text-danger">Hoàn tiền thừa cho khách khi giao hàng
+                                    thành công</i>
                             </div>
                             <div class="row" ng-show="reasonSuggestions.length <= 0 && [1,4].includes(status) 
                                 &&  paidOrRefundObject.paidOrRefund == 1 && !errorQuantity">
@@ -720,7 +711,7 @@
                 </div>
             </div>
         </div>
-    </div>  
+    </div>
 
     <!-- Modal Chỉnh sửa thông tin đơn hàng -->
     <div class="modal fade" id="editShipmentDetail" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -851,10 +842,11 @@
                             </div>
                         </td>
                         <td class="col-2 text-center">
-                            <input type="number" class="form-control mb-1 ms-4" style="width: 60%;" ng-value="bd.quantity"
+                            <input type="number" class="form-control mb-1 ms-4" style="width: 60%;"
+                                ng-value="bd.quantity"
                                 ng-class="{'is-invalid': ((bd.quantityNew > bd.productDetail.quantity) 
-                                || (bd.quantity > bd.productDetail.quantity) || (bd.quantity <= 0)) && [1, 60].includes(status)}" ng-model="bd.quantityNew" min="1"
-                                ng-disabled="![1, 60].includes(status)"
+                                || (bd.quantity > bd.productDetail.quantity) || (bd.quantity <= 0)) && [1, 60].includes(status)}"
+                                ng-model="bd.quantityNew" min="1" ng-disabled="![1, 60].includes(status)"
                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                 ng-change="validateQuantityBd(bd, bd.quantityNew)"
                                 ng-blur="updateBillDetailQuantity(bd.quantityNew, bd)">
@@ -940,7 +932,8 @@
                             </div>
                         </td>
                         <td class="col-2">{{ro.quantity}}</td>
-                        <td class="col-2">{{formatCurrency(ro.billDetail.promotionalPrice * (1 - returnOrdersSummary.tiLeGiam))}}
+                        <td class="col-2">{{formatCurrency(ro.billDetail.promotionalPrice * (1 -
+                            returnOrdersSummary.tiLeGiam))}}
                         </td>
                         <td class="col-2">{{formatCurrency(ro.billDetail.promotionalPrice * ro.quantity * (1 -
                             returnOrdersSummary.tiLeGiam))}}</td>
@@ -1075,7 +1068,8 @@
                     <div class="col-7 fw-bold">
                         <span ng-if="paidOrRefundObject.paidOrRefund == 1 && status !== 32">Số tiền cần thanh toán
                             tiếp:</span>
-                        <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12">Số tiền cần hoàn trả:</span>
+                        <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12">Số tiền cần
+                            hoàn trả:</span>
                         <span ng-if="[30, 31, 32, 12].includes(status)">Số tiền hoàn trả:</span>
                     </div>
                     <div class="col-5 text-end fs-5 money"

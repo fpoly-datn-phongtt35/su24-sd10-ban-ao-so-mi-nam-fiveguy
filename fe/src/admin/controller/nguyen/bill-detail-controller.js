@@ -88,8 +88,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             console.error("Error:", error);
             $location.path('/admin/bill/')
         });
+        
     }
     $scope.getBillById($scope.idBill)
+
+    
 
     //XỬ LÝ STATUS BILL, HISTORY BILL, THÔNG TIN GIAO HÀNG, LOGIC CỦA HIỂN THỊ TRẠNG THÁI ĐƠN HÀNG, paymentStatus
     // #region bill status & bill history
@@ -929,6 +932,22 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             }
         })
     }
+
+    
+    $scope.canShowReturnButton = function(deliveryDate) {
+        // Chuyển đổi utilDate (Java) sang JavaScript Date
+        var deliveryJsDate = new Date(deliveryDate);
+
+        // Tính ngày hiện tại
+        var currentDate = new Date();
+
+        // Cộng 7 ngày vào ngày giao hàng
+        var sevenDaysAfterDelivery = new Date(deliveryJsDate);
+        sevenDaysAfterDelivery.setDate(sevenDaysAfterDelivery.getDate() + 7);
+
+        // Kiểm tra nếu sevenDaysAfterDelivery > currentDate
+        return sevenDaysAfterDelivery < currentDate;
+    };
 
     // #endregion
 
