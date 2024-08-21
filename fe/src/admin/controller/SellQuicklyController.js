@@ -199,7 +199,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
 
             $scope.showShippingFee($scope.selectedBill);
             $scope.clearInputPrice();
-                
+            $scope.keyword = '';
+            $scope.keywordCustomer = '';
             }).catch(error => {
                 console.log("Error", error);
             }).finally(() => {
@@ -593,6 +594,9 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         }
         $scope.selectedBill.customer = customer;
         $scope.updateBill();
+        if ($scope.selectedBill.typeBill == 2) {
+            $scope.showAddress($scope.selectedBill);
+        }
         hiddenElementCustomer.style.display = 'none';
     }
 
@@ -639,7 +643,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                 $('#customerUpdateModal').modal('hide');
                 $scope.selectedBill.customer = resp.data;
                 $scope.updateBill();
-                $scope.resetCustomer();        
+                $scope.resetCustomer();     
                 $('#updateCustomer').css('display', 'inline-block');
                 $('#loadingUpdate').css('display', 'none');   
             }).catch(error => {
@@ -745,12 +749,16 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         }
         $http.put(`${config.host}/address-th`,  address).then(resp => {
             $scope.resetAddress();
-            $scope.showCustomerUpdate();
+            $scope.showCustomerUpdate();  
             toastr["success"]("Cập nhật địa chỉ thành công");
             $('#addressUpdateModal').modal('hide');
             $('#customerUpdateModal').modal('show');
         }).catch(error => {
             console.log("Error", error);
+        }).finally(() => {
+            if ($scope.selectedBill.typeBill == 2) {
+                $scope.showAddress($scope.selectedBill);
+            } 
         });
     }
 
@@ -1157,11 +1165,13 @@ $scope.calculateShippingFee = function (toDistrictId, toWardCode) {
 
 $scope.updateTypeBill = function() {
     if ($scope.isChecked) {
-        $scope.selectedBill.typeBill = 2;  // Set to 2 when the checkbox is checked
+        $scope.selectedBill.typeBill = 2;
+        $scope.showAddress($scope.selectedBill)
+        // Set to 2 when the checkbox is checked
     } else {
         $scope.selectedBill.typeBill = 1;  // Set to 1 when the checkbox is unchecked
     }
-    
+    $scope.showShippingFee($scope.selectedBill);
 // Call the API to update typeBill using $http.post
         $http.post('http://localhost:8080/api/admin/bill-th/typeBill', $scope.selectedBill)
         .then(function(response) {
@@ -1319,16 +1329,23 @@ $scope.showAddress = function(bill) {
 };
 
 
-    $scope.showShippingFee = function (bill) {
-        $scope.inputPrice2 = 1;
-        if (bill.addressId && bill.address && typeof bill.addressId === 'string') {
-            let [wardCode, districtCode, provinceCode] = bill.addressId.split(', ').map(part => part.trim());
+$scope.showShippingFee = function (bill) {
+    if ($scope.selectedBill.typeBill == 1) {
+        $scope.shippingFee = 0;
+        return
+    }
+
+    $scope.inputPrice2 = 1;
+    if (bill.addressId && bill.address && typeof bill.addressId === 'string') {
+        let [wardCode, districtCode, provinceCode] = bill.addressId.split(', ').map(part => part.trim());
 
 
 
-        $scope.calculateShippingFee(districtCode,wardCode);
-        }
-        };
+    $scope.calculateShippingFee(districtCode,wardCode);
+    }
+
+
+    };
 
 
 

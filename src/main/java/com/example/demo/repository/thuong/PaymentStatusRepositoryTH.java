@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PaymentStatusRepositoryTH extends JpaRepository<PaymentStatus, Long> {
     PaymentStatus findByPaymentMethodAndBill_Id(Integer paymentMethod, Long id);
+    boolean existsByCode(String code);
 }
