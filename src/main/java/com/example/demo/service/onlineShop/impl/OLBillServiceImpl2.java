@@ -199,7 +199,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         if (!optionalBill.isPresent()) {
             throw new EntityNotFoundException("Bill not found with id " + id);
         }
-        if (optionalBill.get().getStatus() == 2 || optionalBill.get().getStatus() == 1) {
+        if (optionalBill.get().getStatus() == 2 || optionalBill.get().getStatus() == 1|| optionalBill.get().getStatus() == 60) {
             Bill existingBill = optionalBill.get();
             existingBill.setStatus(bill.getStatus());
             existingBill.setReason(bill.getStatus());
