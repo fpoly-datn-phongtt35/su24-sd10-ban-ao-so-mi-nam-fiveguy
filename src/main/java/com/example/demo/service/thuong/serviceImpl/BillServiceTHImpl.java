@@ -398,6 +398,7 @@ public class BillServiceTHImpl implements BillServiceTH {
             String paymentMethodName = savedBill.getPaymentMethod().getName();
 
             // Set the payment method type
+            paymentStatus.setCode(generateUniqueCode());
             paymentStatus.setPaymentMethod(paymentMethodName.equals("Tiền mặt") ? 1 : paymentMethodName.equals("Chuyển khoản") ? 2 : null);
             paymentStatus.setBill(savedBill);
             paymentStatus.setCustomerPaymentStatus(2);
