@@ -39,9 +39,21 @@ public class BillServiceTHImpl implements BillServiceTH {
     @Autowired
     private VoucherRepositoryTH voucherRepository;
 
+    private static final Random random = new Random();
+    private static final String PREFIX = "TT";
+    private static final int MAX_ATTEMPTS = 1000;
 
+    public String generateUniqueCode() {
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            int randomNumber = random.nextInt(10000);
+            String code = PREFIX + String.format("%04d", randomNumber);
 
-
+            if (!paymentStatusRepository.existsByCode(code)) {
+                return code;
+            }
+        }
+        throw new RuntimeException("Không thể tạo mã duy nhất sau " + MAX_ATTEMPTS + " lần thử.");
+    }
 
     @Override
     public List<BillResponseTH> findAllByStatusAndTypeBill(Integer status, Integer typeBill) {
@@ -164,6 +176,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         if (billDetailOptional.isPresent()) {
             // Nếu BillDetail đã tồn tại, lấy nó ra
             bd = billDetailOptional.get();
+            bd.setProductDetail(checkProductDetail(id));
             bd.setQuantity(bd.getQuantity() + 1); // Cộng số lượng
         } else {
             // Nếu BillDetail chưa tồn tại, tạo mới
