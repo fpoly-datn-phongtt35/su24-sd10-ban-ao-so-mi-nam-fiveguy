@@ -88,11 +88,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             console.error("Error:", error);
             $location.path('/admin/bill/')
         });
-        
+
     }
     $scope.getBillById($scope.idBill)
 
-    
+
 
     //XỬ LÝ STATUS BILL, HISTORY BILL, THÔNG TIN GIAO HÀNG, LOGIC CỦA HIỂN THỊ TRẠNG THÁI ĐƠN HÀNG, paymentStatus
     // #region bill status & bill history
@@ -933,8 +933,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         })
     }
 
-    
-    $scope.canShowReturnButton = function(deliveryDate) {
+
+    $scope.canShowReturnButton = function (deliveryDate) {
         // Chuyển đổi utilDate (Java) sang JavaScript Date
         var deliveryJsDate = new Date(deliveryDate);
 
@@ -945,8 +945,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         var sevenDaysAfterDelivery = new Date(deliveryJsDate);
         sevenDaysAfterDelivery.setDate(sevenDaysAfterDelivery.getDate() + 7);
 
-        // Kiểm tra nếu sevenDaysAfterDelivery > currentDate
-        return sevenDaysAfterDelivery < currentDate;
+        // Kiểm tra nếu ngày hiện tại nhỏ hơn hoặc bằng ngày giao hàng + 7
+        return currentDate <= sevenDaysAfterDelivery;
     };
 
     // #endregion
@@ -1290,28 +1290,28 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
 
     // #region IN HÓA ĐƠN
-    $scope.exportBill = function() {
+    $scope.exportBill = function () {
         let data = angular.copy($scope.billResponse);
         $scope.printBill(data);
-      };
-      
-      $scope.printBill = (resp) => {
+    };
+
+    $scope.printBill = (resp) => {
         const invoiceHTML = generateInvoiceHTML(resp);
         const invoiceWindow = window.open('', '_blank');
         invoiceWindow.document.write(invoiceHTML);
         invoiceWindow.document.close();
-      };
-      
-      const formatCurrency = (price) => {
+    };
+
+    const formatCurrency = (price) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-      };
-      
-      const formatDate = (dateString) => {
+    };
+
+    const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
         return new Date(dateString).toLocaleString('vi-VN', options);
-      };
-      
-      function generateInvoiceHTML(resp) {
+    };
+
+    function generateInvoiceHTML(resp) {
         const listBillDT = Object.values($scope.billDetails).map((billDT) => `
           <tr>
             <td class="desc" style="font-size: 1.1em;">${billDT.productDetail.product.name} <div>Color: ${billDT.productDetail.color.name} - Size: ${billDT.productDetail.size.name}</div></td>
@@ -1330,7 +1330,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             <td class="total" style="font-size: 1.1em;">${formatCurrency(billDT.promotionalPrice * billDT.quantity)}</td>
           </tr>
         `).join('');
-      
+
         const htmlContent = `
           <!DOCTYPE html>
           <html>
@@ -1538,13 +1538,13 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
           </body>
           </html>
         `;
-      
+
         return htmlContent;
-      }
+    }
 
 
 
-    
+
     // #endregion
 
 
@@ -1842,21 +1842,21 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         return formattedNumber + ' đ';
     }
 
-    $scope.shouldShowAmount = function() {
-        return ($scope.paidOrRefundObject.paidOrRefund != 0 && $scope.status !== 32) || 
-               [30, 31, 32].includes($scope.status);
+    $scope.shouldShowAmount = function () {
+        return ($scope.paidOrRefundObject.paidOrRefund != 0 && $scope.status !== 32) ||
+            [30, 31, 32].includes($scope.status);
     };
-    
-    $scope.getAdditionalPaymentAmount = function() {
-        return ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee) - 
-               ($scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee);
+
+    $scope.getAdditionalPaymentAmount = function () {
+        return ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee) -
+            ($scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee);
     };
-    
-    $scope.getRefundAmount = function() {
-        return ($scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee) - 
-               ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee);
+
+    $scope.getRefundAmount = function () {
+        return ($scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee) -
+            ($scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee);
     };
-    
+
 });
 
 app.filter('formatCurrency', function () {
