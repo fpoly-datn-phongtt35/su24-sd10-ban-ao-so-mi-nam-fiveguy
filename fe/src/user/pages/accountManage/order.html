@@ -141,6 +141,8 @@ img.rounded-4.fit {
         width: 120px;
         height: 120px;
     }
+
+
   
 }
 
@@ -250,7 +252,13 @@ img.rounded-4.fit {
                                 <td>{{ bill.code }}</td>
                                 <!-- <td>{{ bill.paymentDate | date:'dd/MM/yyyy' }}</td> -->
                                 <td>{{ bill.deliveryDate | date:'dd/MM/yyyy' }}</td>
-                                <td><strong>{{(bill.status) }}</strong></td>
+                                <td><span  >
+                                    <div  class="badge text-wrap bg-info" 
+                                        style="width: 65%; font-size: 14px;" ng-style="{'background-color': s.color}">
+                                        {{getStatusText(bill.status)}}
+                                    </div>
+                                </span></td>
+
                                 <td>{{ bill.totalAmountAfterDiscount + bill.shippingFee | number}} đ</td>
     
                         <td>

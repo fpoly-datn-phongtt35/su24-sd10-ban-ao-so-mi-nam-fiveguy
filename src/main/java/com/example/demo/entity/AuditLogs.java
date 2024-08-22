@@ -37,6 +37,6 @@ public class AuditLogs {
     @Column(name = "Time")
     private Date time;
 
-    @Column(name="Status")
-    private Integer status;
+    @Column(name="Role")
+    private Long role;
 }

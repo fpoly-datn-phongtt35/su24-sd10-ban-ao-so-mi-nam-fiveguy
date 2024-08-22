@@ -80,4 +80,9 @@ public class ProductDetailServiceTHImpl implements ProductDetailServiceTH {
         }
         return pd;
     }
+
+    @Override
+    public ProductDetail findByBarcode(String barcode) {
+        return repository.findByBarcode(barcode);
+    }
 }

@@ -186,8 +186,10 @@
                     <!-- <td>{{v.status == 1 ? 'Hoạt động' : ' Ngừng'}}</td> -->
 
                     <td scope="col-4" ng-switch="v.status" style="font-size: 18px;">
-                        <span ng-switch-when="1" class="status bg-success text-white fw-bold" style="width: 120px;">Đang
-                            diễn ra</span>
+                        <span ng-switch-when="1" class="status bg-success text-white fw-bold" style="width: auto;">
+                            <span ng-if="v.quantity > 0">Đang diễn ra</span>
+                            <span ng-if="v.quantity <= 0">Đang diễn ra - Tạm hết</span>
+                        </span>
                         <span ng-switch-when="2" class="status bg-danger text-white fw-bold" style="width: 120px;">Đã
                             hết hạn</span>
                         <span ng-switch-when="3" class="status bg-warning text-white fw-bold" style="width: 120px;">Sắp
@@ -518,14 +520,15 @@
                                     </div>
                                     <div class="col-6">
                                         <div class="form-group">
-                                            <label>Số lượt sử dụng cá nhân</label>
-                                            <input type="number" name="addNumberOfUses" class="form-control" min="1"
+                                            <label>Số lượt sử dụng tối đa</label>
+                                            <input type="number" name="addNumberOfUses" class="form-control" min="{{formInputVoucher.applyfor == 1 ? 1 : null}}"
                                                 max="{{formInputVoucher.quantity}}"
+                                                ng-disabled="formInputVoucher.applyfor == 1 ? false : true"
                                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
-                                                ng-model="formInputVoucher.numberOfUses" ng-required="true"
+                                                ng-model="formInputVoucher.numberOfUses" ng-required="formInputVoucher.applyfor == 1 ? true : false"
                                                 ng-class="{'is-invalid': (formAddVoucher.addNumberOfUses.$touched || formAddVoucher.$submitted) && formAddVoucher.addNumberOfUses.$invalid}">
                                             <span
-                                                ng-show="formAddVoucher.$submitted || formAddVoucher.addNumberOfUses.$touched">
+                                                ng-show="(formAddVoucher.$submitted || formAddVoucher.addNumberOfUses.$touched) && formInputVoucher.applyfor == 1">
                                                 <div ng-show="formAddVoucher.addNumberOfUses.$error.required"
                                                     class="error-message text-danger form-text">Số lượt sử dụng
                                                     không được để trống</div>
@@ -900,7 +903,7 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <label>Số lượng</label>
-                                            <input type="number" min="1" id="updateQuantity" name="updateQuantity"
+                                            <input type="number" min="0" id="updateQuantity" name="updateQuantity"
                                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                                 class="form-control" ng-model="formUpdateVoucher.quantity"
                                                 ng-required="true"
@@ -917,24 +920,24 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-6" ng-show="formUpdateVoucher.applyfor == 1">
                                         <div class="form-group">
-                                            <label>Số lượt sử dụng cá nhân</label>
-                                            <input type="number" id="updateNumberOfUses" min="1"
-                                                max="{{formUpdateVoucher.quantity}}"
+                                            <label>Số lượt sử dụng tối đa</label>
+                                            <input type="number" id="updateNumberOfUses" min="{{formUpdateVoucher.applyfor == 1 ? 1 : 0}}"
                                                 oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : 1"
                                                 name="updateNumberOfUses" class="form-control"
                                                 ng-model="formUpdateVoucher.numberOfUses" ng-required="true"
                                                 ng-class="{'is-invalid': (formEditVoucher.updateNumberOfUses.$touched || formAddVoucher.$submitted) && formEditVoucher.updateNumberOfUses.$invalid}">
 
+                                                <!-- max="{{formUpdateVoucher.quantity}}" -->
                                             <span
                                                 ng-show="formEditVoucher.$submitted || formEditVoucher.updateNumberOfUses.$touched">
                                                 <div ng-show="formEditVoucher.updateNumberOfUses.$error.required"
                                                     class="error-message text-danger form-text">
                                                     Số lượt sử dụng không được để trống</div>
-                                                <div ng-show="formEditVoucher.updateNumberOfUses.$error.max"
+                                                <!-- <div ng-show="formEditVoucher.updateNumberOfUses.$error.max"
                                                     class="error-message text-danger form-text">
-                                                    Số lượt sử dụng không được lớn hơn số lượng</div>
+                                                    Số lượt sử dụng không được lớn hơn số lượng</div> -->
                                             </span>
                                         </div>
                                     </div>

@@ -537,25 +537,29 @@ public class NVoucherServiceImpl implements NVoucherService {
         }
 
         // Check the number of uses limit using repository
-        if (voucher.getNumberOfUses() != null && customer != null) {
-            long usedCount = billRepository
-                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
-
-            if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
-                return false; // Voucher usage limit reached
-            }
-        }
-
-//        // Check the number of uses limit using repository
 //        if (voucher.getNumberOfUses() != null && customer != null) {
 //            long usedCount = billRepository
 //                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-//                            List.of(5, 6));
-//            if (usedCount >= voucher.getNumberOfUses()) {
+//                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+//
+//            if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
 //                return false; // Voucher usage limit reached
 //            }
 //        }
+
+        if (voucher.getApplyfor() != 0 && voucher.getNumberOfUses() != null && customer != null) {
+            long usedCount = billRepository
+                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
+                            List.of(5, 6, 1));  // Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+
+            // Kiểm tra nếu voucher đang được sử dụng trong bill hiện tại
+//            boolean isCurrentBillUsingVoucher =
+//                    bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
+
+            if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
+                return false; // Giới hạn số lần sử dụng voucher đã đạt
+            }
+        }
 
         return true; // Voucher is applicable
     }

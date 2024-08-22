@@ -44,8 +44,9 @@ public class NBillRestController {
     @Autowired
     private SCAccountService accountService;
 
-    @Autowired //tinh
-    private SCEmployeeService acScEmployeeService; //tinh
+    @Autowired
+    private com.example.demo.security.service.SCEmployeeService SCEmployeeService;
+
 
     @GetMapping("/all")
     public ResponseEntity<?> getAll() {
@@ -129,6 +130,9 @@ public class NBillRestController {
 
         Optional<String> fullName = accountService.getFullNameByToken(token);
         billRequest.getBillHistory().setCreatedBy(fullName.get());
+
+        Optional<Employee> employee = SCEmployeeService.getEmployeeByToken(token);
+        billService.addAuditlogs(employee.get().getCode(), employee.get().getFullName(), billRequest.getBill().getStatus());
 
         return billService
                 .updateStatusAndBillStatus(billRequest.getBill(), id, billRequest.getBillHistory());

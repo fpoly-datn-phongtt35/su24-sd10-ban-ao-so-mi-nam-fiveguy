@@ -54,7 +54,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="changeStatusModalLabel">Chuyển trạng thái</h5>
+                        <h5 class="modal-title" id="changeStatusModalLabel">Chọn lý do</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                             ng-click="resetCheckBoxes()"></button>
                     </div>
@@ -94,7 +94,7 @@
                                                 id="reason-{{reason.value}}" ng-model="reason.checked"
                                                 ng-click="toggleReason(reason)">
                                             <label class="form-check-label" for="reason-{{reason.value}}">
-                                                {{ reason.text }} - {{reason.value}}
+                                                {{ reason.text }} 
                                             </label>
                                         </div>
                                     </div>
@@ -128,8 +128,7 @@
     <div class="row card mt-4 border rounded p-4 shadow mb-3 bg-body">
         <div class="d-flex justify-content-between mb-3">
             <h5>Thông tin đơn hàng</h5>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShipmentDetail"
-                ng-show="[1].includes(status)">Cập nhật</button>
+           
         </div>
         <hr>
         <div class="row">

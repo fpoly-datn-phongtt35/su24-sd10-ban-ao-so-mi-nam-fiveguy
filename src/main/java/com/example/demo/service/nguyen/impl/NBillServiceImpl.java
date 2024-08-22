@@ -6,14 +6,16 @@ import com.example.demo.repository.nguyen.NCustomerTypeVoucherRepository;
 import com.example.demo.repository.nguyen.NVoucherRepository;
 import com.example.demo.repository.nguyen.bill.*;
 import com.example.demo.repository.nguyen.product.NProductDetailRepository;
+import com.example.demo.repository.tinh.AuditLogRepositoryTinh;
+import com.example.demo.entity.AuditLogs;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillHistory;
 import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
 import com.example.demo.repository.nguyen.bill.NBillHistoryRepository;
 import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.BillSpecification;
-
 import com.example.demo.service.nguyen.NBillService;
+import com.example.demo.service.point.CustomerPointsHistoryService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,6 +54,9 @@ public class NBillServiceImpl implements NBillService {
 
     @Autowired
     NReturnOrderRepository returnOrderRepository;
+
+    @Autowired
+    CustomerPointsHistoryService customerPointsHistoryService;
 
     @Override
     public List<Bill> getAll() {
@@ -130,6 +135,10 @@ public class NBillServiceImpl implements NBillService {
         if (bill.getStatus() == 2) {
             existingBill.setShippingFee(bill.getShippingFee());
         }
+
+        if (bill.getStatus() == 21){
+            existingBill.setDeliveryDate(new Date());
+        }
 //        existingBill.setCustomer(null);
 
         addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
@@ -153,6 +162,10 @@ public class NBillServiceImpl implements NBillService {
             refundProductDetailsQuantities(returnBill);
         }
 
+        //Tinh diem khi hoan tat don hang
+        if(returnBill.getStatus() == 21){
+            customerPointsHistoryService.addPointsFromBill(returnBill.getId());
+        }
 
         return returnBill;
     }
@@ -243,7 +256,11 @@ public class NBillServiceImpl implements NBillService {
         BillHistory newHistory = new BillHistory();
         newHistory.setBill(bill);
         newHistory.setStatus(bill.getStatus());
-        newHistory.setDescription("Thay đổi mã khuyến mãi " + voucher.getCode());
+        if(voucher != null){
+            newHistory.setDescription("Thay đổi mã giảm giá " + voucher.getCode());
+        }else{
+            newHistory.setDescription("Bỏ mã giảm giá");
+        }
         newHistory.setCreatedBy(createBy);
         newHistory.setType(2);
         newHistory.setReason(0);
@@ -545,17 +562,30 @@ public class NBillServiceImpl implements NBillService {
         }
 
         // Check the number of uses limit using repository
-        if (voucher.getNumberOfUses() != null && customer != null) {
+//        if (voucher.getNumberOfUses() != null && customer != null) {
+//            long usedCount = billRepository
+//                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
+//                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+//
+//            // Check if the voucher is already used in the current bill
+//            boolean isCurrentBillUsingVoucher =
+//                    bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
+//
+//            if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
+//                return false; // Voucher usage limit reached
+//            }
+//        }
+        if (voucher.getApplyfor() != 0 && voucher.getNumberOfUses() != null && customer != null) {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+                            List.of(5, 6, 1));  // Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
 
-            // Check if the voucher is already used in the current bill
+            // Kiểm tra nếu voucher đang được sử dụng trong bill hiện tại
             boolean isCurrentBillUsingVoucher =
                     bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId());
 
             if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
-                return false; // Voucher usage limit reached
+                return false; // Giới hạn số lần sử dụng voucher đã đạt
             }
         }
 
@@ -744,4 +774,57 @@ public class NBillServiceImpl implements NBillService {
         return response;
     }
 
+    @Autowired
+    AuditLogRepositoryTinh auditLogRepositoryTinh;
+
+    public AuditLogs addAuditlogs(String code, String fullName, int status){
+        AuditLogs auditLogs = new AuditLogs();
+
+        String detailedAction = null;
+        if(status == 1){
+            detailedAction = "Chờ xác nhận";
+        }else if(status == 2){
+            detailedAction = "Chờ giao hàng";
+        }else if(status == 3){
+            detailedAction = "Đang giao hàng";
+        }else if(status == 4){
+            detailedAction = "Đã giao hàng";
+        }else if(status == 5){
+            detailedAction = "Khách hủy";
+        }else if(status == 6 ){
+            detailedAction = "Đã hủy";
+        }else if(status == 7 | status == 8 | status == 81){
+            detailedAction = "Thất bại";
+        }else if(status == 9){
+            detailedAction = "Chờ giao lại";
+        }else if(status == 10){
+            detailedAction = "Đang giao lại";
+        }else if(status == 11){
+            detailedAction = "Đang hoàn hàng";
+        }else if(status == 12){
+            detailedAction = "Đã hoàn hàng";
+        }else if(status == 13){
+            detailedAction = "Hoàn hàng thất bại";
+        }else if(status == 21){
+            detailedAction = "Hoàn thành";
+        }else if(status == 22){
+            detailedAction = "Thành công";
+        }else if(status == 30 | status == 31){
+            detailedAction = "Trả hàng";
+        }else if(status == 32){
+            detailedAction = "Đã trả hàng";
+        }else if(status == 33){
+            detailedAction = "Trả hàng thất bại";
+        }else if(status == 20){
+            detailedAction = "Tạo đơn hàng";
+        }
+
+        auditLogs.setEmpCode(code);
+        auditLogs.setImplementer(fullName);
+        auditLogs.setActionType("Cập nhật đơn hàng");
+        auditLogs.setDetailedAction("Đã cập nhật đơn hàng thành: " + detailedAction);
+        auditLogs.setTime(new Date());
+        auditLogs.setRole(2L);
+        return auditLogRepositoryTinh.save(auditLogs);
+    }
 }

@@ -9,4 +9,6 @@ public interface ProductDetailServiceTH {
     List<ProductDetail> findAllByProduct_Id(Long id);
     List<ProductDetailResponseTH> getAll(String keyword);
     ProductDetail findById(Long id);
+    ProductDetail findByBarcode(String barcode);
+
 }

@@ -58,12 +58,16 @@ public class SCSCUserServiceImpl implements SCUserService {
     @Autowired
     private SCRoleService SCRoleService;
 
+
     //tinh------------------
     @Autowired
     AuditLogServiceTinh auditLogServiceTinh;
     //tinh ------------------
+
     @Autowired
     private SCEmailService scEmailService;
+
+
 
     private final ModelMapper mapper;
     private final PasswordEncoder bcryptEncoder;
@@ -174,9 +178,6 @@ public class SCSCUserServiceImpl implements SCUserService {
 
                 tokenResponse.setAccessToken(token);
                 tokenResponse.setRefreshToken(refreshToken.getToken());
-                //Tinh -------------
-                auditLogServiceTinh.createAuditLoginCustomer(customerEntity.get().getFullName(),"đăng nhâp", "Khách hàng "+ customerEntity.get().getFullName() + " đã đăng nhập vào hệ thống");
-                //Tinh --------------
                 return tokenResponse;
 
             } else if (employeeEntity.isPresent()) {
@@ -185,7 +186,7 @@ public class SCSCUserServiceImpl implements SCUserService {
                 tokenResponse.setRefreshToken(refreshToken.getToken());
 
                 //Tinh -------------
-                auditLogServiceTinh.createAuditLoginEmployee(employeeEntity.get().getFullName(),"đăng nhâp", "Nhân viên "+ employeeEntity.get().getFullName() + " đã đăng nhập vào hệ thống");
+                auditLogServiceTinh.createAuditLoginEmployee(employeeEntity.get().getFullName(),"đăng nhập", "Nhân viên "+ employeeEntity.get().getFullName() + " đã đăng nhập vào hệ thống",employeeEntity.get().getAccount().getRole().getId());
                 //Tinh --------------
                 return tokenResponse;
             }

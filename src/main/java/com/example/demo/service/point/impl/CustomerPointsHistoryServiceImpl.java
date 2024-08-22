@@ -96,6 +96,10 @@ public class CustomerPointsHistoryServiceImpl implements CustomerPointsHistorySe
                 .divide(BigDecimal.valueOf(pointsPerAmount), RoundingMode.HALF_UP)
                 .intValue();
 
+        if (newPoints < 1){
+            throw new RuntimeException("Point < 1");
+        }
+
         // Update the existing points history or create a new one
         CustomerPointsHistory pointsHistory;
         if (existingPointsHistoryOptional.isPresent()) {
