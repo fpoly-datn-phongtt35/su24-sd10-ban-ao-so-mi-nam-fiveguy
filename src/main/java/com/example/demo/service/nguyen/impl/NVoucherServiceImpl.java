@@ -528,7 +528,7 @@ public class NVoucherServiceImpl implements NVoucherService {
 
         // New logic for applyfor
         if (voucher.getApplyfor() == 1) {
-            if (customer == null || customer.getCustomerType() == null ||
+            if (customer == null || customer.getCustomerType() == null || customer.getCustomerType().getStatus() != 1 ||
                     !customerTypeVoucherRepository.findAllByVoucherId(voucher.getId()).stream()
                             .anyMatch(ctv -> ctv.getCustomerType()
                                     .equals(customer.getCustomerType()))) {
