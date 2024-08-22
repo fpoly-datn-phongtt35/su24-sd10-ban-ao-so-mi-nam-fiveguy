@@ -41,7 +41,7 @@
                         </div>
                         <div>
                             <button class="btn btn-outline-danger me-3" ng-if="deliveryFlow[status].includes(50)"
-                            ng-click="showModalStatus(50)">Yêu cầu hủy</button>
+                            ng-click="showModalStatus(50)">Hủy</button>
                         </div>
                     </div>
                 </div>
@@ -185,7 +185,7 @@
                             <th scope="col">Số lượng</th>
                             <th scope="col" class=" ">Đơn giá</th>
                             <th scope="col" class=" ">Thành tiền</th>
-                            <th scope="col" class=" ">Đánh giá</th>
+                            <th ng-if="billResponse.status == 21 || billResponse.status == 32" scope="col" class=" ">Đánh giá</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -221,7 +221,7 @@
 
                             <td>{{ formatCurrency(bd.quantity * bd.promotionalPrice)  }}đ</td>
 
-                            <td ng-if="billResponse.status == 21 && !bd.rated">
+                            <td ng-if="(billResponse.status == 21 || billResponse.status == 32) && !bd.rated  ">
                                 <button class="btn btn-primary" ng-click="openReview(bd)">Đánh giá</button>
                               </td>
 
@@ -270,15 +270,15 @@
                     <footer>
                         <tr>
                             <td><strong>Tổng tiền hàng:</strong></td>
-                            <td class="text-right">{{ formatCurrency(billResponse.totalAmount) }}đ</td>
+                            <td class="text-right">{{ formatCurrency(billResponse.totalAmount) }} đ</td>
                         </tr> 
                         <tr>
                             <td><strong>Giảm giá hóa đơn:</strong></td>
-                            <td class="text-right">{{ formatCurrency(billResponse.totalAmount - billResponse.totalAmountAfterDiscount)  }}đ</td>
+                            <td class="text-right">{{ formatCurrency(billResponse.totalAmount - billResponse.totalAmountAfterDiscount)  }} đ</td>
                         </tr>
                         <tr>
                             <td><strong>Phí ship:</strong></td>
-                            <td class="text-right">{{ formatCurrency(billResponse.shippingFee) }}đ</td>
+                            <td class="text-right">{{ formatCurrency(billResponse.shippingFee) }} đ</td>
                         </tr>
                         <tr>
                             <td><strong>Khách phải trả:</strong></td>
