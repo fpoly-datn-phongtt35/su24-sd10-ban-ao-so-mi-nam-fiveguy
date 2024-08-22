@@ -11,8 +11,10 @@ import java.util.List;
 @Repository
 public interface CustomerTypeVouchersCommonRepository extends JpaRepository<CustomerTypeVoucher, Long> {
 
-    @Query("SELECT ctv.voucher.id FROM CustomerTypeVoucher ctv WHERE ctv.customerType.id = :customerTypeId")
-    List<Long> findVoucherIdsByCustomerTypeId(@Param("customerTypeId") Long customerTypeId);
+    @Query("SELECT ctv FROM CustomerTypeVoucher ctv " +
+            "WHERE ctv.customerType.id = :customerTypeId " +
+            "AND ctv.customerType.status = 1")
+    List<CustomerTypeVoucher> findByCustomerTypeId(@Param("customerTypeId") Long customerTypeId);
 
 
 }

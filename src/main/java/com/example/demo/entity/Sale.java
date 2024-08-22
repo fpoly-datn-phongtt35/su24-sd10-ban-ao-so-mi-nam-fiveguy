@@ -74,4 +74,12 @@ public class Sale {
     @JsonIgnore
     @OneToMany(mappedBy = "sale")
     private List<ProductSale> productSales;
+
+
+//    status
+//
+//    1 đang hoạt động
+//    2 sắp bắt đầu
+//    3 hết hạn
+//    4 dừng hoạt động
 }

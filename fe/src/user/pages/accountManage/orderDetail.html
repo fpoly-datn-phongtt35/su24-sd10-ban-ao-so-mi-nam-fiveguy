@@ -142,20 +142,21 @@
                     <dd><span class="fw-bold border-bottom">{{billResponse.createdAt | date: "dd/MM/yyyy HH:mm"}}</span>
                     </dd>
                 </div>
-                <div class="info-item">
+                <!-- <div class="info-item">
                     <dt>Ngày nhận hàng dự kiến:</dt>
                     <dd><span class="fw-bold border-bottom">{{billResponse.deliveryDate | date: "dd/MM/yyyy HH:mm"}}</span></dd>
-                </div>
+                </div> -->
                 <div class="info-item">
                     <dt>Phương thức thanh toán:</dt>
                     <dd><span class="fw-bold border-bottom">{{billResponse.paymentMethod.name}}</span></dd>
                     
-                    <!-- <dd>
-                        <div class="badge text-wrap status-{{status}}" style="font-size: 15px;">
-                            {{possibleSteps[status].title}}
-                        </div>
-                    </dd> -->
                 </div>
+                <div class="info-item" ng-if="billResponse.voucher">
+                    <dt>Sử dụng voucher:</dt>
+                    <dd><span class="fw-bold border-bottom">{{billResponse.voucher.name}}</span></dd>
+                </div>
+                
+       
             </div>
             <div class="col-md-7">
                 <div class="info-item">
@@ -189,7 +190,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="bd in billDetail">
+                        <tr ng-repeat="bd in billDetail" style="    vertical-align: middle;">
                         <td>{{$index + 1}}</td>
 
                             <td class="col-5">
@@ -268,20 +269,23 @@
                 <table class="table">
                     <!-- Thêm một hàng mới hiển thị các thông tin tổng hợp -->
                     <footer>
-                        <tr>
+                        <tr class="fw-bold">
                             <td><strong>Tổng tiền hàng:</strong></td>
                             <td class="text-right">{{ formatCurrency(billResponse.totalAmount) }} đ</td>
                         </tr> 
-                        <tr>
-                            <td><strong>Giảm giá hóa đơn:</strong></td>
+                        <tr class="fw-bold">
+
+                            <td><strong>Giảm giá:</strong></td>
                             <td class="text-right">{{ formatCurrency(billResponse.totalAmount - billResponse.totalAmountAfterDiscount)  }} đ</td>
                         </tr>
-                        <tr>
+                        <tr class="fw-bold">
+
                             <td><strong>Phí ship:</strong></td>
                             <td class="text-right">{{ formatCurrency(billResponse.shippingFee) }} đ</td>
                         </tr>
-                        <tr>
-                            <td><strong>Khách phải trả:</strong></td>
+                        <tr class="fw-bold">
+
+                            <td><strong>Tổng tiền:</strong></td>
                             <td class="text-right">{{ formatCurrency(billResponse.totalAmountAfterDiscount + billResponse.shippingFee)  }} đ</td>
                         </tr>
                     </footer>

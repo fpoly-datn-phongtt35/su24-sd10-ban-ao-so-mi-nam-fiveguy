@@ -233,6 +233,11 @@
                                 <p>Giảm {{ formatCurrency(voucher.value) }}{{ voucher.discountType === 2 ? ' đ' : ' %' }} cho đơn từ {{ formatCurrency(voucher.minimumTotalAmount)  }} đ
                                   <br/>Tối đa {{ formatCurrency(voucher.maximumReductionValue)  }} đ
                                 </p>
+                                <p ng-if="voucher.applyfor === 1">
+                                  Số lượt sử dụng: {{ voucher.numberOfUsed }} / {{ voucher.numberOfUses }}
+                              </p>
+                              
+
                                 <p>HSD: {{ voucher.endDate | date:'dd-MM-yyyy HH:mm' }}</p>
                                 <span ng-if="voucher.show === 2" class="limit-message">Bạn đã sử dụng hết lượt giảm giá</span>
                                 <span ng-if="voucher.quantity <= 1" class="limit-message">Giảm giá này đã hết số lượng</span>

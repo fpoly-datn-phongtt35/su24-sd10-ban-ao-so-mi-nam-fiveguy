@@ -19,9 +19,12 @@ public class VoucherDTO {
     private String describe;
     private Date endDate;
     private Integer show;
+    private Integer numberOfUses;
+    private Integer numberOfUsed;
+    private Integer applyfor;
 
 
-    public VoucherDTO(Long id, String code, String name, Double value, Integer discountType, Double maximumReductionValue, Double minimumTotalAmount, Integer quantity, String describe, Date endDate, Integer show) {
+    public VoucherDTO(Long id, String code, String name, Double value, Integer discountType, Double maximumReductionValue, Double minimumTotalAmount, Integer quantity, String describe, Date endDate, Integer show, Integer numberOfUses, Integer numberOfUsed, Integer applyfor) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -33,5 +36,8 @@ public class VoucherDTO {
         this.describe = describe;
         this.endDate = endDate;
         this.show = show;
+        this.numberOfUses = numberOfUses;
+        this.numberOfUsed = numberOfUsed;
+        this.applyfor = applyfor;
     }
 }

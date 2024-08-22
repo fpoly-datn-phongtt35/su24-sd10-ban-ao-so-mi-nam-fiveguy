@@ -444,3 +444,19 @@ dd {
 .statuss-9 { color: #ffc107; } /* Giao lại */
 .statuss-10 { color: #17a2b8; } /* Đang giao lại */
 .statuss-11 { color: #ed79ff; } /* Đang chuyển hàng về kho */
+
+
+.form-control-custom {
+    border: none;
+    border-bottom: 3px solid #ced4da;
+    outline: none;
+    /* Xóa đường viền khi focus */
+    transition: border-color 0.2s ease-in-out;
+    /* Hiệu ứng chuyển đổi màu viền */
+    font-weight: bold;
+}
+
+.form-control-custom:focus {
+    border-color: #007bff;
+    /* Màu viền khi focus */
+}

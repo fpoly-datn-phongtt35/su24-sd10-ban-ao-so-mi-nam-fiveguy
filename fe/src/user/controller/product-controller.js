@@ -875,6 +875,7 @@ $scope.dataCity.ProvinceID;
           delete $scope.selectedVoucher.selected;
           delete $scope.selectedVoucher.valueVoucher;
           delete $scope.selectedVoucher.show;
+          delete $scope.selectedVoucher.numberOfUsed;
           bill.voucher = $scope.selectedVoucher; 
         }
         
@@ -907,7 +908,7 @@ $scope.dataCity.ProvinceID;
             else if (typeof body === 'number') {
                  if (body === 3) {
                     $scope.showErrorNotification("Mã giảm giá đã hết vui lòng chọn mã giảm giá khác")
-                      // Xử lý logic tương ứng
+                    $scope.getVouchersForCustomer();
                   } else if(body == 333){
                     $location.path('/home/paymentSuccess');
 

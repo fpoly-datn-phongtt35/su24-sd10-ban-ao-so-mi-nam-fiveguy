@@ -2,6 +2,7 @@ package com.example.demo.service.common.impl;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerType;
+import com.example.demo.entity.CustomerTypeVoucher;
 import com.example.demo.entity.Voucher;
 import com.example.demo.model.response.common.VoucherDTO;
 import com.example.demo.repository.common.CustomerCommonRepository;
@@ -38,38 +39,55 @@ public class VoucherCommonServiceImpl implements VoucherCommonService {
         return voucherCommonRepository.findAllByStatusAndApplyFor();
     }
 
+    public List<Voucher> getVouchersForCustomer(Customer customer) {
+        List<Voucher> applicableVouchers = new ArrayList<>();
+        List<CustomerTypeVoucher> customerTypeVouchers = customerTypeVouchersRepository
+                .findByCustomerTypeId(customer.getCustomerType().getId());
+        applicableVouchers = customerTypeVouchers.stream()
+                .map(CustomerTypeVoucher::getVoucher)
+                .filter(voucher -> voucher.getApplyfor() == 1 && voucher.getStatus() == 1)
+                .collect(Collectors.toList());
+
+        return applicableVouchers;
+    }
+
 
 
     @Override
     public List<VoucherDTO> getVouchersForCustomer(Customer customer, String search) {
-        // Criterion 1: get vouchers by CustomerTypeVouchers
-        List<Long> voucherIdsFromCustomerType = customerTypeVouchersRepository.findVoucherIdsByCustomerTypeId(customer.getCustomerType().getId());
-        List<Voucher> vouchersFromCustomerType = voucherCommonRepository.findAllByIdAndStatus(voucherIdsFromCustomerType);
+        List<VoucherDTO> voucherDTOs = new ArrayList<>();
 
-        // Criterion 2: get vouchers by applyfor all
-        List<Voucher> voucherStatus0 = voucherCommonRepository.findAllByStatus1AndApplyFor();
+        // Criterion 1: Get vouchers by CustomerTypeVouchers, if the customer has a CustomerType
+        if (customer.getCustomerType() != null) {
+            List<Voucher> vouchersFromCustomerType = getVouchersForCustomer(customer);
 
-        // Combine both lists
-        List<Voucher> combinedVouchers = new ArrayList<>();
-        combinedVouchers.addAll(vouchersFromCustomerType);
-        combinedVouchers.addAll(voucherStatus0);
+            // Convert to VoucherDTO and apply checkNumberOfUser
+            voucherDTOs.addAll(vouchersFromCustomerType.stream()
+                    .map(voucher -> new VoucherDTO(
+                            voucher.getId(),
+                            voucher.getCode(),
+                            voucher.getName(),
+                            voucher.getValue(),
+                            voucher.getDiscountType(),
+                            voucher.getMaximumReductionValue(),
+                            voucher.getMinimumTotalAmount(),
+                            voucher.getQuantity(),
+                            voucher.getDescribe(),
+                            voucher.getEndDate(),
+                            checkNumberOfUser(customer, voucher) ,
+                            voucher.getNumberOfUses(),
+                            getNumberOfUser(customer, voucher),
+                            voucher.getApplyfor()
 
-        // Remove duplicates
-        combinedVouchers = combinedVouchers.stream().distinct().collect(Collectors.toList());
-
-        // Filter by voucher name or code
-        if (search != null && !search.isEmpty()) {
-            combinedVouchers = combinedVouchers.stream()
-                    .filter(voucher -> voucher.getName().toLowerCase().contains(search.toLowerCase())
-                            || voucher.getCode().toLowerCase().contains(search.toLowerCase()))
-                    .collect(Collectors.toList());
+                            ))
+                    .collect(Collectors.toList()));
         }
 
-        // Sort by maximumReductionValue in descending order
-        combinedVouchers.sort(Comparator.comparing(Voucher::getMaximumReductionValue).reversed());
+        // Criterion 2: Get vouchers by apply for all
+        List<Voucher> voucherStatus0 = voucherCommonRepository.findAllByStatus1AndApplyFor();
 
-        // Convert List<Voucher> to List<VoucherDTO>
-        List<VoucherDTO> voucherDTOs = combinedVouchers.stream()
+        // Convert to VoucherDTO and set checkNumberOfUser to 1
+        voucherDTOs.addAll(voucherStatus0.stream()
                 .map(voucher -> new VoucherDTO(
                         voucher.getId(),
                         voucher.getCode(),
@@ -81,22 +99,45 @@ public class VoucherCommonServiceImpl implements VoucherCommonService {
                         voucher.getQuantity(),
                         voucher.getDescribe(),
                         voucher.getEndDate(),
-                        checkNumberOfUser(customer,voucher)
+                        1,
+                        1,
+                        1,
+                        voucher.getApplyfor()
                 ))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+
+        // Remove duplicates
+        voucherDTOs = voucherDTOs.stream().distinct().collect(Collectors.toList());
+
+        // Filter by voucher name or code
+        if (search != null && !search.isEmpty()) {
+            voucherDTOs = voucherDTOs.stream()
+                    .filter(voucher -> voucher.getName().toLowerCase().contains(search.toLowerCase())
+                            || voucher.getCode().toLowerCase().contains(search.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        // Sort by maximumReductionValue in descending order
+        voucherDTOs.sort(Comparator.comparing(VoucherDTO::getMaximumReductionValue).reversed());
 
         return voucherDTOs;
     }
 
+
+
     public  Integer checkNumberOfUser(Customer customer,Voucher voucher){
            Integer countUse = billServiceCommonImpl.countVoucherUsageByCustomer(customer.getId(),voucher.getId());
-//        System.out.println(countUse);
-//        System.out.println(voucher.getNumberOfUses());
            if (countUse > voucher.getNumberOfUses()){
                return 2;
            }
            return 1;
         }
+
+    public  Integer getNumberOfUser(Customer customer,Voucher voucher){
+        Integer countUse = billServiceCommonImpl.countVoucherUsageByCustomer(customer.getId(),voucher.getId());
+
+        return countUse;
+    }
 
 
 //        Lấy list voucher cho bán tại quầy truyền tạo controller chọn khách hàng có id truyền vào
@@ -105,94 +146,7 @@ public class VoucherCommonServiceImpl implements VoucherCommonService {
 //    ----
 @Override
 public List<VoucherDTO> getVouchersForCustomer(Long id, String search) {
-    // Nếu id là null, trả về các voucher có trạng thái 1 và áp dụng cho tất cả
-    if (id == null) {
-        List<Voucher> voucherStatus0 = voucherCommonRepository.findAllByStatus1AndApplyFor();
 
-        // Filter by voucher name or code
-        if (search != null && !search.isEmpty()) {
-            voucherStatus0 = voucherStatus0.stream()
-                    .filter(voucher -> voucher.getName().toLowerCase().contains(search.toLowerCase())
-                            || voucher.getCode().toLowerCase().contains(search.toLowerCase()))
-                    .collect(Collectors.toList());
-        }
-
-        // Sort by maximumReductionValue in descending order
-        voucherStatus0.sort(Comparator.comparing(Voucher::getMaximumReductionValue).reversed());
-
-        // Convert List<Voucher> to List<VoucherDTO>
-        return voucherStatus0.stream()
-                .map(voucher -> new VoucherDTO(
-                        voucher.getId(),
-                        voucher.getCode(),
-                        voucher.getName(),
-                        voucher.getValue(),
-                        voucher.getDiscountType(),
-                        voucher.getMaximumReductionValue(),
-                        voucher.getMinimumTotalAmount(),
-                        voucher.getQuantity(),
-                        voucher.getDescribe(),
-                        voucher.getEndDate(),
-                        1 // Mặc định là 1 vì không có khách hàng cụ thể để kiểm tra số lượng sử dụng
-                ))
-                .collect(Collectors.toList());
-    }
-
-    // Fetch the customer
-    Optional<Customer> customer = customerCommonRepository.findById(id);
-
-    if (customer.isPresent()) {
-        CustomerType customerType = customer.get().getCustomerType();
-        List<Voucher> vouchersFromCustomerType = new ArrayList<>();
-
-        if (customerType != null && customerType.getId() != null) {
-            // Criterion 1: get vouchers by CustomerTypeVouchers
-            List<Long> voucherIdsFromCustomerType = customerTypeVouchersRepository.findVoucherIdsByCustomerTypeId(customerType.getId());
-            vouchersFromCustomerType = voucherCommonRepository.findAllByIdAndStatus(voucherIdsFromCustomerType);
-        }
-
-        // Criterion 2: get vouchers by apply for all
-        List<Voucher> voucherStatus0 = voucherCommonRepository.findAllByStatus1AndApplyFor();
-
-        // Combine both lists
-        List<Voucher> combinedVouchers = new ArrayList<>();
-        combinedVouchers.addAll(vouchersFromCustomerType);
-        combinedVouchers.addAll(voucherStatus0);
-
-        // Remove duplicates
-        combinedVouchers = combinedVouchers.stream().distinct().collect(Collectors.toList());
-
-        // Filter by voucher name or code
-        if (search != null && !search.isEmpty()) {
-            combinedVouchers = combinedVouchers.stream()
-                    .filter(voucher -> voucher.getName().toLowerCase().contains(search.toLowerCase())
-                            || voucher.getCode().toLowerCase().contains(search.toLowerCase()))
-                    .collect(Collectors.toList());
-        }
-
-        // Sort by maximumReductionValue in descending order
-        combinedVouchers.sort(Comparator.comparing(Voucher::getMaximumReductionValue).reversed());
-
-        // Convert List<Voucher> to List<VoucherDTO>
-        List<VoucherDTO> voucherDTOs = combinedVouchers.stream()
-                .map(voucher -> new VoucherDTO(
-                        voucher.getId(),
-                        voucher.getCode(),
-                        voucher.getName(),
-                        voucher.getValue(),
-                        voucher.getDiscountType(),
-                        voucher.getMaximumReductionValue(),
-                        voucher.getMinimumTotalAmount(),
-                        voucher.getQuantity(),
-                        voucher.getDescribe(),
-                        voucher.getEndDate(),
-                        // 1 hiển thị được, 2 vượt quá số lượng giới hạn voucher
-                        checkNumberOfUser(customer.get(), voucher)
-                ))
-                .collect(Collectors.toList());
-
-        return voucherDTOs;
-    }
 
     return null;
 }

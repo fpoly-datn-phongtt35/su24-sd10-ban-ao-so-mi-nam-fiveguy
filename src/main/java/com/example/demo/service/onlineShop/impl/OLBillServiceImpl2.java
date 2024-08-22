@@ -1,9 +1,11 @@
 package com.example.demo.service.onlineShop.impl;
 
 import com.example.demo.entity.*;
+import com.example.demo.repository.common.CustomerTypeVouchersCommonRepository;
 import com.example.demo.repository.common.VoucherCommonRepository;
 import com.example.demo.repository.onlineShop.OLBillHistoryRepository2;
 import com.example.demo.repository.onlineShop.OLBillRepository2;
+import com.example.demo.repository.point.CustomerTypeRepository;
 import com.example.demo.service.onlineShop.OLBillDetailService2;
 import com.example.demo.service.onlineShop.OLBillService2;
 import com.example.demo.service.onlineShop.OLProductDetailService2;
@@ -47,6 +49,8 @@ public class OLBillServiceImpl2 implements OLBillService2 {
     @Autowired
     private OLBillHistoryRepository2 billHistoryRepository;
 
+    @Autowired
+    private CustomerTypeRepository customerTypeRepository;
 
     private boolean isQuantityAvailable(ProductDetail productDetail, int quantityToRemove) {
         int currentQuantity = productDetail.getQuantity() - 1;
@@ -100,12 +104,20 @@ public class OLBillServiceImpl2 implements OLBillService2 {
             Voucher existingVoucher = olVouchersRepository.findById(bill.getVoucher().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
 
-            if ( existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 1) {
-
+            if (existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 1) {
+                if (existingVoucher.getApplyfor() == 1) {
+                    CustomerType customerType = customerTypeRepository.findByCustomersId(customer.getId())
+                            .orElseThrow(() -> new IllegalArgumentException("CustomerType not found"));
+                    if (customerType.getStatus() != 1) {
+                        return ResponseEntity.ok(3); // Add a different response code to handle this case
+                    }
+                }
             } else {
-                return ResponseEntity.ok(3);
+                return ResponseEntity.ok(3); // Existing condition: Voucher not valid
             }
         }
+
+
 
 
         // Kiểm tra và xử lý số lượng sản phẩm trước khi thanh toán

@@ -111,6 +111,11 @@
 }
 
 
+.status.stopped {
+    background-color: #ffc107; /* Red for 'Đã kết thúc' */
+    color: white;
+}
+
 .table-container .action-btn {
     background: none;
     border: none;

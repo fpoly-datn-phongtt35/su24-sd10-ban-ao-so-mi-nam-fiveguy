@@ -111,20 +111,17 @@ public class SaleServiceImpl2 implements SaleService2 {
 
     @Override
     public Long countCurrentSales() {
-        Date currentDate = new Date();
-        return saleRepository2.countCurrentSales(currentDate);
+        return saleRepository2.countSalesWithStatusOneOrFour();
     }
 
     @Override
     public Long countUpcomingSales() {
-        Date currentDate = new Date();
-        return saleRepository2.countUpcomingSales(currentDate);
+        return saleRepository2.countSalesWithStatusTwo();
     }
 
     @Override
     public Long countExpiredSales() {
-        Date currentDate = new Date();
-        return saleRepository2.countExpiredSales(currentDate);
+        return saleRepository2.countSalesWithStatusThree();
     }
 
     @Override
