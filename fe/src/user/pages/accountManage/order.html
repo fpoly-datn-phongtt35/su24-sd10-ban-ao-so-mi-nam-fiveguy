@@ -241,7 +241,8 @@ img.rounded-4.fit {
                             <tr>
                                 <th>Mã hóa đơn</th>
                                 <!-- <th>Ngày thanh toán</th> -->
-                                <th>Ngày giao hàng dự kiến</th>
+                                <!-- <th>Ngày giao hàng dự kiến</th> -->
+                                <th>Loại</th>
                                 <th>Trạng thái đơn hàng</th>
                                 <th>Giá tiền</th>
                                 <th>Xem chi tiết</th>
@@ -251,15 +252,40 @@ img.rounded-4.fit {
                             <tr ng-repeat="bill in bill">
                                 <td>{{ bill.code }}</td>
                                 <!-- <td>{{ bill.paymentDate | date:'dd/MM/yyyy' }}</td> -->
-                                <td>{{ bill.deliveryDate | date:'dd/MM/yyyy' }}</td>
-                                <td><span  >
-                                    <div  class="badge text-wrap bg-info" 
-                                        style="width: 65%; font-size: 14px;" ng-style="{'background-color': s.color}">
-                                        {{getStatusText(bill.status)}}
-                                    </div>
-                                </span></td>
+                                <!-- <td>{{ bill.deliveryDate | date:'dd/MM/yyyy' }}</td> -->
+                                <td ng-switch="bill.typeBill" style="font-size: 20px;">
+                                    <span ng-switch-when="1">
+                                        <div class="badge bg-info text-wrap" style="width: 65%;">
+                                            Tại quầy
+                                        </div>
+                                    </span>
+                                    <span ng-switch-when="2">
+                                        <div class="badge bg-secondary text-wrap" style="width: 65%;">
+                                            Giao hàng
+                                        </div>
+                                    </span>
+                                    <span ng-switch-when="3">
+                                        <div class="badge bg-success text-wrap" style="width: 65%;">
+                                            Online
+                                        </div>
+                                    </span>
+                                    <span ng-switch-default>
+                                        <div class="badge bg-light text-dark text-wrap" style="width: 65%;">
+                                            Khác
+                                        </div>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span ng-repeat="s in statusDisplay" ng-if="s.status == bill.status">
+                                        <div class="badge text-wrap status-{{s.status}}" style="width: 65%;padding: 5px;font-size: 15px;">
+                                            {{s.title}}
+                                        </div>
+                                    </span>
+                                </td>
+                                
+                                
 
-                                <td>{{ bill.totalAmountAfterDiscount + bill.shippingFee | number}} đ</td>
+                                <td>{{formatCurrency( bill.totalAmountAfterDiscount + bill.shippingFee )}} đ</td>
     
                         <td>
                             <a ng-href="#home/orderDetail/{{bill.id}}" class="button-submit action-btn">

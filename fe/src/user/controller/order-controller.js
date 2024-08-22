@@ -1,6 +1,7 @@
 app.controller("orderController", function ($scope, $http, $window,$routeParams,$rootScope,$location,$timeout) {
 
     const apiBillHistory = "http://localhost:8080/api/home/bill-history"
+    $scope.description= '';
     
   // Hàm hiển thị thông báo thành công
   $scope.showSuccessNotification = function(message) {
@@ -239,7 +240,6 @@ if ($scope.idBill != undefined) {
             $scope.reasonSuggestions = [];
         }
     };
-    $scope.description= '';
     $scope.confirmChangeStatus = function () {
         if (!$scope.isReasonSelected() && $scope.reasonSuggestions.length > 0) {
             $scope.showErrorNotification("Vui lòng lý do để hủy.");
@@ -284,7 +284,8 @@ if ($scope.idBill != undefined) {
 
         console.log(data);
         $http.put('http://localhost:8080/api/home/bill/billStatusUpdate/' + $scope.idBill, data).then(function (response) {
-
+        console.log(response.data);
+                
             $('#changeStatusModal').modal('hide');
 
             $scope.getBillById($scope.idBill);
@@ -299,8 +300,8 @@ if ($scope.idBill != undefined) {
         });
 
         // Xóa nội dung ghi chú sau khi xác nhận
-        $scope.billHistoryUpdate.description = null;
-        $scope.otherReasonText = null;
+        // $scope.billHistoryUpdate.description = null;
+        // $scope.otherReasonText = null;
     };
 
     $scope.isReasonSelected = function () {
@@ -331,7 +332,7 @@ if ($scope.idBill != undefined) {
 
     $scope.reasonsList = {
         // Hủy bên khách hàng
-        76: { text: "Không liên hệ được nhân viên giao hàng", value: 76, status: 0 },
+        76: { text: "Không liên hệ được nhân viên", value: 76, status: 0 },
 
         70: { text: "Thay đổi ý định mua hàng", value: 70, status: 0, shortenText: "" },
         71: { text: "Tìm thấy giá tốt hơn", value: 71, status: 0, shortenText: "" },
@@ -352,6 +353,9 @@ if ($scope.idBill != undefined) {
         },
         2: { // Chờ vận chuyển
             50: [70,71,72,73,74,75,76]
+        },    
+        60: { // Chờ vận chuyển
+            50: [70,71,72,73,74,75]
         },
     };
 
@@ -381,8 +385,6 @@ if ($scope.idBill != undefined) {
             30: { title: "Trả hàng", icon: "warehouse", status: 30 },   //trả tại quầy
             31: { title: "Trả hàng", icon: "warehouse", status: 31 },   //trả ship  
             32: { title: "Đã trả hàng", icon: "warehouse", status: 32 },
-            
-             50: { title: "Khách yêu cầu hủy", icon: "warehouse", status: 50 }// khách yêu cầu hủy
         };
 
         $scope.possibleSteps = {
@@ -392,6 +394,9 @@ if ($scope.idBill != undefined) {
             3: { title: "Đang giao hàng", icon: "local_shipping", status: 3 },
             4: { title: "Đã giao hàng", icon: "check_circle", status: 4 },
 
+            60: { title: "Chờ nhập hàng", icon: "not_interested", status: 60 },
+
+            50: { title: "Yêu cầu hủy", icon: "cancel", status: 50 },
             5: { title: "Hủy", icon: "cancel", status: 5 },
             6: { title: "Hủy", icon: "not_interested", status: 6 },
 
@@ -406,15 +411,13 @@ if ($scope.idBill != undefined) {
             12: { title: "Đã hoàn hàng", icon: "assignment_turned_in", status: 12 },
             13: { title: "Hoàn hàng thất bại", icon: "assignment_return", status: 13 },
 
-            20: { title: "Thành công", icon: "task_alt", status: 20 },
             21: { title: "Hoàn thành", icon: "task_alt", status: 21 },
+            22: { title: "Thành công", icon: "task_alt", status: 20 },
 
             30: { title: "Trả hàng", icon: "store", status: 30 },  //tại quầy
             31: { title: "Trả hàng", icon: "local_shipping", status: 31 },  //tận nơi
             32: { title: "Đã trả hàng", icon: "inventory_2", status: 32 },
             33: { title: "Trả hàng thất bại", icon: "assignment_late", status: 33 },
-
-            50: { title: "Khách yêu cầu hủy", icon: "warehouse", status: 50 }// khách yêu cầu hủy
 
         };
 
@@ -422,6 +425,7 @@ if ($scope.idBill != undefined) {
         $scope.deliveryFlow = {
             1: [5], // Chờ xác nhận -> Chờ vận chuyển hoặc khách hủy hoặc đã hủy
             2: [50], // Chờ vận chuyển -> yêu cầu hủy
+            60: [50], // Chờ vận chuyển -> yêu cầu hủy
           
         };
         $scope.steps = [];
@@ -658,50 +662,37 @@ $scope.rating = {
     }
   };
 
-  $scope.getStatusText = function(status) {
-    try {
-        switch (status) {
-            case 1:
-                return "Chờ xác nhận";
-            case 2:
-                return "Chờ giao hàng";
-            case 3:
-                return "Đang giao hàng";
-            case 4:
-                return "Đã giao hàng";
-            case 5:
-            case 6:
-                return "Hủy";
-            case 7:
-            case 8:
-            case 81:
-                return "Thất bại";
-            case 9:
-                return "Chờ giao lại";
-            case 10:
-                return "Đang giao lại";
-            case 11:
-                return "Đang hoàn hàng";
-            case 12:
-                return "Đã hoàn hàng";
-            case 20:
-                return "Tạo đơn hàng";
-            case 21:
-                return "Hoàn thành";
-            case 30:
-            case 31:
-                return "Trả hàng";
-            case 32:
-                return "Đã trả hàng";
-            case 50:
-                return "Khách yêu cầu hủy";
-            default:
-                return "Unknown Status"; // Default text if status is not found
-        }
-    } catch (error) {
-        console.error("Error fetching status text: ", error);
-        return "Error"; // Return a fallback text in case of an error
-    }
+  $scope.statusDisplay = {
+    20: { title: "Tạo đơn hàng", icon: "post_add", status: 20 },
+    1: { title: "Chờ xác nhận", icon: "hourglass_empty", status: 1 },
+    2: { title: "Chờ giao hàng", icon: "inventory", status: 2 },
+    3: { title: "Đang giao hàng", icon: "local_shipping", status: 3 },
+    4: { title: "Đã giao hàng", icon: "check_circle", status: 4 },
+
+    60: { title: "Chờ nhập hàng", icon: "not_interested", status: 60 },
+
+    50: { title: "Yêu cầu hủy", icon: "cancel", status: 50 },
+    5: { title: "Khách hủy", icon: "cancel", status: 5 },
+    6: { title: "Đã hủy", icon: "not_interested", status: 6 },
+
+    7: { title: "Thất bại", icon: "error", status: 7 },
+    8: { title: "Thất bại", icon: "error", status: 8 }, //Lại - thiếu
+    81: { title: "Thất bại", icon: "error", status: 81 }, //Mất hàng
+
+    9: { title: "Chờ giao lại", icon: "replay", status: 9 },
+    10: { title: "Đang giao lại", icon: "local_shipping", status: 10 },
+
+    11: { title: "Đang hoàn hàng", icon: "assignment_return", status: 11 },
+    12: { title: "Đã hoàn hàng", icon: "assignment_turned_in", status: 12 },
+    13: { title: "Hoàn hàng thất bại", icon: "assignment_return", status: 13 },
+
+    21: { title: "Hoàn thành", icon: "task_alt", status: 21 },
+
+    30: { title: "Trả hàng", icon: "store", status: 30 },  //tại quầy
+    31: { title: "Trả hàng", icon: "local_shipping", status: 31 },  //tận nơi
+    32: { title: "Đã trả hàng", icon: "inventory_2", status: 32 },
+    33: { title: "Trả hàng thất bại", icon: "assignment_late", status: 33 },
+
 };
 
 
