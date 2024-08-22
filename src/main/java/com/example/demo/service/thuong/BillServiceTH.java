@@ -23,7 +23,6 @@ public interface BillServiceTH {
     Bill updateBill(Long id, String address, String addressId, String reciverName,  String phoneNumbe);
     Bill updateShippingFee(Long id, BigDecimal shippingFee);
     Bill updateTypeBill(Bill bill);
-    Bill updatePaidAmount(Bill bill);
     Bill updateVoucher(Long billId, Long newVoucherId);
     Bill removeVoucherFromBill(Long billId);
 }

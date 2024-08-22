@@ -192,11 +192,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                     $scope.isChecked = true
                 }
                 $scope.getTotalQuantity();
-
-            $scope.selectedBillDetail = $scope.selectedBill.billDetail;
-
             $scope.showAddress($scope.selectedBill);
-
+            
             $scope.showShippingFee($scope.selectedBill);
             $scope.clearInputPrice();
             $scope.keyword = '';
@@ -226,8 +223,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     $scope.apiRemoveBill = () => {
         $scope.loadingRemove = true;
         $http.delete(`${config.host}/bill-th/delete-bill/${$scope.selectedBill.id}`).then(resp => {
-            $scope.selectedBill = null;
-            $scope.selectedVoucher = null;
             $('#deleteBill').modal('hide');
             toastr["success"]("Xóa " + resp.data.code + " thành công");
             $scope.getBills();
@@ -236,6 +231,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             $('#deleteBill').modal('hide');
             console.log("Error", error);
         }).finally(() => {
+            $scope.selectedBill = null;
+            $scope.selectedVoucher = null;
             $scope.loadingRemove = false; 
         });
     }
@@ -279,8 +276,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             .then(resp => {
                 $scope.getBills();
                 $scope.selectedBill = resp.data;
-            $scope.selectedBillDetail = $scope.selectedBill.billDetail;
-
                 $scope.getTotalQuantity();
                 toastr["success"]("Thêm " + productDetail.product.name + " " + productDetail.color.name + " vào giỏ hàng thành công");
             })
@@ -302,8 +297,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $http.put(`${config.host}/bill-th/add-cart/${productDetail.id}`, $scope.selectedBill).then(resp => {
             $scope.getBills();
             $scope.selectedBill = resp.data;
-            $scope.selectedBillDetail = $scope.selectedBill.billDetail;
-
             $scope.getTotalQuantity();
             $scope.showShippingFee($scope.selectedBill);
             $scope.add = false;
@@ -327,8 +320,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $http.put(`${config.host}/bill-th/remove-cart/${productDetail.id}`, $scope.selectedBill).then(resp => {
             $scope.getBills();
             $scope.selectedBill = resp.data;
-            $scope.selectedBillDetail = $scope.selectedBill.billDetail;
-
             $scope.getTotalQuantity();
             $scope.showShippingFee($scope.selectedBill);
             $scope.remove = false;
@@ -354,7 +345,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $http.put(`${config.host}/bill-th/update-cart/${item.productDetail.id}?updateQty=${item.quantity}`, $scope.selectedBill).then(resp => {
             $scope.getBills();
             $scope.selectedBill = resp.data;
-            $scope.selectedBillDetail = $scope.selectedBill.billDetail;
             $scope.getTotalQuantity();
             $scope.showShippingFee($scope.selectedBill);
         }).catch(error => {
@@ -376,7 +366,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $http.put(`${config.host}/bill-th/delete-cart/${productDetail.id}`, $scope.selectedBill).then(resp => {
             $scope.getBills();
             $scope.selectedBill = resp.data;
-            $scope.selectedBillDetail = $scope.selectedBill.billDetail;
             $scope.getTotalQuantity();
             $scope.showShippingFee($scope.selectedBill);
         }).catch(error => {
@@ -572,13 +561,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
 
     $scope.changeInputPrice = function(value) {
         $scope.selectedBill.paidAmount = value;
-        $http.post('http://localhost:8080/api/admin/bill-th/paidAmount', $scope.selectedBill)
-        .then(function(response) {
-            $scope.selectedBill = response.data;
-        })
-        .catch(function(error) {
-            // Handle error
-        });
+        $scope.updateBill();
         
     }
 
@@ -778,6 +761,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $http.put(`${config.host}/bill-th/payment`, $scope.selectedBill).then(resp => {
             $scope.getBills();
             $scope.selectedBill = null;
+            $scope.totalQuantity = 0;
             toastr["success"]("Thanh toán " + resp.data.code + " thành công");
         }).catch(error => {
             console.log("Error", error);
@@ -786,13 +770,12 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
 
     $scope.paymentBill = () => {
 
-        console.log($scope.selectedBill);
 
         $scope.selectedBill.totalAmountAfterDiscount = $scope.selectedBill.totalAmount - $scope.valueVoucher + $scope.shippingFee;
 
 
         
-        if ($scope.selectedBillDetail.length == 0) {
+        if ($scope.selectedBill.billDetail.length == 0) {
             toastr["warning"]("Vui lòng thêm sản phẩm vào giỏ hàng");
             return;
         }
@@ -804,7 +787,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         }
 
 
-        if ($scope.selectedBill.paymentMethod.name === 'Tiền mặt') {
+        if ($scope.selectedBill.paymentMethod.name == '13') {
 
             if ($scope.selectedBill.paidAmount == null) {
                 toastr["error"]("Vui lòng nhập số tiền khách thanh toán");
@@ -827,7 +810,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             }
         }
      
-        if ($scope.selectedBill.paymentMethod.name == "Chuyển khoản") {
+        if ($scope.selectedBill.paymentMethod.code == "14") {
             let paidContent = $scope.selectedBill.code;
             let paidPrice = $scope.selectedBill.totalAmountAfterDiscount;
             $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${paidPrice}&addInfo=${paidContent}`;
@@ -1009,8 +992,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                 }
 
                 $scope.selectedBill.voucher = $scope.selectedVoucher;
-                    console.log($scope.selectedVoucher)
-
               toastr["success"]($scope.voucherMessage)
             } else {
 

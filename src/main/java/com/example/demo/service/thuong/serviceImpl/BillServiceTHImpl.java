@@ -291,6 +291,7 @@ public class BillServiceTHImpl implements BillServiceTH {
             return null;
         }
         Bill bill = billOptional.get();
+        removeVoucherFromBill(id);
         List<BillDetail> listBD = billDetailsRepository.findAllByBill_Id(id);
         if (listBD.size() > 0) {
             for (BillDetail billDetail : listBD) {
@@ -329,6 +330,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         Bill bill = billOptional.get();
         bill.setEmployee(employee);
         bill.setCustomer(billRequest.getCustomer());
+        bill.setPaidAmount(billRequest.getPaidAmount());
         Optional<PaymentMethod> paymentMethodOptional = paymentMethodRepository.findById(billRequest.getPaymentMethod().getId());
         if (paymentMethodOptional.isEmpty()) {
             return null;
@@ -468,10 +470,6 @@ public class BillServiceTHImpl implements BillServiceTH {
         return billRepository.save(bill);
     }
 
-    @Override
-    public Bill updatePaidAmount(Bill bill) {
-        return billRepository.save(bill);
-    }
 
     @Override
     public Bill updateVoucher(Long billId, Long newVoucherId) {

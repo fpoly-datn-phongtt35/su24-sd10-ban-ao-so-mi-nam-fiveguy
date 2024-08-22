@@ -3,7 +3,6 @@ package com.example.demo.restController.thuong;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.Employee;
 import com.example.demo.model.request.thuong.BillUpdateRequest;
-import com.example.demo.model.request.thuong.CategoryRequestTH;
 import com.example.demo.model.response.thuong.BillResponseTH;
 import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.thuong.BillServiceTH;
@@ -97,11 +96,6 @@ public class BillControllerTH {
     @PostMapping("/typeBill")
     public Bill updateTypeBill(@RequestBody Bill bill) {
         return billService.updateTypeBill(bill);
-    }
-
-    @PostMapping("/paidAmount")
-    public Bill updatePaidAmount(@RequestBody Bill bill) {
-        return billService.updatePaidAmount(bill);
     }
 
     @PutMapping("/{billId}/update-voucher/{voucherId}")
