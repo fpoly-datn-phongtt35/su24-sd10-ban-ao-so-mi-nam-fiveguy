@@ -831,6 +831,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     }
 
     $scope.paymentBill = () => {
+        console.log($scope.selectedBill);
 
 
         $scope.selectedBill.totalAmountAfterDiscount = $scope.selectedBill.totalAmount - $scope.valueVoucher + $scope.shippingFee;
@@ -871,17 +872,18 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                 return;
             }
         }
+
      
-        if ($scope.selectedBill.paymentMethod.code == "14") {
-            let paidContent = $scope.selectedBill.code;
-            let paidPrice = $scope.selectedBill.totalAmountAfterDiscount;
-            $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${paidPrice}&addInfo=${paidContent}`;
-            $scope.runCheckPaid = false;
-            $scope.checkPaid(paidPrice, paidContent);
-            $('#qrModal').modal('show');
-        } else {
-            $scope.apiPayment();
-        }
+        // if ($scope.selectedBill.paymentMethod.code == "14") {
+        //     let paidContent = $scope.selectedBill.code;
+        //     let paidPrice = $scope.selectedBill.totalAmountAfterDiscount;
+        //     $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${paidPrice}&addInfo=${paidContent}`;
+        //     $scope.runCheckPaid = false;
+        //     $scope.checkPaid(paidPrice, paidContent);
+        //     $('#qrModal').modal('show');
+        // } else {
+        //     $scope.apiPayment();
+        // }
     }
 
     // Voucher
@@ -1006,8 +1008,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     
       $scope.applyVoucher = function() {
 
-        if ($scope.selectedVoucher != null && $scope.selectedVoucher.quantity > 0) {
-
+        if ($scope.selectedVoucher != null ) {
+    
             if ($scope.selectedBill.totalAmount >= $scope.selectedVoucher.minimumTotalAmount) {
               var voucherCopy = angular.copy($scope.selectedVoucher);
               delete voucherCopy.selected;
@@ -1074,7 +1076,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                 $scope.selectedBill.voucher = null;
 
               }
-            }
+}
+
         } else {
           
           $scope.voucherMessage = '';
