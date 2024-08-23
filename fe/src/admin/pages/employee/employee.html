@@ -179,11 +179,12 @@
                                         <button class="button-submit action-btn" data-bs-toggle="modal"
                                             data-bs-target="#modalUpdate" ng-click="edit(employee)"><span
                                                 class="material-icons">
-                                                visibility
+                                                edit
                                             </span></button>
-                                        <button class="button-submit action-btn" ng-click="delete(employee)"><span
+                                        <button class="button-submit action-btn" data-bs-toggle="modal"
+                                            data-bs-target="#modalDetail" ng-click="edit(employee)"><span
                                                 class="material-icons">
-                                                delete
+                                                visibility
                                             </span></button>
                                     </td>
                                 </tr>
@@ -268,7 +269,7 @@
                     </select>
 
                     <!-- <label>Thời gian:</label> -->
-                    <input type="text" class="form-control" ng-model="filterAuditlog.time" placeholder="Nhập mã"
+                    <input type="text" class="form-control" ng-model="filterAuditlog.time" placeholder="Chọn ngày"
                         onfocus="(this.type='date')" />
                     <!-- <label>Loại tài khoản:</label> -->
                     <!-- <select class="form-select" ng-model="filterAuditlog.status">
@@ -337,7 +338,7 @@
                                             data-bs-target="#AuditLogUpdate" ng-click="detailAuditLog(employee)"><span
                                                 class="material-icons">
                                                 visibility
-                                            </span></i></button>
+                                            </span></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -607,16 +608,6 @@
 
                             </div>
                         </div>
-                        <!-- <div class="form-group"
-                            ng-class="{'has-error': (formUpdateEmployee.fullName.$touched || formUpdateEmployee.$submitted) && formUpdateEmployee.fullName.$invalid}">
-                            <label for="saleName" class="form-label">Tên đợt giảm giá</label>
-                            <input type="text" class="form-control" id="saleName" name="fullName"
-                                ng-model="formUpdate.fullName" required>
-                            <div class="text-danger"
-                                ng-show="(formUpdateEmployee.fullName || formUpdateEmployee.$submitted) && formUpdateEmployee.fullName.$invalid">
-                                Tên đợt giảm giá là bắt buộc.
-                            </div>
-                        </div> -->
 
 
                         <div class="row mb-3">
@@ -654,8 +645,8 @@
                                 </span>
                             </div>
                         </div>
-
-
+                    </div>
+                    <div class="col-lg-6">
                         <div class="row mb-4">
                             <label for="inputemail" class="col-sm-4 col-form-label">Email</label>
                             <div class="col-sm-8">
@@ -676,9 +667,6 @@
                                 </span>
                             </div>
                         </div>
-
-                    </div>
-                    <div class="col-lg-6">
                         <div class="row mb-3">
                             <label for="inputGender" class="col-sm-5 col-form-label">Giới Tính</label>
                             <div class="row col-sm-7">
@@ -695,9 +683,6 @@
                         <div class="row mb-3">
                             <label for="inputBirthDate" class="col-sm-4 col-form-label">Ngày Sinh</label>
                             <div class="col-sm-8">
-                                <!-- <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
-                                    ng-model="formUpdate.birthDate" ng-value="currentDate | date:'yyyy-MM-dd'"
-                                    required /> -->
                                 <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
                                     ng-model="formUpdate.birthDate" required />
                                 <span ng-show="formUpdateEmployee.$submitted">
@@ -721,35 +706,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Tạo</label>
-                            <div class="col-sm-8">
-                                <input name="createdAt" id="inputUpdatedAt" type="date" class="form-control"
-                                    ng-model="formUpdate.createdAt" readonly />
-                            </div>
-                        </div>
-                        <!-- <div class="row mb-3">
-                            <label for="inputcreatedBy" class="col-sm-4 col-form-label">Người Tạo</label>
-                            <div class="col-sm-8">
-                                <input name="createdBy" id="inputcreatedBy" type="text" class="form-control"
-                                    ng-model="formUpdate.createdBy" readonly />
-                            </div>
-                        </div> -->
-                        <div class="row mb-3">
-                            <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Sửa</label>
-                            <div class="col-sm-8">
-                                <input name="updatedAt" id="inputUpdatedAt" type="date" class="form-control"
-                                    ng-model="formUpdate.updatedAt" ng-value="currentDate | date:'yyyy-MM-dd'"
-                                    readonly />
-                            </div>
-                        </div>
-                        <!-- <div class="row mb-3">
-                            <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Người Sửa</label>
-                            <div class="col-sm-8">
-                                <input name="updatedBy" id="inputUpdatedBy" type="text" class="form-control"
-                                    ng-model="formUpdate.updatedBy" readonly />
-                            </div>
-                        </div> -->
+
                         <div class="row mb-3">
                             <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Chức vụ</label>
                             <div class="col-sm-8">
@@ -800,7 +757,170 @@
 </div>
 <!-- End modal update -->
 
+<!--Modal detail -->
+<div class="modal fade" tabindex="-1" id="modalDetail" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="overlay" ng-show="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && submitFormUpdate()" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết nhân viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" ng-click="resetFormUpdate()"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-lg-6">
+                        <!-- <h1>Avatar</h1> -->
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="image">
+                                    <img id="image-preview-update"
+                                        ng-src="{{formUpdate.avatar ? formUpdate.avatar : '/src/admin/common/img/no-img.png'}}"
+                                        style="width: 100px; height: 100px" readonly />
+                                </label>
+                            </div>
+                            <div class="col-8">
+                                <label for="image-update" class="col-sm-4 col-form-label">Hình Ảnh</label>
+                                <div>
+                                    <input class="form-control" name="path" type="file" id="image-update" readonly />
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="row mb-3">
+                            <label for="inputCode" class="col-sm-4 col-form-label">Mã</label>
+                            <div class="col-sm-8">
+                                <input name="code" id="inputCode" type="text" class="form-control"
+                                    ng-model="formUpdate.code" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputFullName" class="col-sm-4 col-form-label">Họ Tên</label>
+                            <div class="col-sm-8">
+                                <!-- Trường bắt buộc -->
+                                <input name="fullName" id="inputFullName" type="text" class="form-control"
+                                    ng-model="formUpdate.fullName" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputaccount" class="col-sm-4 col-form-label">Tài khoản</label>
+                            <div class="col-sm-8">
+                                <input name="account" id="inputaccount" type="text" class="form-control"
+                                    ng-model="formUpdateAccount.account" ng-change="checkAccountUpdate()" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputphonenumber" class="col-sm-4 col-form-label">SĐT</label>
+                            <div class="col-sm-8">
+                                <input name="phoneNumber" id="inputphonenumber" type="text" class="form-control"
+                                    ng-model="formUpdateAccount.phoneNumber" ng-change="checkPhoneNumberUpdate()"
+                                    readonly />
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-4">
+                            <label for="inputemail" class="col-sm-4 col-form-label">Email</label>
+                            <div class="col-sm-8">
+                                <input name="email" id="inputemail" type="mail" class="form-control"
+                                    ng-model="formUpdateAccount.email" ng-change="checkEmailUpdate()" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputGender" class="col-sm-5 col-form-label">Giới Tính</label>
+                            <div class="row col-sm-7">
+                                <div class="form-check col-sm-6">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender1"
+                                        ng-value="true" ng-model="formUpdate.gender" ng-checked="true" readonly />Nam
+                                </div>
+                                <div class="form-check col-sm-6">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender2"
+                                        ng-model="formUpdate.gender" ng-value="false" readonly />Nữ
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+
+                        <div class="row mb-3">
+                            <label for="inputBirthDate" class="col-sm-4 col-form-label">Ngày Sinh</label>
+                            <div class="col-sm-8">
+                                <!-- <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
+                                    ng-model="formUpdate.birthDate" ng-value="currentDate | date:'yyyy-MM-dd'"
+                                    required /> -->
+                                <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
+                                    ng-model="formUpdate.birthDate" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputAddress" class="col-sm-4 col-form-label">Địa Chỉ</label>
+                            <div class="col-sm-8">
+                                <input name="address" id="inputAddress" type="text" class="form-control"
+                                    ng-model="formUpdate.address" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Tạo</label>
+                            <div class="col-sm-8">
+                                <input name="createdAt" id="inputUpdatedAt" type="date" class="form-control"
+                                    ng-model="formUpdate.createdAt" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputcreatedBy" class="col-sm-4 col-form-label">Người Tạo</label>
+                            <div class="col-sm-8">
+                                <input name="createdBy" id="inputcreatedBy" type="text" class="form-control"
+                                    ng-model="formUpdate.createdBy" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUpdatedAt" class="col-sm-4 col-form-label">Ngày Sửa</label>
+                            <div class="col-sm-8">
+                                <input name="updatedAt" id="inputUpdatedAt" type="date" class="form-control"
+                                    ng-model="formUpdate.updatedAt" ng-value="currentDate | date:'yyyy-MM-dd'"
+                                    readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Người Sửa</label>
+                            <div class="col-sm-8">
+                                <input name="updatedBy" id="inputUpdatedBy" type="text" class="form-control"
+                                    ng-model="formUpdate.updatedBy" readonly />
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Chức vụ</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="role" class="form-control"
+                                    ng-model="formUpdateAccount.role.id == 1 ?'Đang hoạt động': 'Ngừng hoạt động'"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputStatus" class="col-sm-4 col-form-label">Trạng Thái</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="status" class="form-control"
+                                    ng-model="formUpdate.status == 1 ?'Đang hoạt động': 'Ngừng hoạt động'" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="resetFormUpdate()"
+                        data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- End modal detail -->
 <!-- Modal detal chi tiết lịch sửa NV -->
 <div class="modal fade" tabindex="-1" id="AuditLogUpdate" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
