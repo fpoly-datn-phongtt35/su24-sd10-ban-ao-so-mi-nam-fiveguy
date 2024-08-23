@@ -361,7 +361,7 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        <div ng-if="selectedBill.billDetail.length > 0" class="d-flex flex-row mt-2" style="font-size: 16px;">
+                                        <div ng-if="selectedBill.billDetail.length > 0" class="d-flex flex-row mt-2" style="font-size: 15px;">
                                             <div class="d-flex align-items-center me-3" ng-repeat="paymentMethod in paymentMethods">
                                                 <input ng-model="selectedBill.paymentMethod.id" class="form-check-input" type="radio" ng-change="updateBill()" name="paymethod" ng-value="{{paymentMethod.id}}">
                                                 <label class="form-check-label ms-2">{{paymentMethod.name}}</label>

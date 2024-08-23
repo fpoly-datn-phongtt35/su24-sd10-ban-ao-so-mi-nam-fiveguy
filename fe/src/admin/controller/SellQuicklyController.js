@@ -184,14 +184,13 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             $http.get(`${config.host}/bill-th/${id}`).then(resp => {
                 $scope.selectedBill = resp.data;
                 // $scope.clearInputPrice();
-
                 if ($scope.selectedBill.typeBill == 1) {
                     $scope.isChecked = false
 
                 } else {
                     $scope.isChecked = true
                 }
-                $scope.getTotalQuantity();
+            $scope.getTotalQuantity();
             $scope.showAddress($scope.selectedBill);
             
             $scope.showShippingFee($scope.selectedBill);

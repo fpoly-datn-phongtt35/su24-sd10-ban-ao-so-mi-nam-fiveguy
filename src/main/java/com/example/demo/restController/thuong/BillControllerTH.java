@@ -79,7 +79,7 @@ public class BillControllerTH {
 
 
     @PutMapping("/address/{id}")
-    public Bill updateBill(
+    public BillResponseTH updateBill(
             @PathVariable Long id,
             @RequestBody BillUpdateRequest billUpdateRequest) {
 
@@ -87,26 +87,26 @@ public class BillControllerTH {
     }
 
     @PutMapping("/shippingFeeUpdate/{id}")
-    public Bill updateShippingFee(
+    public BillResponseTH updateShippingFee(
             @PathVariable Long id, @RequestBody BigDecimal shippingFee) {
 
         return billService.updateShippingFee(id, shippingFee);
     }
 
     @PostMapping("/typeBill")
-    public Bill updateTypeBill(@RequestBody Bill bill) {
+    public BillResponseTH updateTypeBill(@RequestBody Bill bill) {
         return billService.updateTypeBill(bill);
     }
 
     @PutMapping("/{billId}/update-voucher/{voucherId}")
-    public Bill updateVoucher(@PathVariable Long billId, @PathVariable Long voucherId) {
+    public BillResponseTH updateVoucher(@PathVariable Long billId, @PathVariable Long voucherId) {
         // Update the voucher in the bill using the service
-        return  billService.updateVoucher(billId, voucherId);
+        return billService.updateVoucher(billId, voucherId);
 
     }
 
     @PutMapping("/{billId}/remove-voucher")
-    public Bill removeVoucher(@PathVariable Long billId) {
+    public BillResponseTH removeVoucher(@PathVariable Long billId) {
         return billService.removeVoucherFromBill(billId);
     }
 }

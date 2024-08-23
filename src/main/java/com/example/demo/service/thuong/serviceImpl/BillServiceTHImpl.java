@@ -441,7 +441,7 @@ public class BillServiceTHImpl implements BillServiceTH {
 
 
     @Override
-    public Bill updateBill(Long id, String address, String addressId, String reciverName,  String phoneNumber) {
+    public BillResponseTH updateBill(Long id, String address, String addressId, String reciverName,  String phoneNumber) {
         Optional<Bill> optionalBill = billRepository.findById(id);
         if (optionalBill.isPresent()) {
             Bill bill = optionalBill.get();
@@ -450,29 +450,29 @@ public class BillServiceTHImpl implements BillServiceTH {
             bill.setReciverName(reciverName);
             bill.setPhoneNumber(phoneNumber);
 
-            return billRepository.save(bill); // Save the updated bill
+            return setBillResponse(billRepository.save(bill)); // Save the updated bill
         } else {
             throw new RuntimeException("Bill not found with id " + id);
         }
     }
 
     @Override
-    public Bill updateShippingFee(Long id, BigDecimal shippingFee) {
+    public BillResponseTH updateShippingFee(Long id, BigDecimal shippingFee) {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
         bill.setShippingFee(shippingFee);
 
-        return billRepository.save(bill);
+        return setBillResponse(billRepository.save(bill));
     }
 
     @Override
-    public Bill updateTypeBill(Bill bill) {
-        return billRepository.save(bill);
+    public BillResponseTH updateTypeBill(Bill bill) {
+        return setBillResponse(billRepository.save(bill));
     }
 
 
     @Override
-    public Bill updateVoucher(Long billId, Long newVoucherId) {
+    public BillResponseTH updateVoucher(Long billId, Long newVoucherId) {
         // Retrieve the Bill entity
         Optional<Bill> billOptional = billRepository.findById(billId);
         if (!billOptional.isPresent()) {
@@ -501,11 +501,11 @@ public class BillServiceTHImpl implements BillServiceTH {
 
         // Set the new voucher to the bill
         bill.setVoucher(newVoucher);
-        return billRepository.save(bill);
+        return setBillResponse(billRepository.save(bill));
     }
 
     @Override
-    public Bill removeVoucherFromBill(Long billId) {
+    public BillResponseTH removeVoucherFromBill(Long billId) {
         Optional<Bill> billOptional = billRepository.findById(billId);
         if (billOptional.isEmpty()) {
             throw new RuntimeException("Bill not found with id " + billId);
@@ -524,6 +524,6 @@ public class BillServiceTHImpl implements BillServiceTH {
 
 
         // Lưu lại thay đổi
-        return billRepository.save(bill);
+        return setBillResponse(billRepository.save(bill));
     }
 }
