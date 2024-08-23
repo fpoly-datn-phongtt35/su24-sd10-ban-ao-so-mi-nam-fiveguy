@@ -211,21 +211,18 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
     BigDecimal tongSoTienOption(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     //Tổng số dơn thanhf cong
-    @Query("select b from Bill b JOIN b.paymentStatuses ps JOIN b.billHistories bls where CAST(ps.paymentDate AS DATE) = CAST(:day AS DATE) and ps.customerPaymentStatus = 2  and b.status=21 AND bls.status = 21")
+    @Query("select b from Bill b JOIN b.billHistories bls where CAST(bls.createdAt AS DATE) = CAST(:day AS DATE) and bls.status = 21")
     List<Bill> tongBillThanhCongDay(Date day);
-    @Query("SELECT b FROM Bill b JOIN b.paymentStatuses ps JOIN b.billHistories bls WHERE DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :date) and ps.customerPaymentStatus = 2 AND b.status = 21 AND bls.status = 21")
+    @Query("SELECT b FROM Bill b JOIN b.billHistories bls WHERE DATEPART(YEAR, bls.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, bls.createdAt) = DATEPART(WEEK, :date) AND bls.status = 21")
     List<Bill> tongBillThanhCongWeek(Date date);
-    @Query("select b from Bill b JOIN b.paymentStatuses ps JOIN b.billHistories bls where DATEPART(MONTH, ps.paymentDate) =  Month(:date) and DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and ps.customerPaymentStatus = 2 and b.status=21 AND bls.status = 21")
+    @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(MONTH, bls.createdAt) =  Month(:date) and DATEPART(YEAR, bls.createdAt) = YEAR(:date) AND bls.status = 21")
     List<Bill> tongBillThanhCongMonth(Date date);
-    @Query("select b from Bill b JOIN b.paymentStatuses ps JOIN b.billHistories bls where DATEPART(YEAR, ps.paymentDate) = YEAR(:date) and ps.customerPaymentStatus = 2 and b.status=21 AND bls.status = 21")
+    @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(YEAR, bls.createdAt) = YEAR(:date) AND bls.status = 21")
     List<Bill> tongBillThanhCongYear(Date date);
     @Query("SELECT b FROM Bill b " +
-            "JOIN b.paymentStatuses ps " +
             "JOIN b.billHistories bls " +
-            "WHERE ps.paymentDate BETWEEN :startDate AND :endDate " +
-            "AND ps.customerPaymentStatus = 2 " +
-            "AND bls.status = 21"+
-            "AND b.status = 21")
+            "WHERE bls.createdAt BETWEEN :startDate AND :endDate " +
+            "AND bls.status = 21")
     List<Bill> tongBillThanhCongOption(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
@@ -245,18 +242,17 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
     List<Bill> tongBillHuyOption(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     //Tổng số đơn Trả
-    @Query("select b from Bill b JOIN b.paymentStatuses ps JOIN b.billHistories bls where CAST(ps.paymentDate AS Date) = CAST(:day AS DATE) AND bls.status = 32")
+    @Query("select b from Bill b JOIN b.billHistories bls where CAST(bls.createdAt AS Date) = CAST(:day AS DATE) AND bls.status = 32")
     List<Bill> tongBillTraHangDay(Date day);
-    @Query("SELECT b FROM Bill b JOIN b.paymentStatuses ps JOIN b.billHistories bls WHERE DATEPART(YEAR, ps.paymentDate) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.paymentDate) = DATEPART(WEEK, :date) AND bls.status = 32")
+    @Query("SELECT b FROM Bill b JOIN b.billHistories bls WHERE DATEPART(YEAR, bls.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, bls.createdAt) = DATEPART(WEEK, :date) AND bls.status = 32")
     List<Bill> tongBillTraHangWeek(Date date);
-    @Query("select b from Bill b JOIN b.paymentStatuses ps JOIN b.billHistories bls where DATEPART(MONTH, ps.paymentDate) =  Month(:date) and DATEPART(YEAR, ps.paymentDate) = YEAR(:date) AND bls.status = 32")
+    @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(MONTH, bls.createdAt) =  Month(:date) and DATEPART(YEAR, bls.createdAt) = YEAR(:date) AND bls.status = 32")
     List<Bill> tongBillTraHangMonth(Date date);
-    @Query("select b from Bill b JOIN b.paymentStatuses ps JOIN b.billHistories bls where DATEPART(YEAR, ps.paymentDate) = YEAR(:date) AND bls.status = 32")
+    @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(YEAR, bls.createdAt) = YEAR(:date) AND bls.status = 32")
     List<Bill> tongBillTraHangYear(Date date);
     @Query("SELECT b FROM Bill b " +
-            "JOIN b.paymentStatuses ps " +
             "JOIN b.billHistories bls " +
-            "WHERE ps.paymentDate BETWEEN :startDate AND :endDate " +
+            "WHERE bls.createdAt BETWEEN :startDate AND :endDate " +
             "AND bls.status = 32")
 
     List<Bill> tongBillTraHangOption(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
