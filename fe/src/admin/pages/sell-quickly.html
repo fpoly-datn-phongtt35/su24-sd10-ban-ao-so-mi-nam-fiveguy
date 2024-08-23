@@ -240,8 +240,8 @@
                                     <div class="card-body p-0 d-flex flex-column" style="height: 500px">
                                        <div class="payment p-3" style="height: 450px; overflow-y: scroll; ">
                                         <div class="d-flex flex-row-reverse">{{timeCurrent | date : " dd-MM-yyyy hh:mm" : 0}}</div>
-                                        <div class="form-group">
-                                            <div class="form-check">
+                                        <div class="form-group d-flex align-items-center">
+                                            <div class="form-check w-50">
                                                 <input ng-model="isChecked" 
                                                        ng-change="updateTypeBill()" 
                                                        class="form-check-input" 
@@ -250,19 +250,17 @@
                                                        id="flexSwitchCheckDefault">
                                                 <label class="form-check-label" for="flexSwitchCheckDefault">Giao hàng</label>
                                             </div>
-                                        </div>
-                                        
-                                        <div class="d-flex justify-content-center" 
-                                        ng-if="selectedBill.typeBill === 2 ">
-                                       <button data-bs-toggle="modal" 
-                                               data-bs-target="#addressModal2" 
-                                               type="button" 
-                                               class="btn d-flex align-items-center justify-content-center mt-2 w-50 btn-outline-success">
-                                           <span class="material-icons">add</span>
-                                           Xác nhận địa chỉ giao hàng
-                                       </button>
-                                           </div>
-                                        <div class="box-container">
+                                            
+                                           <button ng-if="selectedBill.typeBill === 2" data-bs-toggle="modal" 
+                                                   data-bs-target="#addressModal2" 
+                                                   type="button" 
+                                                   class="btn d-flex justify-content-center w-75 btn-outline-primary">
+                                               Địa chỉ giao hàng
+                                           </button>
+                                        </div>    
+                                        <p ng-if="selectedBill.typeBill === 2 && selectedBill.addressId" style="margin-top: 8px; color: green;">Địa chỉ giao hàng đã xác nhận</p>
+                                    
+                                        <div class="box-container mt-2">
                                             <div ng-if="selectedBill.customer != null" class="customer-current" style="position: relative;">
                                                 <span class="btn btn-outline-primary w-100 text-start" data-bs-toggle="modal" data-bs-target="#customerUpdateModal" ng-click="showCustomerUpdate()">
                                                     <i class="ri-user-3-fill"></i>
@@ -329,7 +327,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div ng-if="selectedBill.billDetail.length > 0 && selectedBill.typeBill == 2 && selectedBill.addressId" class="d-flex flex-column" style="font-size: 16px;">
+                                        <div ng-if="selectedBill.billDetail.length > 0 && selectedBill.typeBill == 2 && selectedBill.addressId && shippingFee" class="d-flex flex-column" style="font-size: 16px;">
                                             <div class="d-flex align-items-center">
                                                 <p class="w-75">Phí giao hàng</p>
                                                 <div class="ms-auto">
@@ -601,7 +599,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addressCustomer">Nhập địa chỉ</h5>
-          <button ng-click="resetAddress()" type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#customerUpdateModal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form name="addressAddForm" ng-submit="addAddressCustomer()" novalidate>
         <div class="modal-body">
@@ -654,8 +652,8 @@
        
         </div>
         <div class="modal-footer">
-          <button ng-click="resetAddress()" type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#customerUpdateModal">Đóng</button>
-          <button ng-click="getAddressCustomer()" type="button" class="btn btn-secondary"  >Lấy địa chỉ hiện tại của khách</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button ng-click="getAddressCustomer()" type="button" class="btn btn-primary">Lấy địa chỉ hiện tại của khách</button>
           <button type="submit" ng-disabled="addressAddForm.$invalid"  class="btn btn-success">Xác nhận</button>
         </div>
         </form>

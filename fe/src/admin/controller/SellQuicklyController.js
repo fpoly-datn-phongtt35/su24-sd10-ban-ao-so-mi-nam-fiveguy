@@ -831,11 +831,9 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     }
 
     $scope.paymentBill = () => {
-        console.log($scope.selectedBill);
-
-
         $scope.selectedBill.totalAmountAfterDiscount = $scope.selectedBill.totalAmount - $scope.valueVoucher + $scope.shippingFee;
 
+        console.log($scope.selectedBill)
 
         
         if ($scope.selectedBill.billDetail.length == 0) {
@@ -871,17 +869,16 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                 toastr["error"]("Vui lòng xác nhận địa chỉ giao hàng");
                 return;
             }
-        }
-
-     
-        // if ($scope.selectedBill.paymentMethod.code == "14") {
-        //     let paidContent = $scope.selectedBill.code;
-        //     let paidPrice = $scope.selectedBill.totalAmountAfterDiscount;
-        //     $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${paidPrice}&addInfo=${paidContent}`;
-        //     $scope.runCheckPaid = false;
-        //     $scope.checkPaid(paidPrice, paidContent);
-        //     $('#qrModal').modal('show');
-        // } else {
+        }     
+        if ($scope.selectedBill.paymentMethod.code == "14") {
+            let paidContent = $scope.selectedBill.code;
+            let paidPrice = $scope.selectedBill.totalAmountAfterDiscount;
+            $scope.qr = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-compact2.png?amount=${paidPrice}&addInfo=${paidContent}`;
+            $scope.runCheckPaid = false;
+            $scope.checkPaid(paidPrice, paidContent);
+            $('#qrModal').modal('show');
+        } 
+        // else {
         //     $scope.apiPayment();
         // }
     }
@@ -1188,8 +1185,6 @@ $scope.calculateShippingFee = function (toDistrictId, toWardCode) {
           .then(function (response) {
             $scope.shippingFee = response.data.data.total ;
             $scope.updateShippingFeeToBill($scope.shippingFee);
-            console.log($scope.shippingFee)
-
           })
           .catch(function (error) {
               // Xử lý lỗi nếu có
@@ -1229,7 +1224,6 @@ $scope.updateTypeBill = function() {
                 $scope.clearDataAndAddAddress();
                         
                     }
-            console.log('TypeBill updated successfully', response.data);
         })
         .catch(function(error) {
             // Handle error
@@ -1273,7 +1267,6 @@ $scope.addAddressCustomer = () => {
             phoneNumber: $scope.phoneNumber,
         };
 
-        console.log(billData);
         
         $http.put('http://localhost:8080/api/admin/bill-th/address/' + $scope.selectedBill.id, billData)
         .then(function(response) {
@@ -1321,15 +1314,12 @@ $scope.clearDataAndAddAddress = () => {
             .then(function(response) {
                 // Handle success
                 $scope.selectedBill = response.data;
-                console.log($scope.selectedBill)
 
             })
             .catch(function(error) {
                 // Handle error
                 console.error('Error updating bill', error);
             }).finally(function(error){
-                console.log($scope.selectedBill)
-                // $scope.showAddress($scope.selectedBill);
                 $scope.shippingFee = 0;
             });
 
@@ -1447,12 +1437,7 @@ $scope.showShippingFee = function (bill) {
 
 
     $scope.updateShippingFeeToBill = function (shippingFee) {
-        console.log($scope.selectedBill)
-
         let data = shippingFee;
-        console.log($scope.shippingFee)
-        console.log($scope.selectedBill.shippingFee)
-
         if (data == $scope.selectedBill.shippingFee) return;
         $http.put("http://localhost:8080/api/admin/bill-th/shippingFeeUpdate/" + $scope.selectedBill.id, data).then(function (res) {
             console.log("sửa phí ship thành công");
