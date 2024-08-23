@@ -581,11 +581,17 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             $scope.showAddress($scope.selectedBill);
         }
         hiddenElementCustomer.style.display = 'none';
+
+        $scope.clearDataAndAddAddress();
+        $scope.showAddress($scope.selectedBill);
     }
 
     $scope.removeCustomer = () => {
         $scope.selectedBill.customer = null;
         $scope.updateBill();
+
+        $scope.resetAddress();
+        $scope.shippingFee = 0;
     }
 
     $scope.createCustomer = () => {
@@ -684,6 +690,59 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $scope.idAddress = address.id;
     }
 
+    $scope.getAddressCustomer = () => {
+        const bill = $scope.selectedBill;
+        
+        if (!bill || !bill.id) return;
+    
+        $scope.getDefaultAddress(bill.customer.id)
+            .then(() => {
+                if ($scope.defaultAddressCustomer?.address) {
+                    // Update bill with the default address
+                    Object.assign(bill, {
+                        address: $scope.defaultAddressCustomer.address,
+                        phoneNumber: $scope.defaultAddressCustomer.phoneNumber,
+                        reciverName: $scope.defaultAddressCustomer.name,
+                        addressId: $scope.defaultAddressCustomer.addressId
+                    });
+                }
+    
+                // Split the address and extract the detailed information
+                if (bill.address && bill.phoneNumber && bill.reciverName) {
+                    const [addressDetail] = bill.address.split(',').map(part => part.trim());
+                    $scope.addressDetail = addressDetail;
+                    $scope.phoneNumber = bill.phoneNumber;
+                    $scope.reciverName = bill.reciverName;
+                }
+    
+                // Parse and set address components
+                if (bill.addressId) {
+                    const [wardCode, districtCode, provinceCode] = bill.addressId.split(', ').map(part => part.trim());
+                    const [wardValue, districtValue, provinceValue] = bill.address.split(', ').map(part => part.trim());
+    
+                    $scope.setAddressComponents(provinceCode, districtCode, wardCode, provinceValue, districtValue, wardValue);
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching default address:", error);
+            });
+    };
+    
+    $scope.setAddressComponents = (provinceCode, districtCode, wardCode, provinceValue, districtValue, wardValue) => {
+        $scope.provinceCode = provinceCode;
+        $scope.provinceValue = provinceValue;
+        $('.province').val(provinceCode).trigger('change');
+    
+        $scope.loadDistricts(provinceCode, '.district').then(() => {
+            $scope.districtCode = districtCode;
+            $scope.districtValue = districtValue;
+            return $scope.loadWards(districtCode, '.ward');
+        }).then(() => {
+            $scope.wardCode = wardCode;
+            $scope.wardValue = wardValue;
+        });
+    };
+
     $scope.addAddress = () => {
         if ($scope.addressAddForm.$valid && $scope.validateAddress($scope.provinceValue, $scope.districtValue, $scope.wardValue)) {
             if ($scope.defaultAddress) {
@@ -717,6 +776,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     
 
     $scope.updateAddress = () => {
+        console.log("eeee")
+
         let address = {
             id: $scope.idAddress,
             name: $scope.addressDetail,
@@ -739,6 +800,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         }).catch(error => {
             console.log("Error", error);
         }).finally(() => {
+            console.log("eeee")
+
             if ($scope.selectedBill.typeBill == 2) {
                 $scope.showAddress($scope.selectedBill);
             } 
@@ -1158,6 +1221,12 @@ $scope.updateTypeBill = function() {
         .then(function(response) {
    
             $scope.selectedBill = response.data;
+
+            
+            if (response.data.typeBill == 1) {
+                $scope.clearDataAndAddAddress();
+                        
+                    }
             console.log('TypeBill updated successfully', response.data);
         })
         .catch(function(error) {
@@ -1220,6 +1289,51 @@ $scope.addAddressCustomer = () => {
         
     }
 }
+
+
+$scope.clearDataAndAddAddress = () => {
+    // Clear all form data
+    $scope.addressDetail = null;
+    $scope.wardValue = null;
+    $scope.districtValue = null;
+    $scope.provinceValue = null;
+    $scope.wardCode = null;
+    $scope.districtCode = null;
+    $scope.provinceCode = null;
+    $scope.reciverName = null;
+    $scope.phoneNumber = null;
+
+
+
+        // Prepare the data for the API call
+        const billData = {
+            address: null,
+            addressId: null,
+            reciverName: null,
+            phoneNumber: null,
+        };
+
+
+        // Make the API call
+        $http.put('http://localhost:8080/api/admin/bill-th/address/' + $scope.selectedBill.id, billData)
+            .then(function(response) {
+                // Handle success
+                $scope.selectedBill = response.data;
+                console.log($scope.selectedBill)
+
+            })
+            .catch(function(error) {
+                // Handle error
+                console.error('Error updating bill', error);
+            }).finally(function(error){
+                console.log($scope.selectedBill)
+                // $scope.showAddress($scope.selectedBill);
+                $scope.shippingFee = 0;
+            });
+
+
+
+};
 
 $scope.getDefaultAddress = function(customerId) {
     return $http.get('http://localhost:8080/api/admin/address-th/default/' + customerId)
