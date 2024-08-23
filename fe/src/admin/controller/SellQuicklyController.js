@@ -1006,8 +1006,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     
       $scope.applyVoucher = function() {
 
-        if ($scope.selectedVoucher != null) {
-          if ($scope.selectedVoucher.quantity > 0) {
+        if ($scope.selectedVoucher != null && $scope.selectedVoucher.quantity > 0) {
+
             if ($scope.selectedBill.totalAmount >= $scope.selectedVoucher.minimumTotalAmount) {
               var voucherCopy = angular.copy($scope.selectedVoucher);
               delete voucherCopy.selected;
@@ -1075,7 +1075,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
 
               }
             }
-          }
         } else {
           
           $scope.voucherMessage = '';
@@ -1096,6 +1095,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
           .then(function(response) {
             if (response.data) {
               $scope.customerVouchers = response.data;
+              console.log($scope.customerVouchers)
               // Thêm khoảng thời gian trễ trước khi thực hiện hành động tiếp theo
               if ($scope.customerVouchers && $scope.customerVouchers.length > 0) {
                 if ($scope.selectedBill.voucher == null) {
