@@ -526,4 +526,20 @@ public class BillServiceTHImpl implements BillServiceTH {
         // Lưu lại thay đổi
         return setBillResponse(billRepository.save(bill));
     }
+
+    @Override
+    public BillResponseTH removeCustomer(Long billId) {
+        Optional<Bill> billOptional = billRepository.findById(billId);
+        if (billOptional.isEmpty()) {
+            throw new RuntimeException("Bill not found with id " + billId);
+        }
+        Bill bill = billOptional.get();
+        // Xóa voucher khỏi bill
+        bill.setCustomer(null);
+        bill.setAddressId(null);
+        bill.setReciverName(null);
+        bill.setPhoneNumber(null);
+        // Lưu lại thay đổi
+        return setBillResponse(billRepository.save(bill));
+    }
 }

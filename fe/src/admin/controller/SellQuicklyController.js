@@ -551,10 +551,12 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $http.put(`${config.host}/bill-th`, $scope.selectedBill).then(resp => {
             $scope.getBills();
             $scope.selectedBill = resp.data;
+
+            console.log()
         }).catch(error => {
             console.log("Error", error);
         }).finally(() => {
-            //   $scope.getVouchersForCustomer();
+
         });
     }
 
@@ -586,11 +588,18 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     }
 
     $scope.removeCustomer = () => {
-        $scope.selectedBill.customer = null;
-        $scope.updateBill();
+        $http.put('http://localhost:8080/api/admin/bill-th/' + $scope.selectedBill.id + '/remove-customer')
+        .then(function(response) {
+            // Handle success
+            $scope.selectedBill = response.data; 
+            $scope.resetAddress();
+        })
+        .catch(function(error) {
+            // Handle error
+            console.error("Error updating voucher:", error);
+        });
+        // $scope.resetAddress();
 
-        $scope.resetAddress();
-        $scope.shippingFee = 0;
     }
 
     $scope.createCustomer = () => {
@@ -1314,7 +1323,7 @@ $scope.clearDataAndAddAddress = () => {
             .then(function(response) {
                 // Handle success
                 $scope.selectedBill = response.data;
-
+                console.log($scope.selectedBill)
             })
             .catch(function(error) {
                 // Handle error

@@ -25,4 +25,6 @@ public interface BillServiceTH {
     BillResponseTH updateTypeBill(Bill bill);
     BillResponseTH updateVoucher(Long billId, Long newVoucherId);
     BillResponseTH removeVoucherFromBill(Long billId);
+
+    BillResponseTH removeCustomer(Long billId);
 }

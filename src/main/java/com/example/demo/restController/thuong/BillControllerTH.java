@@ -109,4 +109,9 @@ public class BillControllerTH {
     public BillResponseTH removeVoucher(@PathVariable Long billId) {
         return billService.removeVoucherFromBill(billId);
     }
+
+    @PutMapping("/{billId}/remove-customer")
+    public BillResponseTH removeCustomer(@PathVariable Long billId) {
+        return billService.removeCustomer(billId);
+    }
 }
