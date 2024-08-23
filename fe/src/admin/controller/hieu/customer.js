@@ -530,26 +530,34 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
 
   //Hàm check trùng số điện thoại
   $scope.checkPhoneNumber = function () {
-    var phoneNumber = $scope.formInputAccount.phoneNumber;
+    const phoneNumber = $scope.formInputAccount.phoneNumber;
+    console.log("Checking phone number:", phoneNumber); // Debugging log
+
+    // Check if phone number is valid according to the pattern
+    const isValidPhoneNumber = /^(\+84|0)[2|3|5|7|8|9][0-9]{8}$/.test(phoneNumber);
+
+    if (!isValidPhoneNumber) {
+      $scope.phoneNumberError = "Số điện thoại không hợp lệ";
+      return; // Exit if the phone number is invalid
+    }
+
+    // If phone number is valid, check if it exists in the database
     $http
       .get(apiAccount + "/check-phone-number", {
-        params: { phoneNumber: phoneNumber },
+        params: { phoneNumber: phoneNumber }
       })
       .then(function (response) {
+        console.log("API Response:", response.data); // Debugging log
         if (response.data) {
-          // Email bị trùng
           $scope.phoneNumberError = "Số điện thoại đã tồn tại";
-          return false;
         } else {
-          // Email hợp lệ và không bị trùng
           $scope.phoneNumberError = "";
           return true;
         }
       })
       .catch(function (error) {
-        // Xử lý lỗi khi gọi API
+        console.error('API Error:', error); // Handle errors from API
         $scope.phoneNumberError = "Có lỗi xảy ra khi kiểm tra số điện thoại";
-        return false;
       });
   };
 
@@ -586,34 +594,38 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
   };
   //upload ảnh
   $scope.uploadBtnAdd = function () {
-    const fileInput = document.getElementById("image");
-    const file = fileInput.files[0];
-    if (!file) {
-      $scope.showError = true;
-      $scope.$apply();
-      return;
-    }
+    return new Promise((resolve, reject) => {
+      const fileInput = document.getElementById("image");
+      const file = fileInput.files[0];
 
-    $scope.showError = false;
-    $scope.uploading = true; // Đang trong quá trình upload
+      if (!file) {
+        // Nếu không có file, resolve promise ngay lập tức
+        $scope.uploadedImageData = null; // Đặt dữ liệu ảnh là null
+        return resolve(); // Resolve promise ngay lập tức
+      }
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      const data = reader.result.split(",")[1];
-      const postData = {
-        name: file.name,
-        type: file.type,
-        data: data,
+      $scope.showError = false;
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        const data = reader.result.split(",")[1];
+        const postData = {
+          name: file.name,
+          type: file.type,
+          data: data,
+        };
+        $scope.postFile(postData)
+          .then(function () {
+            $scope.$apply(); // Áp dụng thay đổi vào scope
+            resolve(); // Resolve promise khi upload hoàn tất
+          })
+          .catch(reject);
       };
-      $scope.postFile(postData).then(function () {
-        $scope.uploading = false; // Hoàn thành quá trình upload
-        $scope.$apply(); // Áp dụng thay đổi vào scope
-        if (!$scope.uploading) {
-          $scope.submitForm();
-        }
-      });
-    };
+      reader.onerror = function (error) {
+        reject(error);
+      };
+    });
   };
 
   $scope.addAccount = async (objectAccount) => {
@@ -661,35 +673,60 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
   $scope.addCustom = async (objectData) => {
     try {
       const result = await $http.post(`${apiCustomer}/save`, objectData);
-      console.log("Thêm mới nhân viên thành công", result.data);
+      console.log("Thêm mới khách hàng thành công", result.data);
       return result.data;
     } catch (error) {
-      console.error("Lỗi thêm mới tài khoản nhân viên", error);
+      console.error("Lỗi thêm mới tài khoản khách hàng", error);
       throw error;
     }
   };
 
   // Form submit thêm
+  $scope.uploading = false; // Thêm biến trạng thái
+
+  $scope.showLoading = function () {
+    $scope.uploading = true; // Hiển thị spinner
+  };
+
+  $scope.hideLoading = function () {
+    $scope.uploading = false; // Ẩn spinner
+  };
+
   $scope.submitForm = async function () {
     if ($scope.formCreateCustomer.$valid) {
-      const addAccountData = await $scope.themAccount();
-      if (addAccountData) {
-        const dataObject = {
-          account: {
-            id: addAccountData.id,
-          },
-          fullName: $scope.formInput.fullName,
+      try {
+        $scope.showLoading(); // Hiển thị spinner khi bắt đầu xử lý
+
+        // Đợi cho hàm uploadBtnAdd hoàn tất
+        await $scope.uploadBtnAdd();
+
+        // Tiếp tục thực hiện submitForm sau khi upload hoàn tất
+        const addAccountData = await $scope.themAccount();
+        if (addAccountData) {
+          const dataObject = {
+            account: {
+              id: addAccountData.id,
+            },
+            fullName: $scope.formInput.fullName,
           gender: $scope.formInput.gender,
           birthDate: $scope.formInput.birthDate,
           address: $scope.formInput.address,
-          avatar: $scope.uploadedImageData, // Add the image data here
-        };
-        const addCustomersData = await $scope.addCustom(dataObject);
-        console.log("addCustomersData = ", addCustomersData);
-        $scope.showSuccessNotification("Thêm thông tin thành công");
-        $scope.getCustomer(0);
-        $scope.resetFormInput();
-        $("#modalAdd").modal("hide");
+          avatar: $scope.uploadedImageData, // Thêm dữ liệu hình ảnh ở đây (hoặc null nếu không có ảnh)
+          };
+          const addEmployeesData = await $scope.addCustom(dataObject);
+          console.log("addEmployeesData = ", addEmployeesData);
+          $scope.showSuccessNotification("Thêm thông tin thành công");
+
+          // Sử dụng $timeout để cập nhật scope
+          $scope.getCustomer(0);
+          $scope.resetFormInput();
+          $("#modalAdd").modal("hide");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        $scope.showErrorNotification("Không thành công");
+      } finally {
+        $scope.hideLoading(); // Ẩn spinner khi hoàn tất xử lý, bất kể thành công hay thất bại
       }
     } else {
       // Hiển thị lỗi
@@ -697,6 +734,35 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
       $scope.formCreateCustomer.$submitted = true;
     }
   };
+
+  // // Form submit thêm
+  // $scope.submitForm = async function () {
+  //   if ($scope.formCreateCustomer.$valid) {
+  //     const addAccountData = await $scope.themAccount();
+  //     if (addAccountData) {
+  //       const dataObject = {
+  //         account: {
+  //           id: addAccountData.id,
+  //         },
+  //         fullName: $scope.formInput.fullName,
+  //         gender: $scope.formInput.gender,
+  //         birthDate: $scope.formInput.birthDate,
+  //         address: $scope.formInput.address,
+  //         avatar: $scope.uploadedImageData, // Add the image data here
+  //       };
+  //       const addCustomersData = await $scope.addCustom(dataObject);
+  //       console.log("addCustomersData = ", addCustomersData);
+  //       $scope.showSuccessNotification("Thêm thông tin thành công");
+  //       $scope.getCustomer(0);
+  //       $scope.resetFormInput();
+  //       $("#modalAdd").modal("hide");
+  //     }
+  //   } else {
+  //     // Hiển thị lỗi
+  //     $scope.showErrorNotification("Không thành công");
+  //     $scope.formCreateCustomer.$submitted = true;
+  //   }
+  // };
   // END thêm Khách hàng
 
   //Sửa khách hàng

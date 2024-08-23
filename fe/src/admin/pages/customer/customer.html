@@ -199,151 +199,157 @@
     </div>
 
     <!--Modal Add nhân viên -->
-    <div class="modal fade" tabindex="-1" id="modalAdd" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form name="formCreateCustomer" ng-submit="formCreateCustomer.$valid && uploadBtnAdd()" novalidate>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Thêm mới nhân viên</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+</div>
+<div class="modal fade" tabindex="-1" id="modalAdd" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form name="formCreateCustomer" ng-submit="formCreateCustomer.$valid && submitForm()" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm mới nhân viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="overlay" ng-show="uploading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
-                    <div class="modal-body row">
-                        <div class="col-lg-3">
-                            <label for="image">
-                                <img src="/src/admin/common/img/no-img.png" id="image-preview"
-                                    style="width: 100px; height: 100px" />
-                            </label>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-lg-3">
+                        <label for="image">
+                            <img src="/src/admin/common/img/no-img.png" id="image-preview"
+                                style="width: 100px; height: 100px" />
+                        </label>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="row mb-3">
+                            <label for="image" class="col-sm-3 col-form-label">Ảnh</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" name="path" type="file" id="image" />
+                                <span ng-if="showError" class="error-message text-danger form-text">
+                                    {{alertErrorImg}}
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-lg-9">
-                            <div class="row mb-3">
-                                <label for="image" class="col-sm-3 col-form-label">Ảnh</label>
-                                <div class="col-sm-9">
-                                    <input class="form-control" name="path" type="file" id="image" />
-                                    <span ng-if="showError" class="error-message text-danger form-text">
-                                        {{alertErrorImg}}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label for="inputFullName" class="col-sm-3 col-form-label">Họ Tên</label>
-                                <div class="col-sm-9">
-                                    <input name="fullName" id="inputFullName" type="text" class="form-control"
-                                        ng-model="formInput.fullName" required />
-                                    <span ng-show="formCreateCustomer.$submitted">
-                                        <div ng-show="formCreateCustomer.fullName.$invalid"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- form thêm account -->
-                            <div class="row mb-3">
-                                <label for="inputaccount" class="col-sm-3 col-form-label">Tài khoản</label>
-                                <div class="col-sm-9">
-                                    <input name="account" id="inputaccount" type="text" class="form-control"
-                                        ng-model="formInputAccount.account" ng-change="checkAccount()" required />
-                                    <span ng-show="formCreateCustomer.$submitted">
-                                        <div ng-show="formCreateCustomer.account.$invalid"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
-                                        <div ng-show="accountError" class="error-message text-danger form-text">
-                                            {{accountError}}
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label for="inputSDT" class="col-sm-3 col-form-label">SDT</label>
-                                <div class="col-sm-9">
-                                    <input name="phoneNumber" id="inputSDT" type="text" class="form-control"
-                                        ng-model="formInputAccount.phoneNumber" ng-change="checkPhoneNumber()" required
-                                        ng-pattern="/^(\+84|0)[3|5|7|8|9][0-9]{8}$/" />
-                                    <span ng-show="formCreateCustomer.$submitted">
-                                        <div ng-show="formCreateCustomer.phoneNumber.$error.required"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
-                                        <div ng-show="!formCreateCustomer.phoneNumber.$error.required && formCreateCustomer.phoneNumber.$error.pattern"
-                                            class="error-message text-danger form-text">
-                                            Số điện thoại không hợp lệ
-                                        </div>
-                                        <div ng-show="phoneNumberError" class="error-message text-danger form-text">
-                                            {{phoneNumberError}}
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label for="inputemail" class="col-sm-3 col-form-label">Email</label>
-                                <div class="col-sm-9">
-                                    <input name="email" id="inputemail" type="email" class="form-control"
-                                        ng-model="formInputAccount.email" ng-change="checkEmail()" required />
-                                    <span ng-show="formCreateCustomer.$submitted">
-                                        <div ng-show="formCreateCustomer.email.$error.required"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
-                                        <div ng-show="!formCreateCustomer.email.$error.required && formCreateCustomer.email.$error.email"
-                                            class="error-message text-danger form-text">
-                                            Email không hợp lệ
-                                        </div>
-                                        <div ng-show="emailError" class="error-message text-danger form-text">
-                                            {{emailError}}
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label for="inputBirthDate" class="col-sm-3 col-form-label">Ngày Sinh</label>
-                                <div class="col-sm-9">
-                                    <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
-                                        ng-model="formInput.birthDate" required />
-                                    <span ng-show="formCreateCustomer.$submitted">
-                                        <div ng-show="formCreateCustomer.birthDate.$invalid"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label for="inputGender" class="col-sm-3 col-form-label">Giới tính</label>
-                                <div class="col-sm-9">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="gender" id="gender1"
-                                            ng-value="true" ng-model="formInput.gender" ng-checked='true' />Nam
+                        <div class="row mb-3">
+                            <label for="inputFullName" class="col-sm-3 col-form-label">Họ Tên</label>
+                            <div class="col-sm-9">
+                                <input name="fullName" id="inputFullName" type="text" class="form-control"
+                                    ng-model="formInput.fullName" required />
+                                <span ng-show="formCreateCustomer.$submitted">
+                                    <div ng-show="formCreateCustomer.fullName.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="gender" id="gender2"
-                                            ng-model="formInput.gender" ng-value="false" />Nữ
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- form thêm account -->
+                        <div class="row mb-3">
+                            <label for="inputaccount" class="col-sm-3 col-form-label">Tài khoản</label>
+                            <div class="col-sm-9">
+                                <input name="account" id="inputaccount" type="text" class="form-control"
+                                    ng-model="formInputAccount.account" ng-change="checkAccount()" required />
+                                <span ng-show="formCreateCustomer.$submitted">
+                                    <div ng-show="formCreateCustomer.account.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
                                     </div>
+                                    <div ng-show="accountError" class="error-message text-danger form-text">
+                                        {{accountError}}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputSDT" class="col-sm-3 col-form-label">SDT</label>
+                            <div class="col-sm-9">
+                                <input name="phoneNumber" id="inputSDT" type="text" class="form-control"
+                                    ng-model="formInputAccount.phoneNumber" ng-change="checkPhoneNumber()" required />
+                                <span ng-show="formCreateCustomer.$submitted">
+                                    <div ng-show="formCreateCustomer.phoneNumber.$error.required"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                    <div ng-show="!formCreateCustomer.phoneNumber.$error.required && formCreateCustomer.phoneNumber.$error.pattern"
+                                        class="error-message text-danger form-text">
+                                        Số điện thoại không hợp lệ
+                                    </div>
+                                    <div ng-show="phoneNumberError" class="error-message text-danger form-text">
+                                        {{phoneNumberError}}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputemail" class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                <input name="email" id="inputemail" type="email" class="form-control"
+                                    ng-model="formInputAccount.email" ng-change="checkEmail()" required />
+                                <span ng-show="formCreateCustomer.$submitted">
+                                    <div ng-show="formCreateCustomer.email.$error.required"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                    <div ng-show="!formCreateCustomer.email.$error.required && formCreateCustomer.email.$error.email"
+                                        class="error-message text-danger form-text">
+                                        Email không hợp lệ
+                                    </div>
+                                    <div ng-show="emailError" class="error-message text-danger form-text">
+                                        {{emailError}}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputBirthDate" class="col-sm-3 col-form-label">Ngày Sinh</label>
+                            <div class="col-sm-9">
+                                <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
+                                    ng-model="formInput.birthDate" required />
+                                <span ng-show="formCreateCustomer.$submitted">
+                                    <div ng-show="formCreateCustomer.birthDate.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputGender" class="col-sm-3 col-form-label">Giới tính</label>
+                            <div class="col-sm-9">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender1"
+                                        ng-value="true" ng-model="formInput.gender" ng-checked='true' />Nam
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender2"
+                                        ng-model="formInput.gender" ng-value="false" />Nữ
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Loại Khách Hàng</label>
-                                <div class="col-sm-8">
-                                    <select name="customerTypes" class="form-select form-select-sm"
-                                        aria-label="Small select example" ng-model="formInputCustomer.customerTypes.id">
-                                        <option ng-value="1">Mới</option>
-                                        <option ng-value="2">Bạc</option>
-                                        <option ng-value="3">Vàng</option>
-                                        <option ng-value="4">Bạch Kim</option>
-                                        <option ng-value="5">Kim Cương</option>
-                                    </select>
-                                    <span ng-show="formCreateCustomer.$submitted">
-                                        <div ng-show="formCreateCustomer.customerTypes.$invalid"
-                                            class="error-message text-danger form-text">
-                                            Không được để trống
-                                        </div>
-                                    </span>
-                                </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="inputUpdatedBy" class="col-sm-4 col-form-label">Loại Khách Hàng</label>
+                            <div class="col-sm-8">
+                                <select name="customerTypes" class="form-select form-select-sm"
+                                    aria-label="Small select example" ng-model="formInputCustomer.customerTypes.id">
+                                    <option ng-value="1">Mới</option>
+                                    <option ng-value="2">Bạc</option>
+                                    <option ng-value="3">Vàng</option>
+                                    <option ng-value="4">Bạch Kim</option>
+                                    <option ng-value="5">Kim Cương</option>
+                                </select>
+                                <span ng-show="formCreateCustomer.$submitted">
+                                    <div ng-show="formCreateCustomer.customerTypes.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </div>
+                                </span>
                             </div>
+                        </div>
 
 
-                            <!-- <div class="row mb-3">
+                        <!-- <div class="row mb-3">
                                 <label for="inputAddress" class="col-sm-3 col-form-label">Địa Chỉ</label>
                                 <div class="col-sm-9">
                                     <input name="address" id="inputAddress" type="text" class="form-control"
@@ -356,19 +362,18 @@
                                     </span>
                                 </div>
                             </div> -->
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Thêm</button>
-                            <button ng-click="resetFormInput()" type="button" class="btn btn-warning">
-                                Xoá form
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                Đóng
-                            </button>
-                        </div>
                     </div>
-                </form>
-            </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                        <button ng-click="resetFormInput()" type="button" class="btn btn-warning">
+                            Xoá form
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Đóng
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
