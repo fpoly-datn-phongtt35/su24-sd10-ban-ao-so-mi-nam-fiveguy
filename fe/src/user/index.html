@@ -29,10 +29,10 @@
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button> -->
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div style="padding: 16px;" class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#home">Trang chủ</a>
+                        <a class="nav-link active header-title" aria-current="page" href="#home">Trang chủ</a>
                     </li>
                     <!-- <li class="nav-item">
                         <a class="nav-link" href="#">Sản phẩm</a>
@@ -40,7 +40,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Liên hệ</a>
                     </li> -->
-                    <li class="nav-item">
+                    <li class="nav-item header-title">
                         <a class="nav-link" href="http://127.0.0.1:5555/src/admin/index.html">Quản lí</a>
                     </li>
                 </ul>
@@ -52,33 +52,34 @@
                     <button class="btn btn-outline-success" type="submit">Tìm kiếm</button>
                 </form> -->
                 <ul class="navbar-nav">
-                    <li class="nav-item">
+                    <li class="nav-item header-title">
                         <a class="nav-link" href="#/home/orderTrack"><i class="fa-solid fa-box"></i> Tra cứu đơn hàng</a>
                     </li>
                     <!-- <li class="nav-item">
                         <a class="nav-link" href="#/home/order"><i class="fa-solid fa-box"></i> Đơn hàng của tôi</a>
                     </li> -->
                     
-                    <li class="nav-item">
+                    <li class="nav-item header-title">
                         <a class="nav-link" href="#/home/customerProfile"><i class="fas fa-user"></i> Quản lí tài
                             khoản</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item header-title">
                         <a class="nav-link" href="#/home/cart">
                             <i class="fas fa-shopping-cart"></i> Giỏ hàng
-                            <span ng-bind="countProduct" class="badge bg-danger position-absolute  translate-middle badge-circle">{{countProduct}}</span>
+                            <span ng-bind="countProduct" class="countCart badge bg-danger position-absolute   badge-circle">{{countProduct}}</span>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item header-title" id="login-link">
                         <a class="nav-link" href="http://127.0.0.1:5555/src/login/login.html">
                             <i class="fas fa-sign-in-alt"></i> Đăng nhập
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item header-title" id="logout-link" style="display: none;">
                         <a class="nav-link" href="#" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i> Đăng xuất
                         </a>
                     </li>
+                    
 
                 </ul>
             </div>
@@ -168,11 +169,33 @@
 
 
     <script>
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('refreshToken');
-            window.location.href = 'http://127.0.0.1:5555/src/user/index.html#/home';
-        }
+ function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    window.location.href = 'http://127.0.0.1:5555/src/user/index.html#/home';
+    // Reload the page to update the navigation links
+    window.location.reload();
+}
+
+function updateNavLinks() {
+    const token = localStorage.getItem('token');
+    const loginLink = document.getElementById('login-link');
+    const logoutLink = document.getElementById('logout-link');
+
+    if (token) {
+        // If token exists, show the logout link and hide the login link
+        loginLink.style.display = 'none';
+        logoutLink.style.display = 'block';
+    } else {
+        // If token doesn't exist, show the login link and hide the logout link
+        loginLink.style.display = 'block';
+        logoutLink.style.display = 'none';
+    }
+}
+
+// Call the function to update the nav links on page load
+updateNavLinks();
+
         
     </script>
 

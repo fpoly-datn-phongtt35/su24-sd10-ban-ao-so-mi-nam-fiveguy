@@ -725,3 +725,17 @@ font-weight: 400;
   margin-bottom: 14px;
   font-size: 20px;
 }
+
+.header-title{
+  font-weight: 500;
+  line-height: 20px;
+  position: relative;
+  text-transform: uppercase;
+  transition: all .3s;
+  white-space: nowrap;
+
+}
+
+.countCart{
+  transform: translate(-322%, -89%);
+}

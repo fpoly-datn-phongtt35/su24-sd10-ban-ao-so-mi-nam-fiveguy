@@ -12,8 +12,11 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerTypeRepository extends JpaRepository<CustomerType, Long>, JpaSpecificationExecutor<CustomerType> {
-    boolean existsByCode(Integer code);
+    boolean existsByCode(String code);
     List<CustomerType> findByStatus(Integer status);
 
     Optional<CustomerType> findByCustomersId(Long customerId);
+    CustomerType findByCode(String customerId);
+
+
 }

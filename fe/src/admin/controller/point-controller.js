@@ -122,13 +122,37 @@ $scope.viewCustomerTypeDetails = function(customerType) {
 
 // Open modal for adding a new customer type
 $scope.showAddCustomerTypeModal = function() {
-    $scope.newCustomerType = {}; // Reset new customer type form
+    $scope.newCustomerType = {
+        name: '',
+        minPoints: null,
+        maxPoints: null,
+        status: 1 // Default status
+    };
     $('#addCustomerTypeModal').modal('show');
 };
 
 
 // Update an existing customer type
 $scope.updateCustomerType = function() {
+    // Mark the form as submitted to trigger validation messages
+    $scope.editCustomerTypeForm.$submitted = true;
+
+    // Check if the form is valid
+    if ($scope.editCustomerTypeForm.$invalid) {
+        // If the form is invalid, show an error notification and do not proceed
+        $scope.showErrorNotification('Vui lòng nhập đầy đủ thông tin.');
+        return;
+    }
+
+    // Additional logic to check if minPoints is less than maxPoints
+    if ($scope.selectedCustomerType.maxPoints <= $scope.selectedCustomerType.minPoints) {
+        $scope.showErrorNotification('Điểm tối đa phải lớn hơn điểm tối thiểu.');
+        return;
+    }
+
+    // Ensure status is set
+    $scope.selectedCustomerType.status = $scope.selectedCustomerType.status || 1;
+
     $http.put(apiCustomerType, $scope.selectedCustomerType).then(function(response) {
         $scope.showSuccessNotification('Customer type updated successfully');
         $('#editCustomerTypeModal').modal('hide');
@@ -139,9 +163,35 @@ $scope.updateCustomerType = function() {
 };
 
 
+
+
+$scope.newCustomerType = {
+    name: '',
+    minPoints: null,
+    maxPoints: null,
+    status: 1 // Default status
+};
+
 // Add a new customer type
 $scope.addCustomerType = function() {
-    $scope.newCustomerType.status = 1; // Set default status for new customer type
+    // Mark the form as submitted to trigger validation messages
+    $scope.addCustomerTypeForm.$submitted = true;
+
+    // Check if the form is valid
+    if ($scope.addCustomerTypeForm.$invalid) {
+        // If the form is invalid, show an error notification and do not proceed
+        $scope.showErrorNotification('Vui lòng nhập đầy đủ thông tin.');
+        return;
+    }
+
+    // Additional logic to check if minPoints is less than maxPoints
+    if ($scope.newCustomerType.maxPoints <= $scope.newCustomerType.minPoints) {
+        $scope.showErrorNotification('Điểm tối đa phải lớn hơn điểm tối thiểu.');
+        return;
+    }
+
+    $scope.newCustomerType.status = 1; // Ensure status is set
+
     $http.post(apiCustomerType, $scope.newCustomerType).then(function(response) {
         $scope.showSuccessNotification('Customer type created successfully');
         $('#addCustomerTypeModal').modal('hide');
@@ -149,11 +199,14 @@ $scope.addCustomerType = function() {
     }, function(error) {
         if (error.status === 400 && error.data.message === 'Code already exists') {
             $scope.codeExists = true;
+            $scope.showErrorNotification('Mã loại khách hàng đã tồn tại.');
         } else {
             $scope.showErrorNotification('Failed to save Customer Type.');
         }
     });
 };
+
+
 
 
  

@@ -231,10 +231,11 @@
 
             <div class="col-md-6 search-bar">
                 <select class="form-control" id="numberSelect" ng-model="selectedStatus" ng-change="logSelectedNumber()"
-                    ng-options="number for number in numbers">
+                    ng-options="number as status[number].title for number in numbers">
                     <option value="">Chọn trạng thái</option>
                 </select>
             </div>
+            
         </div>
 
 

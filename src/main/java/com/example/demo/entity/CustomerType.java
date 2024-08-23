@@ -24,7 +24,7 @@ public class CustomerType {
     private Long id;
 
     @Column(name = "Code")
-    private Integer code;
+    private String code;
 
     @Column(name = "Name", columnDefinition = "nvarchar(300)")
     private String name;

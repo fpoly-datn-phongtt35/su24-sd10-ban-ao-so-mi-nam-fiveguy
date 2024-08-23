@@ -12,13 +12,25 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class CustomerTypeServiceImpl implements CustomerTypeService {
 
     @Autowired
     private CustomerTypeRepository repository;
+
+
+
+    private String generateCode() {
+        Random random = new Random();
+        int randomNumber = 100000 + random.nextInt(900000); // Sinh số ngẫu nhiên từ 100000 đến 999999
+        return "LKH" + randomNumber;
+    }
+
 
     @Override
     public Page<CustomerType> getCustomerTypes(String name, Pageable pageable) {
@@ -34,13 +46,39 @@ public class CustomerTypeServiceImpl implements CustomerTypeService {
 
     @Override
     public CustomerType saveCustomerType(CustomerType customerType) {
-        if (repository.existsByCode(customerType.getCode())) {
-            throw new IllegalArgumentException("Code already exists");
+        // Kiểm tra xem mã code đã tồn tại hay chưa
+        if (customerType.getCode() == null) {
+            // Trường hợp lưu mới
+//            if (repository.existsByCode(customerType.getCode())) {
+//                throw new IllegalArgumentException("Code already exists");
+//            }
+
+            // Thiết lập mã code mới và các thuộc tính khác
+            customerType.setCode(generateCode());
+            customerType.setCreatedAt(new Date());
+            customerType.setStatus(1);
+            return repository.save(customerType);
+        } else {
+            // Trường hợp cập nhật
+            if (!repository.existsByCode(customerType.getCode())) {
+                throw new IllegalArgumentException("Code does not exist");
+            }
+
+            // Thực hiện cập nhật
+            CustomerType existingCustomerType = repository.findByCode(customerType.getCode());
+            if (existingCustomerType == null) {
+                throw new IllegalArgumentException("CustomerType not found");
+            }
+
+            // Cập nhật thông tin
+            existingCustomerType.setName(customerType.getName());
+            existingCustomerType.setStatus(customerType.getStatus());
+            // Cập nhật các trường khác nếu cần
+
+            return repository.save(existingCustomerType);
         }
-        customerType.setCreatedAt(new Date());
-        customerType.setStatus(1);
-        return repository.save(customerType);
     }
+
 
     @Override
     public CustomerType updateCustomerType(CustomerType customerType) {

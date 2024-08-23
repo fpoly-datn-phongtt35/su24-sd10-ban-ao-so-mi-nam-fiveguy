@@ -154,6 +154,7 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http,$timeout) {
         2: { title: "Chờ giao hàng", icon: "inventory", status: 2 },
         3: { title: "Đang giao hàng", icon: "local_shipping", status: 3 },
         4: { title: "Đã giao hàng", icon: "check_circle", status: 4 },
+        60: { title: "Chờ nhập hàng", icon: "not_interested", status: 60 },
 
         50: { title: "Yêu cầu hủy", icon: "cancel", status: 50 },
         5: { title: "Khách hủy", icon: "cancel", status: 5 },
@@ -181,7 +182,7 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http,$timeout) {
 
 
 
-
+    $scope.numbers = Object.keys($scope.status).map(Number);
 
 
 
@@ -232,11 +233,11 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http,$timeout) {
     // Define statuses for each tab
     const statusesMapping = {
         'Tất cả': null,
-        'Chờ xác nhận': [1],
+        'Chờ xác nhận': [1,60],
         'Chờ giao hàng': [2],
         'Giao hàng': [3, 4, 7, 8, 9, 81, 10],
         'Hoàn thành': [21],
-        'Hủy': [5, 6],
+        'Hủy': [5, 6,50],
         'Hoàn hàng': [11, 12, 13, 30, 31, 32, 33]
     };
     

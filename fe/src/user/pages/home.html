@@ -58,7 +58,7 @@
                           <a ng-href="#home/product/product-detail/{{product.productId}}">
                               <img class="card-img-top rounded-2" width="100%" height="100%" loading="lazy" ng-src="{{ product.imagePath }}" />
                               <h3 class="product-grid__title">
-                                  <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">
+                                  <a  class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">
                                       {{ product.productName }} {{ product.product.category.name }}
                                   </a>
                               </h3>
@@ -117,11 +117,17 @@
   <!-- Category list positioned over the carousel -->
   <div class="category-data" id="categoryDataContainer">
     <ul>
-      <li ng-repeat="category in listActiveCategories">
-        <a ng-href="#home/product?categoryId={{category.id}}" class="text-dark">{{category.name}}</a>
-      </li>
+        <li ng-repeat="category in listActiveCategories">
+            <a 
+                style="font-size: 22px; line-height: 40px; text-decoration: none;" 
+                ng-href="#home/product?categoryId={{category.id}}" 
+                class="text-dark">
+                {{category.name}}
+            </a>
+        </li>
     </ul>
-  </div>
+</div>
+
 </div>
 
 
