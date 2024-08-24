@@ -55,7 +55,7 @@ public class Customer {
     @Column(name = "CreatedBy",columnDefinition = "nvarchar(300)")
     private String createdBy;
 
-    @Column(name = "UpdatedBy",columnDefinition = "nvarchar(300")
+    @Column(name = "UpdatedBy",columnDefinition = "nvarchar(300)")
     private String updatedBy;
 
     @Column(name = "Status")
