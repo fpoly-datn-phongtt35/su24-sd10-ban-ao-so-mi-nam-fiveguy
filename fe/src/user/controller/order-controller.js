@@ -133,7 +133,7 @@ $scope.loadBillsForCustomer = function(page) {
             $scope.desiredPage3 = page + 1;
         }
     }).catch(function(error) {
-        alert("Có lỗi xảy ra khi gọi API!");
+        // alert("Có lỗi xảy ra khi gọi API!");
         console.error(error);
     });
 };

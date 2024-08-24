@@ -40,7 +40,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Liên hệ</a>
                     </li> -->
-                    <li class="nav-item header-title">
+                    <li class="nav-item header-title" id="admin-section">
                         <a class="nav-link" href="http://127.0.0.1:5555/src/admin/index.html">Quản lí</a>
                     </li>
                 </ul>
@@ -59,7 +59,7 @@
                         <a class="nav-link" href="#/home/order"><i class="fa-solid fa-box"></i> Đơn hàng của tôi</a>
                     </li> -->
                     
-                    <li class="nav-item header-title">
+                    <li class="nav-item header-title" id="manage-section">
                         <a class="nav-link" href="#/home/customerProfile"><i class="fas fa-user"></i> Quản lí tài
                             khoản</a>
                     </li>
@@ -157,6 +157,7 @@
 	<script src="/src/user/controller/product-controller.js"></script>
 	<script src="/src/user/controller/order-controller.js"></script>
 	<script src="/src/user/controller/rating-controller.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 
 
 
@@ -169,35 +170,72 @@
 
 
     <script>
- function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    window.location.href = 'http://127.0.0.1:5555/src/user/index.html#/home';
-    // Reload the page to update the navigation links
-    window.location.reload();
-}
-
-function updateNavLinks() {
-    const token = localStorage.getItem('token');
-    const loginLink = document.getElementById('login-link');
-    const logoutLink = document.getElementById('logout-link');
-
-    if (token) {
-        // If token exists, show the logout link and hide the login link
-        loginLink.style.display = 'none';
-        logoutLink.style.display = 'block';
-    } else {
-        // If token doesn't exist, show the login link and hide the logout link
-        loginLink.style.display = 'block';
-        logoutLink.style.display = 'none';
-    }
-}
-
-// Call the function to update the nav links on page load
-updateNavLinks();
-
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            window.location.href = 'http://127.0.0.1:5555/src/user/index.html#/home';
+            // Reload the page to update the navigation links
+            window.location.reload();
+        }
         
-    </script>
+        function updateNavLinks() {
+            const token = localStorage.getItem('token');
+            const loginLink = document.getElementById('login-link');
+            const logoutLink = document.getElementById('logout-link');
+        
+            if (token) {
+                // If token exists, show the logout link and hide the login link
+                loginLink.style.display = 'none';
+                logoutLink.style.display = 'block';
+            } else {
+                // If token doesn't exist, show the login link and hide the logout link
+                loginLink.style.display = 'block';
+                logoutLink.style.display = 'none';
+            }
+        
+            // Get user role and update the admin section display
+            const userRole = authService.getUserRole();
+            handleRoleBasedDisplay(userRole);
+        }
+        
+        var authService = {};
+        
+        authService.getUserRole = function () {
+            var token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    var decodedToken = jwt_decode(token);
+                    return decodedToken.role[0].authority;
+                } catch (error) {
+                    console.error("Failed to decode token or extract role", error);
+                    return null;
+                }
+            }
+            return null;
+        };
+        
+        function handleRoleBasedDisplay(userRole) {
+            const adminSection = document.getElementById('admin-section');
+            const manageSection = document.getElementById('manage-section');
+            if (!adminSection) {
+                return; // Exit the function if the element does not exist
+            }
+        
+            if (userRole === 'ADMIN' || userRole === 'EMPLOYEE') {
+                
+                adminSection.style.display = 'block';
+                manageSection.style.display = 'none';
+            } else if (userRole === 'CUSTOMER') {
+                adminSection.style.display = 'none';
+                manageSection.style.display = 'block';
+
+            } else if(userRole === null){
+                adminSection.style.display = 'none';
+            }
+        }
+        updateNavLinks();
+        </script>
+        
 
 </body>
 

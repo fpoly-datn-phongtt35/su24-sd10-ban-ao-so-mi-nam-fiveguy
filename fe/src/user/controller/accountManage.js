@@ -648,7 +648,7 @@ app.controller("accountManage", function ($scope, $http, $window,$rootScope) {
       // image.src = data.link + "&sz=s500";
       $scope.$apply();
     } catch (error) {
-      alert("Vui lòng thử lại");
+      // alert("Vui lòng thử lại");
     }
   };
   //Sửa khách hàng

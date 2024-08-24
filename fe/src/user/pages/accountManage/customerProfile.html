@@ -147,7 +147,18 @@
         .popover-body {
  
 }
+        .info-container {
+            align-items: center; /* Align items vertically centered */
+            gap: 1rem; /* Optional: Add space between the divs */
+        }
 
+        .info-container .fs-3 {
+            font-size: 1.5rem; /* Adjust icon size if needed */
+        }
+
+        .info-container p {
+            margin: 0; /* Remove default margin */
+        }
         
     }
 </style>
@@ -212,14 +223,33 @@
                             <div class="info-customer" style="    font-style: normal;
                             font-size: 24px;
                             line-height: 23px;">
-                                <p>Khách hàng: {{user.fullName}}</p>
-                           
-                                
-                                <div style="margin-bottom: 1rem;" class="row align-items-center">
-                                    <div class="col-auto">
-                                      <p class="mb-0">Điểm: {{user.point}}</p>
+
+                                <div class="container">
+                                    <div class="info-container" style="display: flex; justify-content: space-between;">
+                                        <!-- Full Name -->
+                                        <div>
+                                            <p>{{user.fullName}}</p>
+                                        </div>
+
+                                        <!-- Customer Type and Icon with Popover -->
+                                        <div class="d-flex align-items-center">
+                                            <p style="margin: 0 10px 0 0;" class="">{{user.customerType.name}}</p>
+                                            <!-- Icon with popover -->
+                                            <i class="fa-solid fa-circle-exclamation"
+                                            data-bs-toggle="popover"
+                                            title="Loại khách hàng"
+                                            data-bs-html="true"
+                                            data-bs-placement="bottom"
+                                            ng-init="initializePopover()"
+                                            class="fs-3">
+                                            </i>
+                                        </div>
                                     </div>
-                                    <div class="col-auto">
+                                </div>
+                                
+                                <div style="margin-bottom: 1rem; margin-left: 2px;" class="row align-items-center">
+                                    <div class="col-auto" style="display: flex; align-items: center;">
+                                      <p style="margin: 0;padding: auto;" class="">Điểm: {{user.point}}</p>
                                       <button type="button" class="btn " ng-click="openPointsHistoryModal()">
                                         <i class="fa-solid fa-eye"></i> 
                                       </button>
@@ -228,19 +258,9 @@
                                   
 
 
-                                <div class="d-flex align-items-center">
-                                    <p class="mb-0 me-3">{{user.customerType.name}}</p>
-                                    <!-- Icon with popover -->
-                                    <i class="fa-solid fa-circle-exclamation"
-                                    data-bs-toggle="popover"
-                                    title="Loại khách hàng"
-                                    data-bs-html="true"
-                                    data-bs-placement="bottom" 
-                                    ng-init="initializePopover()"
-                                    class="fs-3"> <!-- Adjust the icon size if needed -->
-                                 </i>
-                                 
-                                </div>
+                          
+
+                                
                                 <img id="image-preview-update"
                                     style="width: 168px; height: 200px; margin: auto; margin-bottom: 30px;"
                                     ng-src="{{user.avatar ? user.avatar : '/src/admin/common/img/no-img.png'}}"
