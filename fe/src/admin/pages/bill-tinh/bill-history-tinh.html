@@ -36,17 +36,24 @@
             <!-- <label>Loại tài khoản:</label> -->
             <select class="form-select" ng-model="filterBillHistory.status">
                 <option selected value=""> Chọn trạng thái</option>
-                <option value="1">Chờ thanh toán</option>
-                <option value="2">Chờ vận chuyển</option>
-                <option value="3">Đang giao</option>
-                <option value="4">Thành công</option>
-                <option value="5">Đá hủy</option>
-                <option value="6">Dá hủy</option>
+                <option value="1">Chờ xác nhận</option>
+                <option value="2">Chờ giao hang</option>
+                <option value="3">Đang giao hàng</option>
+                <option value="4">Đã giao hàng</option>
+                <option value="50">Yêu cầu hủy</option>
+                <option value="5">Khách hàng hủy</option>
+                <option value="6">Nhân viên hủy</option>
                 <option value="7">Thất bại</option>
-                <option value="8">Thát bại</option>
+                <option value="8">Giao lại - thiếu hàng</option>
+                <option value="81">Mất hàng</option>
                 <option value="9">Chờ giao lại</option>
                 <option value="10">Đang giao lại</option>
-                <option value="11">Hoàn hàng</option>
+                <option value="11">Đang hoàn hàng</option>
+                <option value="12">Đã hoàn hàng</option>
+                <option value="13">Hoàn hàng thất bại</option>
+                <option value="21">Thành công</option>
+                <option value="32">Đã trả hàng</option>
+                <!-- <option value="11">Đang hoàn hàng</option> -->
                 <!-- <option value="4">Tạm ngưng</option> -->
             </select>
         </div>
@@ -95,29 +102,84 @@
                         <td class="col-1.5" ng-switch="employee.bill.status">
                             <span ng-switch-when="1">
                                 <div class="badge bg-success text-wrap">
-                                    Chờ thanh toán
+                                    Chờ xác nhận
                                 </div>
                             </span>
                             <span ng-switch-when="2">
                                 <div class="badge bg-success text-wrap">
-                                    Chờ vận chuyển
-                                </div>
-                            </span>
-                            <span ng-switch-when="2">
-                                <div class="badge bg-success text-wrap">
-                                    Đang Giao
+                                    Chờ giao hàng
                                 </div>
                             </span>
                             <span ng-switch-when="3">
                                 <div class="badge bg-success text-wrap">
-                                    Đang Hoạt Động
+                                    Đang Giao hàng
                                 </div>
                             </span>
                             <span ng-switch-when="4">
+                                <div class="badge bg-success text-wrap">
+                                    Đã giao hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="50">
+                                <div class="badge bg-danger text-wrap">
+                                    Yêu cầu hủy
+                                </div>
+                            </span>
+                            <span ng-switch-when="5">
+                                <div class="badge bg-danger text-wrap">
+                                    Khách háng hủy
+                                </div>
+                            </span>
+                            <span ng-switch-when="6">
+                                <div class="badge bg-danger text-wrap">
+                                    Nhân viên hủy
+                                </div>
+                            </span>
+                            <span ng-switch-when="7">
+                                <div class="badge bg-danger text-wrap">
+                                    Thất bại
+                                </div>
+                            </span>
+                            <span ng-switch-when="8">
+                                <div class="badge bg-danger text-wrap">
+                                    Giao lại-Thiếu hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="9">
+                                <div class="badge bg-danger text-wrap">
+                                    Chờ giao lại
+                                </div>
+                            </span>
+                            <span ng-switch-when="10">
+                                <div class="badge bg-danger text-wrap">
+                                    Đang giao lại
+                                </div>
+                            </span>
+                            <span ng-switch-when="11">
+                                <div class="badge bg-danger text-wrap">
+                                    Đang hoàn hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="12">
+                                <div class="badge bg-danger text-wrap">
+                                    Đã hoàn hàng
+                                </div>
+                            </span>
+                            <span ng-switch-when="13">
+                                <div class="badge bg-danger text-wrap">
+                                    Hoàn hàng thất bại
+                                </div>
+                            </span>
+                            <span ng-switch-when="21">
                                 <div class="badge bg-danger text-wrap">
                                     Thành công
                                 </div>
                             </span>
+                            <span ng-switch-when="3">
+                                <div class="badge bg-danger text-wrap">
+                                    TĐã trả hàng
+                                </div>
+                            </span>>
                         </td>
                         <td scope="col-1.5">
                             <a type="button" class="edit" data-bs-toggle="modal" data-bs-target="#modalUpdate"

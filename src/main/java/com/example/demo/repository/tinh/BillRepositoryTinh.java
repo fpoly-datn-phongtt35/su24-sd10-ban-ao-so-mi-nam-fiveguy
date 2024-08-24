@@ -271,7 +271,7 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
             "AND b.status = :status " )
     List<Bill> tongStatusBillMonth(@Param("day") Date day, @Param("status") Integer status);
     @Query("SELECT b FROM Bill b JOIN b.billHistories ps " +
-            "WHERE FUNCTION('YEAR', ps.createdAt) = FUNCTION('YEAR', :day) " +
+            "WHERE DATEPART(YEAR, ps.createdAt) = YEAR(:day) " +
             "AND b.status = :status ")
     List<Bill> tongStatusBillYear(@Param("day") Date day, @Param("status") Integer status);
     @Query("SELECT b FROM Bill b JOIN b.billHistories ps " +

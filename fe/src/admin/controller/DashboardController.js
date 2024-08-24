@@ -1207,7 +1207,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.totalPages = 0;
     $scope.currentPage = 0;
     $scope.desiredPage = 1;
-    $scope.size = 5;
+    $scope.size = 1;
     $scope.filters = {
         name: null,
         price: null,
@@ -1243,6 +1243,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                         product.remainingQuantity = product.quantity || 0;
                     });
 
+                    // Cập nhật thông tin phân trang
                     $scope.totalPages = response.data.totalPages || 0;
                     $scope.currentPage = pageNumber;
                     $scope.desiredPage = pageNumber + 1;
@@ -1255,20 +1256,24 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
+
+    // Áp dụng bộ lọc và gọi lại API để cập nhật danh sách
     $scope.applyFiltersSanPhamSapHet = function () {
         $scope.getProductDetall(0);
     };
 
+    // Chuyển tới trang mong muốn
     $scope.goToPageSanPhamSapHet = function () {
         let pageNumber = $scope.desiredPage - 1;
         if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
             $scope.getProductDetall(pageNumber);
         } else {
-            $scope.desiredPage = $scope.currentPage + 1;
+            $scope.desiredPage = $scope.currentPage + 1;  // Đặt lại `desiredPage` nếu giá trị không hợp lệ
         }
     };
 
     $scope.getProductDetall(0);
+
 
     $scope.getTotalQuantity = function (product) {
         return product.totalQuantity;
@@ -1276,9 +1281,14 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     $scope.getSizeNames = function (details) {
         if (!details) {
-            return ""; // Hoặc bất kỳ giá trị mặc định nào bạn muốn khi details là null hoặc undefined
+            return ""; // Trả về chuỗi rỗng hoặc giá trị mặc định khi details là null hoặc undefined
         }
-        return details.map((detail) => detail.size.name).join(", ");
+
+        // Lọc ra các kích thước duy nhất
+        const uniqueSizes = [...new Set(details.map(detail => detail.size.name))];
+
+        // Nối các kích thước duy nhất lại với nhau bằng dấu phẩy
+        return uniqueSizes.join(", ");
     };
 
 });

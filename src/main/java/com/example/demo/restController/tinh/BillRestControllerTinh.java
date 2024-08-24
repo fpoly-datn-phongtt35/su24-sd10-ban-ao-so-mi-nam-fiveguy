@@ -27,7 +27,7 @@ import java.util.Random;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/admin/bill-tinh")
+    @RequestMapping("/api/admin/bill-tinh")
 public class BillRestControllerTinh {
     @Autowired
     BillServiceTinh billServiceTinh;
