@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface CustomerRepositoryTH extends JpaRepository<Customer, Long> {
 
-    @Query(value = "SELECT c FROM Customer c WHERE c.fullName LIKE %:keyword% OR c.code LIKE %:keyword% AND c.status = 1")
+    @Query(value = "SELECT c FROM Customer c WHERE c.fullName LIKE %:keyword% OR c.code LIKE %:keyword% AND c.status = 1 ")
     List<Customer> findAllByStatus(@Param("keyword") String keyword);
 
 }

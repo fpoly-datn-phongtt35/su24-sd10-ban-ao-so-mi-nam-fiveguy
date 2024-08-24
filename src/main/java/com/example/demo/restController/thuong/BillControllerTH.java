@@ -3,7 +3,6 @@ package com.example.demo.restController.thuong;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.Employee;
 import com.example.demo.model.request.thuong.BillUpdateRequest;
-import com.example.demo.model.request.thuong.CategoryRequestTH;
 import com.example.demo.model.response.thuong.BillResponseTH;
 import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.thuong.BillServiceTH;
@@ -80,7 +79,7 @@ public class BillControllerTH {
 
 
     @PutMapping("/address/{id}")
-    public Bill updateBill(
+    public BillResponseTH updateBill(
             @PathVariable Long id,
             @RequestBody BillUpdateRequest billUpdateRequest) {
 
@@ -88,31 +87,31 @@ public class BillControllerTH {
     }
 
     @PutMapping("/shippingFeeUpdate/{id}")
-    public Bill updateShippingFee(
+    public BillResponseTH updateShippingFee(
             @PathVariable Long id, @RequestBody BigDecimal shippingFee) {
 
         return billService.updateShippingFee(id, shippingFee);
     }
 
     @PostMapping("/typeBill")
-    public Bill updateTypeBill(@RequestBody Bill bill) {
+    public BillResponseTH updateTypeBill(@RequestBody Bill bill) {
         return billService.updateTypeBill(bill);
     }
 
-    @PostMapping("/paidAmount")
-    public Bill updatePaidAmount(@RequestBody Bill bill) {
-        return billService.updatePaidAmount(bill);
-    }
-
     @PutMapping("/{billId}/update-voucher/{voucherId}")
-    public Bill updateVoucher(@PathVariable Long billId, @PathVariable Long voucherId) {
+    public BillResponseTH updateVoucher(@PathVariable Long billId, @PathVariable Long voucherId) {
         // Update the voucher in the bill using the service
-        return  billService.updateVoucher(billId, voucherId);
+        return billService.updateVoucher(billId, voucherId);
 
     }
 
     @PutMapping("/{billId}/remove-voucher")
-    public Bill removeVoucher(@PathVariable Long billId) {
+    public BillResponseTH removeVoucher(@PathVariable Long billId) {
         return billService.removeVoucherFromBill(billId);
+    }
+
+    @PutMapping("/{billId}/remove-customer")
+    public BillResponseTH removeCustomer(@PathVariable Long billId) {
+        return billService.removeCustomer(billId);
     }
 }

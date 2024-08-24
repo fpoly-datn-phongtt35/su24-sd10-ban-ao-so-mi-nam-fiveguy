@@ -20,10 +20,11 @@ public interface BillServiceTH {
     BillResponseTH paymentBill(Employee employee, BillResponseTH bill);
 
 
-    Bill updateBill(Long id, String address, String addressId, String reciverName,  String phoneNumbe);
-    Bill updateShippingFee(Long id, BigDecimal shippingFee);
-    Bill updateTypeBill(Bill bill);
-    Bill updatePaidAmount(Bill bill);
-    Bill updateVoucher(Long billId, Long newVoucherId);
-    Bill removeVoucherFromBill(Long billId);
+    BillResponseTH updateBill(Long id, String address, String addressId, String reciverName,  String phoneNumbe);
+    BillResponseTH updateShippingFee(Long id, BigDecimal shippingFee);
+    BillResponseTH updateTypeBill(Bill bill);
+    BillResponseTH updateVoucher(Long billId, Long newVoucherId);
+    BillResponseTH removeVoucherFromBill(Long billId);
+
+    BillResponseTH removeCustomer(Long billId);
 }
