@@ -70,7 +70,7 @@ public class Customer {
     private Account account;
 
     @ManyToOne
-    @JoinColumn(name = "IdCustomerType", referencedColumnName = "Id")
+    @JoinColumn(name = "IdCustomerType", referencedColumnName = "Id", nullable = true)
     private CustomerType customerType;
 
     @JsonIgnore

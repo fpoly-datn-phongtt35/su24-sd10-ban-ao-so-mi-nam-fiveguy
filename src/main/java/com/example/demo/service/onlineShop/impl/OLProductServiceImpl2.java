@@ -159,11 +159,10 @@ public class OLProductServiceImpl2 implements OLProductService2 {
             Integer promotionalPrice = findPromotionalPriceByProductId(productId);
             Integer discountType = (Integer) productInfoArray[8];
             Integer value = (Integer) productInfoArray[9];
-//            String brandName = (String) productInfoArray[10];
-            String brandName = "Thương hiệu";
-//            String supplierName = (String) productInfoArray[11];
+            String brandName = (String) productInfoArray[10];
+            String descripe = (String) productInfoArray[11];
 
-            return new ProductInfoDTO(productId, productName, price, wristName, materialName, categoryName, collarName, promotionalPrice, discountType, value, getTotalQuantitySold(productId), brandName, "mô tả");
+            return new ProductInfoDTO(productId, productName, price, wristName, materialName, categoryName, collarName, promotionalPrice, discountType, value, getTotalQuantitySold(productId), brandName, descripe);
         }
         return null;
     }

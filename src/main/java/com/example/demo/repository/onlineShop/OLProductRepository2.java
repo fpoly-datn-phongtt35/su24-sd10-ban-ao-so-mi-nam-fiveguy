@@ -39,18 +39,21 @@ List<Object[]> findProductsWithImages();
             "c.name AS categoryName, co.name AS collarName, " +
             "CASE WHEN ps.id IS NOT NULL THEN ps.promotionalPrice ELSE 0 END AS finalPrice, " +
             "COALESCE(sa.discountType, 0) AS discountType, " +
-            "COALESCE(sa.value, 0) AS value " +
+            "COALESCE(sa.value, 0) AS value, " +
+            "b.name AS brandName, p.describe " +  // Added brand name and description
             "FROM Product p " +
             "LEFT JOIN p.wrist w " +
             "LEFT JOIN p.material m " +
             "LEFT JOIN p.category c " +
             "LEFT JOIN p.collar co " +
+            "LEFT JOIN p.brand b " +  // Added join for brand
             "LEFT JOIN p.productSales ps " +
             "LEFT JOIN ps.sale sa ON sa.status = 1 " +
             "WHERE p.id = :productId " +
             "AND p.status = 1 " +
             "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (sa.status = 1 OR sa.status IS NULL)))")
     List<Object[]> getProductInfo(@Param("productId") Long productId);
+
 
 
 
