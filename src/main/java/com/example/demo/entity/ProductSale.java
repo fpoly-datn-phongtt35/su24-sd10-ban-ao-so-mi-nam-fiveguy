@@ -32,7 +32,7 @@ public class ProductSale {
     @Column(name = "CreatedAt")
     private Date createdAt;
 
-    @Column(name = "CreatedBy")
+    @Column(name = "CreatedBy",columnDefinition = "nvarchar(300)")
     private String createdBy;
 
     @ManyToOne

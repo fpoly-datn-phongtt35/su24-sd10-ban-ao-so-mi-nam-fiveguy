@@ -62,10 +62,10 @@ public class Sale {
     @Column(name = "UpdatedAt")
     private Date updatedAt;
 
-    @Column(name = "CreatedBy")
+    @Column(name = "CreatedBy",columnDefinition = "nvarchar(300)")
     private String createdBy;
 
-    @Column(name = "UpdatedBy")
+    @Column(name = "UpdatedBy",columnDefinition = "nvarchar(300)")
     private String updatedBy;
 
     @Column(name = "Status")

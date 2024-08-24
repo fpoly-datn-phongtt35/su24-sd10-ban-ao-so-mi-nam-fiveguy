@@ -42,7 +42,7 @@ public class Rating {
     @Column(name = "Rated")
     private boolean  rated;
 
-    @Column(name = "Reviewer")
+    @Column(name = "Reviewer",columnDefinition = "nvarchar(300)")
     private String reviewer;
 
     @Temporal(TemporalType.TIMESTAMP)

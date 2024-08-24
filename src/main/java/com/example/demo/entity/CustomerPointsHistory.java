@@ -30,7 +30,7 @@ public class CustomerPointsHistory {
     @Column(name = "Points", nullable = false)
     private Integer points; // Number of points earned
 
-    @Column(name = "Note", columnDefinition = "nvarchar(300)")
+    @Column(name = "Note", columnDefinition = "nvarchar(400)")
     private String note;
 
     @Column(name = "Date", nullable = false)

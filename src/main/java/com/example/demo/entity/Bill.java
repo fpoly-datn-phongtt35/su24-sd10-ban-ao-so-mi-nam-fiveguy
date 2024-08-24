@@ -41,8 +41,8 @@ public class Bill {
     @Column(name = "ShippingFee")
     private BigDecimal shippingFee;
 
-    @Column(name = "TransId")
-    private String transId;
+//    @Column(name = "TransId")
+//    private String transId;
 
     @Column(name = "AddressId")
     private String addressId;
