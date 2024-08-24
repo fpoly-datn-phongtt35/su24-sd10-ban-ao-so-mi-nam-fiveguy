@@ -239,8 +239,7 @@
 
                                     <div class="card-body p-0 d-flex flex-column" style="height: 500px">
                                        <div class="payment p-3" style="height: 450px; overflow-y: scroll; ">
-                                        <div class="d-flex flex-row-reverse">{{timeCurrent | date : " dd-MM-yyyy hh:mm" : 0}}</div>
-                                        <div class="form-group d-flex align-items-center">
+                                        <div ng-show="selectedBill" class="form-group d-flex align-items-center">
                                             <div class="form-check w-50">
                                                 <input ng-model="isChecked" 
                                                        ng-change="updateTypeBill()" 
@@ -258,7 +257,7 @@
                                                Địa chỉ giao hàng
                                            </button>
                                         </div>    
-                                        <p ng-if="selectedBill.typeBill === 2 && selectedBill.addressId" style="margin-top: 8px; color: green;">Địa chỉ giao hàng đã xác nhận</p>
+                                        <p ng-if="messageShip" style="margin-top: 8px; color: green;">{{messageShip}}</p>
                                     
                                         <div class="box-container mt-2">
                                             <div ng-if="selectedBill.customer != null" class="customer-current" style="position: relative;">
@@ -336,7 +335,7 @@
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column" style="font-size: 16px;">
-                                            <div class="d-flex">
+                                            <div class="d-flex align-items-center">
                                                 <p>Khách cần trả</p>
                                                 <p class="ms-auto">
                                                     {{ formatCurrency(selectedBill.totalAmount - (valueVoucher || 0) + (shippingFee || 0)) }}
@@ -360,10 +359,10 @@
                                             </div>
                                         </div>
                                         <div ng-if="selectedBill.billDetail.length > 0" class="d-flex flex-row mt-2" style="font-size: 15px;">
-                                            <div class="d-flex align-items-center me-3" ng-repeat="paymentMethod in paymentMethods">
-                                                <input ng-model="selectedBill.paymentMethod.id" class="form-check-input" type="radio" ng-change="updateBill()" name="paymethod" ng-value="{{paymentMethod.id}}">
+                                            <div class="d-flex align-items-center me-3" ng-repeat="paymentMethod in getFilteredPaymentMethods()">
+                                                <input ng-model="selectedBill.paymentMethod.id" class="form-check-input" type="radio" ng-change="updateBill()" name="paymethod" ng-value="paymentMethod.id">
                                                 <label class="form-check-label ms-2">{{paymentMethod.name}}</label>
-                                              </div>
+                                            </div>
                                         </div>
                                        </div>
                                        <button ng-click="paymentBill()" type="button" class="btn btn-primary mx-2" ng-class="{'disabled' : !selectedBill}">Thanh toán</button>
@@ -653,7 +652,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-          <button ng-click="getAddressCustomer()" type="button" class="btn btn-primary">Lấy địa chỉ hiện tại của khách</button>
+          <button ng-click="getAddressCustomer()" type="button" class="btn btn-primary" ng-class="{'disabled' : !selectedBill.customer}">Lấy địa chỉ hiện tại của khách</button>
           <button type="submit" ng-disabled="addressAddForm.$invalid"  class="btn btn-success">Xác nhận</button>
         </div>
         </form>

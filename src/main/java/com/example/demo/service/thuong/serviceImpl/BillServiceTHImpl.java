@@ -89,7 +89,6 @@ public class BillServiceTHImpl implements BillServiceTH {
         billResponse.setNote(bill.getNote());
         billResponse.setStatus(bill.getStatus());
         billResponse.setBillDetail(billDetailsRepository.findAllByBill_Id(bill.getId()));
-        billResponse.setPaymentStatus(paymentStatusRepository.findByPaymentMethodAndBill_Id(2, bill.getId()));
         return billResponse;
     }
 
@@ -313,7 +312,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         Bill bill = new Bill();
         bill.setCode("HD" + Integer.parseInt(Long.toString(System.currentTimeMillis()).substring(7)));
         bill.setCreatedAt(new Date());
-        bill.setPaymentMethod(paymentMethodRepository.findByNameIgnoreCase("Tiền mặt"));
+        bill.setPaymentMethod(paymentMethodRepository.findByCode(13).get());
         bill.setTypeBill(1);
         bill.setStatus(20);
         bill.setEmployee(employee);
@@ -397,11 +396,11 @@ public class BillServiceTHImpl implements BillServiceTH {
         // Handle payment status if the payment method is provided and valid
         if (savedBill.getPaymentMethod().getCode() != 10) {
             PaymentStatus paymentStatus = new PaymentStatus();
-            String paymentMethodName = savedBill.getPaymentMethod().getName();
+            Integer paymentMethodCode = savedBill.getPaymentMethod().getCode();
 
             // Set the payment method type
             paymentStatus.setCode(generateUniqueCode());
-            paymentStatus.setPaymentMethod(paymentMethodName.equals("Tiền mặt") ? 1 : paymentMethodName.equals("Chuyển khoản") ? 2 : null);
+            paymentStatus.setPaymentMethod(paymentMethodCode == 13 ? 1 : paymentMethodCode == 14 ? 2 : null);
             paymentStatus.setBill(savedBill);
             paymentStatus.setCustomerPaymentStatus(2);
             paymentStatus.setPaymentType(1);

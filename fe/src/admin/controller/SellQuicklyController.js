@@ -31,7 +31,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     $scope.districts = [];
     $scope.wards = [];
     $scope.totalQuantity = 0;
-    $scope.timeCurrent = new Date();
     $scope.errors = [];
     $scope.defaultAddressUpdate = false;
 
@@ -50,9 +49,9 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                     const lastContent = lastPaid["Mô tả"];
                     
                     if (lastPrice >= price && lastContent.includes(content)) {
+                        $scope.runCheckPaid = true;
                         $scope.apiPayment();
                         $scope.qr = null;
-                        $scope.runCheckPaid = true;
                         $('#qrModal').modal('hide'); // Đánh dấu là đã thành công để dừng kiểm tra
                     } 
                 } else {
@@ -169,6 +168,16 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         });
     }
 
+    $scope.getFilteredPaymentMethods = function() {
+        if ($scope.selectedBill.typeBill === 2) {
+            return $scope.paymentMethods;
+        } else {
+            return $scope.paymentMethods.filter(function(method) {
+                return method.code !== 10; 
+            });
+        }
+    };
+
     $scope.getPaymentMethods();
 
     $scope.getTotalQuantity = () => {
@@ -200,6 +209,9 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             }).catch(error => {
                 console.log("Error", error);
             }).finally(() => {
+                $scope.messageShip = null;
+                $scope.voucherMessage = null;
+                $scope.selectedVoucher = null;
                 $scope.getVouchersForCustomer();
             });
             
@@ -233,6 +245,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             $scope.selectedBill = null;
             $scope.selectedVoucher = null;
             $scope.loadingRemove = false; 
+            $scope.messageShip = null;
+            $scope.voucherMessage = null;
         });
     }
 
@@ -577,14 +591,16 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             return;
         }
         $scope.selectedBill.customer = customer;
-        $scope.updateBill();
-        if ($scope.selectedBill.typeBill == 2) {
+        try {
+            $scope.updateBill();
+        } catch (error) {
+            console.log("Error:", error);
+        } finally {
+            hiddenElementCustomer.style.display = 'none';
+            $scope.clearDataAndAddAddress();
             $scope.showAddress($scope.selectedBill);
         }
-        hiddenElementCustomer.style.display = 'none';
-
-        $scope.clearDataAndAddAddress();
-        $scope.showAddress($scope.selectedBill);
+       
     }
 
     $scope.removeCustomer = () => {
@@ -593,12 +609,12 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             // Handle success
             $scope.selectedBill = response.data; 
             $scope.resetAddress();
+            $scope.messageShip = null;
         })
         .catch(function(error) {
             // Handle error
             console.error("Error updating voucher:", error);
         });
-        // $scope.resetAddress();
 
     }
 
@@ -730,6 +746,9 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     
                     $scope.setAddressComponents(provinceCode, districtCode, wardCode, provinceValue, districtValue, wardValue);
                 }
+                toastr["success"]("Xác nhận địa chỉ giao hàng " + " thành công");
+                $scope.messageShip = "Xác nhận địa chỉ giao hàng thành công";
+                $('#addressModal2').modal('hide');
             })
             .catch(error => {
                 console.error("Error fetching default address:", error);
@@ -784,8 +803,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     
 
     $scope.updateAddress = () => {
-        console.log("eeee")
-
         let address = {
             id: $scope.idAddress,
             name: $scope.addressDetail,
@@ -808,8 +825,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         }).catch(error => {
             console.log("Error", error);
         }).finally(() => {
-            console.log("eeee")
-
             if ($scope.selectedBill.typeBill == 2) {
                 $scope.showAddress($scope.selectedBill);
             } 
@@ -830,10 +845,17 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
 
     $scope.apiPayment = () => {
         $http.put(`${config.host}/bill-th/payment`, $scope.selectedBill).then(resp => {
-            $scope.getBills();
             $scope.selectedBill = null;
             $scope.totalQuantity = 0;
             toastr["success"]("Thanh toán " + resp.data.code + " thành công");
+            $scope.messageShip = null;
+            $scope.voucherMessage = null;
+            $scope.selectedVoucher = null;
+            let result = confirm("Bạn có muốn mở trang in hóa đơn?");
+            if (result === true) {
+                $scope.printBill(resp.data);
+            } 
+            $scope.getBills();
         }).catch(error => {
             console.log("Error", error);
         });
@@ -841,9 +863,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
 
     $scope.paymentBill = () => {
         $scope.selectedBill.totalAmountAfterDiscount = $scope.selectedBill.totalAmount - $scope.valueVoucher + $scope.shippingFee;
-
-        console.log($scope.selectedBill)
-
         
         if ($scope.selectedBill.billDetail.length == 0) {
             toastr["warning"]("Vui lòng thêm sản phẩm vào giỏ hàng");
@@ -851,13 +870,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         }
 
 
-        // if ( $scope.inputP) {
-        //     toastr["error"]("Số tiền khách thanh toán không đủ");
-        //     return;
-        // }
-
-
-        if ($scope.selectedBill.paymentMethod.name == '13') {
+        if ($scope.selectedBill.paymentMethod.code == '13') {
 
             if ($scope.selectedBill.paidAmount == null) {
                 toastr["error"]("Vui lòng nhập số tiền khách thanh toán");
@@ -887,9 +900,9 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             $scope.checkPaid(paidPrice, paidContent);
             $('#qrModal').modal('show');
         } 
-        // else {
-        //     $scope.apiPayment();
-        // }
+        else {
+            $scope.apiPayment();
+        }
     }
 
     // Voucher
@@ -1219,7 +1232,9 @@ $scope.updateTypeBill = function() {
         $scope.showAddress($scope.selectedBill)
         // Set to 2 when the checkbox is checked
     } else {
-        $scope.selectedBill.typeBill = 1;  // Set to 1 when the checkbox is unchecked
+        $scope.selectedBill.typeBill = 1;
+        $scope.selectedBill.paymentMethod = $scope.paymentMethods.find(p => p.code == '13');
+          // Set to 1 when the checkbox is unchecked
     }
     $scope.showShippingFee($scope.selectedBill);
 // Call the API to update typeBill using $http.post
@@ -1227,7 +1242,7 @@ $scope.updateTypeBill = function() {
         .then(function(response) {
    
             $scope.selectedBill = response.data;
-
+            $scope.messageShip = null;
             
             if (response.data.typeBill == 1) {
                 $scope.clearDataAndAddAddress();
@@ -1281,7 +1296,9 @@ $scope.addAddressCustomer = () => {
         .then(function(response) {
             // Handle success
             toastr["success"]("Xác nhận địa chỉ giao hàng " + " thành công");
+            $scope.messageShip = "Xác nhận địa chỉ giao hàng thành công";
             $scope.selectedBill = response.data;
+            $('#addressModal2').modal('hide');
         })
         .catch(function(error) {
             // Handle error
@@ -1323,7 +1340,6 @@ $scope.clearDataAndAddAddress = () => {
             .then(function(response) {
                 // Handle success
                 $scope.selectedBill = response.data;
-                console.log($scope.selectedBill)
             })
             .catch(function(error) {
                 // Handle error
@@ -1449,13 +1465,260 @@ $scope.showShippingFee = function (bill) {
         let data = shippingFee;
         if (data == $scope.selectedBill.shippingFee) return;
         $http.put("http://localhost:8080/api/admin/bill-th/shippingFeeUpdate/" + $scope.selectedBill.id, data).then(function (res) {
-            console.log("sửa phí ship thành công");
-            // console.log(res.data);
-        //  $scope.getBill();
         }, function (error) {
             console.error('update shippingfee error', error);
         });
     }
+
+    // print bill
+      
+      $scope.printBill = (resp) => {
+        console.log(resp);
+        const invoiceHTML = generateInvoiceHTML(resp);
+        const invoiceWindow = window.open('fiveguys', 'fiveguys');
+        invoiceWindow.document.write(invoiceHTML);
+        invoiceWindow.document.close();
+      };
+      
+      const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+        return new Date(dateString).toLocaleString('vi-VN', options);
+      };
+      
+      function generateInvoiceHTML(resp) {
+        const listBillDT = Object.values(resp.billDetail).map((billDT) => `
+          <tr>
+            <td class="desc" style="font-size: 1.1em;">${billDT.productDetail.product.name} <div>Color: ${billDT.productDetail.color.name} - Size: ${billDT.productDetail.size.name}</div></td>
+            <td style="width: 16.67%; text-align: right; font-size: 1.1em;">
+              ${billDT.promotionalPrice < billDT.price ? `
+                <p style="margin: 0;">
+                  <span>${$scope.formatCurrency(billDT.promotionalPrice)}</span>
+                  <br>
+                  <span style="text-decoration: line-through; color: red; font-size: 0.9em;">${$scope.formatCurrency(billDT.price)}</span>
+                </p>
+              ` : `
+                <p style="margin: 0;">${$scope.formatCurrency(billDT.price)}</p>
+              `}
+            </td>
+            <td class="qty" style="font-size: 1.1em;">${billDT.quantity}</td>
+            <td class="total" style="font-size: 1.1em;">${$scope.formatCurrency(billDT.promotionalPrice * billDT.quantity)}</td>
+          </tr>
+        `).join('');
+      
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <style>
+              .clearfix:after {
+                content: "";
+                display: table;
+                clear: both;
+              }
+              a {
+                color: #5D6975;
+                text-decoration: underline;
+              }
+              body {
+                position: relative;
+                width: 21cm;  
+                height: 20cm; 
+                margin: 0 auto; 
+                color: #001028;
+                background: #FFFFFF; 
+                font-family: Arial, sans-serif; 
+                font-size: 14px; 
+              }
+              header {
+                padding: 10px 0;
+                margin-bottom: 30px;
+              }
+              #logo {
+                text-align: center;
+                margin-bottom: 10px;
+              }
+              #logo img {
+                width: 90px;
+              }
+              h1 {
+border-top: 1px solid  #5D6975;
+                border-bottom: 1px solid  #5D6975;
+                color: #5D6975;
+                font-size: 2.4em;
+                line-height: 1.4em;
+                font-weight: normal;
+                text-align: center;
+                margin: 0 0 20px 0;
+                background: #F5F5F5;
+              }
+              #project {
+                float: left;
+              }
+              #project span {
+                color: #5D6975;
+                text-align: right;
+                width: 52px;
+                margin-right: 10px;
+                display: inline-block;
+                font-size: 0.8em;
+              }
+              #company {
+                float: right;
+                text-align: right;
+              }
+              #company div {
+                white-space: nowrap;        
+              }
+              table {
+                width: 100%;
+                border-collapse: collapse;
+                border-spacing: 0;
+                margin-bottom: 20px;
+                margin-top: -35px;
+              }
+              table tr:nth-child(2n-1) td {
+                background: #F5F5F5;
+              }
+              table th,
+              table td {
+                text-align: center;
+              }
+              table th {
+                padding: 5px 20px;
+                color: #5D6975;
+                border-bottom: 1px solid #C1CED9;
+                white-space: nowrap;        
+                font-weight: normal;
+              }
+              table .service,
+              table .desc {
+                text-align: left;
+              }
+              table td {
+                padding: 20px;
+                text-align: right;
+              }
+              table td.service,
+              table td.desc {
+                vertical-align: top;
+              }
+              table td.unit,
+              table td.qty,
+              table td.total {
+                font-size: 1.2em;
+              }
+              table td.grand {
+                border-top: 1px solid #5D6975;;
+              }
+              .footer {
+                color: #5D6975;
+                width: 100%;
+                height: 30px;
+                border-top: 1px solid #C1CED9;
+                padding: 8px 0;
+                text-align: center;
+              }
+              .font-b {
+                font-weight: bold;
+              }
+              /* Flexbox để chia hai phần */
+            .container {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            #company, #project {
+                display: flex;
+                flex-direction: column; /* Sắp xếp các phần tử theo cột */
+                font-size: 16px;
+            }
+
+            #company div, #project div {
+                margin-bottom: 10px; /* Khoảng cách giữa các hàng */
+            }
+
+            #project div {
+                display: flex;
+            }
+#project span {
+                display: inline-block;
+                width: 100px; /* Đảm bảo các nhãn có kích thước đồng nhất */
+                text-align: left;
+                font-size: 16px;
+                font-weight: bold; /* Làm cho nhãn nổi bật hơn */
+            }
+            </style>    
+          </head>
+          <body>
+            <header class="clearfix">
+            <div id="logo">
+            <img src="https://res.cloudinary.com/dvtz5mjdb/image/upload/v1701333412/image/h1vzhjzyuuwhrhak1bcr.png">
+            </div>
+            <h1>HÓA ĐƠN</h1>
+            <div class="container">
+            <div id="project">
+                <div><span>Khách hàng:</span> ${resp.reciverName ? resp.reciverName : 'Khách lẻ'}</div>
+                <div><span>SĐT:</span> ${resp ? resp.phoneNumber : ''}</div>
+                <div><span>Địa chỉ:</span> <div style="max-width: 300px;">${resp ? resp.address : ''}</div></div>
+            </div>
+
+            <div id="company">
+                <div>#${resp.code}</div>
+                <div>Ngày tạo: ${formatDate(resp.createdAt)}</div>
+            </div>
+            </div>
+              
+            </header>
+            <main>
+              <table>
+                <thead>
+                  <tr>
+                    <th class="desc" style="text-align: center; font-size: 1.1em;">Sản phẩm</th>
+                    <th style="text-align: end; font-size: 1.1em;">Đơn giá</th>
+                    <th style="text-align: end; font-size: 1.1em;">Số lượng</th>
+                    <th style="text-align: end; font-size: 1.1em;">Thành tiền</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${listBillDT}
+                  <tr>
+                    <td colspan="3" class="font-b" style="font-size: 1.1em;">Tổng tiền hàng: </td>
+                    <td class="total font-b" style="font-size: 1.1em;">${$scope.formatCurrency(resp.totalAmount)}</td>
+                  </tr>
+                  ${resp.shippingFee != null ? `
+                    <tr>
+                    <td colspan="3" class="font-b" style="font-size: 1.1em;">Phí giao hàng:</td>
+                    <td class="total font-b" style="font-size: 1.1em;">${$scope.formatCurrency(resp.shippingFee)}</td>
+                    </tr>
+                ` : ''}
+                 ${resp.totalAmount > resp.totalAmountAfterDiscount ? `
+                    <tr>
+                        <td colspan="3" class="font-b" style="font-size: 1.1em;">Giảm giá:</td>
+                        <td class="total font-b" style="font-size: 1.1em;">${$scope.formatCurrency(resp.totalAmount - resp.totalAmountAfterDiscount)}</td>
+                    </tr>
+                    ` : ''}
+                  <tr>
+                    <td colspan="3" class="grand font-b" style="font-size: 1.1em;">Tổng thanh toán</td>
+                    <td class="total grand font-b" style="font-size: 1.1em;">${resp.totalAmountAfterDiscount == 0 ? $scope.formatCurrency(resp.totalAmount + (resp.shippingFee == null ? 0 : resp.shippingFee)) : $scope.formatCurrency(resp.totalAmountAfterDiscount + (resp.shippingFee == null ? 0 : resp.shippingFee))}</td>
+                  </tr>
+                </tbody>
+</table>
+              <div class="footer">
+                Cảm ơn và hẹn gặp lại!
+              </div>
+            </main>
+            <script>
+              window.onload = function() {
+                window.print();
+              };
+            </script>
+          </body>
+          </html>
+        `;
+      
+        return htmlContent;
+      }
+
 
 });
 
