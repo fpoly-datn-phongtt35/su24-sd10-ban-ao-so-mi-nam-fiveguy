@@ -329,4 +329,28 @@ table, th, td {
     100% { transform: rotate(360deg); }
 }
 
+/* Phân trang  */
+.pagination .btn {
+    padding: 5px 10px; /* Giảm padding để các nút nhỏ hơn */
+    font-size: 12px; /* Giảm kích thước font chữ trong nút */
+    margin: 0 3px; /* Giảm khoảng cách giữa các nút */
+}
+
+.pagination .form-control-custom {
+    width: 30px; /* Giảm kích thước chiều rộng của input */
+    font-size: 12px; /* Giảm kích thước chữ của input */
+}
+
+.pagination .fs-4 {
+    font-size: 12px; /* Giảm kích thước font chữ của số trang */
+    font-weight: normal; /* Điều chỉnh font weight nếu cần */
+}
+
+.pagination .material-icons {
+    font-size: 16px; /* Giảm kích thước của icon */
+}
+
+.d-flex {
+    gap: 4px; /* Tạo khoảng cách nhỏ hơn giữa các thành phần */
+}
 

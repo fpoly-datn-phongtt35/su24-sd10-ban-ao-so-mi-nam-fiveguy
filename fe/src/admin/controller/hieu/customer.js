@@ -326,7 +326,7 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
   $scope.edit = function (customer) {
     $scope.emailAccount = customer.account.email;
     // console.log($scope.emailAccount);
-    const birthDateNew = $scope.formatDate(customer.birthDate);
+    const birthDateNew = angular.copy(customer.birthDate);
     if ($scope.formUpdate.updatedAt) {
       $scope.formUpdate = angular.copy(customer);
     } else {
@@ -336,6 +336,8 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
       $scope.formInputAccount = angular.copy(customer.account);
     }
     $scope.formUpdate.birthDate = new Date(birthDateNew);
+    console.log($scope.formUpdate.birthDate);
+
     $scope.formUpdate.avatar = angular.copy(customer.avatar);
   };
 
@@ -466,90 +468,86 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
     };
     $scope.getCustomer(0);
   };
+  $scope.isEmailValid = false;
+  $scope.isAccountValid = false;
+  $scope.isPhoneNumberValid = false;
 
   //Hàm check email ko được bắt đầu bằng số, check trùng
   $scope.checkEmail = function () {
     var email = $scope.formInputAccount.email;
 
-    // Kiểm tra nếu trường input trống, coi như hợp lệ
     if (!email) {
       $scope.emailError = "";
+      $scope.isEmailValid = true; // Email rỗng coi như hợp lệ
       return true;
     }
 
-    // Kiểm tra nếu email không bắt đầu bằng số
     var EMAIL_REGEXP = /^[^\d].*/;
     if (!EMAIL_REGEXP.test(email)) {
       $scope.emailError = "Email không được bắt đầu bằng số";
+      $scope.isEmailValid = false;
       return false;
     }
 
-    // Email hợp lệ, tiếp tục kiểm tra trùng email
-    $http
-      .get(apiAccount + "/check-email", { params: { email: email } })
+    $http.get(apiAccount + "/check-email", { params: { email: email } })
       .then(function (response) {
         if (response.data) {
-          // Email bị trùng
           $scope.emailError = "Email đã tồn tại";
-          return false;
+          $scope.isEmailValid = false;
         } else {
-          // Email hợp lệ và không bị trùng
           $scope.emailError = "";
-          return true;
+          $scope.isEmailValid = true;
         }
       })
       .catch(function (error) {
-        // Xử lý lỗi khi gọi API
         $scope.emailError = "Có lỗi xảy ra khi kiểm tra email";
-        return false;
+        $scope.isEmailValid = false;
       });
   };
 
-  //Hàm check trùng tên tài khoản
   $scope.checkAccount = function () {
     var account = $scope.formInputAccount.account;
-    $http
-      .get(apiAccount + "/check-account", { params: { account: account } })
+
+    $http.get(apiAccount + "/check-account", { params: { account: account } })
       .then(function (response) {
         if (response.data) {
-          // Email bị trùng
           $scope.accountError = "Tài khoản đã tồn tại";
-          return false;
+          $scope.isAccountValid = false;
         } else {
-          // Email hợp lệ và không bị trùng
           $scope.accountError = "";
-          return true;
+          $scope.isAccountValid = true;
         }
       })
       .catch(function (error) {
-        // Xử lý lỗi khi gọi API
-        $scope.accountError = "Có lỗi xảy ra khi kiểm tra Tài khoản";
-        return false;
+        $scope.accountError = "Có lỗi xảy ra khi kiểm tra tài khoản";
+        $scope.isAccountValid = false;
       });
   };
 
-  //Hàm check trùng số điện thoại
   $scope.checkPhoneNumber = function () {
-    var phoneNumber = $scope.formInputAccount.phoneNumber;
-    $http
-      .get(apiAccount + "/check-phone-number", {
-        params: { phoneNumber: phoneNumber },
-      })
+    const phoneNumber = $scope.formInputAccount.phoneNumber;
+
+    const isValidPhoneNumber = /^(\+84|0)[2|3|5|7|8|9][0-9]{8}$/.test(phoneNumber);
+
+    if (!isValidPhoneNumber) {
+      $scope.phoneNumberError = "Số điện thoại không hợp lệ";
+      $scope.isPhoneNumberValid = false;
+      return;
+    }
+
+    $http.get(apiAccount + "/check-phone-number", { params: { phoneNumber: phoneNumber } })
       .then(function (response) {
         if (response.data) {
-          // Email bị trùng
           $scope.phoneNumberError = "Số điện thoại đã tồn tại";
-          return false;
+          $scope.isPhoneNumberValid = false;
         } else {
-          // Email hợp lệ và không bị trùng
           $scope.phoneNumberError = "";
-          return true;
+          $scope.isPhoneNumberValid = true;
         }
       })
       .catch(function (error) {
-        // Xử lý lỗi khi gọi API
         $scope.phoneNumberError = "Có lỗi xảy ra khi kiểm tra số điện thoại";
-        return false;
+        $scope.isPhoneNumberValid = false;
       });
   };
 
@@ -586,34 +584,38 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
   };
   //upload ảnh
   $scope.uploadBtnAdd = function () {
-    const fileInput = document.getElementById("image");
-    const file = fileInput.files[0];
-    if (!file) {
-      $scope.showError = true;
-      $scope.$apply();
-      return;
-    }
+    return new Promise((resolve, reject) => {
+      const fileInput = document.getElementById("image");
+      const file = fileInput.files[0];
 
-    $scope.showError = false;
-    $scope.uploading = true; // Đang trong quá trình upload
+      if (!file) {
+        // Nếu không có file, resolve promise ngay lập tức
+        $scope.uploadedImageData = null; // Đặt dữ liệu ảnh là null
+        return resolve(); // Resolve promise ngay lập tức
+      }
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      const data = reader.result.split(",")[1];
-      const postData = {
-        name: file.name,
-        type: file.type,
-        data: data,
+      $scope.showError = false;
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        const data = reader.result.split(",")[1];
+        const postData = {
+          name: file.name,
+          type: file.type,
+          data: data,
+        };
+        $scope.postFile(postData)
+          .then(function () {
+            $scope.$apply(); // Áp dụng thay đổi vào scope
+            resolve(); // Resolve promise khi upload hoàn tất
+          })
+          .catch(reject);
       };
-      $scope.postFile(postData).then(function () {
-        $scope.uploading = false; // Hoàn thành quá trình upload
-        $scope.$apply(); // Áp dụng thay đổi vào scope
-        if (!$scope.uploading) {
-          $scope.submitForm();
-        }
-      });
-    };
+      reader.onerror = function (error) {
+        reject(error);
+      };
+    });
   };
 
   $scope.addAccount = async (objectAccount) => {
@@ -661,35 +663,71 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
   $scope.addCustom = async (objectData) => {
     try {
       const result = await $http.post(`${apiCustomer}/save`, objectData);
-      console.log("Thêm mới nhân viên thành công", result.data);
+      console.log("Thêm mới khách hàng thành công", result.data);
       return result.data;
     } catch (error) {
-      console.error("Lỗi thêm mới tài khoản nhân viên", error);
+      console.error("Lỗi thêm mới tài khoản khách hàng", error);
       throw error;
     }
   };
 
   // Form submit thêm
+  $scope.uploading = false; // Thêm biến trạng thái
+
+  $scope.showLoading = function () {
+    $scope.uploading = true; // Hiển thị spinner
+  };
+
+  $scope.hideLoading = function () {
+    $scope.uploading = false; // Ẩn spinner
+  };
+
   $scope.submitForm = async function () {
     if ($scope.formCreateCustomer.$valid) {
-      const addAccountData = await $scope.themAccount();
-      if (addAccountData) {
-        const dataObject = {
-          account: {
-            id: addAccountData.id,
-          },
-          fullName: $scope.formInput.fullName,
-          gender: $scope.formInput.gender,
-          birthDate: $scope.formInput.birthDate,
-          address: $scope.formInput.address,
-          avatar: $scope.uploadedImageData, // Add the image data here
-        };
-        const addCustomersData = await $scope.addCustom(dataObject);
-        console.log("addCustomersData = ", addCustomersData);
-        $scope.showSuccessNotification("Thêm thông tin thành công");
-        $scope.getCustomer(0);
-        $scope.resetFormInput();
-        $("#modalAdd").modal("hide");
+      try {
+        // Gọi các hàm kiểm tra trước khi xử lý form
+        $scope.checkEmail();
+        $scope.checkAccount();
+        $scope.checkPhoneNumber();
+
+        // Đợi các kiểm tra hoàn thành
+        await $timeout(() => { }, 500); // Đợi một thời gian ngắn để đảm bảo các promise trong các hàm kiểm tra hoàn tất
+
+        // Nếu tất cả các kiểm tra đều hợp lệ
+        if ($scope.isEmailValid && $scope.isAccountValid && $scope.isPhoneNumberValid) {
+          $scope.showLoading(); // Hiển thị spinner khi bắt đầu xử lý
+
+          // Đợi cho hàm uploadBtnAdd hoàn tất
+          await $scope.uploadBtnAdd();
+
+          // Tiếp tục thực hiện submitForm sau khi upload hoàn tất
+          const addAccountData = await $scope.themAccount();
+          if (addAccountData) {
+            const dataObject = {
+              account: { id: addAccountData.id },
+              fullName: $scope.formInput.fullName,
+              gender: $scope.formInput.gender,
+              birthDate: $scope.formInput.birthDate,
+              address: $scope.formInput.address,
+              avatar: $scope.uploadedImageData, // Thêm dữ liệu hình ảnh ở đây (hoặc null nếu không có ảnh)
+            };
+            const addEmployeesData = await $scope.addCustom(dataObject);
+            console.log("addEmployeesData = ", addEmployeesData);
+            $scope.showSuccessNotification("Thêm thông tin thành công");
+
+            // Sử dụng $timeout để cập nhật scope
+            $scope.getCustomer(0);
+            $scope.resetFormInput();
+            $("#modalAdd").modal("hide");
+          }
+        } else {
+          $scope.showErrorNotification("Vui lòng kiểm tra lại thông tin đã nhập.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        $scope.showErrorNotification("Không thành công");
+      } finally {
+        $scope.hideLoading(); // Ẩn spinner khi hoàn tất xử lý, bất kể thành công hay thất bại
       }
     } else {
       // Hiển thị lỗi
@@ -697,7 +735,6 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
       $scope.formCreateCustomer.$submitted = true;
     }
   };
-  // END thêm Khách hàng
 
   //Sửa khách hàng
   $scope.uploadBtnUpdate = async function () {
@@ -826,40 +863,49 @@ app.controller("customerCtrl", function ($scope, $http, $timeout) {
     }
   };
 
+  $scope.isLoading = false;
+
   // Form submit update
   $scope.submitFormUpdate = async function () {
     if ($scope.formUpdateCustomer.$valid) {
-      const addAccountData = await $scope.suaAccount();
-      console.log(addAccountData);
-      if (addAccountData) {
-        const dataObject = {
-          code: $scope.formUpdate.code,
-          avata: $scope.formUpdate.avata,
-          account: {
-            id: addAccountData.id,
-          },
-
-          avatar: $scope.uploadedImageData, // Add the image data here
-          fullName: $scope.formUpdate.fullName,
-          gender: $scope.formUpdate.gender,
-          birthDate: $scope.formUpdate.birthDate,
-          address: $scope.formUpdate.address,
-          createdAt: $scope.formUpdate.createdAt,
-          updatedAt: $scope.formUpdate.updatedAt,
-          createdBy: $scope.formUpdate.createdBy,
-          updatedBy: $scope.formUpdate.updatedBy,
-          status: $scope.formUpdate.status,
-        };
-        console.log(dataObject);
-        const updateCustomersData = await $scope.updateCustomer(dataObject);
-        $scope.getCustomer(0);
-        $scope.resetFormUpdate();
-        $scope.showSuccessNotification("Sửa thông tin thành công");
-        console.log("updateCustomersData = ", updateCustomersData);
-        $("#modalUpdate").modal("hide"); // Đóng modal bằng JavaScript thuần
+      $scope.isLoading = true;  // Set loading to true
+      try {
+        
+        const addAccountData = await $scope.suaAccount();
+        console.log(addAccountData);
+        if (addAccountData) {
+          const dataObject = {
+            code: $scope.formUpdate.code,
+            avata: $scope.formUpdate.avata,
+            account: {
+              id: addAccountData.id,
+            },
+            avatar: $scope.uploadedImageData, // Add the image data here
+            fullName: $scope.formUpdate.fullName,
+            gender: $scope.formUpdate.gender,
+            birthDate: $scope.formUpdate.birthDate,
+            address: $scope.formUpdate.address,
+            createdAt: $scope.formUpdate.createdAt,
+            updatedAt: $scope.formUpdate.updatedAt,
+            createdBy: $scope.formUpdate.createdBy,
+            updatedBy: $scope.formUpdate.updatedBy,
+            status: $scope.formUpdate.status,
+          };
+          console.log(dataObject);
+          const updateCustomersData = await $scope.updateCustomer(dataObject);
+          $scope.getCustomer(0);
+          $scope.resetFormUpdate();
+          $scope.showSuccessNotification("Sửa thông tin thành công");
+          console.log("updateCustomersData = ", updateCustomersData);
+          $("#modalUpdate").modal("hide"); // Close modal
+        }
+      } catch (error) {
+        console.error("Error updating customer:", error);
+      } finally {
+        $scope.isLoading = false;  // Set loading to false after completion
       }
-      // $uibModalInstance.close(); // Đóng modal
     }
   };
+
   // END Sửa khách hàng
 });
