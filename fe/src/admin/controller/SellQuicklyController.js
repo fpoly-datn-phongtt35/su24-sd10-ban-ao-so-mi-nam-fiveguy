@@ -52,7 +52,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                         $scope.runCheckPaid = true;
                         $scope.apiPayment();
                         $scope.qr = null;
-                        $('#qrModal').modal('hide'); // Đánh dấu là đã thành công để dừng kiểm tra
+                        $('#qrModal').modal('hide');
                     } 
                 } else {
                     console.log("Dữ liệu thanh toán không hợp lệ");
@@ -244,6 +244,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         }).finally(() => {
             $scope.selectedBill = null;
             $scope.selectedVoucher = null;
+            $scope.valueVoucher = null;
+            $scope.shippingFee = null;
             $scope.loadingRemove = false; 
             $scope.messageShip = null;
             $scope.voucherMessage = null;
@@ -746,9 +748,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     
                     $scope.setAddressComponents(provinceCode, districtCode, wardCode, provinceValue, districtValue, wardValue);
                 }
-                toastr["success"]("Xác nhận địa chỉ giao hàng " + " thành công");
-                $scope.messageShip = "Xác nhận địa chỉ giao hàng thành công";
-                $('#addressModal2').modal('hide');
             })
             .catch(error => {
                 console.error("Error fetching default address:", error);
@@ -1473,7 +1472,6 @@ $scope.showShippingFee = function (bill) {
     // print bill
       
       $scope.printBill = (resp) => {
-        console.log(resp);
         const invoiceHTML = generateInvoiceHTML(resp);
         const invoiceWindow = window.open('fiveguys', 'fiveguys');
         invoiceWindow.document.write(invoiceHTML);
@@ -1691,15 +1689,15 @@ border-top: 1px solid  #5D6975;
                     <td class="total font-b" style="font-size: 1.1em;">${$scope.formatCurrency(resp.shippingFee)}</td>
                     </tr>
                 ` : ''}
-                 ${resp.totalAmount > resp.totalAmountAfterDiscount ? `
+                 ${$scope.valueVoucher ? `
                     <tr>
                         <td colspan="3" class="font-b" style="font-size: 1.1em;">Giảm giá:</td>
-                        <td class="total font-b" style="font-size: 1.1em;">${$scope.formatCurrency(resp.totalAmount - resp.totalAmountAfterDiscount)}</td>
+                        <td class="total font-b" style="font-size: 1.1em;">${$scope.formatCurrency($scope.valueVoucher)}</td>
                     </tr>
                     ` : ''}
                   <tr>
                     <td colspan="3" class="grand font-b" style="font-size: 1.1em;">Tổng thanh toán</td>
-                    <td class="total grand font-b" style="font-size: 1.1em;">${resp.totalAmountAfterDiscount == 0 ? $scope.formatCurrency(resp.totalAmount + (resp.shippingFee == null ? 0 : resp.shippingFee)) : $scope.formatCurrency(resp.totalAmountAfterDiscount + (resp.shippingFee == null ? 0 : resp.shippingFee))}</td>
+                    <td class="total grand font-b" style="font-size: 1.1em;">${$scope.formatCurrency(resp.totalAmount - ($scope.valueVoucher || 0) + (resp.shippingFee || 0))}</td>
                   </tr>
                 </tbody>
 </table>
