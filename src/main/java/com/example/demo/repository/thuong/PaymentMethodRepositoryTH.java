@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface PaymentMethodRepositoryTH extends JpaRepository<PaymentMethod, Long> {
-    PaymentMethod findByNameIgnoreCase(String name);
     @Query(value = "SELECT p from PaymentMethod p WHERE p.paymentType = 2 AND p.status = 1")
     List<PaymentMethod> listPaymentMethod();
     Optional<PaymentMethod> findByCode(Integer code);

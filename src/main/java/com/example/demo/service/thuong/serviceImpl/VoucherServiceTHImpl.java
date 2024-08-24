@@ -2,6 +2,7 @@ package com.example.demo.service.thuong.serviceImpl;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerType;
+import com.example.demo.entity.CustomerTypeVoucher;
 import com.example.demo.entity.Voucher;
 import com.example.demo.model.response.thuong.VoucherResponseTH;
 import com.example.demo.repository.thuong.BillRepositoryTH;
@@ -34,6 +35,21 @@ public class VoucherServiceTHImpl implements VoucherServiceTH {
     @Autowired
     private BillRepositoryTH billRepository;
 
+    public List<Voucher> getVouchersForCustomer(Customer customer) {
+        List<Voucher> applicableVouchers = new ArrayList<>();
+        List<CustomerTypeVoucher> customerTypeVouchers = customerTypeVouchersRepository
+                .findByCustomerTypeId(customer.getCustomerType().getId());
+        applicableVouchers = customerTypeVouchers.stream()
+                .map(CustomerTypeVoucher::getVoucher)
+                .filter(voucher -> voucher.getApplyfor() == 1 && voucher.getStatus() == 1)
+                .collect(Collectors.toList());
+
+        return applicableVouchers;
+    }
+
+
+
+
     public  Integer checkNumberOfUser(Customer customer,Voucher voucher){
         Integer countUse = billRepository.countVoucherUsageByCustomer(customer.getId(),voucher.getId());
 //        System.out.println(countUse);
@@ -46,95 +62,62 @@ public class VoucherServiceTHImpl implements VoucherServiceTH {
 
     @Override
     public List<VoucherResponseTH> getVouchersForCustomer(Long id, String search) {
-        // Nếu id là null, trả về các voucher có trạng thái 1 và áp dụng cho tất cả
+        List<Voucher> combinedVouchers = new ArrayList<>();
+        Optional<Customer> customerOpt = null;
+        // Trường hợp id là null: chỉ lấy các voucher có trạng thái 1 và áp dụng cho tất cả
         if (id == null) {
-            List<Voucher> voucherStatus0 = voucherCommonRepository.findAllByStatus1AndApplyFor();
 
-            // Filter by voucher name or code
-            if (search != null && !search.isEmpty()) {
-                voucherStatus0 = voucherStatus0.stream()
-                        .filter(voucher -> voucher.getName().toLowerCase().contains(search.toLowerCase())
-                                || voucher.getCode().toLowerCase().contains(search.toLowerCase()))
-                        .collect(Collectors.toList());
+            combinedVouchers = voucherCommonRepository.findAllByStatus1AndApplyFor();
+        } else {
+            // Fetch the customer
+            customerOpt = customerRepository.findById(id);
+
+            if (customerOpt.isPresent()) {
+                Customer customer = customerOpt.get();
+                CustomerType customerType = customer.getCustomerType();
+
+                // Lấy các voucher từ CustomerType nếu customerType không null
+                if (customerType != null && customerType.getId() != null) {
+                    combinedVouchers.addAll(getVouchersForCustomer(customer));
+                }
+
+                // Lấy thêm các voucher có trạng thái 1 và áp dụng cho tất cả
+                combinedVouchers.addAll(voucherCommonRepository.findAllByStatus1AndApplyFor());
             }
+        }
 
-            // Sort by maximumReductionValue in descending order
-            voucherStatus0.sort(Comparator.comparing(Voucher::getMaximumReductionValue).reversed());
+        // Loại bỏ các voucher trùng lặp
+        combinedVouchers = combinedVouchers.stream().distinct().collect(Collectors.toList());
 
-            // Convert List<Voucher> to List<VoucherDTO>
-            return voucherStatus0.stream()
-                    .map(voucher -> new VoucherResponseTH(
-                            voucher.getId(),
-                            voucher.getCode(),
-                            voucher.getName(),
-                            voucher.getValue(),
-                            voucher.getDiscountType(),
-                            voucher.getMaximumReductionValue(),
-                            voucher.getMinimumTotalAmount(),
-                            voucher.getQuantity(),
-                            voucher.getDescribe(),
-                            voucher.getEndDate(),
-                            1 // Mặc định là 1 vì không có khách hàng cụ thể để kiểm tra số lượng sử dụng
-                    ))
+        // Filter by voucher name or code
+        if (search != null && !search.isEmpty()) {
+            combinedVouchers = combinedVouchers.stream()
+                    .filter(voucher -> voucher.getName().toLowerCase().contains(search.toLowerCase())
+                            || voucher.getCode().toLowerCase().contains(search.toLowerCase()))
                     .collect(Collectors.toList());
         }
 
-        // Fetch the customer
-        Optional<Customer> customer = customerRepository.findById(id);
+        // Sort by maximumReductionValue in descending order
+        combinedVouchers.sort(Comparator.comparing(Voucher::getMaximumReductionValue).reversed());
 
-        if (customer.isPresent()) {
-            CustomerType customerType = customer.get().getCustomerType();
-            List<Voucher> vouchersFromCustomerType = new ArrayList<>();
+        // Convert List<Voucher> to List<VoucherResponseTH>
+        Optional<Customer> finalCustomerOpt = customerOpt;
+        List<VoucherResponseTH> voucherDTOs = combinedVouchers.stream()
+                .map(voucher -> new VoucherResponseTH(
+                        voucher.getId(),
+                        voucher.getCode(),
+                        voucher.getName(),
+                        voucher.getValue(),
+                        voucher.getDiscountType(),
+                        voucher.getMaximumReductionValue(),
+                        voucher.getMinimumTotalAmount(),
+                        voucher.getQuantity(),
+                        voucher.getDescribe(),
+                        voucher.getEndDate(),
+                        (id == null) ? 1 : checkNumberOfUser(finalCustomerOpt.get(), voucher) // Mặc định là 1 nếu id là null
+                ))
+                .collect(Collectors.toList());
 
-            if (customerType != null && customerType.getId() != null) {
-                // Criterion 1: get vouchers by CustomerTypeVouchers
-                List<Long> voucherIdsFromCustomerType = customerTypeVouchersRepository.findVoucherIdsByCustomerTypeId(customerType.getId());
-                vouchersFromCustomerType = voucherCommonRepository.findAllByIdAndStatus(voucherIdsFromCustomerType);
-            }
-
-            // Criterion 2: get vouchers by apply for all
-            List<Voucher> voucherStatus0 = voucherCommonRepository.findAllByStatus1AndApplyFor();
-
-            // Combine both lists
-            List<Voucher> combinedVouchers = new ArrayList<>();
-            combinedVouchers.addAll(vouchersFromCustomerType);
-            combinedVouchers.addAll(voucherStatus0);
-
-            // Remove duplicates
-            combinedVouchers = combinedVouchers.stream().distinct().collect(Collectors.toList());
-
-            // Filter by voucher name or code
-            if (search != null && !search.isEmpty()) {
-                combinedVouchers = combinedVouchers.stream()
-                        .filter(voucher -> voucher.getName().toLowerCase().contains(search.toLowerCase())
-                                || voucher.getCode().toLowerCase().contains(search.toLowerCase()))
-                        .collect(Collectors.toList());
-            }
-
-            // Sort by maximumReductionValue in descending order
-            combinedVouchers.sort(Comparator.comparing(Voucher::getMaximumReductionValue).reversed());
-
-            // Convert List<Voucher> to List<VoucherDTO>
-            List<VoucherResponseTH> voucherDTOs = combinedVouchers.stream()
-                    .map(voucher -> new VoucherResponseTH(
-                            voucher.getId(),
-                            voucher.getCode(),
-                            voucher.getName(),
-                            voucher.getValue(),
-                            voucher.getDiscountType(),
-                            voucher.getMaximumReductionValue(),
-                            voucher.getMinimumTotalAmount(),
-                            voucher.getQuantity(),
-                            voucher.getDescribe(),
-                            voucher.getEndDate(),
-                            // 1 hiển thị được, 2 vượt quá số lượng giới hạn voucher
-                            checkNumberOfUser(customer.get(), voucher)
-                    ))
-                    .collect(Collectors.toList());
-
-            return voucherDTOs;
-        }
-
-        return null;
+        return voucherDTOs;
     }
 }
