@@ -123,42 +123,42 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
         type: "doughnut",
         data: {
             labels: [
-                "Chờ Xác nhận",
+                // "Chờ Xác nhận",
                 "Chờ Vận chuyển",
                 "Đang giao hàng",
                 // "Đã giao hàng",
                 "Đã hủy",
                 "Thất bại",
-                "Chờ giao lại",
-                "Đang giao lại",
-                "Đang hoàn hàng",
-                "Đã hoàn hàng",
-                "Hoàn hàng thất bại",
-
-                "Đơn trả", "Thành công",
-                "Đã trả hàng",
-                "Trả hàng thất bại"
+                // "Chờ giao lại",
+                // "Đang giao lại",
+                // "Đang hoàn hàng",
+                // "Đã hoàn hàng",
+                "Hoàn, trả hàng thất bại",
+                "Thành công",
+                "Đơn trả, hoàn hàng",
+                // "Đã trả hàng",
+                // "Trả hàng thất bại"
             ],
             datasets: [
                 {
                     label: "Số lượng hóa đơn theo trạng thái",
                     data: [0, 0, 0, 0, 0, 0, 0, 0, 0], // Mảng dữ liệu sẽ được cập nhật sau
                     backgroundColor: [
-                        "#eca147",
+                        // "#eca147",
                         "rgb(54, 162, 235)",
                         "#33FFFF",
                         // "#459446",
                         "#dc3545",
                         "#ff7c4e",
-                        "rgb(255, 205, 86)",
-                        "#0dcaf0",
-                        "rgb(255, 99, 132)",
-                        "#FFCCFF",
+                        // "rgb(255, 205, 86)",
+                        // "#0dcaf0",
+                        // "rgb(255, 99, 132)",
+                        // "#FFCCFF",
                         "#FF0066",
                         "#00FF00",
-                        "#CC3366",
+                        // "#CC3366",
                         "#00CC99",
-                        "#CC0033"
+                        // "#CC0033"
                     ],
                     hoverOffset: 4,
                 },
@@ -183,21 +183,20 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     function updateChart() {
         // Chuyển các giá trị từ mảng tongBillStatuses thành mảng dữ liệu cho biểu đồ
         const data = [
-            $scope.tongBillStatuses[1] || 0,
-            $scope.tongBillStatuses[2] || 0,
-            $scope.tongBillStatuses[3] || 0,
+            // $scope.tongBillStatuses[1] || 0,
+            ($scope.tongBillStatuses[2] || 0) + ($scope.tongBillStatuses[9] || 0),
+            ($scope.tongBillStatuses[3] || 0) + ($scope.tongBillStatuses[10] || 0),
             // $scope.tongBillStatuses[4] || 0,
             ($scope.tongBillStatuses[5] || 0) + ($scope.tongBillStatuses[6] || 0),
             ($scope.tongBillStatuses[7] || 0) + ($scope.tongBillStatuses[8] || 0) + ($scope.tongBillStatuses[81] || 0),
-            $scope.tongBillStatuses[9] || 0,
-            $scope.tongBillStatuses[10] || 0,
-            $scope.tongBillStatuses[11] || 0,
-            $scope.tongBillStatuses[12] || 0,
-            $scope.tongBillStatuses[13] || 0,
+
+
+            // $scope.tongBillStatuses[11] || 0,
+            // $scope.tongBillStatuses[12] || 0,
+            ($scope.tongBillStatuses[13] || 0) + ($scope.tongBillStatuses[33] || 0),
             $scope.tongBillStatuses[21] || 0,
-            ($scope.tongBillStatuses[30] || 0) + ($scope.tongBillStatuses[31] || 0),
-            $scope.tongBillStatuses[32] || 0,
-            $scope.tongBillStatuses[33] || 0,
+            // ($scope.tongBillStatuses[30] || 0) + ($scope.tongBillStatuses[31] || 0),
+            ($scope.tongBillStatuses[32] || 0) + ($scope.tongBillStatuses[12] || 0),
         ];
 
         // Cập nhật dữ liệu của biểu đồ

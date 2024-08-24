@@ -6,30 +6,71 @@
         </center>
         
         <div class="row">
-            <div class="col-4">
-                <div class="overlay" ng-show="loading">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+            <div class="col-md-6">
+                <div class="main-left-detail-employee">
+                    <div class="top-left-detail-employee">
+                        <div class="overlay" ng-show="loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="image-update">
+                                <img id="image-preview-update" class="img-preview-employee"
+                                    ng-src="{{formUpdateEm.avatar ? formUpdateEm.avatar : '/src/admin/common/img/no-img.png'}}" />
+                            </label>
+                            <input type="file" name="path" id="image-update" style="display: none" />
+                        </div>
+                        <button ng-click="uploadBtnUpdate()" class="btn-update-image-employee">Cập Nhật Ảnh</button>
+                    </div>
+
+                    <div class="bottom-left-detail-employee">
+                        <form name="formUpdatePassword" novalidate>
+                        
+                            <div class="row mb-3">
+                                <label for="newPassword" class="col-sm-12 col-form-label label-form-css">Mật khẩu mới</label>
+                                <div class="col-sm-12">
+                                    <input name="newPassword" id="newPassword" type="password" class="form-control"
+                                        ng-model="updatePassword.password" required />
+                                    <span ng-show="formUpdatePassword.$submitted && formUpdatePassword.newPassword.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </span>
+                                </div>
+                            </div>
+                        
+                            <div class="row mb-3">
+                                <label for="confirmPassword" class="col-sm-12 col-form-label label-form-css">Xác nhận mật khẩu</label>
+                                <div class="col-sm-12">
+                                    <input name="confirmPassword" id="confirmPassword" type="password"
+                                        class="form-control" ng-model="formUpdate.confirmPassword"
+                                        password-match="updatePassword.password" required />
+                                    <span ng-show="formUpdatePassword.$submitted && formUpdatePassword.confirmPassword.$invalid"
+                                        class="error-message text-danger form-text">
+                                        Không được để trống
+                                    </span>
+                                    <span ng-show="formUpdatePassword.$submitted || formUpdate.confirmPassword.$touched"
+                                        class="error-message text-danger form-text">
+                                        Mật khẩu không khớp
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn-update-image-employee" ng-click="suaAccountPassword()">Cập nhật mật khẩu</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div>
-                    <label for="image-update">
-                        <img id="image-preview-update" style="width: 250px; height: 250px"
-                            ng-src="{{formUpdateEm.avatar ? formUpdateEm.avatar : '/src/admin/common/img/no-img.png'}}" />
-                    </label>
-                    <input type="file" name="path" id="image-update" style="display: none" />
-                </div>
-                <button ng-click="uploadBtnUpdate()">Cập Nhật Ảnh</button>
             </div>
 
-            <div class="col-8">
-                <div class="row">
-                    <div>
-                        <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && submitFormUpdate()"
+            <div class="col-md-6">
+                <div class="main-right-detail-employee">
+
+                    <form name="formUpdateEmployee" ng-submit="formUpdateEmployee.$valid && submitFormUpdate()"
                             novalidate>
                             <div class="row mb-3">
-                                <label for="inputFullName" class="col-sm-3 col-form-label">Họ Tên</label>
-                                <div class="col-sm-9">
+                                <label for="inputFullName" class="col-sm-12 col-form-label label-form-css">Họ Tên</label>
+                                <div class="col-sm-12">
                                     <input name="fullName" id="inputFullName" type="text" class="form-control"
                                         ng-model="formUpdateEm.fullName" required />
                                     <span ng-show="formUpdateEmployee.$submitted">
@@ -41,8 +82,8 @@
                                 </div>
                             </div>
                             <!-- <div class="row mb-3">
-                            <label for="inputaccount" class="col-sm-3 col-form-label">Tài khoản</label>
-                            <div class="col-sm-9">
+                            <label for="inputaccount" class="col-sm-12 col-form-label label-form-css">Tài khoản</label>
+                            <div class="col-sm-12">
                                 <input name="account" id="inputaccount" type="text" class="form-control"
                                     ng-model="formInputAccount.account" ng-change="checkAccount()" required />
                                 <span ng-show="formUpdateEmployee.$submitted">
@@ -57,8 +98,8 @@
                             </div>
                         </div> -->
                             <div class="row mb-3">
-                                <label for="inputphonenumber" class="col-sm-3 col-form-label">SĐT</label>
-                                <div class="col-sm-9">
+                                <label for="inputphonenumber" class="col-sm-12 col-form-label label-form-css">SĐT</label>
+                                <div class="col-sm-12">
                                     <input name="phoneNumber" id="inputphonenumber" type="text" class="form-control"
                                         ng-model="formInputAccount.phoneNumber" ng-change="checkPhoneNumber()"
                                         required />
@@ -74,8 +115,8 @@
                                 </div>
                             </div>
                             <div class="row mb-4">
-                                <label for="inputemail" class="col-sm-3 col-form-label">Email</label>
-                                <div class="col-sm-9">
+                                <label for="inputemail" class="col-sm-12 col-form-label label-form-css">Email</label>
+                                <div class="col-sm-12">
                                     <input name="email" id="inputemail" type="mail" class="form-control"
                                         ng-model="formInputAccount.email" ng-change="checkEmail()" required />
                                     <span ng-show="formUpdateEmployee.$submitted">
@@ -94,8 +135,8 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="inputBirthDate" class="col-sm-3 col-form-label">Ngày Sinh</label>
-                                <div class="col-sm-9">
+                                <label for="inputBirthDate" class="col-sm-12 col-form-label label-form-css">Ngày Sinh</label>
+                                <div class="col-sm-12">
                                     <input name="birthDate" id="inputBirthDate" type="date" class="form-control"
                                         ng-model="formUpdateEm.birthDate" required />
                                     <span ng-show="formUpdateEmployee.$submitted">
@@ -107,8 +148,8 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="inputAddress" class="col-sm-3 col-form-label">Địa Chỉ</label>
-                                <div class="col-sm-9">
+                                <label for="inputAddress" class="col-sm-12 col-form-label label-form-css">Địa Chỉ</label>
+                                <div class="col-sm-12">
                                     <input name="address" id="inputAddress" type="text" class="form-control"
                                         ng-model="formUpdateEm.address" required />
                                     <span ng-show="formUpdateEmployee.$submitted">
@@ -121,64 +162,9 @@
                             </div>
 
                             <div>
-                                <button type="submit">Cập Nhật Thông Tin</button>
+                                <button type="submit" class="btn-update-image-employee">Cập Nhật Thông Tin</button>
                             </div>
                         </form>
-                    </div>
-                    <div>
-                        <form name="formUpdatePassword" novalidate>
-                            <!-- <div class="row mb-3">
-                                <label for="currentPassword" class="col-sm-3 col-form-label">Mật khẩu hiện tại</label>
-                                <div class="col-sm-9">
-                                    <input name="currentPassword" id="currentPassword" type="password"
-                                        class="form-control" ng-model="currentPassword" ng-change="checkPassword()"
-                                        required />
-                                    <span ng-show="formUpdatePassword.$submitted && formUpdatePassword.currentPassword.$invalid"
-                                        class="error-message text-danger form-text">
-                                        Không được để trống
-                                    </span>
-                                    <span ng-show="!passwordMatched && formUpdatePassword.$submitted"
-                                        class="error-message text-danger form-text">
-                                        Mật khẩu hiện tại không đúng
-                                    </span>
-                                </div>
-                            </div> -->
-                        
-                            <div class="row mb-3">
-                                <label for="newPassword" class="col-sm-3 col-form-label">Mật khẩu mới</label>
-                                <div class="col-sm-9">
-                                    <input name="newPassword" id="newPassword" type="password" class="form-control"
-                                        ng-model="updatePassword.password" required />
-                                    <span ng-show="formUpdatePassword.$submitted && formUpdatePassword.newPassword.$invalid"
-                                        class="error-message text-danger form-text">
-                                        Không được để trống
-                                    </span>
-                                </div>
-                            </div>
-                        
-                            <div class="row mb-3">
-                                <label for="confirmPassword" class="col-sm-3 col-form-label">Xác nhận mật khẩu</label>
-                                <div class="col-sm-9">
-                                    <input name="confirmPassword" id="confirmPassword" type="password"
-                                        class="form-control" ng-model="formUpdate.confirmPassword"
-                                        password-match="updatePassword.password" required />
-                                    <span ng-show="formUpdatePassword.$submitted && formUpdatePassword.confirmPassword.$invalid"
-                                        class="error-message text-danger form-text">
-                                        Không được để trống
-                                    </span>
-                                    <span ng-show="formUpdatePassword.$submitted || formUpdate.confirmPassword.$touched"
-                                        class="error-message text-danger form-text">
-                                        Mật khẩu không khớp
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <button type="button" ng-click="suaAccountPassword()">Cập nhật mật khẩu</button>
-                            </div>
-                        </form>
-                        
-
-                    </div>
                 </div>
             </div>
         </div>
