@@ -1,3 +1,14 @@
+
+body {
+  overflow-x: hidden;
+}
+
+/* Or for specific containers */
+.container {
+  overflow-x: hidden;
+}
+
+
 .color-circle {
     width: 50px; /* Điều chỉnh kích thước nếu cần */
     height: 50px; /* Điều chỉnh kích thước nếu cần */
@@ -649,7 +660,7 @@ font-weight: 400;
 }
 
 #carouselExample {
-  width: 1920px;
+  /* width: 1920px; */
   height: 730px;
   overflow: hidden;
   position: relative;

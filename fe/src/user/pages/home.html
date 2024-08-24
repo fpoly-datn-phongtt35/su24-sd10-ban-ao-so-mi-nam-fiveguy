@@ -65,8 +65,8 @@
                           </a>
                           <!-- Displaying prices -->
                           <div class="price-info">
-                              <div ng-if="product.promotionalPrice">
-                                  <span>{{ formatCurrency(product.promotionalPrice) }}₫</span>
+                              <div  ng-if="product.promotionalPrice">
+                                  <span >{{ formatCurrency(product.promotionalPrice) }}₫</span>
                               </div>
                               <div ng-if="product.saleValue">
                                   <span class="sale-value" ng-if="product.discountType === 1"> -{{ product.saleValue }}₫</span>
@@ -161,7 +161,7 @@
                 <div class="policies-desc">
                   Chất lượng đảm bảo
                 </div>
-              </div>
+              </div>  
             </div>
           </div>
   
