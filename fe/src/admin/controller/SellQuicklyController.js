@@ -875,8 +875,11 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
     }
 
     $scope.paymentBill = () => {
-        $scope.selectedBill.totalAmountAfterDiscount = $scope.selectedBill.totalAmount - $scope.valueVoucher + $scope.shippingFee;
+        $scope.selectedBill.totalAmountAfterDiscount = $scope.selectedBill.totalAmount - $scope.valueVoucher ;
         
+
+
+        // console.log($scope.selectedBill);
         if ($scope.selectedBill.billDetail.length == 0) {
             toastr["warning"]("Vui lòng thêm sản phẩm vào giỏ hàng");
             return;

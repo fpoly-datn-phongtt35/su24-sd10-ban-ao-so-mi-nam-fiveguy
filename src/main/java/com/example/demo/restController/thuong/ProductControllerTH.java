@@ -36,6 +36,7 @@ public class ProductControllerTH {
         return ResponseEntity.ok(productService.getProducts(page, size, keyword, sortField, sortDirection, minPrice, maxPrice, status));
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.findById(id));
