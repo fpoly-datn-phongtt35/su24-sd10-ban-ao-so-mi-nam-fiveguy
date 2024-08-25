@@ -82,12 +82,25 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         }
     }
 
-    private String generateCode() {
-        long currentTimeMillis = System.currentTimeMillis();
-        SimpleDateFormat formatter = new SimpleDateFormat("HHmm");
-        String formattedTime = formatter.format(new Date(currentTimeMillis));
-        return "HD" + formattedTime;
+
+    private static final Random random = new Random();
+    private static final String PREFIX = "HD";
+    private static final int MAX_ATTEMPTS = 1000;
+
+    public String generateUniqueCode() {
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            // Generate a random 6-digit number
+            int randomNumber = random.nextInt(900000) + 100000;
+            String code = PREFIX + randomNumber;
+
+            // Check if the code already exists in the database
+            if (!olBillRepository.existsByCode(code)) {
+                return code;
+            }
+        }
+        throw new RuntimeException("Không thể tạo mã duy nhất sau " + MAX_ATTEMPTS + " lần thử.");
     }
+
 
     @Override
     public ResponseEntity<?> creatBill(JsonNode orderData, Customer customer) {
@@ -98,7 +111,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         ObjectMapper mapper = new ObjectMapper();
         Bill bill = mapper.convertValue(orderData, Bill.class);
         bill.setCreatedAt(new Date());
-        bill.setCode(generateCode());
+        bill.setCode(generateUniqueCode());
 // Kiểm tra số lượng tồn của voucher trước khi sử dụng
         if (bill.getVoucher() != null) {
             Voucher existingVoucher = olVouchersRepository.findById(bill.getVoucher().getId())
