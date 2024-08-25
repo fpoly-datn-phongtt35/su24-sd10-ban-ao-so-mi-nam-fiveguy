@@ -878,16 +878,16 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.goToPageSanPhamBanChay = function (pageNumber2) {
         if (pageNumber2 >= 0 && pageNumber2 < $scope.totalPages2) {
             switch ($scope.selectedButton) {
-                case 'ngay':
+                case 'Ngày':
                     $scope.getSanPhamBanChayNgay(pageNumber2);
                     break;
-                case 'tuan':
+                case 'Tuần':
                     $scope.getSanPhamBanChayTuan(pageNumber2);
                     break;
-                case 'thang':
+                case 'Tháng':
                     $scope.getSanPhamBanChayThang(pageNumber2);
                     break;
-                case 'nam':
+                case 'Năm':
                     $scope.getSanPhamBanChayNam(pageNumber2);
                     break;
                 case 'tuyChinh':

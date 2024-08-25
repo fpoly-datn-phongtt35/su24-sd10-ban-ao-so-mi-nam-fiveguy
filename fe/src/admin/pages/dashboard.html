@@ -130,7 +130,7 @@
                     <div class="db-icon-img">
                         <span class="material-icons"> calendar_view_day </span>
                     </div>
-                    <div class="db-date">Tùy chỉnh</div>
+                    <!-- <div class="db-date">Tùy chỉnh</div> -->
                     <div class="db-number-total">{{(tongDoanhThuTuyChinh || 0) | currency:'₫':0:'vi-VN' }}</div>
                     <div class="db-list-item-info">
                         <div class="db-item-info">
@@ -172,9 +172,9 @@
                 <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'nam'}">
                     <a href="" ng-click="submitNam()">Năm</a>
                 </div>
-                <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'tuyChinh'}">
+                <!-- <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'tuyChinh'}">
                     <a href="" ng-click="toggleDiv()">Tùy chỉnh</a>
-                </div>
+                </div> -->
                 <div class="item-input-filter-db-table" ng-class="{'hidden': !showDiv}">
                     Từ:
                     <input type="date" id="startDate" ng-model="filterStartDate" ng-change="checkDates()" />
@@ -212,7 +212,7 @@
                                     <td class="text-left">{{sanPhamBanChay.ten_sanpham}}</td>
                                     <td class="text-center">{{sanPhamBanChay.so_luong_ban}}</td>
                                     <td class="text-right">
-                                        {{sanPhamBanChay.price | currency}}
+                                        {{formatCurrency(sanPhamBanChay.price) }}
                                     </td>
                                     <!-- <td scope="col-2" class="css-text-overfolow-acction">
                                         <button class="button-submit action-btn" data-bs-toggle="modal"
@@ -465,7 +465,7 @@
                                     <span class="material-icons"> poll </span>Doanh thu ngày
                                 </div>
                             </li>
-                            <li>{{tongDoanhThuNgay || 0}} đ</li>
+                            <li>{{formatCurrency(tongDoanhThuNgay)}}đ</li>
                             <li>
                                 <div ng-if="tongDoanhThuNgay >= tongDoanhThuNgayTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
@@ -487,7 +487,7 @@
                                     <span class="material-icons"> poll </span>Doanh thu Thang
                                 </div>
                             </li>
-                            <li>{{tongDoanhThuThang || 0}} đ</li>
+                            <li>{{formatCurrency(tongDoanhThuThang )}}đ</li>
                             <li>
                                 <div ng-if="tongDoanhThuThang >= tongDoanhThuThangTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
@@ -509,7 +509,7 @@
                                     <span class="material-icons"> poll </span>Doanh thu năm
                                 </div>
                             </li>
-                            <li>{{tongDoanhThuNam || 0}} đ</li>
+                            <li>{{formatCurrency(tongDoanhThuNam )}}đ</li>
                             <li>
                                 <div ng-if="tongDoanhThuNam >= tongDoanhThuNamTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
