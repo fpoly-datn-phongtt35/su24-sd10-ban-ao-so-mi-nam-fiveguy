@@ -172,10 +172,10 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http,$timeout) {
         13: { title: "Hoàn hàng thất bại", icon: "assignment_return", status: 13 },
 
         21: { title: "Hoàn thành", icon: "task_alt", status: 21 },
-        22: { title: "Thành công", icon: "task_alt", status: 20 },
+        // 22: { title: "Thành công", icon: "task_alt", status: 20 },
 
         30: { title: "Trả hàng", icon: "store", status: 30 },  //tại quầy
-        31: { title: "Trả hàng", icon: "local_shipping", status: 31 },  //tận nơi
+        // 31: { title: "Trả hàng", icon: "local_shipping", status: 31 },  //tận nơi
         32: { title: "Đã trả hàng", icon: "inventory_2", status: 32 },
         33: { title: "Trả hàng thất bại", icon: "assignment_late", status: 33 },
     };
@@ -238,7 +238,7 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http,$timeout) {
         'Giao hàng': [3, 4, 7, 8, 9, 81, 10],
         'Hoàn thành': [21],
         'Hủy': [5, 6,50],
-        'Hoàn hàng': [11, 12, 13, 30, 31, 32, 33]
+        'Hoàn hàng': [11, 12, 13, 30, 32, 33]
     };
     
     // Fetch orders when the controller is initialized

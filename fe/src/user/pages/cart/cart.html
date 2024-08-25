@@ -43,9 +43,14 @@
                               {{ formatCurrency(item.price) }} đ
                           </span>
                           <span class="h6" ng-if="item.promotionalPrice && item.promotionalPrice != 0">
-                              <del>{{ formatCurrency(item.price) }} đ</del>
+                              <del class="text-decoration-line-through text-danger" style="font-size: 0.9em;">{{ formatCurrency(item.price) }} đ</del>
+                              <br>
+
                               <span>{{ formatCurrency(item.promotionalPrice)  }} đ</span>
+                         
                           </span>
+
+                        
                       </div>
                       <div class="input-number flex-grow-1">
                           <input ng-model="item.quantity" type="number" min="1" max="100" ng-change="checkQuantityChange(item)" ng-blur="cart.update(item.id, item.quantity)" class="form-control updateQuantityProduct" style="max-width: 70px; overflow: hidden" />

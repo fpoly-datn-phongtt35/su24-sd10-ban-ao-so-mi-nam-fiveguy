@@ -62,18 +62,20 @@ public class CustomerPointsHistoryServiceImpl implements CustomerPointsHistorySe
         // Retrieve the totalRevenueAdjusted
         BigDecimal totalRevenueAdjusted = billRepository.findBillWithRevenueById(billId);
         if (totalRevenueAdjusted == null) {
-            throw new RuntimeException("Total revenue adjusted not found");
+            return;
+
         }
 
         // Retrieve the Bill
         Optional<Bill> billOptional = billRepository.findById(billId);
         if (!billOptional.isPresent()) {
-            throw new RuntimeException("Bill not found");
+            return;
+
         }
         Bill bill = billOptional.get();
         Customer customer = bill.getCustomer();
         if (customer == null) {
-            throw new RuntimeException("Customer not found in the bill");
+            return;
         }
 
         // Retrieve the existing CustomerPointsHistory for the bill
