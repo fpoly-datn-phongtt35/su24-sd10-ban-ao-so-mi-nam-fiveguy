@@ -58,6 +58,8 @@ public interface OLBillRepository2 extends JpaRepository<Bill, Long> {
 """, nativeQuery = true)
     BigDecimal findBillWithRevenueById(@Param("id") Long id);
 
+
+    boolean existsByCode(String code);
 }
 
 
