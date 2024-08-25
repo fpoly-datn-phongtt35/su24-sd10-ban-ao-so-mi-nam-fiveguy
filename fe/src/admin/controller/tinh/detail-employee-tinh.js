@@ -1,4 +1,4 @@
-app.controller("tinh-detail-employee-controller", function ($scope, $http) {
+app.controller("tinh-detail-employee-controller", function ($scope, $http, $timeout) {
   $scope.getDetailEmployee = {};
   $scope.formUpdate = {};
   $scope.formUpdateEm = {};
@@ -7,6 +7,18 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
   $scope.currentPassword = {};
   formInputAccountPassword = {};
   const emailAccount = null;
+
+  $scope.showPassword = false;
+
+  $scope.togglePasswordVisibility = function () {
+    $scope.showPassword = !$scope.showPassword;
+  };
+  $scope.showConfirmPassword = false;
+
+  $scope.toggleConfirmPasswordVisibility = function() {
+      $scope.showConfirmPassword = !$scope.showConfirmPassword;
+  };
+  
   // Hàm hiển thị thông báo thành công
   $scope.showSuccessNotification = function (message) {
     toastr["success"](message);
@@ -68,6 +80,8 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
   };
 
   $scope.checkEmail = function () {
+    console.log("hihi");
+    
     var email = $scope.formInputAccount.email;
 
     // Kiểm tra nếu trường input trống, coi như hợp lệ
@@ -201,6 +215,7 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
     try {
       if (!file) {
         $scope.showError = true;
+
         // Nếu không có ảnh được chọn, tiếp tục quy trình cập nhật mà không có ảnh
         const addAccountData = await $scope.suaAccount();
         if (addAccountData) {
@@ -247,6 +262,10 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
           } else {
             $scope.showErrorNotification("Lỗi khi tải ảnh lên.");
           }
+
+          // Tắt trạng thái loading khi hoàn tất
+          $scope.loading = false;
+          $scope.$apply(); // Áp dụng thay đổi vào scope
         };
       }
     } catch (error) {
@@ -254,9 +273,11 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
       $scope.showErrorNotification("Có lỗi xảy ra.");
     } finally {
       $scope.loading = false; // Tắt trạng thái loading khi hoàn tất
-      $scope.$apply(); // Áp dụng thay đổi vào scope
+      $scope.$apply(); // Đảm bảo cập nhật giao diện
     }
   };
+
+
 
 
   // Hàm xử lý sự kiện thay đổi tệp ảnh
@@ -418,14 +439,15 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
     // Đánh dấu form đã được submit để ng-show hoạt động
     $scope.formUpdateEmployee.$submitted = true;
 
+
+
     // Kiểm tra tính hợp lệ của form
-    if ($scope.formUpdateEmployee.$valid) {
+    if ($scope.formUpdateEmployee.$valid && !$scope.emailError && !$scope.phoneNumberError) {
       const addAccountData = await $scope.suaAccount();
       console.log(addAccountData);
       if (addAccountData) {
         const dataObject = {
           code: $scope.getDetailEmployee.code,
-          // avatar: $scope.getDetailEmployee.avatar,
           account: {
             id: addAccountData.id,
           },
@@ -452,6 +474,7 @@ app.controller("tinh-detail-employee-controller", function ($scope, $http) {
       console.log($scope.formUpdateEmployee.$error);
     }
   };
+
 
 
   $scope.detailEmployee = function () {
