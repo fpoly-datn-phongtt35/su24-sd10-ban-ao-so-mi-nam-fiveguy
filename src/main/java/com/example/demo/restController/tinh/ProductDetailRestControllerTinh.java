@@ -4,8 +4,10 @@ import com.example.demo.entity.Employee;
 import com.example.demo.entity.Image;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.ProductDetail;
+import com.example.demo.model.response.tinh.ProductResponseT;
 import com.example.demo.repository.tinh.ImageRepositoryTinh;
 import com.example.demo.repository.tinh.ProductRepositoryTinh;
+import com.example.demo.repository.tinh.SizeRepositoryTinh;
 import com.example.demo.service.tinh.ProductDetailServiceTinh;
 import com.example.demo.untility.tinh.PaginationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,14 @@ public class ProductDetailRestControllerTinh {
     @Autowired
     ImageRepositoryTinh imageRepositoryTinh;
 
+
+
+
+
+
+    @Autowired
+    private SizeRepositoryTinh sizeRepository;
+
     @GetMapping("")
     public ResponseEntity<List<ProductDetail>> getAll(){
         List<ProductDetail> products= productServiceTinh.getAll();
@@ -53,73 +63,71 @@ public class ProductDetailRestControllerTinh {
     }
 
     @GetMapping("/page-product")
-    public PaginationResponse<Map<String, Object>> getProduct(
+    public PaginationResponse<ProductResponseT> getProduct(
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "0") Integer pageNumber,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(required = false) Integer totalQuantity) {
 
-        // Xác định thứ tự sắp xếp
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
         Pageable pageable = PageRequest.of(pageNumber, size, sort);
 
-        // Truy xuất tất cả sản phẩm và chi tiết sản phẩm
-        List<Object[]> allResults = productRepositoryTinh.findAllProductAndDetails();
-        Map<Long, Integer> totalQuantityMap = new HashMap<>();
-        Map<Long, List<ProductDetail>> productDetailMap = new HashMap<>();
-        Map<Long, List<String>> productImageMap = new HashMap<>(); // Lưu thông tin ảnh
+//        Page<Product> page = productRepositoryTinh.findAll(pageable);
+        List<Product> products = productRepositoryTinh.findAll();
+        // Lấy tất cả chi tiết sản phẩm
+        List<ProductDetail> productDetails = productServiceTinh.findAllByProductIdIn(
+                products.stream().map(Product::getId).collect(Collectors.toList())
+        );
 
-        // Xử lý kết quả truy vấn
-        for (Object[] result : allResults) {
-            Product product = (Product) result[0];
-            ProductDetail productDetail = (ProductDetail) result[1];
+        // Lấy tất cả ảnh sản phẩm
+        Map<Long, String> productImageMap = imageRepositoryTinh.findByProductIdIn(
+                products.stream().map(Product::getId).collect(Collectors.toList())
+        ).stream()
+                .collect(Collectors.toMap(
+                        img -> img.getProduct().getId(),
+                        Image::getPath,
+                        (existing, replacement) -> existing // Chọn ảnh đầu tiên nếu có nhiều ảnh
+                ));
 
-            // Cập nhật tổng số lượng và chi tiết sản phẩm
-            totalQuantityMap.put(product.getId(), totalQuantityMap.getOrDefault(product.getId(), 0) + productDetail.getQuantity());
-            productDetailMap.computeIfAbsent(product.getId(), k -> new ArrayList<>()).add(productDetail);
+        // Lấy tất cả kích cỡ sản phẩm
+        Map<Long, List<String>> productSizeMap = productDetails.stream()
+                .collect(Collectors.groupingBy(
+                        pd -> pd.getProduct().getId(),
+                        Collectors.mapping(pd -> pd.getSize().getName(), Collectors.toList())
+                ));
 
-            // Lấy danh sách ảnh từ bảng ProductImage
-            List<Image> images = imageRepositoryTinh.findByProductId(product.getId());
-            List<String> imageUrls = images.stream()
-                    .map(Image::getPath) // Giả sử có phương thức getPath() trong Image
-                    .collect(Collectors.toList());
-            productImageMap.put(product.getId(), imageUrls); // Lưu ảnh theo ID sản phẩm
-        }
+        // Tính tổng số lượng cho mỗi sản phẩm
+        Map<Long, Integer> totalQuantityMap = productDetails.stream()
+                .collect(Collectors.groupingBy(
+                        pd -> pd.getProduct().getId(),
+                        Collectors.summingInt(ProductDetail::getQuantity)
+                ));
 
-        // Truy xuất các sản phẩm phân trang
-        Page<Product> page = productRepositoryTinh.findDistinctProducts(pageable);
-
-        // Kết hợp thông tin từ cả hai bước trên, lọc và sắp xếp theo totalQuantity
-        List<Map<String, Object>> productAndDetails = page.getContent().stream()
+        // Tạo danh sách kết quả với thông tin chi tiết
+        List<ProductResponseT> productResponses = products.stream()
                 .map(product -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("product", product);
-                    map.put("productDetails", productDetailMap.get(product.getId()));
-                    map.put("totalQuantity", totalQuantityMap.getOrDefault(product.getId(), 0)); // Sử dụng giá trị mặc định là 0
-                    map.put("images", productImageMap.get(product.getId())); // Thêm ảnh vào map
-                    return map;
+                    ProductResponseT response = new ProductResponseT();
+                    response.setImage(productImageMap.getOrDefault(product.getId(), null));
+                    response.setName(product.getName());
+                    response.setTotalQuantity(totalQuantityMap.getOrDefault(product.getId(), 0));
+                    response.setPrice(product.getPrice());
+                    response.setSizes(productSizeMap.getOrDefault(product.getId(), Collections.emptyList()));
+                    return response;
                 })
-//                .filter(map -> totalQuantity == null || (Integer) map.get("totalQuantity") <= totalQuantity)
-                .sorted((m1, m2) -> ((Integer) m2.get("totalQuantity")).compareTo((Integer) m1.get("totalQuantity")))
+                .filter(response -> totalQuantity == null || response.getTotalQuantity() <= totalQuantity)
+                .sorted((r1, r2) -> Integer.compare(r2.getTotalQuantity(), r1.getTotalQuantity()))
                 .collect(Collectors.toList());
 
-        // Tính toán phân trang
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), productAndDetails.size());
+        // Phân trang kết quả
+        int start = Math.min((int) pageable.getOffset(), productResponses.size());
+        int end = Math.min(start + pageable.getPageSize(), productResponses.size());
+        List<ProductResponseT> pagedProductResponses = productResponses.subList(start, end);
 
-        if (start >= productAndDetails.size()) {
-            // Nếu start lớn hơn hoặc bằng kích thước của danh sách, trả về danh sách trống
-            start = productAndDetails.size();
-        }
-
-        List<Map<String, Object>> pagedProductAndDetails = productAndDetails.subList(start, end);
-
-
-        // Tạo đối tượng Page
-        Page<Map<String, Object>> resultPage = new PageImpl<>(pagedProductAndDetails, pageable, productAndDetails.size());
-        return new PaginationResponse<>(resultPage);
+        return new PaginationResponse<>(new PageImpl<>(pagedProductResponses, pageable, productResponses.size()));
     }
+
+
 
 
 
