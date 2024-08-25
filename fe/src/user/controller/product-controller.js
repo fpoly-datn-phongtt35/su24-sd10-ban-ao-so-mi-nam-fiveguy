@@ -1375,6 +1375,8 @@ $scope.dataCity.ProvinceID;
   // $scope.originalTotalAmount = $scope.totalAmount; // Store the original total amount
   
   $scope.selectVoucher = function(selectedVoucher) {
+
+    // console.log(selectedVoucher)
     // console.log(selectedVoucher);
     if (selectedVoucher.quantity > 1) {
       if ($scope.selectedVoucher === selectedVoucher) {
@@ -1419,11 +1421,14 @@ $scope.dataCity.ProvinceID;
           } else if ($scope.selectedVoucher.discountType === 2) {
             // Fixed amount discount
             $scope.valueVoucher = $scope.selectedVoucher.value;
-            if ($scope.valueVoucher >= $scope.selectedVoucher.maximumReductionValue) {
-              $scope.valueVoucher = $scope.selectedVoucher.maximumReductionValue;
-            }
+            // if ($scope.valueVoucher >= $scope.selectedVoucher.maximumReductionValue) {
+            //   $scope.valueVoucher = $scope.selectedVoucher.maximumReductionValue;
+            // }
             $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
+            console.log($scope.selectedVoucher)
+            console.log($scope.valueVoucher)
           }
+  
   
           $scope.voucherMessage = 'Mã giảm giá đã được áp dụng';
 
