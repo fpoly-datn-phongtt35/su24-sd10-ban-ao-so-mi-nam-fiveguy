@@ -26,16 +26,14 @@ public class ProductControllerTH {
 
     @GetMapping
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
-                                       @RequestParam(defaultValue = "5") int size,
-                                       @RequestParam(required = false) String keyword,
-                                       @RequestParam String sortField,
-                                       @RequestParam String sortDirection,
+                                         @RequestParam(defaultValue = "5") int size,
+                                         @RequestParam(required = false) String keyword,
+                                         @RequestParam(defaultValue = "createdAt") String sortField,
+                                         @RequestParam(defaultValue = "DESC") String sortDirection,
                                          @RequestParam(required = false) BigDecimal minPrice,
                                          @RequestParam(required = false) BigDecimal maxPrice,
-                                         @RequestParam(required = false) Integer status
-
-    ) {
-        return ResponseEntity.ok(productService.getProducts(page, size, keyword, sortField, sortDirection, minPrice, maxPrice,status));
+                                         @RequestParam(required = false) Integer status) {
+        return ResponseEntity.ok(productService.getProducts(page, size, keyword, sortField, sortDirection, minPrice, maxPrice, status));
     }
 
     @GetMapping("/{id}")
