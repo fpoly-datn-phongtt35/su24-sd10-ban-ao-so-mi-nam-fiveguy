@@ -852,7 +852,20 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             $scope.selectedVoucher = null;
             let result = confirm("Bạn có muốn mở trang in hóa đơn?");
             if (result === true) {
-                $scope.printBill(resp.data);
+                if (resp.data.customer) {
+                    $http.get(`${config.host}/address-th/default/` + resp.data.customer.id).then(function(response) {
+                        // Xử lý kết quả thành công
+                        $scope.customerAddressDefault = response.data;
+                        $scope.printBill(resp.data);
+                       })
+                        .catch(function(error) {
+                        // Xử lý lỗi
+                        console.log("Error:", error);
+                    });
+                } else {
+                    $scope.printBill(resp.data);
+
+                }
             } 
             $scope.getBills();
         }).catch(error => {
@@ -1486,7 +1499,7 @@ $scope.showShippingFee = function (bill) {
       function generateInvoiceHTML(resp) {
         const listBillDT = Object.values(resp.billDetail).map((billDT) => `
           <tr>
-            <td class="desc" style="font-size: 1.1em;">${billDT.productDetail.product.name} <div>Color: ${billDT.productDetail.color.name} - Size: ${billDT.productDetail.size.name}</div></td>
+            <td class="desc" style="font-size: 1.1em;">${`${billDT.productDetail.product.name}, ${billDT.productDetail.color.name}`}<div>Size: ${billDT.productDetail.size.name}</div></td>
             <td style="width: 16.67%; text-align: right; font-size: 1.1em;">
               ${billDT.promotionalPrice < billDT.price ? `
                 <p style="margin: 0;">
@@ -1498,7 +1511,7 @@ $scope.showShippingFee = function (bill) {
                 <p style="margin: 0;">${$scope.formatCurrency(billDT.price)}</p>
               `}
             </td>
-            <td class="qty" style="font-size: 1.1em;">${billDT.quantity}</td>
+            <td class="qty" style="font-size: 1.1em;">x ${billDT.quantity}</td>
             <td class="total" style="font-size: 1.1em;">${$scope.formatCurrency(billDT.promotionalPrice * billDT.quantity)}</td>
           </tr>
         `).join('');
@@ -1652,13 +1665,23 @@ border-top: 1px solid  #5D6975;
             <div id="logo">
             <img src="https://res.cloudinary.com/dvtz5mjdb/image/upload/v1701333412/image/h1vzhjzyuuwhrhak1bcr.png">
             </div>
-            <h1>HÓA ĐƠN</h1>
+            <h1>HÓA ĐƠN THANH TOÁN</h1>
             <div class="container">
-            <div id="project">
-                <div><span>Khách hàng:</span> ${resp.reciverName ? resp.reciverName : 'Khách lẻ'}</div>
-                <div><span>SĐT:</span> ${resp ? resp.phoneNumber : ''}</div>
-                <div><span>Địa chỉ:</span> <div style="max-width: 300px;">${resp ? resp.address : ''}</div></div>
-            </div>
+                 <div id="project">
+            ${resp.customer ?  `
+                    <div><span>Khách hàng:</span> ${resp.customer.fullName}</div>
+                    <div><span>SĐT:</span> ${$scope.customerAddressDefault.phoneNumber}</div>
+                    <div><span>Địa chỉ:</span> <div style="max-width: 300px;">${$scope.customerAddressDefault.address}</div></div>
+            ` : `<div><span>Khách hàng:</span> Khách lẻ</div>`}
+                ${resp.addressId ? `
+                    <div>- Người nhận -</div>
+                    <div><span>Khách hàng:</span> ${resp.reciverName}</div>
+                    <div><span>SĐT:</span> ${resp.phoneNumber}</div>
+                    <div><span>Địa chỉ:</span> <div style="max-width: 300px;">${resp.address}</div></div>
+                ` : ``}
+                    <div><span>Thu ngân:</span> ${resp.employee.fullName}</div>
+                </div>
+
 
             <div id="company">
                 <div>#${resp.code}</div>
