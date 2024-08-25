@@ -246,6 +246,11 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         return null;
     }
 
+    @Override
+    public void deleteBill(Bill bill) {
+        olBillRepository.delete(bill);
+    }
+
     @Transactional
     public void updateVoucherOnBillCancellation(Long billId) {
         Bill bill = olBillRepository.findById(billId)
