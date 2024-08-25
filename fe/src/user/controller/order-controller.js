@@ -613,10 +613,11 @@ $scope.getNumber = function(num) {
   
   $scope.addRating = function() {
     // Kiểm tra nếu số sao là 0
-    if ($scope.rating.stars === 0) {
-      $scope.showErrorNotification("Vui lòng chọn sao!"); 
-      return;
+    if (!$scope.rating.content || $scope.rating.stars === 0) {
+        $scope.showErrorNotification("Vui lòng chọn sao và nhập nội dung đánh giá!"); 
+        return;
     }
+    
   
     // Tạo đối tượng dữ liệu đánh giá
     var ratingData = {
@@ -633,6 +634,11 @@ $scope.getNumber = function(num) {
             $scope.showSuccessNotification("Cảm ơn bạn đã đánh giá"); 
             $scope.getBillDetailByIdBill($scope.idBill)
           $scope.closeReview();
+          $scope.rating = {
+            stars: 0,
+            content: ''
+          };
+          $scope.clearStars();
         } else {
           // Nếu đánh giá đã tồn tại
           $scope.showErrorNotification("Bạn đã đánh giá cho sản phẩm này trước đó"); 
@@ -661,6 +667,14 @@ $scope.rating = {
         stars[i].classList.remove('checked');
     }
   };
+
+  $scope.clearStars = function() {
+    $scope.rating.stars = 0; // Reset the stars to 0
+    const stars = document.querySelectorAll('.fa-star');
+    stars.forEach(star => {
+        star.classList.remove('checked');
+    });
+};
 
   $scope.statusDisplay = {
     20: { title: "Tạo đơn hàng", icon: "post_add", status: 20 },

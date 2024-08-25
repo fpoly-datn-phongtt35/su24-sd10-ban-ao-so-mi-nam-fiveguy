@@ -34,4 +34,7 @@ public interface OLBillService2 {
     Page<Bill> getBillsByPhoneNumber(String phoneNumber, String search, int page, int size);
 
     Bill updateStatusAndBillStatus(Bill bill, Long id, BillHistory billHistory);
+
+
+    void deleteBill(Bill bill);
 }

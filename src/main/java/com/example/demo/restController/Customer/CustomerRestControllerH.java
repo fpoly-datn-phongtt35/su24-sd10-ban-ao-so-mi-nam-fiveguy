@@ -2,6 +2,7 @@ package com.example.demo.restController.Customer;
 
 import com.example.demo.entity.Customer;
 import com.example.demo.repository.Customer.CustomerRepositoryH;
+import com.example.demo.security.service.SCCustomerService;
 import com.example.demo.untility.tinh.PaginationResponse;
 import com.example.demo.service.Customer.CustomerServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +13,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -42,6 +35,9 @@ public class CustomerRestControllerH {
 
     @Autowired
     CustomerRepositoryH customerRepositoryH;
+
+    @Autowired
+    SCCustomerService scCustomerService;
 
     @GetMapping("")
     public ResponseEntity<List<Customer>> getAll() {
@@ -91,10 +87,11 @@ public class CustomerRestControllerH {
 
     //Thêm customer
 
-    @PostMapping("/save")
-    public ResponseEntity<?> create(@RequestBody Customer customers) {
+    @PostMapping(value = "/save", produces = "application/json")
+    public ResponseEntity<?> create(@RequestBody Customer customers, @RequestHeader("Authorization") String token) {
         try {
-            Customer createdCustomer = customerService.create(customers);
+            Optional<Customer> employee = scCustomerService.getCustomerByToken(token);
+            Customer createdCustomer = customerService.create(customers, employee.get().getFullName());
             return ResponseEntity.status(HttpStatus.CREATED).body(createdCustomer);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -110,9 +107,10 @@ public class CustomerRestControllerH {
     }
 
     //update customer
-    @PutMapping("/{id}")
-    public ResponseEntity<Customer> update(@PathVariable Long id, @RequestBody Customer customers) {
-        customerService.update(id, customers);
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<Customer> update(@PathVariable Long id, @RequestBody Customer customers, @RequestHeader("Authorization") String token) {
+        Optional<Customer> employee = scCustomerService.getCustomerByToken(token);
+        customerService.update(id, customers, employee.get().getFullName());
         if (customers != null) {
             return ResponseEntity.ok(customers);
         } else {

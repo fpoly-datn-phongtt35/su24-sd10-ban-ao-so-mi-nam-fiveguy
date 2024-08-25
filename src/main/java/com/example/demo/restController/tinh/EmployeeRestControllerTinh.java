@@ -91,10 +91,11 @@ public class EmployeeRestControllerTinh {
 
     //Thêm Employee
 
-    @PostMapping("/save")
-    public ResponseEntity<?> create(@RequestBody Employee employees) {
+    @PostMapping(value = "/save", produces = "application/json")
+    public ResponseEntity<?> create(@RequestBody Employee employees,@RequestHeader("Authorization") String token) {
         try {
-            Employee createdEmployee = employeeService.create(employees);
+            Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
+            Employee createdEmployee = employeeService.create(employees,employee.get().getFullName());
             return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -110,9 +111,10 @@ public class EmployeeRestControllerTinh {
     }
 
     //update employee
-    @PutMapping("/{id}")
-    public ResponseEntity<Employee> update(@PathVariable Long id, @RequestBody Employee employees) {
-        employeeService.update(id, employees);
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<Employee> update(@PathVariable Long id, @RequestBody Employee employees,@RequestHeader("Authorization") String token) {
+        Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
+        employeeService.update(id, employees,employee.get().getFullName());
         if (employees != null) {
             return ResponseEntity.ok(employees);
         } else {

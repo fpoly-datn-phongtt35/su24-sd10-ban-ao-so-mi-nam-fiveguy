@@ -181,14 +181,14 @@ public class VNPayRestController {
 
                 response.sendRedirect(Config.fe_liveServer_Success);
             } else {
-                bill.setStatus(5);
-                bill.setPaidAmount(new BigDecimal(0));
+//                bill.setStatus(5);
+//                bill.setPaidAmount(new BigDecimal(0));
 
 //                olBillUntility.restoreProductQuantity(bill.getBillDetail());
 //                if (bill.getVoucher() != null){
 //                    olBillUntility.increaseVoucherQuantity(bill.getVoucher().getId());
 //                }
-                olBillService.save(bill);
+                olBillService.deleteBill(bill);
 
                 response.sendRedirect(Config.fe_liveServer_Failed);
 

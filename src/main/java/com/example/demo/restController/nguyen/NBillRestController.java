@@ -132,7 +132,7 @@ public class NBillRestController {
         billRequest.getBillHistory().setCreatedBy(fullName.get());
 
         Optional<Employee> employee = SCEmployeeService.getEmployeeByToken(token);
-        billService.addAuditlogs(employee.get().getCode(), employee.get().getFullName(), billRequest.getBill().getStatus());
+        billService.addAuditlogs(employee.get().getCode(), employee.get().getFullName(), billRequest.getBill().getStatus(), employee.get().getAccount().getRole().getId());
 
         return billService
                 .updateStatusAndBillStatus(billRequest.getBill(), id, billRequest.getBillHistory());

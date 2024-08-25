@@ -34,5 +34,5 @@ public interface NBillService {
 
     Page<BillResponse> getBillsByFilters(List<Integer> statuses, String searchTerm, Integer typeBill, Date fromDate, Date toDate, Pageable pageable);
 
-    AuditLogs addAuditlogs(String code, String fullName, int status);
+    AuditLogs addAuditlogs(String code, String fullName, int status, Long role);
 }

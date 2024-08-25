@@ -15,13 +15,13 @@ public interface EmployeeServiceTinh {
 
      Employee getById(Long id);
 
-     Employee create(Employee employees);
+     Employee create(Employee employees, String createdBy);
 
      void delete(Long id);
 
      Employee getByAccount(String account);
 
-     Employee update(Long id, Employee employees);
+     Employee update(Long id, Employee employees, String createdBy);
 
      Employee updateRole(Long id, Employee employees);
 

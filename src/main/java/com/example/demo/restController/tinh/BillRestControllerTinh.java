@@ -27,7 +27,7 @@ import java.util.Random;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/admin/bill-tinh")
+    @RequestMapping("/api/admin/bill-tinh")
 public class BillRestControllerTinh {
     @Autowired
     BillServiceTinh billServiceTinh;
@@ -390,5 +390,46 @@ public class BillRestControllerTinh {
         Page<Bill> page = billRepositoryTinh.getAllBillChoThanhToan(pageable);
         return new PaginationResponse<>(page);
     }
+//hai
 
+
+    @GetMapping("/khach-hang-mua-nhieu-nhat/ngay")
+    public ResponseEntity<Page<ThongKeKhachHang>> getKhachHangMuaNhieuNhatNgay(
+            @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKeKhachHang> result = billServiceTinh.getKhachHangMuaNhieuNhatNgay(pageable);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/khach-hang-mua-nhieu-nhat/tuan")
+    public ResponseEntity<Page<ThongKeKhachHang>> getKhachHangMuaNhieuNhatTuan(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKeKhachHang> result = billServiceTinh.getKhachHangMuaNhieuNhatTuan(pageable);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/khach-hang-mua-nhieu-nhat/thang")
+    public ResponseEntity<Page<ThongKeKhachHang>> getKhachHangMuaNhieuNhatThang(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKeKhachHang> result = billServiceTinh.getKhachHangMuaNhieuNhatThang(pageable);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/khach-hang-mua-nhieu-nhat/nam")
+    public ResponseEntity<Page<ThongKeKhachHang>> getKhachHangMuaNhieuNhatNam(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThongKeKhachHang> result = billServiceTinh.getKhachHangMuaNhieuNhatNam(pageable);
+        return ResponseEntity.ok(result);
+    }
 }

@@ -41,6 +41,11 @@ public class ProductDetailServiceImplTinh implements ProductDetailServiceTinh {
     }
 
     @Override
+    public List<ProductDetail> findAllByProductIdIn(List<Long> productIds) {
+        return productDetaillRepositoryTinh.findAllByProductIdIn(productIds);
+    }
+
+    @Override
     public ProductDetail update(Long id, ProductDetail employees){
         Optional<ProductDetail> existingEmployee = productDetaillRepositoryTinh.findById(id);
         if (existingEmployee.isPresent()) {

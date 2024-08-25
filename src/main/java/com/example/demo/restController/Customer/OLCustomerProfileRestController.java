@@ -12,6 +12,7 @@ import com.example.demo.service.Customer.AccountServiceH;
 import com.example.demo.service.Customer.CustomerServiceH;
 import com.example.demo.service.Customer.CustomerTypeServiceH;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,9 +51,10 @@ public class OLCustomerProfileRestController {
         return "User not found";
     }
 
-    @PutMapping("/update-user/{id}")
-    public ResponseEntity<Customer> update(@PathVariable Long id, @RequestBody Customer customers) {
-        customerService.update(id, customers);
+    @PutMapping(value = "/update-user/{id}", produces = "application/json")
+    public ResponseEntity<Customer> update(@PathVariable Long id, @RequestBody Customer customers, @RequestHeader("Authorization") String token) {
+        Optional<Customer> employee = scCustomerService.getCustomerByToken(token);
+        customerService.update(id, customers,employee.get().getFullName());
         if (customers != null) {
             return ResponseEntity.ok(customers);
         } else {

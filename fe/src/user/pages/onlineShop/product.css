@@ -750,3 +750,10 @@ font-weight: 400;
 .countCart{
   transform: translate(21%, -8%);
 }
+
+
+
+.size-img{
+  width: 260px;
+  height: 390px;
+}
