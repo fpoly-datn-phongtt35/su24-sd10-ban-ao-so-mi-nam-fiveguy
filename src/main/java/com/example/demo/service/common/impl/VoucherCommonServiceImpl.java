@@ -127,7 +127,7 @@ public class VoucherCommonServiceImpl implements VoucherCommonService {
 
     public  Integer checkNumberOfUser(Customer customer,Voucher voucher){
            Integer countUse = billServiceCommonImpl.countVoucherUsageByCustomer(customer.getId(),voucher.getId());
-           if (countUse > voucher.getNumberOfUses()){
+           if (countUse >= voucher.getNumberOfUses()){
                return 2;
            }
            return 1;
