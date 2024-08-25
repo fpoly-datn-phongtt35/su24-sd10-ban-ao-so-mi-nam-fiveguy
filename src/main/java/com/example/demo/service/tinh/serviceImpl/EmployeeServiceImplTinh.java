@@ -50,7 +50,7 @@ public class EmployeeServiceImplTinh implements EmployeeServiceTinh {
 
 
     @Override
-    public Employee create(Employee employees){
+    public Employee create(Employee employees, String createdBy){
 //        List<Employees> hi = new ArrayList<>();
         Employee employees1 = new Employee();
         String randomCode = generateRandomCode(6);
@@ -63,8 +63,8 @@ public class EmployeeServiceImplTinh implements EmployeeServiceTinh {
         employees1.setAccount(employees.getAccount());
         employees1.setCreatedAt(new Date());
         employees1.setUpdatedAt(new Date());
-        employees1.setCreatedBy("admin");
-        employees1.setUpdatedBy("admin");
+        employees1.setCreatedBy(createdBy);
+        employees1.setUpdatedBy(createdBy);
         employees1.setStatus(1);
 
         return employeeRepository.save(employees1);
@@ -77,7 +77,7 @@ public class EmployeeServiceImplTinh implements EmployeeServiceTinh {
     }
 
     @Override
-    public  Employee update(Long id, Employee employees){
+    public  Employee update(Long id, Employee employees, String createdBy){
         Optional<Employee> existingEmployee = employeeRepository.findById(id);
         if (existingEmployee.isPresent()) {
             Employee employees1 = existingEmployee.get();
@@ -90,8 +90,8 @@ public class EmployeeServiceImplTinh implements EmployeeServiceTinh {
             employees1.setAccount(employees.getAccount());
             employees1.setCreatedAt(employees.getCreatedAt());
             employees1.setUpdatedAt(new Date());
-            employees1.setCreatedBy("admin");
-            employees1.setUpdatedBy("admin");
+            employees1.setCreatedBy(createdBy);
+            employees1.setUpdatedBy(createdBy);
             employees1.setStatus(employees.getStatus());
 
             return employeeRepository.save(employees1); // Lưu khách hàng đã cập nhật vào cơ sở dữ liệu

@@ -777,7 +777,7 @@ public class NBillServiceImpl implements NBillService {
     @Autowired
     AuditLogRepositoryTinh auditLogRepositoryTinh;
 
-    public AuditLogs addAuditlogs(String code, String fullName, int status){
+    public AuditLogs addAuditlogs(String code, String fullName, int status, Long role){
         AuditLogs auditLogs = new AuditLogs();
 
         String detailedAction = null;
@@ -824,7 +824,7 @@ public class NBillServiceImpl implements NBillService {
         auditLogs.setActionType("Cập nhật đơn hàng");
         auditLogs.setDetailedAction("Đã cập nhật đơn hàng thành: " + detailedAction);
         auditLogs.setTime(new Date());
-        auditLogs.setRole(2L);
+        auditLogs.setRole(role);
         return auditLogRepositoryTinh.save(auditLogs);
     }
 }

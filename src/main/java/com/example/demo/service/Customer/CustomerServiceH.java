@@ -20,11 +20,11 @@ public interface CustomerServiceH {
 
     Page<Customer> phanTrang(Integer pageNum, Integer pageNo);
 
-    Customer create(Customer customers);
+    Customer create(Customer customers, String createdBy);
 
     void delete(Long id);
 
-    Customer update(Long id, Customer customers);
+    Customer update(Long id, Customer customers, String createdBy);
 
     Customer updateRole(Long id, Customer customers);
 

@@ -61,7 +61,7 @@ public class CustomerServiceHImpl implements CustomerServiceH {
     }
 
     @Override
-    public Customer create(Customer customers){
+    public Customer create(Customer customers, String createdBy){
         Customer customers1 = new Customer();
         Account account = new Account();
         Role customerRole = roleRepository.findByFullName("CUSTOMER");
@@ -81,8 +81,8 @@ public class CustomerServiceHImpl implements CustomerServiceH {
         customers1.setAccount(customers.getAccount());
         customers1.setCreatedAt(new Date());
         customers1.setUpdatedAt(new Date());
-        customers1.setCreatedBy("admin");
-        customers1.setUpdatedBy("admin");
+        customers1.setCreatedBy(createdBy);
+        customers1.setUpdatedBy(createdBy);
         customers1.setCustomerType(customerType);
         customers1.setStatus(1);
 
@@ -96,7 +96,7 @@ public class CustomerServiceHImpl implements CustomerServiceH {
     }
 
     @Override
-    public  Customer update(Long id, Customer customers){
+    public  Customer update(Long id, Customer customers, String createdBy){
         Optional<Customer> Customer = customerRepositoryH.findById(id);
         if (Customer.isPresent()) {
             Customer customers1 = Customer.get();
@@ -108,8 +108,8 @@ public class CustomerServiceHImpl implements CustomerServiceH {
             customers1.setAccount(customers.getAccount());
             customers1.setCreatedAt(customers.getCreatedAt());
             customers1.setUpdatedAt(new Date());
-            customers1.setCreatedBy("admin");
-            customers1.setUpdatedBy("admin");
+            customers1.setCreatedBy(createdBy);
+            customers1.setUpdatedBy(createdBy);
             customers1.setCustomerType(customers.getCustomerType());
             customers1.setStatus(customers.getStatus());
 
