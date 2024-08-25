@@ -120,7 +120,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
             if (existingVoucher.getStatus() == 1 && existingVoucher.getQuantity() > 1) {
                 if (existingVoucher.getApplyfor() == 1) {
                     Optional<CustomerType> customerType = customerTypeRepository.findByCustomersId(customer.getId());
-                    if ( customerType.isPresent() || customerType.get().getStatus() != 1) {
+                    if ( customerType.isPresent() && customerType.get().getStatus() != 1) {
                         return ResponseEntity.ok(3); // Add a different response code to handle this case
                     }
                 }
