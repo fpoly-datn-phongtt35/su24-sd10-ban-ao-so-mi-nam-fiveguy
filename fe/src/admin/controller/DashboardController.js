@@ -751,6 +751,8 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             size: $scope.size2
         };
 
+        console.log(params)
+
         $http.get("http://localhost:8080/api/admin/bill-tinh/top-ban-chay-ngay", { params: params })
             .then(function (response) {
                 $scope.sanPhamBanChay = response.data.content;
@@ -855,16 +857,16 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.applyFiltersSanPhamBanChay = function () {
         $scope.desiredPage2 = 0; // Reset desired page to first page
         switch ($scope.selectedButton) {
-            case 'ngay':
+            case 'Ngày':
                 $scope.getSanPhamBanChayNgay(0);
                 break;
-            case 'tuan':
+            case 'Tuần':
                 $scope.getSanPhamBanChayTuan(0);
                 break;
-            case 'thang':
+            case 'Tháng':
                 $scope.getSanPhamBanChayThang(0);
                 break;
-            case 'nam':
+            case 'Năm':
                 $scope.getSanPhamBanChayNam(0);
                 break;
             case 'tuyChinh':
@@ -910,19 +912,18 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     //=================================Khachs hàng mua nhiều nhất================================
     $scope.khachHangMuaNhieuNhat = [];
 
-    $scope.size3 = 5;
+    $scope.sizeh = 5;
     $scope.totalPages3 = 0;
     $scope.currentPage3 = 0;
     $scope.desiredPage3 = 1;
 
     $scope.getKhachHangMuaNhieuNhatNgay = function (pageNumber3) {
         let params = {
-            date: todayfomat,
             page: pageNumber3 || 0,
-            size: $scope.size3
+            size: $scope.sizeh
         };
-
-        $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-ngay", { params: params })
+            console.log(params)
+        $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat/ngay", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
                 $scope.totalPages3 = response.data.totalPages;
@@ -935,12 +936,11 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     $scope.getKhachHangMuaNhieuNhatTuan = function (pageNumber3) {
         let params = {
-            date: todayfomat,
             page: pageNumber3 || 0,
-            size: $scope.size3
+            size: $scope.sizeh
         };
 
-        $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-tuan", { params: params })
+        $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat/tuan", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
                 $scope.totalPages3 = response.data.totalPages;
@@ -953,12 +953,12 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     $scope.getKhachHangMuaNhieuNhatThang = function (pageNumber3) {
         let params = {
-            date: todayfomat,
+
             page: pageNumber3 || 0,
-            size: $scope.size3
+            size: $scope.sizeh
         };
 
-        $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-thang", { params: params })
+        $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat/thang", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
                 $scope.totalPages3 = response.data.totalPages;
@@ -971,12 +971,12 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     $scope.getKhachHangMuaNhieuNhatNam = function (pageNumber3) {
         let params = {
-            date: todayfomat,
+
             page: pageNumber3 || 0,
-            size: $scope.size3
+            size: $scope.sizeh
         };
 
-        $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-nam", { params: params })
+        $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat/nam", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
                 $scope.totalPages3 = response.data.totalPages;
@@ -987,46 +987,46 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    $scope.getKhachHangMuaNhieuNhatTuyChinh = function (pageNumber3) {
-        // Lấy giá trị ngày từ ng-model
-        const startDate = $scope.filterStartDate;
-        const endDate = $scope.filterEndDate;
+    // $scope.getKhachHangMuaNhieuNhatTuyChinh = function (pageNumber3) {
+    //     // Lấy giá trị ngày từ ng-model
+    //     const startDate = $scope.filterStartDate;
+    //     const endDate = $scope.filterEndDate;
 
-        if (startDate && endDate) {
-            // Định dạng ngày theo kiểu 'yyyy-MM-dd'
-            const formattedStartDate = $filter("date")(new Date(startDate), "yyyy-MM-dd");
-            const formattedEndDate = $filter("date")(new Date(endDate), "yyyy-MM-dd");
+    //     if (startDate && endDate) {
+    //         // Định dạng ngày theo kiểu 'yyyy-MM-dd'
+    //         const formattedStartDate = $filter("date")(new Date(startDate), "yyyy-MM-dd");
+    //         const formattedEndDate = $filter("date")(new Date(endDate), "yyyy-MM-dd");
 
-            // Gọi API với ngày bắt đầu, ngày kết thúc, trang và kích thước trang
-            $http
-                .get(
-                    `http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}&page=${pageNumber3 || 0}&size=${$scope.size}`
-                )
-                .then(function (response) {
-                    $scope.khachHangMuaNhieuNhat = response.data.content;
-                    $scope.totalPages3 = response.data.totalPages;
-                    $scope.currentPage3 = response.data.number;
-                    $scope.desiredPage3 = $scope.currentPage3 + 1;
-                })
-                .catch(function (error) {
-                    console.error("Có lỗi xảy ra khi gọi API:", error);
-                });
-        }
-    };
+    //         // Gọi API với ngày bắt đầu, ngày kết thúc, trang và kích thước trang
+    //         $http
+    //             .get(
+    //                 `http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}&page=${pageNumber3 || 0}&size=${$scope.size}`
+    //             )
+    //             .then(function (response) {
+    //                 $scope.khachHangMuaNhieuNhat = response.data.content;
+    //                 $scope.totalPages3 = response.data.totalPages;
+    //                 $scope.currentPage3 = response.data.number;
+    //                 $scope.desiredPage3 = $scope.currentPage3 + 1;
+    //             })
+    //             .catch(function (error) {
+    //                 console.error("Có lỗi xảy ra khi gọi API:", error);
+    //             });
+    //     }
+    // };
 
     $scope.applyFiltersKhachHangMuaNhieu = function () {
         $scope.desiredPage = 0;
         switch ($scope.selectedButton) {
-            case 'ngay':
+            case 'Ngày':
                 $scope.getKhachHangMuaNhieuNhatNgay(0);
                 break;
-            case 'tuan':
+            case 'Tuần':
                 $scope.getKhachHangMuaNhieuNhatTuan(0);
                 break;
-            case 'thang':
+            case 'Tháng':
                 $scope.getKhachHangMuaNhieuNhatThang(0);
                 break;
-            case 'nam':
+            case 'Năm':
                 $scope.getKhachHangMuaNhieuNhatNam(0);
                 break;
             case 'tuyChinh':
@@ -1039,16 +1039,16 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
         if (pageNumber3 >= 0 && pageNumber3 < $scope.totalPages3) {
             switch ($scope.selectedButton) {
-                case 'ngay':
+                case 'Ngày':
                     $scope.getKhachHangMuaNhieuNhatNgay(pageNumber3);
                     break;
-                case 'tuan':
+                case 'Tuần':
                     $scope.getKhachHangMuaNhieuNhatTuan(pageNumber3);
                     break;
-                case 'thang':
+                case 'Tháng':
                     $scope.getKhachHangMuaNhieuNhatThang(pageNumber3);
                     break;
-                case 'nam':
+                case 'Năm':
                     $scope.getKhachHangMuaNhieuNhatNam(pageNumber3);
                     break;
                 case 'tuyChinh':
@@ -1103,7 +1103,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.hihi = "";
 
     $scope.submitNgay = function () {
-        $scope.selectedButton = "ngay";
+        $scope.selectedButton = "Ngày";
         $scope.showLoading(); // Hiển thị loading khi bắt đầu xử lý
 
         Promise.all([
@@ -1126,7 +1126,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     // Làm tương tự cho các phương thức submit khác
     $scope.submitTuan = function () {
-        $scope.selectedButton = "tuan";
+        $scope.selectedButton = "Tuần";
         $scope.showLoading();
 
         Promise.all([
@@ -1146,7 +1146,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     $scope.submitThang = function () {
-        $scope.selectedButton = "thang";
+        $scope.selectedButton = "Tháng";
         $scope.showLoading(); // Hiển thị loading khi bắt đầu xử lý
 
         Promise.all([
@@ -1156,7 +1156,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
         ])
             .then(function (results) {
                 // Xử lý kết quả
-                $scope.hihi = "Theo Thang";
+                $scope.hihi = "Theo Tháng";
             })
             .catch(function (error) {
                 // Xử lý lỗi nếu có
@@ -1169,7 +1169,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
     // Làm tương tự cho các phương thức submit khác
     $scope.submitNam = function () {
-        $scope.selectedButton = "nam";
+        $scope.selectedButton = "Năm";
         $scope.showLoading();
 
         Promise.all([
@@ -1178,7 +1178,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             $scope.getKhachHangMuaNhieuNhatNam(0)
         ])
             .then(function (results) {
-                $scope.hihi = "Theo Nam";
+                $scope.hihi = "Theo Năm";
             })
             .catch(function (error) {
                 console.error("Error occurred:", error);
@@ -1202,83 +1202,101 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
 
 
     //===================================Sản phẩm gần hết=============================================================
-    $scope.filterProductDetall = {};
-    $scope.filterProductDetallImage = {};
-    $scope.totalPages = 0;
-    $scope.currentPage = 0;
-    $scope.desiredPage = 1;
-    $scope.size = 5;
-    $scope.filters = {
-        name: null,
-        price: null,
-        totalQuantity: 100, // Thêm bộ lọc totalQuantity
-    };
+$scope.filterProductDetall = [];
+$scope.filterProductDetallImage = {};
+$scope.totalPages = 0;
+$scope.currentPage = 0;
+$scope.desiredPage5 = 1;
+$scope.size = 5; // Thay đổi thành kích thước mặc định bạn muốn
+$scope.filters = {
+    name: null,
+    price: null,
+    totalQuantity: 100, // Bộ lọc tổng số lượng
+};
 
-    $scope.getProductDetall = function (pageNumber) {
-        let params = angular.extend(
-            { pageNumber: pageNumber, size: $scope.size },
-            $scope.filters
-        );
-        $http
-            .get("http://localhost:8080/api/admin/product-tinh/page-product", {
-                params: params,
-            })
-            .then(function (response) {
-                console.log("API response:", response.data); // Ghi lại phản hồi của API
-                if (response.data && response.data.content) {
-                    $scope.filterProductDetall = response.data.content;
+$scope.getProductDetall = function (pageNumber) {
+    let params = angular.extend(
+        { pageNumber: pageNumber, size: $scope.size },
+        $scope.filters
+    );
+    $http
+        .get("http://localhost:8080/api/admin/product-tinh/page-product", {
+            params: params,
+        })
+        .then(function (response) {
+            console.log("API response:", response.data); // Ghi lại phản hồi của API
+            if (response.data && response.data.content) {
+                $scope.filterProductDetall = response.data.content;
+                console.log( response.data.content); // Ghi lại phản hồi của API
 
-                    // Xử lý ảnh Base64
-                    $scope.filterProductDetall.forEach(function (product) {
-                        product.images = product.images || []; // Đảm bảo images là mảng, tránh lỗi khi không có ảnh
+                // Xử lý ảnh và số lượng
+                $scope.filterProductDetall.forEach(function (product) {
+                    product.sizes = product.sizes || []; // Đảm bảo sizes là mảng, tránh lỗi khi không có kích cỡ
 
-                        // Lấy ảnh đầu tiên từ danh sách ảnh
-                        if (product.images.length > 0) {
-                            product.mainImage = product.images[0]; // Lấy ảnh đầu tiên
-                        } else {
-                            product.mainImage = null; // Nếu không có ảnh, đặt giá trị mặc định
-                        }
+                    // Xử lý ảnh
+                    if (product.image) {
+                        product.mainImage = product.image; // Lấy ảnh đầu tiên
+                    } else {
+                        product.mainImage = null; // Nếu không có ảnh, đặt giá trị mặc định
+                    }
 
-                        product.inputQuantity = 1;
-                        product.remainingQuantity = product.quantity || 0;
-                    });
+                    // Đảm bảo có đủ thông tin cho số lượng
+                    product.totalQuantity = product.totalQuantity || 0;
+                });
 
-                    $scope.totalPages = response.data.totalPages || 0;
-                    $scope.currentPage = pageNumber;
-                    $scope.desiredPage = pageNumber + 1;
-                } else {
-                    console.error("Invalid API response structure");
-                }
-            })
-            .catch(function (error) {
-                console.error("Error fetching product details:", error);
-            });
-    };
+                // Cập nhật thông tin phân trang
+                $scope.totalPages = response.data.totalPages || 0;
+                $scope.currentPage = pageNumber;
+                $scope.desiredPage5 = pageNumber + 1;
 
+                console.log($scope.desiredPage5)
+            } else {
+                console.error("Invalid API response structure");
+            }
+        })
+        .catch(function (error) {
+            console.error("Error fetching product details:", error);
+        });
+};
+
+
+
+    // Áp dụng bộ lọc và gọi lại API để cập nhật danh sách
     $scope.applyFiltersSanPhamSapHet = function () {
         $scope.getProductDetall(0);
     };
 
-    $scope.goToPageSanPhamSapHet = function () {
-        let pageNumber = $scope.desiredPage - 1;
+    // Chuyển tới trang mong muốn
+    $scope.goToPageSanPhamSapHet = function (pageNumber) {
         if (pageNumber >= 0 && pageNumber < $scope.totalPages) {
-            $scope.getProductDetall(pageNumber);
-        } else {
-            $scope.desiredPage = $scope.currentPage + 1;
+            $scope.currentPage = pageNumber; // Cập nhật trang hiện tại
+            $scope.desiredPage5 = pageNumber + 1; // Cập nhật số trang mong muốn để đồng bộ với input
+            $scope.getProductDetall(pageNumber); // Gọi API để lấy dữ liệu của trang mới
         }
     };
+    
 
     $scope.getProductDetall(0);
+
 
     $scope.getTotalQuantity = function (product) {
         return product.totalQuantity;
     };
 
-    $scope.getSizeNames = function (details) {
-        if (!details) {
-            return ""; // Hoặc bất kỳ giá trị mặc định nào bạn muốn khi details là null hoặc undefined
-        }
-        return details.map((detail) => detail.size.name).join(", ");
+    $scope.getUniqueSizesString = function(sizes) {
+        if (!sizes || sizes.length === 0) return ''; // Trả về chuỗi rỗng nếu không có kích cỡ
+    
+        // Loại bỏ các giá trị trùng lặp
+        let uniqueSizes = Array.from(new Set(sizes));
+    
+        // Nối các kích cỡ thành một chuỗi, phân cách bởi dấu phẩy
+        return uniqueSizes.join(', ');
+    };
+    
+
+    $scope.formatCurrency = function(value) {
+        if (!value) return '';
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
 
 });

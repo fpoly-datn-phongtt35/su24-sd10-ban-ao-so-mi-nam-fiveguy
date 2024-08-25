@@ -248,7 +248,7 @@
 
                                 <div class="d-flex align-items-center mx-1">
                                     <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
-                                        style="width: 40px;" ng-model="desiredPage" min="1" max="{{totalPages2}}"
+                                        style="width: 40px;" ng-model="desiredPage2" min="1" max="{{totalPages2}}"
                                         ng-change="goToPageSanPhamBanChay()">
                                     <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages2}}</span>
                                 </div>
@@ -296,7 +296,7 @@
                                     <td class="text-left">{{khachHangMuaNhieuNhat.tongSoLuongMua}}</td>
                                     <td class="text-center">{{khachHangMuaNhieuNhat.tongSoBill}}</td>
                                     <td class="text-right">
-                                        {{khachHangMuaNhieuNhat.tongDoanhThu | currency}}
+                                        {{formatCurrency(khachHangMuaNhieuNhat.tongDoanhThu) }}đ
                                     </td>
                                     <!-- <td class="text-right">{{sanPhamBanChay.doanh_thu | currency}}</td> -->
                                 </tr>
@@ -307,7 +307,7 @@
                         <div class="d-flex align-items-center">
                             <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                             <div>
-                                <input id="size3" ng-model="size3" ng-change="applyFiltersKhachHangMuaNhieu()" value="1"
+                                <input  ng-model="sizeh" ng-change="applyFiltersKhachHangMuaNhieu()" value="1"
                                     type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
                             </div>
                         </div>
@@ -325,7 +325,7 @@
 
                                 <div class="d-flex align-items-center mx-1">
                                     <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
-                                        style="width: 40px;" ng-model="desiredPage" min="1" max="{{totalPages3}}"
+                                        style="width: 40px;" ng-model="desiredPage3" min="1" max="{{totalPages3}}"
                                         ng-change="goToPageKhachHangMuaNhieu()">
                                     <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages3}}</span>
                                 </div>
@@ -374,60 +374,72 @@
                                 <tr ng-repeat="product in filterProductDetall">
                                     <td>{{($index + 1) + (currentPage * size)}}</td>
                                     <td>
+                                        <!-- Hiển thị ảnh sản phẩm -->
                                         <div ng-if="product.mainImage" class="img-table-avatar">
                                             <img ng-src="{{ product.mainImage }}" alt="Product Image"
                                                 style="max-width: 200px; max-height: 200px;" />
                                         </div>
                                     </td>
-                                    <td class="text-left">{{product.product.name}}</td>
-                                    <td class="text-center">{{getTotalQuantity(product)}}</td>
+                                    <td class="text-left">{{product.name}} d</td>
+                                    <td class="text-center">{{getTotalQuantity(product)}} </td>
                                     <td class="text-right">
-                                        {{product.product.price | currency}}
+                                        {{formatCurrency(product.price) }}đ
                                     </td>
                                     <td class="text-right">
-                                        {{getSizeNames(product.productDetails)}}
+                                        {{ getUniqueSizesString(product.sizes) }}
                                     </td>
+                                    
+                                    
                                 </tr>
                             </tbody>
+                            
                         </table>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-4">
                         <div class="d-flex align-items-center">
                             <div class="ms-4 me-3 hint-text">Số lượng hiển thị:</div>
                             <div>
-                                <input id="size" ng-model="size" ng-change="applyFiltersSanPhamSapHet()" value="1"
-                                    type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
+                                <input  ng-model="size" ng-change="applyFiltersSanPhamSapHet()" type="number"
+                                    max="100" min="1" class="form-control" style="width: 5rem" required />
                             </div>
                         </div>
                         <ul class="pagination">
                             <div class="d-flex justify-content-between align-items-center">
+                                <!-- Nút trang đầu tiên -->
                                 <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0"
-                                    ng-click="getProductDetall(0)">
+                                    ng-click="goToPageSanPhamSapHet(0)">
                                     <span class="material-icons align-middle">first_page</span>
                                 </button>
+                                <!-- Nút trang trước -->
                                 <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0"
-                                    ng-click="getProductDetall(currentPage - 1)">
+                                    ng-click="goToPageSanPhamSapHet(currentPage - 1)">
                                     <span class="material-icons align-middle">chevron_left</span>
                                 </button>
-
+                        
+                                <!-- Input cho số trang mong muốn -->
                                 <div class="d-flex align-items-center mx-1">
                                     <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
-                                        style="width: 40px;" ng-model="desiredPage" min="1" max="{{totalPages}}"
-                                        ng-change="goToPageSanPhamSapHet()">
+                                        style="width: 60px;" ng-model="desiredPage5" min="1" max="{{totalPages}}"
+                                        ng-change="goToPageSanPhamSapHet(desiredPage5 - 1)">
                                     <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages}}</span>
                                 </div>
-
-                                <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1"
-                                    ng-click="getProductDetall(currentPage + 1)">
+                        
+                                <!-- Nút trang tiếp theo -->
+                                <button class="btn btn-primary mx-1" ng-disabled="currentPage >= totalPages - 1"
+                                    ng-click="goToPageSanPhamSapHet(currentPage + 1)">
                                     <span class="material-icons align-middle">chevron_right</span>
                                 </button>
-                                <button class="btn btn-primary mx-1" ng-disabled="currentPage == totalPages - 1"
-                                    ng-click="getProductDetall(totalPages - 1)">
+                                <!-- Nút trang cuối -->
+                                <button class="btn btn-primary mx-1" ng-disabled="currentPage >= totalPages - 1"
+                                    ng-click="goToPageSanPhamSapHet(totalPages - 1)">
                                     <span class="material-icons align-middle">last_page</span>
                                 </button>
                             </div>
                         </ul>
+                        
+
                     </div>
+
                 </div>
             </div>
             <!-- End Phần 3 -->

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
@@ -271,7 +272,7 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
             "AND b.status = :status " )
     List<Bill> tongStatusBillMonth(@Param("day") Date day, @Param("status") Integer status);
     @Query("SELECT b FROM Bill b JOIN b.billHistories ps " +
-            "WHERE FUNCTION('YEAR', ps.createdAt) = FUNCTION('YEAR', :day) " +
+            "WHERE DATEPART(YEAR, ps.createdAt) = YEAR(:day) " +
             "AND b.status = :status ")
     List<Bill> tongStatusBillYear(@Param("day") Date day, @Param("status") Integer status);
     @Query("SELECT b FROM Bill b JOIN b.billHistories ps " +
@@ -287,4 +288,90 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
 
     @Query("SELECT b FROM Bill b WHERE b.status = 1")
     Page<Bill> getAllBillChoThanhToan(Pageable pageable);
+
+
+//    hai
+
+
+
+    @Query(value = "SELECT " +
+            "    c.Id AS khachhang_id, " +
+            "    c.FullName AS ten_khachhang, " +
+            "    COALESCE(SUM(hdct.quantity - COALESCE(ro.returnQuantity, 0)), 0) AS tong_so_luong_mua, " +
+            "    COALESCE(SUM((hdct.quantity - COALESCE(ro.returnQuantity, 0)) * hdct.PromotionalPrice), 0) AS tong_doanh_thu, " +
+            "    COUNT(DISTINCT b.Id) AS tong_so_bill " +
+            "FROM " +
+            "    Customers c " +
+            "JOIN " +
+            "    Bills b ON c.Id = b.idCustomer " +
+            "JOIN " +
+            "    BillDetails hdct ON b.Id = hdct.IdBill " +
+            "LEFT JOIN ( " +
+            "    SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+            "    FROM ReturnOrders r " +
+            "    JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+            "    WHERE p.PaymentType = 4 " +
+            "    GROUP BY r.IdBillDetail " +
+            ") ro ON hdct.id = ro.IdBillDetail " +
+            "WHERE " +
+            "    EXISTS ( " +
+            "        SELECT 1 " +
+            "        FROM BillHistories bh " +
+            "        WHERE bh.BillId = b.id " +
+            "        AND bh.Status = 21 " +
+            "    ) " +
+            "    AND (" +
+            "        (:period = 'day' AND CONVERT(DATE, b.createdAt) = CONVERT(DATE, :date)) OR " +
+            "        (:period = 'week' AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, b.createdAt) = DATEPART(WEEK, :date)) OR " +
+            "        (:period = 'month' AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(MONTH, b.createdAt) = DATEPART(MONTH, :date)) OR " +
+            "        (:period = 'year' AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date)) " +
+            "    ) " +
+            "GROUP BY " +
+            "    c.Id, c.FullName " +
+            "ORDER BY " +
+            "    tong_so_luong_mua DESC",
+            countQuery = "SELECT COUNT(*) " +
+                    "FROM ( " +
+                    "    SELECT " +
+                    "        c.Id AS khachhang_id " +
+                    "    FROM " +
+                    "        Customers c " +
+                    "    JOIN " +
+                    "        Bills b ON c.Id = b.idCustomer " +
+                    "    JOIN " +
+                    "        BillDetails hdct ON b.Id = hdct.IdBill " +
+                    "    LEFT JOIN ( " +
+                    "        SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+                    "        FROM ReturnOrders r " +
+                    "        JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+                    "        WHERE p.PaymentType = 4 " +
+                    "        GROUP BY r.IdBillDetail " +
+                    "    ) ro ON hdct.id = ro.IdBillDetail " +
+                    "    WHERE " +
+                    "        EXISTS ( " +
+                    "            SELECT 1 " +
+                    "            FROM BillHistories bh " +
+                    "            WHERE bh.BillId = b.id " +
+                    "            AND bh.Status = 21 " +
+                    "        ) " +
+                    "        AND (" +
+                    "            (:period = 'day' AND CONVERT(DATE, b.createdAt) = CONVERT(DATE, :date)) OR " +
+                    "            (:period = 'week' AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, b.createdAt) = DATEPART(WEEK, :date)) OR " +
+                    "            (:period = 'month' AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(MONTH, b.createdAt) = DATEPART(MONTH, :date)) OR " +
+                    "            (:period = 'year' AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date)) " +
+                    "        ) " +
+                    "    GROUP BY " +
+                    "        c.Id, c.FullName " +
+                    ") AS subquery",
+            nativeQuery = true)
+    Page<Map<String, Object>> findKhachHangMuaNhieuNhat(
+            @Param("date") Date date,
+            @Param("period") String period,
+            Pageable pageable
+    );
+
+
+
+
+
 }
