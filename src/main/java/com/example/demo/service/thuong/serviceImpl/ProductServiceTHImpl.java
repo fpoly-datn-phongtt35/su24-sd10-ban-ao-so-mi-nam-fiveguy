@@ -37,10 +37,6 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Product create(ProductRequestTH productRequest, String fullName) {
-//        Product exProductByName = productRepository.findByName(productRequest.getName());
-//        if (exProductByName != null) {
-//            throw new DuplicateException("Trùng tên sản phẩm", "name");
-//        }
         Product exProductByCode = productRepository.findByCode(productRequest.getCode());
         if (exProductByCode != null) {
             throw new DuplicateException("Trùng mã sản phẩm", "code");
@@ -98,10 +94,6 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Product update(ProductRequestTH productRequestTH, Long id, String fullName) {
-        Product exProductByName = productRepository.findByName(productRequestTH.getName());
-        if (exProductByName != null && !exProductByName.getId().equals(id)) {
-            throw new DuplicateException("Trùng tên sản phẩm", "name");
-        }
         Product exProductByCode = productRepository.findByCode(productRequestTH.getCode());
         if (exProductByCode != null && !exProductByCode.getId().equals(id)) {
             throw new DuplicateException("Trùng mã sản phẩm", "code");
