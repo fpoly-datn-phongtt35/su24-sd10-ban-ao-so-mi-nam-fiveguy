@@ -167,14 +167,19 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Page<ProductResponseTH> getProducts(int page, int size, String keyword, String sortField, String sortDirection, BigDecimal minPrice, BigDecimal maxPrice, Integer status) {
-        // Start with sorting by the user's sortField
-        Sort sort = Sort.by(sortField);
+        // Use "createdAt" as the default sort field if none is provided
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "createdAt";
+        }
 
+        // Default to descending order if no sort direction is provided
+        Sort sort = Sort.by(sortField);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
         } else {
             sort = sort.ascending();
         }
+        System.out.println(sort);
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -190,6 +195,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             });
         }
     }
+
 
 
 

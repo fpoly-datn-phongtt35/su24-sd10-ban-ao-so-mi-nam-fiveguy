@@ -376,15 +376,11 @@ public class BillServiceTHImpl implements BillServiceTH {
             bill.setPaidShippingFee(BigDecimal.valueOf(0));
         } else if (bill.getPaymentMethod().getCode() == 13 || bill.getPaymentMethod().getCode() == 14) {
             // Payment method codes 13 or 14: Calculate paid amounts based on total amount after discount and shipping fee
-            bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(
-                    bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0)
-            ));
+            bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
             bill.setPaidShippingFee(bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
         } else {
             // Other payment methods: Set paid amounts based on total amount after discount and shipping fee
-            bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(
-                    bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0)
-            ));
+            bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
             bill.setPaidShippingFee(bill.getShippingFee() != null ? bill.getShippingFee() : BigDecimal.valueOf(0));
         }
 
