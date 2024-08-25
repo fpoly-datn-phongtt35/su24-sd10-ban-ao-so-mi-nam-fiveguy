@@ -728,7 +728,8 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                     Object.assign(bill, {
                         address: $scope.defaultAddressCustomer.address,
                         phoneNumber: $scope.defaultAddressCustomer.phoneNumber,
-                        reciverName: $scope.defaultAddressCustomer.name,
+                        reciverName: bill.fullName,
+                        addressDetail: $scope.defaultAddressCustomer.name,
                         addressId: $scope.defaultAddressCustomer.addressId
                     });
                 }
@@ -1062,9 +1063,9 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
               } else if ($scope.selectedVoucher.discountType === 2) {
                 // Fixed amount discount
                 $scope.valueVoucher = $scope.selectedVoucher.value;
-                if ($scope.valueVoucher >= $scope.selectedVoucher.maximumReductionValue) {
-                  $scope.valueVoucher = $scope.selectedVoucher.maximumReductionValue;
-                }
+                // if ($scope.valueVoucher >= $scope.selectedVoucher.maximumReductionValue) {
+                //   $scope.valueVoucher = $scope.selectedVoucher.maximumReductionValue;
+                // }
                 $scope.selectedBill.totalAmountAfterDiscount = $scope.selectedBill.totalAmount - $scope.valueVoucher;
               }
 
@@ -1393,8 +1394,11 @@ $scope.loadAddressForBill = function(bill) {
                         // Cập nhật bill với địa chỉ mặc định
                         bill.address = $scope.defaultAddressCustomer.address;
                         bill.phoneNumber = $scope.defaultAddressCustomer.phoneNumber;
-                        bill.reciverName = $scope.defaultAddressCustomer.name;
+                        bill.reciverName = bill.customer.fullName;
+                        bill.addressDetail = $scope.defaultAddressCustomer.name;
                         bill.addressId = $scope.defaultAddressCustomer.addressId;
+
+                    
                     }
                     resolve(bill);
                 }).catch(function(error) {
