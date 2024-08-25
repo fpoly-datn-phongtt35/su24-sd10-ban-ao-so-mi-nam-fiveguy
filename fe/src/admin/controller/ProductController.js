@@ -3,7 +3,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
     $scope.filter = {
         keyword: '',
         sortField: 'createdAt',
-        sortDirection: 'ASC',
+        sortDirection: 'DESC',
         min: 500,
         max: 10000000
     };
