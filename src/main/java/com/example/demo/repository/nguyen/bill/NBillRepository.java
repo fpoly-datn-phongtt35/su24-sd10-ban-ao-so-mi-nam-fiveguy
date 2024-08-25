@@ -67,7 +67,7 @@ public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecifica
 
     //    Hải code
     @Query("SELECT b FROM Bill b LEFT JOIN b.customer c WHERE " +
-            "(:statuses IS NULL AND b.status <> 20 OR b.status IN :statuses) AND " +
+            "((:statuses IS NULL AND b.status NOT IN (20, 100)) OR b.status IN :statuses) AND " +
             "(:searchTerm IS NULL OR b.code LIKE %:searchTerm% OR b.reciverName LIKE %:searchTerm% " +
             "OR (c IS NOT NULL AND c.fullName LIKE %:searchTerm%) OR b.phoneNumber LIKE %:searchTerm%) AND " +
             "(:typeBill IS NULL OR b.typeBill = :typeBill) AND " +
@@ -79,5 +79,6 @@ public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecifica
                                   @Param("fromDate") Date fromDate,
                                   @Param("toDate") Date toDate,
                                   Pageable pageable);
+
 
 }

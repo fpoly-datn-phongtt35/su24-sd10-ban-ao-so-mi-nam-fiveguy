@@ -244,13 +244,13 @@ public static String encodeId(long id) {
 //                        if (bill.getVoucher() != null){
 //                            increaseVoucherQuantity(bill.getVoucher().getId());
 //                        }
-                        bill.setStatus(5);
-//                        huyPaymentStatus
-                        newPaymentStatusAndBillHistory( bill, bill.getCustomer(),5,3,0);
-                        bill.setPaidAmount(new BigDecimal(0));
+//                        bill.setStatus(5);
+////                        huyPaymentStatus
+//                        newPaymentStatusAndBillHistory( bill, bill.getCustomer(),5,3,0);
+//                        bill.setPaidAmount(new BigDecimal(0));
 
 
-                        olBillService.save(bill);
+                        olBillService.deleteBill(bill);
                     }
                 }
             }

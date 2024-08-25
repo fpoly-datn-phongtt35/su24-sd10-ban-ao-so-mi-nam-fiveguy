@@ -37,10 +37,6 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Product create(ProductRequestTH productRequest, String fullName) {
-        Product exProductByName = productRepository.findByName(productRequest.getName());
-        if (exProductByName != null) {
-            throw new DuplicateException("Trùng tên sản phẩm", "name");
-        }
         Product exProductByCode = productRepository.findByCode(productRequest.getCode());
         if (exProductByCode != null) {
             throw new DuplicateException("Trùng mã sản phẩm", "code");
@@ -98,10 +94,6 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Product update(ProductRequestTH productRequestTH, Long id, String fullName) {
-        Product exProductByName = productRepository.findByName(productRequestTH.getName());
-        if (exProductByName != null && !exProductByName.getId().equals(id)) {
-            throw new DuplicateException("Trùng tên sản phẩm", "name");
-        }
         Product exProductByCode = productRepository.findByCode(productRequestTH.getCode());
         if (exProductByCode != null && !exProductByCode.getId().equals(id)) {
             throw new DuplicateException("Trùng mã sản phẩm", "code");
@@ -175,24 +167,30 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Page<ProductResponseTH> getProducts(int page, int size, String keyword, String sortField, String sortDirection, BigDecimal minPrice, BigDecimal maxPrice, Integer status) {
+        // Start with sorting by the user's sortField
         Sort sort = Sort.by(sortField);
+
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             sort = sort.descending();
         } else {
             sort = sort.ascending();
         }
+
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        if (keyword == null || keyword.isEmpty())
-            return productRepository.findAllAndStatus( minPrice, maxPrice, status,pageable).map(p -> {
+        if (keyword == null || keyword.isEmpty()) {
+            return productRepository.findAllAndStatus(minPrice, maxPrice, status, pageable).map(p -> {
                 p.setImagePath(getImagePathByProductId(p.getId()));
                 return p;
             });
-        else return productRepository.findByNameOrCode(minPrice, maxPrice, keyword, status,pageable).map(p -> {
-            p.setImagePath(getImagePathByProductId(p.getId()));
-            return p;
-        });
+        } else {
+            return productRepository.findByNameOrCode(minPrice, maxPrice, keyword, status, pageable).map(p -> {
+                p.setImagePath(getImagePathByProductId(p.getId()));
+                return p;
+            });
+        }
     }
+
 
 
     @Override

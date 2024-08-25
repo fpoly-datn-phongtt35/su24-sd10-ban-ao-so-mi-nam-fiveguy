@@ -148,13 +148,13 @@
                                             </div>
                                             <div class="col-4 p-details">
                                                 <h1 ng-if="productDetail.promotionalPrice" style="text-decoration: line-through; color: #ccc;">
-                                                    {{productDetail.product.price | number:'0':'symbol':'short'}} VND
+                                                    {{formatCurrency(productDetail.product.price)}} VND
                                                 </h1>
                                                 <h1 ng-if="productDetail.promotionalPrice">
-                                                    {{productDetail.promotionalPrice | number:'0':'symbol':'short'}} VND
+                                                    {{formatCurrency(productDetail.promotionalPrice)}} VND
                                                 </h1>
                                                 <h1 ng-if="!productDetail.promotionalPrice">
-                                                    {{productDetail.product.price | number:'0':'symbol':'short'}} VND
+                                                    {{formatCurrency(productDetail.product.price)}} VND
                                                 </h1>
                                             </div>
                                         </div>
@@ -219,7 +219,7 @@
                                                             </button>
                                                         </div>
                                                     </td>
-                                                    <td style="line-height: 35px"><p class="m-0 fw-bold">{{item.promotionalPrice | number:'0':'symbol':'short'}} VND</p></td>
+                                                    <td style="line-height: 35px"><p class="m-0 fw-bold">{{formatCurrency(item.promotionalPrice)}} VND</p></td>
                                                     <td><button ng-click="deletePDCart(item.productDetail)" class="btn btn-light border text-danger icon-hover-danger d-flex align-items-center"><i class="material-icons">
                                                         delete
                                                         </i></button></td>
@@ -239,7 +239,7 @@
 
                                     <div class="card-body p-0 d-flex flex-column" style="height: 500px">
                                        <div class="payment p-3" style="height: 450px; overflow-y: scroll; ">
-                                        <div ng-show="selectedBill" class="form-group d-flex align-items-center">
+                                        <div ng-show="selectedBill.billDetail.length > 0" class="form-group d-flex align-items-center">
                                             <div class="form-check w-50">
                                                 <input ng-model="isChecked" 
                                                        ng-change="updateTypeBill()" 
@@ -305,7 +305,7 @@
                                         <div class="d-flex flex-column" style="font-size: 16px;">
                                             <div class="d-flex">
                                                 <p>Tổng tiền hàng</p>
-                                                <p class="ms-4">{{totalQuantity}}</p>
+                                                <!-- <p class="ms-4">{{totalQuantity}}</p> -->
                                                 <p class="ms-auto">{{formatCurrency(selectedBill.totalAmount)}}</p>
                                             </div>
                                         </div>

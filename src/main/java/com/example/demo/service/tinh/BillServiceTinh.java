@@ -39,4 +39,13 @@ public interface BillServiceTinh {
 
     List<ThongKe> getBySanPhamBanChayNgay(Date date, Long productId);
 
+
+
+        Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNgay(Pageable pageable);
+        Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuan(Pageable pageable);
+        Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatThang(Pageable pageable);
+        Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNam(Pageable pageable);
+
+
+
 }

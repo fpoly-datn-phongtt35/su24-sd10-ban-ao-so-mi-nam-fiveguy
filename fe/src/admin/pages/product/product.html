@@ -31,8 +31,8 @@
                     <div class="col-sm-3 d-flex flex-column">
                         <label for="sortDirection">Thứ tự</label>
                         <select ng-model="filter.sortDirection" class="form-select" id="sortDirection">
-                            <option value="ASC">Tăng dần</option>
-                            <option value="DESC">Giảm dần</option>
+                            <option value="ASC">Cũ nhất</option>
+                            <option value="DESC">Mới nhất</option>
                           </select>
                     </div>
                     <div class="col-sm-3 d-flex flex-column">   
@@ -99,7 +99,7 @@
                                 <th>
                                     <div class="d-flex align-items-center flex-column">
                                         <button type="button" class="btn btn-sm" ng-class="{'btn-success': product.status === 1, 'btn-danger': product.status === 0}">{{ product.status === 1 ? 'Kinh doanh' : 'Ngừng kinh doanh' }}</button>
-                                        <span>{{product.createdAt | date : "hh:mm dd-MM-yyyy" : 0}} - {{product.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span>
+                                        <!-- <span>{{product.createdAt | date : "hh:mm dd-MM-yyyy" : 0}} - {{product.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span> -->
                                     </div>
                                    
                                 </th>            

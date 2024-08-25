@@ -12,4 +12,6 @@ public interface ProductDetailServiceTinh {
     List<ProductDetail> getAll();
     ProductDetail update(Long id, ProductDetail employees);
     Page<ProductDetail> findProductDetal(String name, String code, BigDecimal price, Pageable pageable);
+
+    List<ProductDetail> findAllByProductIdIn(List<Long> productIds);
 }

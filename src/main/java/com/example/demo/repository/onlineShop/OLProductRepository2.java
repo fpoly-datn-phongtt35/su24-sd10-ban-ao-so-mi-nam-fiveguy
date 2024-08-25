@@ -66,19 +66,36 @@ List<Object[]> findProductsWithImages();
             "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")
     Integer findPromotionalPriceByProductId(@Param("productId") Long productId);
 
-    @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
-            "MIN(i.path) AS imagePath " +  // Selecting the first image path per product
-            "FROM Product p " +
-            "JOIN p.productDetails pd " +
-            "LEFT JOIN pd.billDetails bd " +
-            "LEFT JOIN bd.bill b " +
-            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
-            "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
-            "LEFT JOIN p.images i ON i.product.id = p.id " +
-            "WHERE p.status = 1 AND b.status = 21 " +
-            "GROUP BY p.id, p.name, p.price, ps.discountPrice, s.value, s.discountType " +  // Grouping by all selected columns
-            "ORDER BY COALESCE(SUM(bd.quantity), 0) DESC")
+    @Query(value = "SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
+            "MIN(i.path) AS imagePath, " +  // Selecting the first image path per product
+            "COALESCE(SUM(bd.quantity - COALESCE(ro.returnQuantity, 0)), 0) AS totalQuantitySold " +
+            "FROM Products p " +
+            "JOIN ProductDetails pd ON p.id = pd.Idproduct " +
+            "LEFT JOIN BillDetails bd ON pd.id = bd.IdProductDetail " +
+            "LEFT JOIN Bills b ON bd.IdBill = b.id " +
+            "LEFT JOIN ProductSales ps ON p.id = ps.Idproduct " +
+            "LEFT JOIN Sales s ON ps.Idsale = s.id AND s.status = 1 " +
+            "LEFT JOIN Images i ON i.Idproduct = p.id " +
+            "LEFT JOIN ( " +
+            "    SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+            "    FROM ReturnOrders r " +
+            "    JOIN PaymentStatus p2 ON r.IdBill = p2.BillId " +
+            "    WHERE p2.PaymentType = 4 " +
+            "    GROUP BY r.IdBillDetail " +
+            ") ro ON bd.id = ro.IdBillDetail " +
+            "WHERE p.status = 1 " +
+            "AND EXISTS ( " +
+            "    SELECT 1 " +
+            "    FROM BillHistories bh " +
+            "    WHERE bh.BillId = b.id " +
+            "    AND bh.Status = 21 " +
+            ") " +
+            "GROUP BY p.id, p.name, ps.discountPrice, s.value, s.discountType " +  // Grouping by all selected columns
+            "ORDER BY totalQuantitySold DESC",
+            nativeQuery = true)
     List<Object[]> findAllProductsOrderedByTotalQuantitySold();
+
+
 
     @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
             "MIN(i.path) AS imagePath, p.createdAt " +  // Including p.createdAt in the SELECT clause
