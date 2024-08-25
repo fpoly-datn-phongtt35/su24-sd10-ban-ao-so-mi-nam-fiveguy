@@ -13,9 +13,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BillServiceImplTinh implements BillServiceTinh {
@@ -325,13 +325,13 @@ public class BillServiceImplTinh implements BillServiceTinh {
     //====================Khách hàng mua hàng nhiều nhất
     @Override
     public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNgay(Date date, Pageable pageable) {
-        // Truy xuất toàn bộ dữ liệu
+        // Query to fetch customer statistics similar to the conditions in findTotalQuantitySoldByDate
         List<ThongKeKhachHang> khachHangList = jdbctemplate.query(
                 "SELECT " +
                         "    c.Id AS khachhang_id, " +
                         "    c.FullName AS ten_khachhang, " +
-                        "    COALESCE(SUM(hdct.quantity), 0) AS tong_so_luong_mua, " +
-                        "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS tong_doanh_thu, " +
+                        "    COALESCE(SUM(hdct.quantity - COALESCE(ro.returnQuantity, 0)), 0) AS tong_so_luong_mua, " +
+                        "    COALESCE(SUM((hdct.quantity - COALESCE(ro.returnQuantity, 0)) * hdct.PromotionalPrice), 0) AS tong_doanh_thu, " +
                         "    COUNT(DISTINCT b.Id) AS tong_so_bill " +
                         "FROM " +
                         "    Customers c " +
@@ -339,12 +339,21 @@ public class BillServiceImplTinh implements BillServiceTinh {
                         "    Bills b ON c.Id = b.idCustomer " +
                         "JOIN " +
                         "    BillDetails hdct ON b.Id = hdct.IdBill " +
-                        "JOIN " +
-                        "    PaymentStatus ps ON b.Id = ps.BillId " +
+                        "LEFT JOIN ( " +
+                        "    SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+                        "    FROM ReturnOrders r " +
+                        "    JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+                        "    WHERE p.PaymentType = 4 " +
+                        "    GROUP BY r.IdBillDetail " +
+                        ") ro ON hdct.id = ro.IdBillDetail " +
                         "WHERE " +
-                        "    CAST(ps.PaymentDate AS DATE) = ? " +
-                        "    AND ps.CustomerPaymentStatus = 2 " +
-                        "    AND b.Status = 21 " +
+                        "    EXISTS ( " +
+                        "        SELECT 1 " +
+                        "        FROM BillHistories bh " +
+                        "        WHERE bh.BillId = b.id " +
+                        "        AND bh.Status = 21 " +
+                        "    ) " +
+                        "    AND CAST(b.createdAt AS DATE) = ? " +
                         "GROUP BY " +
                         "    c.Id, c.FullName " +
                         "ORDER BY " +
@@ -359,7 +368,7 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 )
         );
 
-        // Áp dụng phân trang trong Java
+        // Apply pagination in Java
         int total = khachHangList.size();
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), total);
@@ -368,14 +377,14 @@ public class BillServiceImplTinh implements BillServiceTinh {
         return new PageImpl<>(pagedKhachHangList, pageable, total);
     }
 
+
     @Override
     public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuan(Date date, Pageable pageable) {
-        // Truy vấn để lấy dữ liệu với phân trang
         String query = "SELECT " +
                 "    c.Id AS khachhang_id, " +
                 "    c.FullName AS ten_khachhang, " +
-                "    COALESCE(SUM(hdct.quantity), 0) AS tong_so_luong_mua, " +
-                "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS tong_doanh_thu, " +
+                "    COALESCE(SUM(hdct.quantity - COALESCE(ro.returnQuantity, 0)), 0) AS tong_so_luong_mua, " +
+                "    COALESCE(SUM((hdct.quantity - COALESCE(ro.returnQuantity, 0)) * hdct.PromotionalPrice), 0) AS tong_doanh_thu, " +
                 "    COUNT(DISTINCT b.Id) AS tong_so_bill " +
                 "FROM " +
                 "    Customers c " +
@@ -383,20 +392,29 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    Bills b ON c.Id = b.idCustomer " +
                 "JOIN " +
                 "    BillDetails hdct ON b.Id = hdct.IdBill " +
-                "JOIN " +
-                "    PaymentStatus ps ON b.Id = ps.BillId " +
+                "LEFT JOIN ( " +
+                "    SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+                "    FROM ReturnOrders r " +
+                "    JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+                "    WHERE p.PaymentType = 4 " +
+                "    GROUP BY r.IdBillDetail " +
+                ") ro ON hdct.id = ro.IdBillDetail " +
                 "WHERE " +
-                "    DATEPART(WEEK, ps.PaymentDate) = DATEPART(WEEK, ?) " +
-                "    AND DATEPART(YEAR, ps.PaymentDate) = DATEPART(YEAR, ?) " +
-                "    AND ps.CustomerPaymentStatus = 2 " +
-                "    AND b.Status = 21 " +
+                "    EXISTS ( " +
+                "        SELECT 1 " +
+                "        FROM BillHistories bh " +
+                "        WHERE bh.BillId = b.id " +
+                "        AND bh.Status = 21 " +
+                "    ) " +
+                "    AND DATEPART(WEEK, b.createdAt) = DATEPART(WEEK, ?) " +
+                "    AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, ?) " +
                 "GROUP BY " +
                 "    c.Id, c.FullName " +
                 "ORDER BY " +
                 "    tong_so_luong_mua DESC " +
                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
-        // Thực hiện truy vấn phân trang
+        // Thực hiện truy vấn và phân trang
         List<ThongKeKhachHang> khachHangList = jdbctemplate.query(
                 query,
                 new Object[]{date, date, pageable.getOffset(), pageable.getPageSize()},
@@ -409,41 +427,19 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 )
         );
 
-        // Truy vấn để tính tổng số kết quả
-        String countQuery = "SELECT COUNT(*) FROM (" +
-                "    SELECT " +
-                "        c.Id " +
-                "    FROM " +
-                "        Customers c " +
-                "    JOIN " +
-                "        Bills b ON c.Id = b.idCustomer " +
-                "    JOIN " +
-                "        BillDetails hdct ON b.Id = hdct.IdBill " +
-                "    JOIN " +
-                "        PaymentStatus ps ON b.Id = ps.BillId " +
-                "    WHERE " +
-                "        DATEPART(WEEK, ps.PaymentDate) = DATEPART(WEEK, ?) " +
-                "        AND DATEPART(YEAR, ps.PaymentDate) = DATEPART(YEAR, ?) " +
-                "        AND ps.CustomerPaymentStatus = 2 " +
-                "        AND b.Status = 21 " +
-                "    GROUP BY " +
-                "        c.Id, c.FullName " +
-                ") AS countTable";
-
-        // Tính tổng số kết quả
+        String countQuery = "SELECT COUNT(*) FROM (" + query + ") AS countTable";
         int total = jdbctemplate.queryForObject(countQuery, new Object[]{date, date}, Integer.class);
 
-        // Trả về trang dữ liệu
         return new PageImpl<>(khachHangList, pageable, total);
     }
 
     @Override
     public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatThang(Date date, Pageable pageable) {
-        String sql = "SELECT " +
+        String query = "SELECT " +
                 "    c.Id AS khachhang_id, " +
                 "    c.FullName AS ten_khachhang, " +
-                "    COALESCE(SUM(hdct.quantity), 0) AS tong_so_luong_mua, " +
-                "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS tong_doanh_thu, " +
+                "    COALESCE(SUM(hdct.quantity - COALESCE(ro.returnQuantity, 0)), 0) AS tong_so_luong_mua, " +
+                "    COALESCE(SUM((hdct.quantity - COALESCE(ro.returnQuantity, 0)) * hdct.PromotionalPrice), 0) AS tong_doanh_thu, " +
                 "    COUNT(DISTINCT b.Id) AS tong_so_bill " +
                 "FROM " +
                 "    Customers c " +
@@ -451,21 +447,32 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    Bills b ON c.Id = b.idCustomer " +
                 "JOIN " +
                 "    BillDetails hdct ON b.Id = hdct.IdBill " +
-                "JOIN " +
-                "    PaymentStatus ps ON b.Id = ps.BillId " +
+                "LEFT JOIN ( " +
+                "    SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+                "    FROM ReturnOrders r " +
+                "    JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+                "    WHERE p.PaymentType = 4 " +
+                "    GROUP BY r.IdBillDetail " +
+                ") ro ON hdct.id = ro.IdBillDetail " +
                 "WHERE " +
-                "    DATEPART(MONTH, ps.PaymentDate) = DATEPART(MONTH, ?) " +
-                "    AND DATEPART(YEAR, ps.PaymentDate) = DATEPART(YEAR, ?) " +
-                "    AND ps.CustomerPaymentStatus = 2 " +
-                "    AND b.Status = 21 " +
+                "    EXISTS ( " +
+                "        SELECT 1 " +
+                "        FROM BillHistories bh " +
+                "        WHERE bh.BillId = b.id " +
+                "        AND bh.Status = 21 " +
+                "    ) " +
+                "    AND DATEPART(MONTH, b.createdAt) = DATEPART(MONTH, ?) " +
+                "    AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, ?) " +
                 "GROUP BY " +
                 "    c.Id, c.FullName " +
                 "ORDER BY " +
-                "    tong_so_luong_mua DESC";
+                "    tong_so_luong_mua DESC " +
+                "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
+        // Thực hiện truy vấn và phân trang
         List<ThongKeKhachHang> khachHangList = jdbctemplate.query(
-                sql,
-                new Object[]{date, date},
+                query,
+                new Object[]{date, date, pageable.getOffset(), pageable.getPageSize()},
                 (rs, rowNum) -> new ThongKeKhachHang(
                         rs.getLong("khachhang_id"),
                         rs.getString("ten_khachhang"),
@@ -475,21 +482,19 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 )
         );
 
-        int total = khachHangList.size();
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), total);
-        List<ThongKeKhachHang> pagedKhachHangList = khachHangList.subList(start, end);
+        String countQuery = "SELECT COUNT(*) FROM (" + query + ") AS countTable";
+        int total = jdbctemplate.queryForObject(countQuery, new Object[]{date, date}, Integer.class);
 
-        return new PageImpl<>(pagedKhachHangList, pageable, total);
+        return new PageImpl<>(khachHangList, pageable, total);
     }
 
     @Override
     public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNam(Date date, Pageable pageable) {
-        String sql = "SELECT " +
+        String query = "SELECT " +
                 "    c.Id AS khachhang_id, " +
                 "    c.FullName AS ten_khachhang, " +
-                "    COALESCE(SUM(hdct.quantity), 0) AS tong_so_luong_mua, " +
-                "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS tong_doanh_thu, " +
+                "    COALESCE(SUM(hdct.quantity - COALESCE(ro.returnQuantity, 0)), 0) AS tong_so_luong_mua, " +
+                "    COALESCE(SUM((hdct.quantity - COALESCE(ro.returnQuantity, 0)) * hdct.PromotionalPrice), 0) AS tong_doanh_thu, " +
                 "    COUNT(DISTINCT b.Id) AS tong_so_bill " +
                 "FROM " +
                 "    Customers c " +
@@ -497,20 +502,31 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    Bills b ON c.Id = b.idCustomer " +
                 "JOIN " +
                 "    BillDetails hdct ON b.Id = hdct.IdBill " +
-                "JOIN " +
-                "    PaymentStatus ps ON b.Id = ps.BillId " +
+                "LEFT JOIN ( " +
+                "    SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+                "    FROM ReturnOrders r " +
+                "    JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+                "    WHERE p.PaymentType = 4 " +
+                "    GROUP BY r.IdBillDetail " +
+                ") ro ON hdct.id = ro.IdBillDetail " +
                 "WHERE " +
-                "    DATEPART(YEAR, ps.PaymentDate) = DATEPART(YEAR, ?) " +
-                "    AND ps.CustomerPaymentStatus = 2 " +
-                "    AND b.Status = 21 " +
+                "    EXISTS ( " +
+                "        SELECT 1 " +
+                "        FROM BillHistories bh " +
+                "        WHERE bh.BillId = b.id " +
+                "        AND bh.Status = 21 " +
+                "    ) " +
+                "    AND DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, ?) " +
                 "GROUP BY " +
                 "    c.Id, c.FullName " +
                 "ORDER BY " +
-                "    tong_so_luong_mua DESC";
+                "    tong_so_luong_mua DESC " +
+                "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
+        // Thực hiện truy vấn và phân trang
         List<ThongKeKhachHang> khachHangList = jdbctemplate.query(
-                sql,
-                new Object[]{date},
+                query,
+                new Object[]{date, pageable.getOffset(), pageable.getPageSize()},
                 (rs, rowNum) -> new ThongKeKhachHang(
                         rs.getLong("khachhang_id"),
                         rs.getString("ten_khachhang"),
@@ -520,21 +536,19 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 )
         );
 
-        int total = khachHangList.size();
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), total);
-        List<ThongKeKhachHang> pagedKhachHangList = khachHangList.subList(start, end);
+        String countQuery = "SELECT COUNT(*) FROM (" + query + ") AS countTable";
+        int total = jdbctemplate.queryForObject(countQuery, new Object[]{date}, Integer.class);
 
-        return new PageImpl<>(pagedKhachHangList, pageable, total);
+        return new PageImpl<>(khachHangList, pageable, total);
     }
 
     @Override
     public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuyChinh(Date startDate, Date endDate, Pageable pageable) {
-        String sql = "SELECT " +
+        String query = "SELECT " +
                 "    c.Id AS khachhang_id, " +
                 "    c.FullName AS ten_khachhang, " +
-                "    COALESCE(SUM(hdct.quantity), 0) AS tong_so_luong_mua, " +
-                "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS tong_doanh_thu, " +
+                "    COALESCE(SUM(hdct.quantity - COALESCE(ro.returnQuantity, 0)), 0) AS tong_so_luong_mua, " +
+                "    COALESCE(SUM((hdct.quantity - COALESCE(ro.returnQuantity, 0)) * hdct.PromotionalPrice), 0) AS tong_doanh_thu, " +
                 "    COUNT(DISTINCT b.Id) AS tong_so_bill " +
                 "FROM " +
                 "    Customers c " +
@@ -542,20 +556,31 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 "    Bills b ON c.Id = b.idCustomer " +
                 "JOIN " +
                 "    BillDetails hdct ON b.Id = hdct.IdBill " +
-                "JOIN " +
-                "    PaymentStatus ps ON b.Id = ps.BillId " +
+                "LEFT JOIN ( " +
+                "    SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+                "    FROM ReturnOrders r " +
+                "    JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+                "    WHERE p.PaymentType = 4 " +
+                "    GROUP BY r.IdBillDetail " +
+                ") ro ON hdct.id = ro.IdBillDetail " +
                 "WHERE " +
-                "    ps.PaymentDate BETWEEN ? AND ? " +
-                "    AND ps.CustomerPaymentStatus = 2 " +
-                "    AND b.Status = 21 " +
+                "    EXISTS ( " +
+                "        SELECT 1 " +
+                "        FROM BillHistories bh " +
+                "        WHERE bh.BillId = b.id " +
+                "        AND bh.Status = 21 " +
+                "    ) " +
+                "    AND b.createdAt BETWEEN ? AND ? " +
                 "GROUP BY " +
                 "    c.Id, c.FullName " +
                 "ORDER BY " +
-                "    tong_so_luong_mua DESC";
+                "    tong_so_luong_mua DESC " +
+                "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
+        // Thực hiện truy vấn và phân trang
         List<ThongKeKhachHang> khachHangList = jdbctemplate.query(
-                sql,
-                new Object[]{startDate, endDate},
+                query,
+                new Object[]{startDate, endDate, pageable.getOffset(), pageable.getPageSize()},
                 (rs, rowNum) -> new ThongKeKhachHang(
                         rs.getLong("khachhang_id"),
                         rs.getString("ten_khachhang"),
@@ -565,45 +590,55 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 )
         );
 
-        int total = khachHangList.size();
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), total);
-        List<ThongKeKhachHang> pagedKhachHangList = khachHangList.subList(start, end);
+        String countQuery = "SELECT COUNT(*) FROM (" + query + ") AS countTable";
+        int total = jdbctemplate.queryForObject(countQuery, new Object[]{startDate, endDate}, Integer.class);
 
-        return new PageImpl<>(pagedKhachHangList, pageable, total);
+        return new PageImpl<>(khachHangList, pageable, total);
     }
+
 
     @Override
     public List<ThongKe> getBySanPhamBanChayNgay(Date date, Long productId) {
+        String query = "SELECT " +
+                "    sp.Id AS sanpham_id, " +
+                "    sp.Name AS ten_sanpham, " +
+                "    sp.Price AS price, " +
+                "    COALESCE(SUM(hdct.quantity - COALESCE(ro.returnQuantity, 0)), 0) AS so_luong_ban, " +
+                "    COALESCE(SUM((hdct.quantity - COALESCE(ro.returnQuantity, 0)) * hdct.PromotionalPrice), 0) AS doanh_thu, " +
+                "    COALESCE(MAX(ha.Name), '') AS anh_mac_dinh " +
+                "FROM " +
+                "    Products sp " +
+                "JOIN " +
+                "    ProductDetails pd ON sp.Id = pd.IdProduct " +
+                "JOIN " +
+                "    BillDetails hdct ON pd.Id = hdct.IdProductDetail " +
+                "JOIN " +
+                "    Bills b ON hdct.IdBill = b.Id " +
+                "LEFT JOIN " +
+                "    Images ha ON sp.Id = ha.IdProduct " +
+                "LEFT JOIN ( " +
+                "    SELECT r.IdBillDetail, SUM(r.Quantity) AS returnQuantity " +
+                "    FROM ReturnOrders r " +
+                "    JOIN PaymentStatus p ON r.IdBill = p.BillId " +
+                "    WHERE p.PaymentType = 4 " +
+                "    GROUP BY r.IdBillDetail " +
+                ") ro ON hdct.Id = ro.IdBillDetail " +
+                "WHERE " +
+                "    EXISTS ( " +
+                "        SELECT 1 " +
+                "        FROM BillHistories bh " +
+                "        WHERE bh.BillId = b.Id " +
+                "        AND bh.Status = 21 " +
+                "    ) " +
+                "    AND CAST(b.createdAt AS DATE) = CAST(? AS DATE) " + // Điều kiện lọc theo ngày
+                "    AND sp.Id = ? " + // Điều kiện lọc theo productId
+                "GROUP BY " +
+                "    sp.Id, sp.Name, sp.Price " +
+                "ORDER BY " +
+                "    so_luong_ban DESC";
+
         return jdbctemplate.query(
-                "SELECT " +
-                        "    sp.Id AS sanpham_id, " +
-                        "    sp.Name AS ten_sanpham, " +
-                        "    sp.Price AS price, " +
-                        "    COALESCE(SUM(hdct.quantity), 0) AS so_luong_ban, " +
-                        "    COALESCE(SUM(hdct.quantity * hdct.Price), 0) AS doanh_thu, " +
-                        "    COALESCE(MAX(ha.Name), '') AS anh_mac_dinh " +
-                        "FROM " +
-                        "    ProductDetails pd " +
-                        "JOIN " +
-                        "    BillDetails hdct ON pd.Id = hdct.IdProductDetail " +
-                        "JOIN " +
-                        "    Bills b ON hdct.IdBill = b.Id " +
-                        "JOIN " +
-                        "    Products sp ON pd.IdProduct = sp.Id " +
-                        "LEFT JOIN " +
-                        "    Images ha ON sp.Id = ha.Id " +
-                        "JOIN " +
-                        "    PaymentStatus ps ON b.Id = ps.BillId " +
-                        "WHERE " +
-                        "    CAST(ps.PaymentDate AS DATE) = CAST(? AS DATE) " +
-                        "    AND ps.CustomerPaymentStatus = 2 " +
-                        "    AND b.Status = 21 " +
-                        "    AND sp.Id = ? " + // Thêm điều kiện lọc theo productId
-                        "GROUP BY " +
-                        "    sp.Id, sp.Name, sp.Price " +
-                        "ORDER BY " +
-                        "    so_luong_ban DESC",
+                query,
                 new Object[]{date, productId},
                 (rs, rowNum) -> new ThongKe(
                         rs.getLong("sanpham_id"),
@@ -615,4 +650,51 @@ public class BillServiceImplTinh implements BillServiceTinh {
                 )
         );
     }
+
+
+    @Override
+    public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNgay(Pageable pageable) {
+        Date today = new Date();
+        return getKhachHangMuaNhieuNhat(today, "day", pageable);
+    }
+
+    @Override
+    public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuan(Pageable pageable) {
+        Date today = new Date();
+        return getKhachHangMuaNhieuNhat(today, "week", pageable);
+    }
+
+    @Override
+    public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatThang(Pageable pageable) {
+        Date today = new Date();
+        return getKhachHangMuaNhieuNhat(today, "month", pageable);
+    }
+
+    @Override
+    public Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNam(Pageable pageable) {
+        Date today = new Date();
+        return getKhachHangMuaNhieuNhat(today, "year", pageable);
+    }
+
+    private Page<ThongKeKhachHang> getKhachHangMuaNhieuNhat(Date date, String period, Pageable pageable) {
+        if (!Arrays.asList("day", "week", "month", "year").contains(period)) {
+            throw new IllegalArgumentException("Invalid period. Must be one of 'day', 'week', 'month', 'year'.");
+        }
+
+        Page<Map<String, Object>> result = billRepositoryTinh.findKhachHangMuaNhieuNhat(date, period, pageable);
+
+        List<ThongKeKhachHang> khachHangList = result.getContent().stream()
+                .map(row -> new ThongKeKhachHang(
+                        ((Number) row.get("khachhang_id")).longValue(),
+                        (String) row.get("ten_khachhang"),
+                        ((Number) row.get("tong_so_luong_mua")).intValue(),
+                        ((BigDecimal) row.get("tong_doanh_thu")),
+                        ((Number) row.get("tong_so_bill")).intValue()
+                ))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(khachHangList, pageable, result.getTotalElements());
+    }
+
+
 }
