@@ -1139,21 +1139,29 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             //   console.log($scope.customerVouchers)
               // Thêm khoảng thời gian trễ trước khi thực hiện hành động tiếp theo
               if ($scope.customerVouchers && $scope.customerVouchers.length > 0) {
+                console.log($scope.selectedBill.voucher)
                 if ($scope.selectedBill.voucher == null) {
                 $scope.selectBestVoucher();
-                }else{
-                    
+                }else {
                     for (let i = 0; i < $scope.customerVouchers.length; i++) {
-                        if ($scope.customerVouchers[i].id === $scope.selectedBill.voucher.id && $scope.customerVouchers[i].show == 1) {
-                              $scope.customerVouchers[i].selected = true;
-
-                              $scope.selectedVoucher = $scope.customerVouchers[i];
-                              console.log($scope.selectedVoucher)
-                            break; // Exit the loop once the voucher is found
+                        if ($scope.customerVouchers[i].id === $scope.selectedBill.voucher.id) {
+                            $scope.customerVouchers[i].selected = true;
+                
+                            $scope.selectedVoucher = $scope.customerVouchers[i];
+                            console.log($scope.selectedVoucher);
+                            
+                            // Kiểm tra thuộc tính show và gọi selectBestVoucher nếu cần
+                            if ($scope.customerVouchers[i].show === 2) {
+                                $scope.selectBestVoucher();
+                                return; // Dừng xử lý tiếp tục
+                            }
+                
+                            break; // Thoát khỏi vòng lặp nếu voucher đã được tìm thấy
                         }
                     }
                     $scope.applyVoucher();
                 }
+                
 
               } 
             }
