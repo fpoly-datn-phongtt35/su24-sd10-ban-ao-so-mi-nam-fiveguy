@@ -1,14 +1,13 @@
 package com.example.demo.service.thuong.serviceImpl;
 
 import com.example.demo.advice.DuplicateException;
-import com.example.demo.entity.Image;
-import com.example.demo.entity.Product;
-import com.example.demo.entity.ProductDetail;
+import com.example.demo.entity.*;
 import com.example.demo.model.request.thuong.ProductRequestTH;
 import com.example.demo.model.response.thuong.ProductResponseTH;
 import com.example.demo.repository.thuong.ImageRepositoryTH;
 import com.example.demo.repository.thuong.ProductDetailRepositoryTH;
 import com.example.demo.repository.thuong.ProductRepositoryTH;
+import com.example.demo.repository.tinh.AuditLogRepositoryTinh;
 import com.example.demo.service.thuong.ProductServiceTH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,7 +35,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
 
     @Override
-    public Product create(ProductRequestTH productRequest, String fullName) {
+    public Product create(ProductRequestTH productRequest, String fullName, Employee employee) {
         Product exProductByCode = productRepository.findByCode(productRequest.getCode());
         if (exProductByCode != null) {
             throw new DuplicateException("Trùng mã sản phẩm", "code");
@@ -88,7 +87,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
             }
             imageRepository.saveAll(images);
         }
-
+        addAuditlogs(employee.getCode(), employee.getFullName(), saveProduct.getName(), employee.getAccount().getRole().getId());
         return saveProduct;
     }
 
@@ -202,5 +201,22 @@ public class ProductServiceTHImpl implements ProductServiceTH {
     @Override
     public Product findById(Long id) {
         return productRepository.findById(id).orElse(null);
+    }
+
+//    tinh
+
+    @Autowired
+    AuditLogRepositoryTinh auditLogRepositoryTinh;
+
+    public AuditLogs addAuditlogs(String code, String fullName, String status, Long role){
+        AuditLogs auditLogs = new AuditLogs();
+
+        auditLogs.setEmpCode(code);
+        auditLogs.setImplementer(fullName);
+        auditLogs.setActionType("Thêm sản phẩm");
+        auditLogs.setDetailedAction(fullName + " Đã Thêm sản phẩm: " + status);
+        auditLogs.setTime(new Date());
+        auditLogs.setRole(role);
+        return auditLogRepositoryTinh.save(auditLogs);
     }
 }
