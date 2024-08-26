@@ -175,8 +175,8 @@ public class VNPayRestController {
                 bill.setStatus(1);
                 olBillUntility.newPaymentStatusAndBillHistory(bill,bill.getCustomer(),1,2,1);
 //                bill.setTransId(vnp_TransactionNo);
-                bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
-
+                bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
+                bill.setPaidShippingFee(bill.getShippingFee());
                 olBillService.save(bill);
 
                 response.sendRedirect(Config.fe_liveServer_Success);

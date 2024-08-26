@@ -221,8 +221,8 @@ public static String encodeId(long id) {
                             if (authenticationCheckMoMo(encodeId(bill.getId()))) {
                                 bill.setStatus(1);
                                  newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
-
-                                bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+                                bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
+                                bill.setPaidShippingFee((bill.getShippingFee()));
 
 
                                 olBillService.save(bill);
@@ -232,7 +232,8 @@ public static String encodeId(long id) {
                             if (authenticationCheckVnPay(encodeId(bill.getId()),req)) {
                                 bill.setStatus(1);
                                 newPaymentStatusAndBillHistory( bill, bill.getCustomer(),1,2,1);
-                                bill.setPaidAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
+                                bill.setPaidAmount(bill.getTotalAmountAfterDiscount());
+                                bill.setPaidShippingFee((bill.getShippingFee()));
 
 
 

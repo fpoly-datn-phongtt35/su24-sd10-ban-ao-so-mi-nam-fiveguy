@@ -8,6 +8,13 @@
   .checked {
     color: orange;
   }
+
+  .btn-equal-width {
+    width: 120px; /* Độ rộng cố định cho nút */
+    text-align: center; /* Căn giữa nội dung văn bản trong nút */
+    display: inline-block; /* Đảm bảo các nút hiển thị trong cùng một dòng */
+}
+
 </style>
 
 <link rel="stylesheet" href="/src/admin/pages/sale/sale.css">
@@ -68,7 +75,7 @@
     
                                 <th>Nội dung</th>
                                 <th>Ngày tạo</th>
-                                <th>Ngày sửa</th>
+                                <!-- <th>Ngày sửa</th> -->
                                 <th>Người duyệt</th>
                                 <th>Ngày duyệt</th>
                                 <!-- <th>Duyệt</th> -->
@@ -96,10 +103,10 @@
                                     </div>
                                 </td>
                                 <td>{{ rate.content }}</td>
-                                <td>{{ rate.createdAt | date:'dd/MM/yyyy' }}</td>
-                                <td>{{ rate.updatedAt | date:'dd/MM/yyyy' }}</td>
+                                <td>{{ rate.createdAt | date:'dd-MM-yyyy' }}</td>
+                                <!-- <td>{{ rate.updatedAt | date:'dd-MM-yyyy' }}</td> -->
                                 <td>{{ rate.reviewer }}</td>
-                                <td>{{ rate.reviewedAt }}</td>
+                                <td>{{ rate.reviewedAt | date:'dd-MM-yyyy' }}</td>
                                     <!-- <td ng-style="getApprovalStatusStyle(rate.approvalStatus)">
                                         <span ng-if="rate.approvalStatus == 1">Đã được duyệt</span>
                                         <span ng-if="rate.approvalStatus == 2">Chờ duyệt</span>
@@ -111,11 +118,12 @@
                                 </td>
                                 <td>
                                     <button ng-if="rate.approvalStatus == 3 || rate.approvalStatus == 2"
-                                            ng-click="updateRating(rate, 1)" class="btn btn-primary">Phê duyệt</button>
+                                            ng-click="updateRating(rate, 1)" class="btn btn-primary btn-equal-width">Phê duyệt</button>
                                     <button ng-if="rate.approvalStatus == 1 || rate.approvalStatus == 2"
-                                            ng-click="updateRating(rate, 3)" class="btn btn-danger">Từ chối</button>
+                                            ng-click="updateRating(rate, 3)" class="btn btn-danger btn-equal-width">Từ chối</button>
                                     <!-- <button ng-click="viewProduct(rate.billDetail.productDetail.product.id)" class="btn btn-outline-secondary">Sản phẩm</button> -->
                                 </td>
+                                
                                 
                                 
                                 

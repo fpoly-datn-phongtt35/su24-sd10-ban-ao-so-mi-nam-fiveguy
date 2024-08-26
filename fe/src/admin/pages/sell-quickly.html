@@ -827,6 +827,7 @@
                     <div class="voucher-left">
                       <h5>{{ voucher.code }}</h5>
                       <h5>{{ voucher.name }}</h5>
+                      <h5>{{ voucher.show }}</h5>
                       <p>Giảm {{ formatCurrency(voucher.value) }}{{ voucher.discountType === 2 ? ' đ' : ' %' }} cho đơn từ {{ formatCurrency(voucher.minimumTotalAmount)  }} đ
                         <br/>Tối đa {{ formatCurrency(voucher.maximumReductionValue)  }} đ
                       </p>
