@@ -911,7 +911,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     $scope.$watch('billDetails', function (newValue, oldValue) {
         if (newValue != oldValue) {
-            $scope.errorQuantity = false;
+            // $scope.errorQuantity = false;
             $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
                 if (response.data == 1) {
                     $scope.errorQuantity = true;

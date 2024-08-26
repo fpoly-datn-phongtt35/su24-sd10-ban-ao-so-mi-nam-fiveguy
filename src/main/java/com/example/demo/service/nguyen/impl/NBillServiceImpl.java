@@ -578,7 +578,7 @@ public class NBillServiceImpl implements NBillService {
         if (voucher.getApplyfor() != 0 && voucher.getNumberOfUses() != null && customer != null) {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-                            List.of(5, 6, 1));  // Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+                            List.of(5, 6, 1, 20, 100));  // Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
 
             // Kiểm tra nếu voucher đang được sử dụng trong bill hiện tại
             boolean isCurrentBillUsingVoucher =
