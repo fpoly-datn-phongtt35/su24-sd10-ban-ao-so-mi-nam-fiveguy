@@ -18,13 +18,13 @@ public class BrandControllerTH {
     @GetMapping
     public ResponseEntity<?> getBrands(@RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "5") int size,
-                                           @RequestParam(required = false) String keyword,
+                                           @RequestParam(required = false) String name,
                                            @RequestParam String sortField,
                                            @RequestParam String sortDirection,
                                             @RequestParam(required = false) Integer status
     ) {
 
-        return ResponseEntity.ok(brandServiceTH.getBrands(page, size, keyword, sortField, sortDirection, status));
+        return ResponseEntity.ok(brandServiceTH.getBrands(page, size, name, sortField, sortDirection, status));
     }
 
     @GetMapping("/all")
