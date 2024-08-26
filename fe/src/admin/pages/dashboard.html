@@ -282,7 +282,7 @@
                         <table class="table">
                             <thead class="heading-table">
                                 <tr>
-                                    <th>STT</th>
+                                    
                                     <th>Tên khách hàng</th>
                                     <th>Số lượng sản phẩm</th>
                                     <th>Số lượng hóa đơn</th>
@@ -291,7 +291,6 @@
                             </thead>
                             <tbody class="tbody-table">
                                 <tr ng-repeat="khachHangMuaNhieuNhat in khachHangMuaNhieuNhat">
-                                    <td class="text-center">{{($index + 1) + (currentPage3 * size3)}}</td>
                                     <td class="text-left">{{khachHangMuaNhieuNhat.tenKhachHang}}</td>
                                     <td class="text-left">{{khachHangMuaNhieuNhat.tongSoLuongMua}}</td>
                                     <td class="text-center">{{khachHangMuaNhieuNhat.tongSoBill}}</td>
