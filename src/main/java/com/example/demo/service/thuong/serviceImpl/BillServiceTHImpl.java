@@ -41,10 +41,9 @@ public class BillServiceTHImpl implements BillServiceTH {
     @Autowired
     private VoucherRepositoryTH voucherRepository;
 
-    LocalDate localDate = LocalDate.of(2024, 8, 10);
 
     // Converting LocalDate to Date
-    Date dateTEst = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    Date dateTEst = new Date();
 
     private static final Random random = new Random();
     private static final String PREFIX = "TT";

@@ -179,7 +179,6 @@ public class ProductServiceTHImpl implements ProductServiceTH {
         } else {
             sort = sort.ascending();
         }
-        System.out.println(sort);
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
