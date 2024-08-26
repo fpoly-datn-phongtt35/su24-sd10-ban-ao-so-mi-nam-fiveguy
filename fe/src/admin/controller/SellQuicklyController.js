@@ -595,12 +595,13 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $scope.selectedBill.customer = customer;
         try {
             $scope.updateBill();
+            // $scope.clearDataAndAddAddress();
+            
         } catch (error) {
             console.log("Error:", error);
         } finally {
             hiddenElementCustomer.style.display = 'none';
-            $scope.clearDataAndAddAddress();
-            $scope.showAddress($scope.selectedBill);
+            $scope.getAddressCustomer();
         }
        
     }
@@ -724,11 +725,12 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         $scope.getDefaultAddress(bill.customer.id)
             .then(() => {
                 if ($scope.defaultAddressCustomer?.address) {
+                        console.log($scope.defaultAddressCustomer);
                     // Update bill with the default address
                     Object.assign(bill, {
                         address: $scope.defaultAddressCustomer.address,
                         phoneNumber: $scope.defaultAddressCustomer.phoneNumber,
-                        reciverName: bill.fullName,
+                        reciverName: $scope.defaultAddressCustomer.customer.fullName,
                         addressDetail: $scope.defaultAddressCustomer.name,
                         addressId: $scope.defaultAddressCustomer.addressId
                     });
@@ -941,15 +943,17 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
       }
 
       $scope.selectBestVoucher = function() {
+
+      console.log("validVouchers")
+
         if (!$scope.customerVouchers || $scope.customerVouchers.length === 0) {
           return;
         }   
         
         // Bước 1: Lọc danh sách voucher còn số lượng và đủ điều kiện áp dụng
         var validVouchers = $scope.customerVouchers.filter(function(voucher) {
-          return voucher.quantity > 0 && $scope.selectedBill.totalAmount >= voucher.minimumTotalAmount && voucher.show == 1;
+          return voucher.quantity > 0  && $scope.selectedBill.totalAmount >= voucher.minimumTotalAmount && voucher.show == 1;
         });
-      
       
         if (validVouchers.length === 0) {
           if ($scope.selectedVoucher) {
@@ -1368,19 +1372,19 @@ $scope.clearDataAndAddAddress = () => {
 
 };
 
-$scope.getDefaultAddress = function(customerId) {
-    return $http.get('http://localhost:8080/api/admin/address-th/default/' + customerId)
-    .then(function(response) {
-        // Xử lý kết quả thành công
-        $scope.defaultAddressCustomer = response.data;
-        return $scope.defaultAddressCustomer;
-    })
-    .catch(function(error) {
-        // Xử lý lỗi
-        console.error("Error fetching default address:", error);
-        throw error; // Đảm bảo lỗi được ném ra ngoài để Promise bị từ chối
-    });
-};
+    $scope.getDefaultAddress = function(customerId) {
+        return $http.get('http://localhost:8080/api/admin/address-th/default/' + customerId)
+        .then(function(response) {
+            // Xử lý kết quả thành công
+            $scope.defaultAddressCustomer = response.data;
+            return $scope.defaultAddressCustomer;
+        })
+        .catch(function(error) {
+            // Xử lý lỗi
+            console.error("Error fetching default address:", error);
+            throw error; // Đảm bảo lỗi được ném ra ngoài để Promise bị từ chối
+        });
+    };
 
 
 
@@ -1394,13 +1398,12 @@ $scope.loadAddressForBill = function(bill) {
                 $scope.getDefaultAddress(bill.customer.id).then(function() {
                     // Sau khi lấy được địa chỉ mặc định, kiểm tra xem có địa chỉ không
                     if ($scope.defaultAddressCustomer && $scope.defaultAddressCustomer.address) {
-                        // Cập nhật bill với địa chỉ mặc định
+
                         bill.address = $scope.defaultAddressCustomer.address;
                         bill.phoneNumber = $scope.defaultAddressCustomer.phoneNumber;
                         bill.reciverName = bill.customer.fullName;
                         bill.addressDetail = $scope.defaultAddressCustomer.name;
                         bill.addressId = $scope.defaultAddressCustomer.addressId;
-
                     
                     }
                     resolve(bill);

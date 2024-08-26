@@ -51,6 +51,9 @@ public class VoucherServiceTHImpl implements VoucherServiceTH {
 
 
     public  Integer checkNumberOfUser(Customer customer,Voucher voucher){
+        if (voucher.getApplyfor() == 1){
+            return 1;
+        }
         Integer countUse = billRepository.countVoucherUsageByCustomer(customer.getId(),voucher.getId());
 //        System.out.println(countUse);
 //        System.out.println(voucher.getNumberOfUses());

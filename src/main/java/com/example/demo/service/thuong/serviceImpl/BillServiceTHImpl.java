@@ -350,6 +350,11 @@ public class BillServiceTHImpl implements BillServiceTH {
         // Set the status based on the type of bill
         int newStatus = (billRequest.getTypeBill() == 1) ? 21 : (billRequest.getTypeBill() == 2) ? 1 : bill.getStatus();
         bill.setStatus(newStatus);
+        bill.setCreatedAt(new Date());
+
+        if (billRequest.getTypeBill() == 1){
+            bill.setDeliveryDate(new Date());
+        }
 
 // Update voucher if provided
         if (billRequest.getVoucher() != null) {
@@ -400,7 +405,7 @@ public class BillServiceTHImpl implements BillServiceTH {
             paymentStatus.setBill(savedBill);
             paymentStatus.setCustomerPaymentStatus(2);
             paymentStatus.setPaymentType(1);
-
+            paymentStatus.setPaymentDate(new Date());
             paymentStatus.setPaymentAmount(savedBill.getTotalAmountAfterDiscount().add(
                     savedBill.getShippingFee() != null ? savedBill.getShippingFee() : BigDecimal.valueOf(0)
             ));
