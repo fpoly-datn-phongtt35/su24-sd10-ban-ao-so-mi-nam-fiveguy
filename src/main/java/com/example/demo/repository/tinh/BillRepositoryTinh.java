@@ -228,14 +228,34 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
 
 
     //Tổng số dơn  Huy
-    @Query("select b from Bill b JOIN b.billHistories ps where CAST(ps.createdAt AS DATE) = CAST(:day AS DATE) and b.status= 5 or CAST(ps.createdAt AS DATE) = CAST(:day AS DATE) and b.status= 6")
-    List<Bill> tongBillHuyDay(Date day);
-    @Query("SELECT b FROM Bill b JOIN b.billHistories ps WHERE DATEPART(YEAR, ps.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.createdAt) = DATEPART(WEEK, :date) AND b.status=5 or DATEPART(YEAR, ps.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.createdAt) = DATEPART(WEEK, :date) and b.status=6")
-    List<Bill> tongBillHuyWeek(Date date);
-    @Query("select b from Bill b JOIN b.billHistories ps where DATEPART(MONTH, ps.createdAt) =  Month(:date) and DATEPART(YEAR, ps.createdAt) = YEAR(:date) and b.status=5 or DATEPART(MONTH, ps.createdAt) =  Month(:date) and DATEPART(YEAR, ps.createdAt) = YEAR(:date) and b.status=6")
-    List<Bill> tongBillHuyMonth(Date date);
-    @Query("select b from Bill b JOIN b.billHistories ps where DATEPART(YEAR, ps.createdAt) = YEAR(:date) and b.status=5 or DATEPART(YEAR, ps.createdAt) = YEAR(:date) and b.status=6")
-    List<Bill> tongBillHuyYear(Date date);
+//    @Query("select b from Bill b JOIN b.billHistories ps where CAST(ps.createdAt AS DATE) = CAST(:day AS DATE) and b.status= 5 or CAST(ps.createdAt AS DATE) = CAST(:day AS DATE) and b.status= 6")
+//    List<Bill> tongBillHuyDay(Date day);
+//    @Query("SELECT b FROM Bill b JOIN b.billHistories ps WHERE DATEPART(YEAR, ps.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.createdAt) = DATEPART(WEEK, :date) AND b.status=5 or DATEPART(YEAR, ps.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.createdAt) = DATEPART(WEEK, :date) and b.status=6")
+//    List<Bill> tongBillHuyWeek(Date date);
+//    @Query("select b from Bill b JOIN b.billHistories ps where DATEPART(MONTH, ps.createdAt) =  Month(:date) and DATEPART(YEAR, ps.createdAt) = YEAR(:date) and b.status=5 or DATEPART(MONTH, ps.createdAt) =  Month(:date) and DATEPART(YEAR, ps.createdAt) = YEAR(:date) and b.status=6")
+//    List<Bill> tongBillHuyMonth(Date date);
+//    @Query("select b from Bill b JOIN b.billHistories ps where DATEPART(YEAR, ps.createdAt) = YEAR(:date) and b.status=5 or DATEPART(YEAR, ps.createdAt) = YEAR(:date) and b.status=6")
+//    List<Bill> tongBillHuyYear(Date date);
+
+    // Count the number of distinct bills for the current day
+    @Query("SELECT COUNT(DISTINCT b) FROM Bill b WHERE CAST(b.createdAt AS DATE) = CAST(:date AS DATE) AND (b.status = 5 OR b.status = 6)")
+    Long tongBillHuyDay(@Param("date") Date date);
+
+    // Count the number of distinct bills for the current week
+    @Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billHistories ps WHERE DATEPART(YEAR, ps.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.createdAt) = DATEPART(WEEK, :date) AND (b.status = 5 OR b.status = 6)")
+    Long tongBillHuyWeek(@Param("date") Date date);
+
+    // Count the number of distinct bills for the current month
+    @Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billHistories ps WHERE DATEPART(MONTH, ps.createdAt) = MONTH(:date) AND DATEPART(YEAR, ps.createdAt) = YEAR(:date) AND (b.status = 5 OR b.status = 6)")
+    Long tongBillHuyMonth(@Param("date") Date date);
+
+    // Count the number of distinct bills for the current year
+    @Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billHistories ps WHERE DATEPART(YEAR, ps.createdAt) = DATEPART(YEAR, :date) AND (b.status = 5 OR b.status = 6)")
+    Long tongBillHuyYear(@Param("date") Date date);
+
+
+
+
     @Query("SELECT b FROM Bill b " +
             "JOIN b.billHistories ps " +
             "WHERE ps.createdAt BETWEEN :startDate AND :endDate " +
