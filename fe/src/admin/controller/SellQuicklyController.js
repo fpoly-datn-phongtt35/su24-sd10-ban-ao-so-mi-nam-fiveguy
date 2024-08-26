@@ -944,7 +944,6 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
 
       $scope.selectBestVoucher = function() {
 
-      console.log("validVouchers")
 
         if (!$scope.customerVouchers || $scope.customerVouchers.length === 0) {
           return;
@@ -1145,10 +1144,11 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
                 }else{
                     
                     for (let i = 0; i < $scope.customerVouchers.length; i++) {
-                        if ($scope.customerVouchers[i].id === $scope.selectedBill.voucher.id) {
+                        if ($scope.customerVouchers[i].id === $scope.selectedBill.voucher.id && $scope.customerVouchers[i].show == 1) {
                               $scope.customerVouchers[i].selected = true;
 
                               $scope.selectedVoucher = $scope.customerVouchers[i];
+                              console.log($scope.selectedVoucher)
                             break; // Exit the loop once the voucher is found
                         }
                     }

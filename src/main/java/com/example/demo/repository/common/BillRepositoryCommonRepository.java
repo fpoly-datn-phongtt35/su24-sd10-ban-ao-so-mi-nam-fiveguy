@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BillRepositoryCommonRepository extends JpaRepository<Bill, Long> {
 
-    @Query("SELECT COUNT(b) FROM Bill b WHERE b.customer.id = :customerId AND b.voucher.id = :voucherId AND b.status NOT IN (5, 6,1)")
+    @Query("SELECT COUNT(b) FROM Bill b WHERE b.customer.id = :customerId AND b.voucher.id = :voucherId AND b.status NOT IN (5, 6,20,100)")
     Integer countVoucherUsageByCustomer(@Param("customerId") Long customerId, @Param("voucherId") Long voucherId);
 
 }
