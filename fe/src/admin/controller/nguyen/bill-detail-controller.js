@@ -1480,7 +1480,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
           <body>
             <header class="clearfix">
             <div id="logo">
-            <img src="https://res.cloudinary.com/dvtz5mjdb/image/upload/v1701333412/image/h1vzhjzyuuwhrhak1bcr.png">
+            <img src="common/img/logo-shirt.png">
             </div>
             <h1>HÓA ĐƠN</h1>
             <div class="container">
