@@ -106,20 +106,20 @@ public class BillRestControllerTinh {
 
     //Tỏng dơne hàng Huy ====================================================================
     @GetMapping("/tong-hoa-don-huy-ngay/{sl}")
-    public int sumBillHuyDay(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
-        return billRepositoryTinh.tongBillHuyDay(sl).size();
+    public Long sumBillHuyDay(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillHuyDay(sl);
     }
     @GetMapping("/tong-hoa-don-huy-tuan/{sl}")
-    public int sumBillHuyWeed(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
-        return billRepositoryTinh.tongBillHuyWeek(sl).size();
+    public Long sumBillHuyWeed(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillHuyWeek(sl);
     }
     @GetMapping("/tong-hoa-don-huy-thang/{sl}")
-    public int sumBillHuyMonth(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
-        return billRepositoryTinh.tongBillHuyMonth(sl).size();
+    public Long sumBillHuyMonth(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillHuyMonth(sl);
     }
     @GetMapping("/tong-hoa-don-huy-nam/{sl}")
-    public int sumBillHuyYear(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
-        return billRepositoryTinh.tongBillHuyYear(sl).size();
+    public Long sumBillHuyYear(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date sl) {
+        return billRepositoryTinh.tongBillHuyYear(sl);
     }
     @GetMapping("/tong-hoa-don-huy-tuy-chinh")
     public int getCancelledBillsBetweenDates(

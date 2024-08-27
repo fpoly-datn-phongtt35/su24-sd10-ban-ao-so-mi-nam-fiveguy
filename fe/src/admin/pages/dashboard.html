@@ -212,7 +212,7 @@
                                     <td class="text-left">{{sanPhamBanChay.ten_sanpham}}</td>
                                     <td class="text-center">{{sanPhamBanChay.so_luong_ban}}</td>
                                     <td class="text-right">
-                                        {{formatCurrency(sanPhamBanChay.price) }}
+                                        {{formatCurrency(sanPhamBanChay.price) }}d
                                     </td>
                                     <!-- <td scope="col-2" class="css-text-overfolow-acction">
                                         <button class="button-submit action-btn" data-bs-toggle="modal"
@@ -282,7 +282,7 @@
                         <table class="table">
                             <thead class="heading-table">
                                 <tr>
-                                    <th>STT</th>
+                                    
                                     <th>Tên khách hàng</th>
                                     <th>Số lượng sản phẩm</th>
                                     <th>Số lượng hóa đơn</th>
@@ -291,7 +291,6 @@
                             </thead>
                             <tbody class="tbody-table">
                                 <tr ng-repeat="khachHangMuaNhieuNhat in khachHangMuaNhieuNhat">
-                                    <td class="text-center">{{($index + 1) + (currentPage3 * size3)}}</td>
                                     <td class="text-left">{{khachHangMuaNhieuNhat.tenKhachHang}}</td>
                                     <td class="text-left">{{khachHangMuaNhieuNhat.tongSoLuongMua}}</td>
                                     <td class="text-center">{{khachHangMuaNhieuNhat.tongSoBill}}</td>
@@ -470,14 +469,12 @@
                                 <div ng-if="tongDoanhThuNgay >= tongDoanhThuNgayTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up
-                                    </span>{{((tongDoanhThuNgayTruoc === 0 ? 0 :
-                                    (tongDoanhThuNgay/tongDoanhThuNgayTruoc)*100) | number:2) || 0}} %
+                                    </span>
                                 </div>
                                 <div ng-if="tongDoanhThuNgay < tongDoanhThuNgayTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down
-                                    </span>{{((tongDoanhThuNgayTruoc === 0 ? 0 :
-                                    (tongDoanhThuNgay/tongDoanhThuNgayTruoc)*100) | number:2) || 0}} %
+                                    </span>
                                 </div>
                             </li>
                         </ul>
@@ -492,14 +489,12 @@
                                 <div ng-if="tongDoanhThuThang >= tongDoanhThuThangTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up
-                                    </span>{{((tongDoanhThuThangTruoc === 0 ? 0 :
-                                    (tongDoanhThuThang/tongDoanhThuThangTruoc)*100) | number:2) || 0}} %
+                                    </span>
                                 </div>
                                 <div ng-if="tongDoanhThuThang < tongDoanhThuThangTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down
-                                    </span>{{((tongDoanhThuThangTruoc === 0 ? 0 :
-                                    (tongDoanhThuThang/tongDoanhThuThangTruoc)*100) | number:2) || 0}} %
+                                    </span>
                                 </div>
                             </li>
                         </ul>
@@ -514,12 +509,12 @@
                                 <div ng-if="tongDoanhThuNam >= tongDoanhThuNamTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up
-                                    </span>{{((tongDoanhThuNamTruoc === 0 ? 0 : (tongDoanhThuNam/tongDoanhThuNamTruoc)*100 ) | number:2) || 0}} %
+                                    </span>
                                 </div>
                                 <div ng-if="tongDoanhThuNam < tongDoanhThuNamTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down
-                                    </span>{{((tongDoanhThuNamTruoc === 0 ? 0 : (tongDoanhThuNam/tongDoanhThuNamTruoc)*100 ) | number:2) || 0}} %
+                                    </span>
                                 </div>
                             </li>
 
@@ -536,14 +531,12 @@
                                 <div ng-if="tongDonHangNgay >= tongDonHangNgayTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up
-                                    </span>{{((tongDonHangNgayTruoc === 0 ? 0 :
-                                    (tongDonHangNgay/tongDonHangNgayTruoc)*100 ) | number:2) || 0}} %
+                                    </span>
                                 </div>
                                 <div ng-if="tongDonHangNgay < tongDonHangNgayTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down
-                                    </span>{{((tongDonHangNgayTruoc === 0 ? 0 :
-                                    (tongDonHangNgay/tongDonHangNgayTruoc)*100 ) | number:2) || 0}} %
+                                    </span>
                                 </div>
                             </li>
                         </ul>
@@ -558,14 +551,12 @@
                                 <div ng-if="tongDonHangThang >= tongDonHangThangTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up
-                                    </span>{{((tongDonHangThangTruoc === 0 ? 0
-                                    :(tongDonHangThang/tongDonHangThangTruoc)*100 )| number:2) || 0}} %
+                                    </span>
                                 </div>
                                 <div ng-if="tongDonHangThang < tongDonHangThangTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down
-                                    </span>{{((tongDonHangThangTruoc === 0 ? 0
-                                    :(tongDonHangThang/tongDonHangThangTruoc)*100 )| number:2) || 0}} %
+                                    </span>
                                 </div>
                             </li>
                         </ul>
@@ -580,14 +571,12 @@
                                 <div ng-if="tongDonHangNam >= tongDonHangNamTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up
-                                    </span>{{((tongDonHangNamTruoc === 0 ? 0 : (tongDonHangNam/tongDonHangNamTruoc)*100 )
-                                    | number:2) || 0}} %
+                                    </span>
                                 </div>
                                 <div ng-if="tongDonHangNam < tongDonHangNamTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down
-                                    </span>{{((tongDonHangNamTruoc === 0 ? 0 : (tongDonHangNam/tongDonHangNamTruoc)*100 )
-                                    | number:2) || 0}} %
+                                    </span>
                                 </div>
                             </li>
                         </ul>
@@ -603,14 +592,12 @@
                                 <div ng-if="tongSanPhamNgay >= tongSanPhamNgayTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up
-                                    </span>{{((tongSanPhamNgayTruoc === 0 ? 0 :(tongSanPhamNgay/tongSanPhamNgayTruoc)*100
-                                    )|number:2) || 0}} %
+                                    </span>
                                 </div>
                                 <div ng-if="tongSanPhamNgay < tongSanPhamNgayTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down
-                                    </span>{{((tongSanPhamNgayTruoc === 0 ? 0 :(tongSanPhamNgay/tongSanPhamNgayTruoc)*100
-                                    )|number:2) || 0}} %
+                                    </span>
                                 </div>
                             </li>
                         </ul>
@@ -625,16 +612,12 @@
                                 <div ng-if="tongSanPhamThang >= tongSanPhamThangTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up
-                                    </span>{{((tongSanPhamThangTruoc ===0 ? 0
-                                    :(tongSanPhamThang/tongSanPhamThangTruoc)*100) |
-                                    number:2) || 0}} %
+                                    </span>
                                 </div>
                                 <div ng-if="tongSanPhamThang < tongSanPhamThangTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down
-                                    </span>{{((tongSanPhamThangTruoc ===0 ? 0
-                                    :(tongSanPhamThang/tongSanPhamThangTruoc)*100) |
-                                    number:2) || 0}} %
+                                    </span>
                                 </div>
                             </li>
                         </ul>
@@ -649,14 +632,11 @@
                                 <div ng-if="tongSanPhamNam >= tongSanPhamNamTruoc"
                                     class="d-flex align-items-center gap-2 color-blue">
                                     <span class="material-icons"> trending_up </span>
-                                    {{ ((tongSanPhamNamTruoc === 0 ? 0 : (tongSanPhamNam / tongSanPhamNamTruoc) * 100) |
-                                    number:2) || 0 }} %
                                 </div>
                                 <div ng-if="tongSanPhamNam < tongSanPhamNamTruoc"
                                     class="d-flex align-items-center gap-2 color-red">
                                     <span class="material-icons"> trending_down </span>
-                                    {{ ((tongSanPhamNamTruoc === 0 ? 0 : (tongSanPhamNam / tongSanPhamNamTruoc) * 100) |
-                                    number:2) || 0 }} %
+
                                 </div>
                             </li>
 

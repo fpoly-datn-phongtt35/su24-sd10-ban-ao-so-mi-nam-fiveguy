@@ -365,7 +365,7 @@
                                             </div>
                                         </div>
                                        </div>
-                                       <button ng-click="paymentBill()" type="button" class="btn btn-primary mx-2" ng-class="{'disabled' : !selectedBill}">Thanh toán</button>
+                                       <button ng-click="paymentBill()" type="button" class="btn btn-primary mx-2" ng-class="{'disabled' : !selectedBill}">{{selectedBill.typeBill === 2 ? 'Giao hàng' : 'Thanh toán'}}</button>
                                     </div>
                                 </div>
                             </div>

@@ -1,9 +1,6 @@
 package com.example.demo.service.thuong.serviceImpl;
 
-import com.example.demo.entity.Customer;
-import com.example.demo.entity.CustomerType;
-import com.example.demo.entity.CustomerTypeVoucher;
-import com.example.demo.entity.Voucher;
+import com.example.demo.entity.*;
 import com.example.demo.model.response.thuong.VoucherResponseTH;
 import com.example.demo.repository.thuong.BillRepositoryTH;
 import com.example.demo.repository.thuong.CustomerRepositoryTH;
@@ -36,27 +33,31 @@ public class VoucherServiceTHImpl implements VoucherServiceTH {
     private BillRepositoryTH billRepository;
 
     public List<Voucher> getVouchersForCustomer(Customer customer) {
-        List<Voucher> applicableVouchers = new ArrayList<>();
+        if (customer.getCustomerType() == null) {
+
+            return new ArrayList<>();
+        }
+
         List<CustomerTypeVoucher> customerTypeVouchers = customerTypeVouchersRepository
                 .findByCustomerTypeId(customer.getCustomerType().getId());
-        applicableVouchers = customerTypeVouchers.stream()
+        List<Voucher> filteredVouchers = customerTypeVouchers.stream()
                 .map(CustomerTypeVoucher::getVoucher)
                 .filter(voucher -> voucher.getApplyfor() == 1 && voucher.getStatus() == 1)
                 .collect(Collectors.toList());
 
-        return applicableVouchers;
+        return filteredVouchers;
     }
 
 
 
 
+
+
     public  Integer checkNumberOfUser(Customer customer,Voucher voucher){
-        if (voucher.getApplyfor() == 1){
+        if (voucher.getApplyfor() == 0){
             return 1;
         }
         Integer countUse = billRepository.countVoucherUsageByCustomer(customer.getId(),voucher.getId());
-//        System.out.println(countUse);
-//        System.out.println(voucher.getNumberOfUses());
         if (countUse >= voucher.getNumberOfUses()){
             return 2;
         }
@@ -82,15 +83,17 @@ public class VoucherServiceTHImpl implements VoucherServiceTH {
                 // Lấy các voucher từ CustomerType nếu customerType không null
                 if (customerType != null && customerType.getId() != null) {
                     combinedVouchers.addAll(getVouchersForCustomer(customer));
+
                 }
 
                 // Lấy thêm các voucher có trạng thái 1 và áp dụng cho tất cả
                 combinedVouchers.addAll(voucherCommonRepository.findAllByStatus1AndApplyFor());
+
             }
         }
 
+
         // Loại bỏ các voucher trùng lặp
-        combinedVouchers = combinedVouchers.stream().distinct().collect(Collectors.toList());
 
         // Filter by voucher name or code
         if (search != null && !search.isEmpty()) {
@@ -120,7 +123,6 @@ public class VoucherServiceTHImpl implements VoucherServiceTH {
                         (id == null) ? 1 : checkNumberOfUser(finalCustomerOpt.get(), voucher) // Mặc định là 1 nếu id là null
                 ))
                 .collect(Collectors.toList());
-
         return voucherDTOs;
     }
 }

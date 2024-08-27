@@ -1,7 +1,9 @@
 package com.example.demo.restController.thuong;
 
+import com.example.demo.entity.Employee;
 import com.example.demo.model.request.thuong.ProductRequestTH;
 import com.example.demo.security.service.SCAccountService;
+import com.example.demo.security.service.SCEmployeeService;
 import com.example.demo.service.thuong.ProductServiceTH;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class ProductControllerTH {
     @Autowired
     private SCAccountService accountService;
 
+    @Autowired
+    private SCEmployeeService scEmployeeService;
+
     @GetMapping
     public ResponseEntity<?> getProducts(@RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "5") int size,
@@ -45,7 +50,8 @@ public class ProductControllerTH {
     @PostMapping
     public ResponseEntity<?> createProduct(@Valid @RequestBody ProductRequestTH productRequestTH, @RequestHeader("Authorization") String token) {
         Optional<String> fullName = accountService.getFullNameByToken(token);
-        return new ResponseEntity<>(productService.create(productRequestTH, fullName.get()), HttpStatus.CREATED);
+        Optional<Employee> employee = scEmployeeService.getEmployeeByToken(token);
+        return new ResponseEntity<>(productService.create(productRequestTH, fullName.get(), employee.get()), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
