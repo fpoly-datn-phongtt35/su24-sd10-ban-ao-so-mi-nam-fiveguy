@@ -1673,7 +1673,7 @@ border-top: 1px solid  #5D6975;
           <body>
             <header class="clearfix">
             <div id="logo">
-            <img src="https://res.cloudinary.com/dvtz5mjdb/image/upload/v1701333412/image/h1vzhjzyuuwhrhak1bcr.png">
+            <img src="common/img/logo-shirt.png">
             </div>
             <h1>HÓA ĐƠN THANH TOÁN</h1>
             <div class="container">
