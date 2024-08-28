@@ -112,6 +112,7 @@ public class SCSCUserServiceImpl implements SCUserService {
         } else {
             String otp = helper.generateOTP(); // Tạo mã OTP
             user.setPassword(bcryptEncoder.encode(user.getPassword()));
+            user.setStatus(1);
             Account savedUser = mapper.map(user, Account.class);
 
             Optional<Role> roles = SCRoleService.findByFullNameAndStatus("CUSTOMER",1);
