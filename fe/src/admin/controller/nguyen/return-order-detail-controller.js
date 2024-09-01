@@ -49,7 +49,6 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
         });
     };
     $scope.findById($scope.idBill);
-
     $scope.validateQuantity = function (bdIn) {
         if (bdIn.inputQuantity >=
             bdIn.quantity) {
@@ -57,53 +56,129 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
         }
     };
 
-    $scope.addReturnOrder = function (billDetail) {
-        if (billDetail.isChecked) {
-            const returnOrder = {
-                bill: $scope.bill,
-                billDetail: billDetail,
-                type: 1,
-                quantity: billDetail.inputQuantity,
-                returnStatus: 2
-            };
-            $scope.returnOrders.push(returnOrder);
+    $scope.isProductInReturnList = function (billDetail) {
+        return $scope.returnOrders.some(ro => ro.billDetail.id === billDetail.id);
+    };
+    $scope.addReturnOrder = function (billDetail, quantity = 1, skipPromotionCheck = false) {
+        if (!skipPromotionCheck && billDetail.promotionalPrice != billDetail.price) {
+            $scope.showWarning("Không thể trả hàng cho sản phẩm có giá khuyến mãi");
+            return false;
+        }
 
-            // $scope.returnOrders.forEach(function(ro){
-            //     if(returnOrder.billDetail.id == ro.billDetail.id){
-            //         ro.quantity = ro.quantity + returnOrder.quantity
-            //     }else{
-            //         $scope.returnOrders.push(returnOrder);
-            //     }
-            // })
-        } else {
-            const index = $scope.returnOrders.findIndex(ro => ro.billDetail.id === billDetail.id);
-            if (index !== -1) {
-                $scope.returnOrders.splice(index, 1);
+        if ($scope.isProductInReturnList(billDetail)) {
+            $scope.showWarning("Sản phẩm đã được thêm vào danh sách trả hàng");
+            return false;
+        }
+
+        let refundPrice = (billDetail.promotionalPrice * (1 - $scope.billDetailSummary.tiLeGiam))
+
+        const returnOrder = {
+            bill: $scope.bill,
+            billDetail: billDetail,
+            type: 1,
+            quantity: quantity,
+            defectiveQuantity: 0,
+            refundPrice: refundPrice,
+            returnReason: 'Khách muốn trả hàng', // default reason
+            returnStatus: 2,
+            otherReason: ''
+        };
+
+        $scope.updateDefectiveQuantity(returnOrder);
+        $scope.returnOrders.push(returnOrder);
+
+        if (!skipPromotionCheck) {
+            $scope.showSuccess("Đã thêm sản phẩm vào danh sách trả hàng");
+        }
+        return true;
+    };
+
+    // $scope.updateReturnReason = function(ro) {
+    //     if (ro.returnReason === 'Lý do khác') {
+    //         ro.note = ro.otherReason || ''; // Use custom reason if provided
+    //     } else {
+    //         ro.note = ro.returnReason; // Use selected reason directly
+    //     }
+    // };
+
+    // $scope.updateOtherReason = function(ro) {
+    //     if (ro.returnReason === 'Lý do khác') {
+    //         ro.note = ro.otherReason; // Update note with the custom reason
+    //     }
+    // };
+
+    $scope.addAllReturnableProducts = function () {
+        let addedCount = 0;
+        $scope.billDetails.forEach(function (bd) {
+            if (bd.promotionalPrice === bd.price && !$scope.isProductInReturnList(bd)) {
+                const success = $scope.addReturnOrder(bd, bd.quantity, true);
+                if (success) {
+                    addedCount++;
+                }
             }
+        });
+        if (addedCount > 0) {
+            $scope.showSuccess(`Đã thêm ${addedCount} sản phẩm vào danh sách trả hàng`);
+        } else {
+            $scope.showWarning("Không có sản phẩm nào có thể thêm vào danh sách trả hàng");
         }
     };
 
-    $scope.changeQuantity = function (billDetail, updateQuantity) {
-        $scope.returnOrders.forEach(function (ro) {
-            if (ro.billDetail.id == billDetail.id && ro.quantity !== updateQuantity) {
-                ro.quantity = updateQuantity
-                $scope.showSuccess("Chỉnh sửa số lượng thành công")
-            }
-        })
-    }
+    $scope.addSingleProductReturn = function (billDetail) {
+        $scope.addReturnOrder(billDetail, 1);
+    };
 
+    $scope.validateQuantity = function (ro) {
+        if (ro.quantity > ro.billDetail.quantity) {
+            ro.quantity = ro.billDetail.quantity;
+        }
+
+        if (ro.quantity < 1) {
+            ro.quantity = 1;
+        }
+
+        $scope.updateDefectiveQuantity(ro);
+    };
+
+    $scope.removeReturnOrder = function (returnOrder) {
+        const index = $scope.returnOrders.indexOf(returnOrder);
+        if (index !== -1) {
+            $scope.returnOrders.splice(index, 1);
+            $scope.showSuccess("Đã xóa sản phẩm khỏi danh sách trả hàng");
+        }
+    };
+
+    $scope.updateDefectiveQuantity = function (ro) {
+        ro.defectiveQuantity = ro.returnReason == 'Lỗi do sản xuất' ? ro.quantity : 0;
+    };
+
+    $scope.updateReturnReason = function (ro) {
+        $scope.updateDefectiveQuantity(ro);
+    };
 
     $scope.confirmReturn = function () {
 
+        // Loop through each return order
+        // $scope.returnOrders.forEach(function (returnOrder) {
+        //     // Check if the reason is "Lý do khác"
+        //     if (returnOrder.returnReason == "Lý do khác") {
+        //         // Prepend "Lý do khác: " to otherReason
+        //         returnOrder.returnReason = "Lý do khác: " + returnOrder.otherReason;
+        //     }
+        // });
+
+        // Send the updated returnOrders to the server
         $http.post($scope.apiReturnOrder + "/addReturnOrder", $scope.returnOrders).then(function (response) {
             console.log(response);
-
+            $('#confirmReturnModal').modal('hide');
             $location.path('/admin/bill/' + $scope.bill.id);
         }).catch(function (error) {
             console.error("Error:", error);
         });
     };
+    
     $scope.returnOrdersSummary.tongTienTra = 0;
+
 
     $scope.calculateSummary = function () {
         $http.put($scope.apiReturnOrder + "/" + $scope.idBill + "/calculateSummary", $scope.returnOrders).then(function (response) {
@@ -117,6 +192,7 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
     $scope.$watch('returnOrders', function (newValue, oldValue) {
         if (newValue !== oldValue) {
             $scope.calculateSummary()
+            console.log($scope.returnOrders);
         }
     }, true);
 
@@ -136,7 +212,7 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
     }, true);
 
 
-    
+
     $scope.formatInput = function (input) {
         // Lấy giá trị hiện tại của input, chỉ giữ lại số nguyên
         let value = input.value.replace(/\D/g, '');

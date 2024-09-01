@@ -387,9 +387,13 @@ public class NBillServiceImpl implements NBillService {
         for (ReturnOrder returnOrder : returnOrders) {
             BillDetail billDetail = returnOrder.getBillDetail();
             ProductDetail productDetail = billDetail.getProductDetail();
-            productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
-            productDetail.setUpdatedAt(new Date());
-            productDetailRepository.save(productDetail);
+
+            // Only refund the quantity if defectiveQuantity is 0
+            if (returnOrder.getDefectiveQuantity() == 0) {
+                productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
+                productDetail.setUpdatedAt(new Date());
+                productDetailRepository.save(productDetail);
+            }
         }
     }
 

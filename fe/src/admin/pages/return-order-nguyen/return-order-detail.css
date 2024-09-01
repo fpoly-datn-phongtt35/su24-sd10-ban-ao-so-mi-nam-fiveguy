@@ -218,3 +218,68 @@ input.largerCheckbox {
     width: 15px;
     height: 15px;
 } */
+
+
+/* styles.css */
+/* styles.css */
+
+/* Tiêu đề modal */
+.modal-header-custom {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title-custom {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.btn-close-custom {
+    background: #007bff;
+}
+
+/* Nội dung modal */
+.modal-body-custom {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.modal-body-custom h6 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #343a40; /* Màu tối cho tiêu đề */
+}
+
+.modal-body-custom p,
+.modal-body-custom ol,
+.modal-body-custom ul {
+    margin-bottom: 1rem;
+}
+
+.modal-body-custom ol,
+.modal-body-custom ul {
+    margin-left: 1.5rem;
+}
+
+.modal-body-custom ul {
+    list-style-type: disc;
+}
+
+.modal-body-custom ol {
+    list-style-type: decimal;
+}
+
+/* Chân modal */
+.modal-footer-custom {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.modal-footer-custom .btn {
+    border-radius: 0.25rem;
+}
+
+/* Toàn bộ modal */
+.modal-content-custom {
+    border-radius: 0.5rem;
+}
