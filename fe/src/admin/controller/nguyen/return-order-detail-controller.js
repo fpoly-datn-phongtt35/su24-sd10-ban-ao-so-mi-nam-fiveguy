@@ -192,7 +192,7 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
     $scope.$watch('returnOrders', function (newValue, oldValue) {
         if (newValue !== oldValue) {
             $scope.calculateSummary()
-            console.log($scope.returnOrders);
+            // console.log($scope.returnOrders);
         }
     }, true);
 

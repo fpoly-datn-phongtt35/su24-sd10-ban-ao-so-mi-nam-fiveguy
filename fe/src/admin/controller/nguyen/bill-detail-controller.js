@@ -1153,6 +1153,13 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //add product to bill
     $scope.addBillDetail = function (pdId, quantityInput, priceInput, pPriceInput, pd) {
 
+        let newTotalQuantity = $scope.billDetailSummary.totalQuantity + quantityInput;
+
+        if (newTotalQuantity > 20) {
+            $scope.showWarning("Tổng số lượng trong đơn không được vượt quá 20");
+            return;
+        }
+
         if (quantityInput >= pd.quantity) {
             $scope.showWarning("Thêm thất bại, không được vượt quá số lượng tồn")
             return;
@@ -1223,14 +1230,31 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     }
 
     //Validate max quantity in dillDetail
-    $scope.validateQuantityBd = function (bd, quantityNew) {
+    // $scope.validateQuantityBd = function (bd, quantityNew) {
 
-        // if (quantityNew >= bd.productDetail.quantity) {
-        //     bd.quantityNew = bd.productDetail.quantity - 1;
-        // }
-        if (quantityNew >= bd.productDetail.quantity) {
-            bd.quantityNew = bd.productDetail.quantity;
+    //     // if (quantityNew >= bd.productDetail.quantity) {
+    //     //     bd.quantityNew = bd.productDetail.quantity - 1;
+    //     // }
+    //     if (quantityNew >= bd.productDetail.quantity) {
+    //         bd.quantityNew = bd.productDetail.quantity;
+    //     }
+    // };
+    $scope.validateQuantityBd = function (bd, quantityNew) {
+        let currentTotalQuantity = $scope.billDetailSummary.totalQuantity - bd.quantity + quantityNew;
+    
+        if (currentTotalQuantity > 20) {
+            $scope.showWarning("Tổng số lượng trong đơn không được vượt quá 20");
+            bd.quantityNew = bd.quantity;  // Giữ lại số lượng cũ nếu vượt quá 20
+            return;
         }
+    
+        if (quantityNew > bd.productDetail.quantity) {
+            $scope.showWarning("Số lượng không được vượt quá số lượng tồn");
+            bd.quantityNew = bd.productDetail.quantity; // Giới hạn số lượng không vượt quá số lượng tồn
+        }
+        
+        // bd.quantity = bd.quantityNew;
+        // $scope.updateBillDetailQuantity(bd.quantityNew, bd);
     };
 
     //update quantity in billDetail

@@ -868,7 +868,7 @@
                             bd.price) *
                             bd.quantity)}}</td>
                         <td>
-                            <button class="btn" ng-click="removeBillDetail(bd.id)" ng-show="[1].includes(status)">
+                            <button class="btn" ng-click="removeBillDetail(bd.id)" ng-disabled="billDetails.length <= 1" ng-show="[1].includes(status)">
                                 <i class="material-icons">&#xE15C;</i>
                             </button>
                         </td>
