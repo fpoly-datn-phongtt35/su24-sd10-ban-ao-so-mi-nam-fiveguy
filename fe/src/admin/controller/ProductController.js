@@ -319,71 +319,89 @@ app.controller("ProductController", function($scope, $http, $timeout){
     function isImage(file) {
         return file.name.match(/\.(jpg|jpeg|png|gif|bmp)$/);
     }
-
-
+    // Utility function to check for duplicate file names
     function check_duplicate(name, lst) {
-        var status = true;
-        if (lst.length > 0) {
-            for (e = 0; e < lst.length; e++) {
-                if (lst[e].name == name) {
-                    status = false;
-                    break;
-                }
-            }
-        }
-        return status;
+        return lst.some(e => e.name === name);
     }
     
     $scope.setColor = (color) => {
         $scope.color = color;
     }
     
-
     $scope.uploadFile = (event) => {
-        let images = event.target.files;
-        for (let i = 0; i < images.length; i++) {
-            let image = images[i];
+        const images = event.files;
+        const filesImage = [];
     
+        // Check if the maximum number of images has already been reached
+        if ($scope.color.images.length >= 10) {
+            toastr.error("Bạn chỉ có thể thêm tối đa 10 ảnh.");
+            angular.element(event).val(null); // Reset the file input
+            return;
+        }
+    
+        // Loop through each selected file
+        for (let i = 0; i < images.length; i++) {
+            const image = images[i];
+    
+            // Check if the file is an image
             if (!isImage(image)) {
-                toastr.error(image.name + " không đúng định dạng hình ảnh");
+                toastr.error(`${image.name} không đúng định dạng hình ảnh`);
                 continue;
             }
     
+            // Check for duplicate images
             if (check_duplicate(image.name, $scope.color.images)) {
-                if (image.size > 10048576) {
-                    toastr.warning(image.name + " có kích thước lớn hơn 10MB");
-                    continue;
-                }
-                
-                let reader = new FileReader();
-                reader.onload = (function (img) {
-                    return function (e) {
-                        $scope.$apply(function () {
-                            if ($scope.color.images.length >= 10) {
-                                toastr.warning("Chỉ được thêm tối đa 10 ảnh");
-                                return;
-                            }
-                            $scope.color.images.push({
-                                "name": img.name,
-                                "path": e.target.result,
-                                "status": 1,
-                            });
-                        });
-                    };
-                })(image);
+                toastr.error(`${image.name} đã có trong danh sách`);
+                continue;
+            }
     
-                reader.readAsDataURL(image);
-            } else {
-                toastr.error(image.name + " đã có trong danh sách");
+            // Check the file size
+            if (image.size > 10485760) { // 10MB = 10 * 1024 * 1024
+                toastr.warning(`${image.name} có kích thước lớn hơn 10MB`);
+                continue;
+            }
+    
+            // Add the image to the list
+            image.previewUrl = URL.createObjectURL(image);
+            filesImage.push(image);
+    
+            if ($scope.color.images.length + filesImage.length >= 10) {
+                toastr.error("Bạn chỉ có thể thêm tối đa 10 ảnh.");
+                break;
             }
         }
     
-        angular.element(event.target).val(null);
+        // If there are valid images to upload
+        if (filesImage.length > 0) {
+            const formData = new FormData();
+            filesImage.forEach(file => formData.append('files', file));
+    
+            $http.post(`http://localhost:8080/upload-multiple-files`, formData, {
+                headers: { 'Content-Type': undefined },
+                transformRequest: angular.identity
+            }).then(response => {
+                response.data.forEach(image => {
+                    $scope.color.images.push(image);
+                });
+            }).catch(error => {
+                console.error("Error uploading images:", error);
+            }).finally(() => {
+                angular.element(event).val(null); // Reset the file input
+            });
+        } else {
+            angular.element(event).val(null); // Reset the file input if no files were valid
+        }
     };
+    
 
     $scope.uploadFileUpdate = (event) => {
-        let images = event.target.files;
-        
+        let images = event.files;
+        const filesImage = [];
+        if ($scope.color.images.length >= 10) {
+            toastr.error("Bạn chỉ có thể thêm tối đa 10 ảnh.");
+            angular.element(event).val(null); // Reset the file input
+            return;
+        }
         for (let i = 0; i < images.length; i++) {
             let image = images[i];
             
@@ -391,41 +409,46 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 toastr.error(image.name + " không đúng định dạng hình ảnh");
                 continue;
             }
-                if (image.size > 10048576) {
+            if (image.size > 10048576) {
                     toastr.warning(image.name + " có kích thước lớn hơn 10MB");
                     continue;
-                }
-                let reader = new FileReader();
-                reader.onload = (function (img) {
-                    return function (e) {
-                        $scope.$apply(function () {                      
-                                let existingImage = $scope.color.images.find(item => item.name == img.name && item.status == 0);
-                                if (existingImage) {
-                                    existingImage.status = 1; // Cập nhật trạng thái ảnh thành 1           
-                                }
-                                else {
-                                    if ($scope.color.images.length >= 10) {
-                                        toastr.warning("Chỉ được thêm tối đa 10 ảnh");
-                                        return;
-                                    }
-                                    if (check_duplicate(image.name, $scope.color.images)) {
-                                        $scope.color.images.push({
-                                            "name": img.name,
-                                            "path": e.target.result,
-                                            "status": 1,
-                                            "isNew": true
-                                        });
-                                    } else {
-                                        toastr.error(image.name + " đã có trong danh sách");
-                                    }   
-                                }
-                        });
-                    };
-                })(image);
-        
-                reader.readAsDataURL(image);
+            }
+            let existingImage = $scope.color.images.find(item => item.name == image.name && item.status == 0);
+            if (existingImage) {
+                existingImage.status = 1; // Cập nhật trạng thái ảnh thành 1           
+            }
+            else {
+                if (!check_duplicate(image.name, $scope.color.images)) {
+                    image.previewUrl = URL.createObjectURL(image);
+                    filesImage.push(image);
+                    if ($scope.color.images.length + filesImage.length >= 10) {
+                        toastr.error("Bạn chỉ có thể thêm tối đa 10 ảnh.");
+                        break;
+                    }
+                } else {
+                    toastr.error(image.name + " đã có trong danh sách");    
+                }   
+            }   
         }
-        angular.element(event.target).val(null);
+        if (filesImage.length > 0) {
+            const formData = new FormData();
+            filesImage.forEach(file => formData.append('files', file));
+    
+            $http.post(`http://localhost:8080/upload-multiple-files`, formData, {
+                headers: { 'Content-Type': undefined },
+                transformRequest: angular.identity
+            }).then(response => {
+                response.data.forEach(image => {
+                    $scope.color.images.push(image);
+                });
+            }).catch(error => {
+                console.error("Error uploading images:", error);
+            }).finally(() => {
+                angular.element(event).val(null); // Reset the file input
+            });
+        } else {
+            angular.element(event).val(null); // Reset the file input if no files were valid
+        }
     };
     
     $scope.reloadImage = function(color, item) {
@@ -458,7 +481,6 @@ app.controller("ProductController", function($scope, $http, $timeout){
 
     $scope.deleteImg = (color, item) => {
         color.images.splice(color.images.indexOf(item), 1);
-        
     }
 
     $scope.toggleImgStatus = function(color, item) {
@@ -882,8 +904,8 @@ app.controller("ProductController", function($scope, $http, $timeout){
             }
             if ($scope.colorSelected.length > 0 && $scope.sizeSelected.length > 0) {
                 $scope.product.images = [];
-                $scope.product.productDetails = [];
-                $scope.colorSelected.forEach(colorSelect => {
+                    $scope.product.productDetails = [];
+                    $scope.colorSelected.forEach(colorSelect => {
                     $scope.colors.forEach(color => {
                         if (colorSelect.id === color.id) {
                             colorSelect.images.forEach(image => {
@@ -902,10 +924,10 @@ app.controller("ProductController", function($scope, $http, $timeout){
                     });
                 });
                 if (!$scope.checkListImage()) return;
-               
             }
             $('#addProduct').css('display', 'none');
             $('#loadingAdd').css('display', 'inline-block');
+
            $http.post(`${config.host}/product`, $scope.product).then((response) => {
                 $('#addProduct').css('display', 'inline-block');
                 $('#loadingAdd').css('display', 'none');
@@ -994,19 +1016,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
 
 })
 
-app.directive('customOnChange', function() {
-    return {
-      restrict: 'A',
-      link: function (scope, element, attrs) {
-        var onChangeHandler = scope.$eval(attrs.customOnChange);
-        element.on('change', onChangeHandler);
-        element.on('$destroy', function() {
-          element.off();
-        });
-  
-      }
-    };
-  });
+
 
 
   

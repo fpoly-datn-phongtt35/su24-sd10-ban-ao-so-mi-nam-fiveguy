@@ -283,9 +283,10 @@
                                                     </tbody>
                                                   </table>
                                                   <div>
-                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple custom-on-change="uploadFile">
+                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple onchange="angular.element(this).scope().uploadFile(this)">
                                                   </div>
                                                     <div ng-repeat="item in color.images" class="image_container position-relative">
+    
                                                         <img ng-src="{{item.path}}" alt="Image"> 
                                                             <span class="position-absolute close" ng-click="deleteImg(color, item)">&times;</span>
                                                      </div>
@@ -483,7 +484,7 @@
                                                     </tbody>
                                                   </table>
                                                   <div>
-                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple custom-on-change="uploadFileUpdate">
+                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple onchange="angular.element(this).scope().uploadFileUpdate(this)">
                                                   </div>
                                                   <div ng-repeat="item in color.images" class="image_container position-relative">
                                                         <img ng-src="{{item.path}}" alt="Image" ng-class="{'overlay': item.status === 0}">
