@@ -17,26 +17,18 @@
                     </div>
                 </div>
                 <div class="row mx-0 mt-3 mb-2">
-                    <div class="col-sm-3 d-flex flex-column">   
+                    <div class="col-sm-4 d-flex flex-column">   
                         <label for="search">Tìm kiếm</label>                     
                         <input type="text" id="search" ng-model="filter.keyword" class="form-control" placeholder="Tìm kiếm...">
                     </div>
-                    <div class="col-sm-3 d-flex flex-column">
-                        <label for="sortField">Sắp xếp theo</label>
-                        <select ng-model="filter.sortField" class="form-select" id="sortField">
-                            <option value="createdAt">Thời gian tạo</option>
-                            <option value="updatedAt">Thời gian cập nhật</option>
-                          </select>
-                    </div>
-                    <div class="col-sm-3 d-flex flex-column">
+                    <div class="col-sm-4 d-flex flex-column">
                         <label for="sortDirection">Thứ tự</label>
                         <select ng-model="filter.sortDirection" class="form-select" id="sortDirection">
                             <option value="DESC">Mới nhất</option>
                             <option value="ASC">Cũ nhất</option>
-
                           </select>
                     </div>
-                    <div class="col-sm-3 d-flex flex-column">   
+                    <div class="col-sm-4 d-flex flex-column">   
                         <label>Trạng thái</label>                     
                         <select ng-model="filter.status" class="form-select">
                             <option value="">Tất cả</option>
@@ -100,7 +92,6 @@
                                 <th>
                                     <div class="d-flex align-items-center flex-column">
                                         <button type="button" class="btn btn-sm" ng-class="{'btn-success': product.status === 1, 'btn-danger': product.status === 0}">{{ product.status === 1 ? 'Kinh doanh' : 'Ngừng kinh doanh' }}</button>
-                                        <!-- <span>{{product.createdAt | date : "hh:mm dd-MM-yyyy" : 0}} - {{product.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span> -->
                                     </div>
                                    
                                 </th>            
@@ -292,9 +283,10 @@
                                                     </tbody>
                                                   </table>
                                                   <div>
-                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple custom-on-change="uploadFile">
+                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple onchange="angular.element(this).scope().uploadFile(this)">
                                                   </div>
                                                     <div ng-repeat="item in color.images" class="image_container position-relative">
+    
                                                         <img ng-src="{{item.path}}" alt="Image"> 
                                                             <span class="position-absolute close" ng-click="deleteImg(color, item)">&times;</span>
                                                      </div>
@@ -492,7 +484,7 @@
                                                     </tbody>
                                                   </table>
                                                   <div>
-                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple custom-on-change="uploadFileUpdate">
+                                                    <input ng-click="setColor(color)" type="file" class="custom-file-input" multiple onchange="angular.element(this).scope().uploadFileUpdate(this)">
                                                   </div>
                                                   <div ng-repeat="item in color.images" class="image_container position-relative">
                                                         <img ng-src="{{item.path}}" alt="Image" ng-class="{'overlay': item.status === 0}">
