@@ -172,9 +172,9 @@
                 <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'nam'}">
                     <a href="" ng-click="submitNam()">Năm</a>
                 </div>
-                <!-- <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'tuyChinh'}">
+                <div class="item-filter-db-table" ng-class="{selected: selectedButton === 'tuyChinh'}">
                     <a href="" ng-click="toggleDiv()">Tùy chỉnh</a>
-                </div> -->
+                </div>
                 <div class="item-input-filter-db-table" ng-class="{'hidden': !showDiv}">
                     Từ:
                     <input type="date" id="startDate" ng-model="filterStartDate" ng-change="checkDates()" />
@@ -198,7 +198,7 @@
                                     <th>Ảnh</th>
                                     <th>Tên sản phẩm</th>
                                     <th>Số lượng</th>
-                                    <th>Giá tiền</th>
+                                    <th>Giá hiện tại</th>
                                 </tr>
                             </thead>
                             <tbody class="tbody-table">
@@ -206,22 +206,14 @@
                                     <td class="text-center">{{($index + 1) + (currentPage2 * size2)}}</td>
                                     <td>
                                         <div class="img-table-avatar">
-                                            <img ng-src="{{sanPhamBanChay.anh_mac_dinh}}" alt="Hình ảnh" />
+                                            <img ng-src="{{sanPhamBanChay.image}}" alt="Hình ảnh" />
                                         </div>
                                     </td>
-                                    <td class="text-left">{{sanPhamBanChay.ten_sanpham}}</td>
-                                    <td class="text-center">{{sanPhamBanChay.so_luong_ban}}</td>
+                                    <td class="text-left">{{sanPhamBanChay.tenSanPham}}</td>
+                                    <td class="text-center">{{sanPhamBanChay.soLuongBan}}</td>
                                     <td class="text-right">
                                         {{formatCurrency(sanPhamBanChay.price) }}d
                                     </td>
-                                    <!-- <td scope="col-2" class="css-text-overfolow-acction">
-                                        <button class="button-submit action-btn" data-bs-toggle="modal"
-                                            data-bs-target="#AuditLogUpdate" ng-click="detailAuditLog(employee)"><span
-                                                class="material-icons">
-                                                visibility
-                                            </span></i></button>
-                                    </td> -->
-                                    <!-- <td class="text-right">{{sanPhamBanChay.doanh_thu | currency}}</td> -->
                                 </tr>
                             </tbody>
                         </table>
@@ -282,18 +274,25 @@
                         <table class="table">
                             <thead class="heading-table">
                                 <tr>
-                                    
+                                    <th>STT</th>
+                                    <th>Ảnh</th>
                                     <th>Tên khách hàng</th>
                                     <th>Số lượng sản phẩm</th>
-                                    <th>Số lượng hóa đơn</th>
                                     <th>Tổng tiền</th>
                                 </tr>
                             </thead>
                             <tbody class="tbody-table">
-                                <tr ng-repeat="khachHangMuaNhieuNhat in khachHangMuaNhieuNhat">
+                                <tr ng-repeat="khachHangMuaNhieuNhat in khachHangMuaNhieuNhat track by $index">
+                                    <td>{{($index + 1) + (currentPage3 * sizeh)}}</td>
+
+                                         <td>
+                                        <div ng-if="product.mainImage" class="img-table-avatar">
+                                            <img ng-src="{{ khachHangMuaNhieuNhat.avatarKhachHang }}" alt="Product Image"
+                                                style="max-width: 200px; max-height: 200px;" />
+                                        </div>
+                                    </td>
                                     <td class="text-left">{{khachHangMuaNhieuNhat.tenKhachHang}}</td>
                                     <td class="text-left">{{khachHangMuaNhieuNhat.tongSoLuongMua}}</td>
-                                    <td class="text-center">{{khachHangMuaNhieuNhat.tongSoBill}}</td>
                                     <td class="text-right">
                                         {{formatCurrency(khachHangMuaNhieuNhat.tongDoanhThu) }}đ
                                     </td>
@@ -356,7 +355,6 @@
                         value="1" type="number" max="100" min="1" class="form-control" style="width: 5rem" required />
                 </div>
                 <div class="row mt-3">
-                    <!-- Danh sách bảng -->
                     <div class="db-table">
                         <table class="table">
                             <thead class="heading-table">
@@ -365,7 +363,7 @@
                                     <th>Ảnh</th>
                                     <th>Tên sản phẩm</th>
                                     <th>Số lượng</th>
-                                    <th>Giá tiền</th>
+                                    <th>Giá hiện tại</th>
                                     <th>Kích cỡ</th>
                                 </tr>
                             </thead>
@@ -373,7 +371,6 @@
                                 <tr ng-repeat="product in filterProductDetall">
                                     <td>{{($index + 1) + (currentPage * size)}}</td>
                                     <td>
-                                        <!-- Hiển thị ảnh sản phẩm -->
                                         <div ng-if="product.mainImage" class="img-table-avatar">
                                             <img ng-src="{{ product.mainImage }}" alt="Product Image"
                                                 style="max-width: 200px; max-height: 200px;" />
@@ -404,18 +401,15 @@
                         </div>
                         <ul class="pagination">
                             <div class="d-flex justify-content-between align-items-center">
-                                <!-- Nút trang đầu tiên -->
                                 <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0"
                                     ng-click="goToPageSanPhamSapHet(0)">
                                     <span class="material-icons align-middle">first_page</span>
                                 </button>
-                                <!-- Nút trang trước -->
                                 <button class="btn btn-primary mx-1" ng-disabled="currentPage == 0"
                                     ng-click="goToPageSanPhamSapHet(currentPage - 1)">
                                     <span class="material-icons align-middle">chevron_left</span>
                                 </button>
 
-                                <!-- Input cho số trang mong muốn -->
                                 <div class="d-flex align-items-center mx-1">
                                     <input type="number" class="form-control-custom no-spinners mx-2 fs-4 text-center"
                                         style="width: 60px;" ng-model="desiredPage5" min="1" max="{{totalPages}}"
@@ -423,12 +417,10 @@
                                     <span class="fs-4 me-2" style="font-weight: bold;"> / {{totalPages}}</span>
                                 </div>
 
-                                <!-- Nút trang tiếp theo -->
                                 <button class="btn btn-primary mx-1" ng-disabled="currentPage >= totalPages - 1"
                                     ng-click="goToPageSanPhamSapHet(currentPage + 1)">
                                     <span class="material-icons align-middle">chevron_right</span>
                                 </button>
-                                <!-- Nút trang cuối -->
                                 <button class="btn btn-primary mx-1" ng-disabled="currentPage >= totalPages - 1"
                                     ng-click="goToPageSanPhamSapHet(totalPages - 1)">
                                     <span class="material-icons align-middle">last_page</span>

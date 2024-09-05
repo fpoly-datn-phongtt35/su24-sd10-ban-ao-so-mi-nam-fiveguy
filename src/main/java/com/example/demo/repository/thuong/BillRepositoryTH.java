@@ -20,7 +20,7 @@ public interface BillRepositoryTH extends JpaRepository<Bill, Long> {
             "WHERE b.status = :status AND b.typeBill IN (:typeBills)")
     List<BillResponseTH> findAllByStatusAndTypeBill(@Param("status") Integer status, @Param("typeBills") List<Integer> typeBills);
 
-    @Query("SELECT COUNT(b) FROM Bill b WHERE b.customer.id = :customerId AND b.voucher.id = :voucherId AND b.status NOT IN (5, 6,1,20,100)")
+    @Query("SELECT COUNT(b) FROM Bill b WHERE b.customer.id = :customerId AND b.voucher.id = :voucherId AND b.status NOT IN (5, 6,20,100)")
     Integer countVoucherUsageByCustomer(@Param("customerId") Long customerId, @Param("voucherId") Long voucherId);
 
 

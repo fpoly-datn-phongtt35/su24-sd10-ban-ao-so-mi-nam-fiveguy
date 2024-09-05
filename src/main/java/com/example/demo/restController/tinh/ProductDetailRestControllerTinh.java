@@ -81,14 +81,14 @@ public class ProductDetailRestControllerTinh {
         );
 
         // Lấy tất cả ảnh sản phẩm
-        Map<Long, String> productImageMap = imageRepositoryTinh.findByProductIdIn(
-                products.stream().map(Product::getId).collect(Collectors.toList())
-        ).stream()
-                .collect(Collectors.toMap(
-                        img -> img.getProduct().getId(),
-                        Image::getPath,
-                        (existing, replacement) -> existing // Chọn ảnh đầu tiên nếu có nhiều ảnh
-                ));
+//        Map<Long, String> productImageMap = imageRepositoryTinh.findByProductIdIn(
+//                products.stream().map(Product::getId).collect(Collectors.toList())
+//        ).stream()
+//                .collect(Collectors.toMap(
+//                        img -> img.getProduct().getId(),
+//                        Image::getPath,
+//                        (existing, replacement) -> existing
+//                ));
 
         // Lấy tất cả kích cỡ sản phẩm
         Map<Long, List<String>> productSizeMap = productDetails.stream()
@@ -108,7 +108,7 @@ public class ProductDetailRestControllerTinh {
         List<ProductResponseT> productResponses = products.stream()
                 .map(product -> {
                     ProductResponseT response = new ProductResponseT();
-                    response.setImage(productImageMap.getOrDefault(product.getId(), null));
+//                    response.setImage(productImageMap.getOrDefault(product.getId(), null));
                     response.setName(product.getName());
                     response.setTotalQuantity(totalQuantityMap.getOrDefault(product.getId(), 0));
                     response.setPrice(product.getPrice());

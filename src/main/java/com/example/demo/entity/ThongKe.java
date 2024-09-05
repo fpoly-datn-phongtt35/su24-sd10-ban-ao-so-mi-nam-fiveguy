@@ -7,19 +7,24 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class ThongKe {
-    private Long sanpham_id;
-
-    private String ten_sanpham;
-
+    private Long idSanPham;
+    private String tenSanPham;
+    private String image;
+    private int soLuongBan;
     private BigDecimal price;
 
-    private int so_luong_ban;
+    // Constructor
 
-    private BigDecimal doanh_thu;
+    public ThongKe(Long idSanPham, String tenSanPham, String image, int soLuongBan, BigDecimal price) {
+        this.idSanPham = idSanPham;
+        this.tenSanPham = tenSanPham;
+        this.image = image;
+        this.soLuongBan = soLuongBan;
+        this.price = price;
+    }
 
-    private String anh_mac_dinh;
 
+    // Getters and setters
 }

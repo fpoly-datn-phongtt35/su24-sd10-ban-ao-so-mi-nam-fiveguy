@@ -189,8 +189,6 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             // $scope.tongBillStatuses[4] || 0,
             ($scope.tongBillStatuses[5] || 0) + ($scope.tongBillStatuses[6] || 0),
             ($scope.tongBillStatuses[7] || 0) + ($scope.tongBillStatuses[8] || 0) + ($scope.tongBillStatuses[81] || 0),
-
-
             // $scope.tongBillStatuses[11] || 0,
             // $scope.tongBillStatuses[12] || 0,
             ($scope.tongBillStatuses[13] || 0) + ($scope.tongBillStatuses[33] || 0),
@@ -215,8 +213,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.getTongDoangThuNgay = function () {
         $http
             .get(
-                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-ngay/" +
-                `${todayfomat}`
+                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-ngay"
             )
             .then(function (response) {
                 $scope.tongDoanhThuNgay = response.data;
@@ -228,8 +225,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.getTongDoangThuTuan = function () {
         $http
             .get(
-                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-tuan/" +
-                `${todayfomat}`
+                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-tuan"
             )
             .then(function (response) {
                 $scope.tongDoanhThuTuan = response.data;
@@ -240,8 +236,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.getTongDoangThuThang = function () {
         $http
             .get(
-                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-thang/" +
-                `${todayfomat}`
+                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-thang"
             )
             .then(function (response) {
                 $scope.tongDoanhThuThang = response.data;
@@ -252,8 +247,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.getTongDoangThuNam = function () {
         $http
             .get(
-                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-nam/" +
-                `${todayfomat}`
+                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-nam"
             )
             .then(function (response) {
                 $scope.tongDoanhThuNam = response.data;
@@ -289,41 +283,41 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     };
 
     // doanh thu của ngày tháng năm trước đó
-    $scope.getTongDoangThuNgayTruoc = function () {
-        $http
-            .get(
-                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-ngay/" +
-                `${yesterdayFormatted}`
-            )
-            .then(function (response) {
-                $scope.tongDoanhThuNgayTruoc = response.data;
-            });
-    };
-    $scope.getTongDoangThuNgayTruoc();
+    // $scope.getTongDoangThuNgayTruoc = function () {
+    //     $http
+    //         .get(
+    //             "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-ngay/" +
+    //             `${yesterdayFormatted}`
+    //         )
+    //         .then(function (response) {
+    //             $scope.tongDoanhThuNgayTruoc = response.data;
+    //         });
+    // };
+    // $scope.getTongDoangThuNgayTruoc();
 
-    $scope.getTongDoangThuThangTruoc = function () {
-        $http
-            .get(
-                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-thang/" +
-                `${lastMonthFormatted}`
-            )
-            .then(function (response) {
-                $scope.tongDoanhThuThangTruoc = response.data;
-            });
-    };
-    $scope.getTongDoangThuThangTruoc();
+    // $scope.getTongDoangThuThangTruoc = function () {
+    //     $http
+    //         .get(
+    //             "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-thang/" +
+    //             `${lastMonthFormatted}`
+    //         )
+    //         .then(function (response) {
+    //             $scope.tongDoanhThuThangTruoc = response.data;
+    //         });
+    // };
+    // $scope.getTongDoangThuThangTruoc();
 
-    $scope.getTongDoangThuNamTruoc = function () {
-        $http
-            .get(
-                "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-nam/" +
-                `${lastYearFormatted}`
-            )
-            .then(function (response) {
-                $scope.tongDoanhThuNamTruoc = response.data;
-            });
-    };
-    $scope.getTongDoangThuNamTruoc();
+    // $scope.getTongDoangThuNamTruoc = function () {
+    //     $http
+    //         .get(
+    //             "http://localhost:8080/api/admin/bill-tinh/tong-doanh-thu-nam/" +
+    //             `${lastYearFormatted}`
+    //         )
+    //         .then(function (response) {
+    //             $scope.tongDoanhThuNamTruoc = response.data;
+    //         });
+    // };
+    // $scope.getTongDoangThuNamTruoc();
 
     //=================================End Get All tổng doanh thu=============================
 
@@ -918,14 +912,16 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     $scope.desiredPage3 = 1;
 
     $scope.getKhachHangMuaNhieuNhatNgay = function (pageNumber3) {
+
         let params = {
             page: pageNumber3 || 0,
             size: $scope.sizeh
         };
-            console.log(params)
         $http.get("http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat/ngay", { params: params })
             .then(function (response) {
                 $scope.khachHangMuaNhieuNhat = response.data.content;
+        console.log($scope.khachHangMuaNhieuNhat)
+
                 $scope.totalPages3 = response.data.totalPages;
                 $scope.currentPage3 = response.data.number;
                 $scope.desiredPage3 = $scope.currentPage3 + 1;
@@ -987,32 +983,32 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             });
     };
 
-    // $scope.getKhachHangMuaNhieuNhatTuyChinh = function (pageNumber3) {
-    //     // Lấy giá trị ngày từ ng-model
-    //     const startDate = $scope.filterStartDate;
-    //     const endDate = $scope.filterEndDate;
+    $scope.getKhachHangMuaNhieuNhatTuyChinh = function (pageNumber3) {
+        // Lấy giá trị ngày từ ng-model
+        const startDate = $scope.filterStartDate;
+        const endDate = $scope.filterEndDate;
 
-    //     if (startDate && endDate) {
-    //         // Định dạng ngày theo kiểu 'yyyy-MM-dd'
-    //         const formattedStartDate = $filter("date")(new Date(startDate), "yyyy-MM-dd");
-    //         const formattedEndDate = $filter("date")(new Date(endDate), "yyyy-MM-dd");
+        if (startDate && endDate) {
+            // Định dạng ngày theo kiểu 'yyyy-MM-dd'
+            const formattedStartDate = $filter("date")(new Date(startDate), "yyyy-MM-dd");
+            const formattedEndDate = $filter("date")(new Date(endDate), "yyyy-MM-dd");
 
-    //         // Gọi API với ngày bắt đầu, ngày kết thúc, trang và kích thước trang
-    //         $http
-    //             .get(
-    //                 `http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}&page=${pageNumber3 || 0}&size=${$scope.size}`
-    //             )
-    //             .then(function (response) {
-    //                 $scope.khachHangMuaNhieuNhat = response.data.content;
-    //                 $scope.totalPages3 = response.data.totalPages;
-    //                 $scope.currentPage3 = response.data.number;
-    //                 $scope.desiredPage3 = $scope.currentPage3 + 1;
-    //             })
-    //             .catch(function (error) {
-    //                 console.error("Có lỗi xảy ra khi gọi API:", error);
-    //             });
-    //     }
-    // };
+            // Gọi API với ngày bắt đầu, ngày kết thúc, trang và kích thước trang
+            $http
+                .get(
+                    `http://localhost:8080/api/admin/bill-tinh/khach-hang-mua-nhieu-nhat-tuy-chinh?startDate=${formattedStartDate}&endDate=${formattedEndDate}&page=${pageNumber3 || 0}&size=${$scope.sizeh}`
+                )
+                .then(function (response) {
+                    $scope.khachHangMuaNhieuNhat = response.data.content;
+                    $scope.totalPages3 = response.data.totalPages;
+                    $scope.currentPage3 = response.data.number;
+                    $scope.desiredPage3 = $scope.currentPage3 + 1;
+                })
+                .catch(function (error) {
+                    console.error("Có lỗi xảy ra khi gọi API:", error);
+                });
+        }
+    };
 
     $scope.applyFiltersKhachHangMuaNhieu = function () {
         $scope.desiredPage = 0;
@@ -1079,7 +1075,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                 $scope.getTongDonHangHuyTuyChinh();
                 $scope.getTongSanPhamTuyChinh();
                 $scope.getSanPhamBanChayTuyChinh();
-                $scope.getTongBillStatusTuyChinh();
+                // $scope.getTongBillStatusTuyChinh();
                 $scope.getKhachHangMuaNhieuNhatTuyChinh();
                 // $scope.getTongBillStatus = function (url) {
                 //     return $http.get(url); // $http.get tự động trả về promise
@@ -1224,10 +1220,8 @@ $scope.getProductDetall = function (pageNumber) {
             params: params,
         })
         .then(function (response) {
-            console.log("API response:", response.data); // Ghi lại phản hồi của API
             if (response.data && response.data.content) {
                 $scope.filterProductDetall = response.data.content;
-                console.log( response.data.content); // Ghi lại phản hồi của API
 
                 // Xử lý ảnh và số lượng
                 $scope.filterProductDetall.forEach(function (product) {
@@ -1248,8 +1242,6 @@ $scope.getProductDetall = function (pageNumber) {
                 $scope.totalPages = response.data.totalPages || 0;
                 $scope.currentPage = pageNumber;
                 $scope.desiredPage5 = pageNumber + 1;
-
-                console.log($scope.desiredPage5)
             } else {
                 console.error("Invalid API response structure");
             }

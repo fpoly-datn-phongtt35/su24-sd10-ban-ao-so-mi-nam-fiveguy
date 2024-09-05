@@ -191,9 +191,9 @@ body {
 }
 
 .product-grid__title {
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1.2em;
-  font-weight: 400;
+  font-weight: 600;
   margin: 10px 0;
 }
 .product h3{
@@ -390,11 +390,17 @@ font-weight: 400;
 }
 
 .product-display .price-info {
-  padding: 10px;
-}
 
+  padding: 10px;
+
+}
+.price-info{
+  font-size: 15px;
+  font-weight: 700;
+}
 .price-info .sale-value {
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .price-info .original-price {
@@ -762,4 +768,102 @@ font-weight: 400;
 .size-imgCategory{
   width: 332px;
   height: 462px;
+}
+
+.nav-item.header-title {
+  position: relative;
+}
+
+.nav-item .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: 400px;
+  padding: 0;
+  margin: 0;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+
+
+  max-width: 600px; /* Giới hạn chiều rộng tối đa */
+  max-height: 300px; /* Giới hạn chiều cao tối đa */
+  word-wrap: break-word; /* Cho phép xuống dòng khi gặp khoảng trắng */
+  white-space: normal; /* Cho phép nội dung xuống dòng */
+  overflow-y: auto; /* Hiển thị thanh cuộn dọc nếu nội dung vượt quá chiều cao tối đa */
+  overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+}
+
+.nav-item.header-title:hover .dropdown-menu {
+  display: block;
+}
+
+.cart-item {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 0.5rem;
+  margin-top: 10px;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.cart-showname {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  white-space: normal; /* Cho phép xuống dòng */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  text-transform: none; /* Giữ nguyên định dạng chữ gốc */
+}
+
+.cart-attribute{
+  font-size: 13px;
+}
+
+.text-price div span{
+  font-size: 13px;
+}
+
+
+.cart-item .ms-2 {
+  overflow: visible; /* Đảm bảo nội dung không bị cắt */
+  width: auto; /* Điều chỉnh chiều rộng tự động */
+  min-width: 150px; /* Đặt chiều rộng tối thiểu nếu cần */
+}
+
+.view-all {
+  text-align: right; /* Căn phải văn bản */
+  display: block; /* Đảm bảo rằng liên kết chiếm toàn bộ chiều ngang */
+  margin-top: 10px; /* Điều chỉnh khoảng cách phía trên nếu cần */
+  color: #0066cc; /* Màu chữ xanh tương tự như ảnh */
+  font-weight: bold; /* Làm đậm chữ */
+  font-size: 14px; /* Điều chỉnh kích thước chữ */
+  text-decoration: none; /* Bỏ gạch chân */
+}
+
+.view-all:hover {
+  text-decoration: underline; /* Gạch chân khi hover */
+}
+
+.swal2-cancel{
+  margin-right: 10px;
+  padding: 10px;
+}
+
+.swal2-confirm{
+  margin-left: 10px;
+  padding: 10px;
+
 }

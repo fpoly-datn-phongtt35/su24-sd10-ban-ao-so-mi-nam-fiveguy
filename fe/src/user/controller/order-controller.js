@@ -710,6 +710,39 @@ $scope.rating = {
 };
 
 
-
+$scope.confirmCancelOrder = function() {
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: "btn btn-danger",
+            cancelButton: "btn btn-secondary"
+        },
+        buttonsStyling: false
+    });
+  
+    swalWithBootstrapButtons.fire({
+        title: "Bạn có chắc chắn muốn hủy đơn hàng?",
+        text: "Hành động này không thể hoàn tác!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Đồng ý hủy",
+        cancelButtonText: "Giữ lại",
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $scope.confirmChangeStatus();  
+            swalWithBootstrapButtons.fire({
+                title: "Đã hủy đơn!",
+                text: "Đơn hàng của bạn đã được hủy thành công.",
+                icon: "success"
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            swalWithBootstrapButtons.fire({
+                title: "Giữ lại đơn",
+                text: "Đơn hàng của bạn vẫn còn hiệu lực.",
+                icon: "info"
+            });
+        }
+    });
+  };
 
 });
