@@ -451,7 +451,7 @@ app.controller("ProductController", function($scope, $http, $timeout){
         }
     };
     
-    $scope.reloadImage = function(color, item) {
+    $scope.reloadImage = function(item) {
         let input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
@@ -461,18 +461,19 @@ app.controller("ProductController", function($scope, $http, $timeout){
     
         input.onchange = function(event) {
             let file = event.target.files[0];
-            
+            let formData = new FormData();
+            formData.append('file', file);
             if (file && isImage(file)) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    $scope.$apply(function() {
-                        // Update the current image's name and path
-                        item.name = file.name;
-                        item.path = e.target.result;
-                        item.status = 1;
-                    });
-                };
-                reader.readAsDataURL(file);
+                $http.post(`http://localhost:8080/upload-file`, formData, {
+                    headers: { 'Content-Type': undefined },
+                    transformRequest: angular.identity
+                }).then(response => {
+                    item.name = response.data.name;
+                    item.path = response.data.path;
+                    item.status = 1;
+                }).catch(error => {
+                    console.error("Error uploading images:", error);
+                })
             } else {
                 toastr.error("Định dạng hình ảnh không hợp lệ hoặc không có tệp nào được chọn");
             }

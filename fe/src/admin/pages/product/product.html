@@ -491,7 +491,7 @@
                                                         <span class="position-absolute close" ng-click="toggleImgStatus(color, item)">
                                                             <i class="material-icons" style="font-size: 18px; font-weight: bold;"> {{item.status === 0 ? 'settings_backup_restore ' : 'close'}}</i>
                                                         </span>
-                                                        <span ng-if="!item.isNew" class="position-absolute cached" ng-click="reloadImage(color, item)">
+                                                        <span ng-if="!item.isNew" class="position-absolute cached" ng-click="reloadImage(item)">
                                                             <i class="material-icons" style="font-size: 18px; font-weight: bold;">cached</i>
                                                         </span>
                                                   </div>
