@@ -473,7 +473,7 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
         return file.name.match(/\.(jpg|jpeg|png|gif|bmp)$/);
     }
     $scope.uploadFile = (event) => {
-        let image = event.target.files[0]; 
+        let image = event.files[0]; 
     
         if (!isImage(image)) {
             toastr.error(image.name + " không đúng định dạng hình ảnh");
@@ -484,19 +484,20 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             toastr.warning(image.name + " có kích thước lớn hơn 10MB");
             return;
         }
-    
-        let reader = new FileReader();
-        reader.onload = function (e) {
-            $scope.$apply(function () {
-                $scope.customer.avatar = e.target.result;
-            });
-        };
-    
-        reader.readAsDataURL(image);
+        let formData = new FormData();
+        formData.append('file', image);
+        $http.post(`http://localhost:8080/upload-file`, formData, {
+            headers: { 'Content-Type': undefined },
+            transformRequest: angular.identity
+        }).then(response => {
+            $scope.customer.avatar =  response.data.path;
+        }).catch(error => {
+            console.error("Error uploading images:", error);
+        })
     };
 
     $scope.uploadUpdateFile = (event) => {
-        let image = event.target.files[0]; 
+        let image = event.files[0]; 
     
         if (!isImage(image)) {
             toastr.error(image.name + " không đúng định dạng hình ảnh");
@@ -508,14 +509,16 @@ app.controller("SellQuicklyController", function($scope, $http, $filter, $timeou
             return;
         }
     
-        let reader = new FileReader();
-        reader.onload = function (e) {
-            $scope.$apply(function () {
-                $scope.customerUpdate.avatar = e.target.result;
-            });
-        };
-    
-        reader.readAsDataURL(image);
+        let formData = new FormData();
+        formData.append('file', image);
+        $http.post(`http://localhost:8080/upload-file`, formData, {
+            headers: { 'Content-Type': undefined },
+            transformRequest: angular.identity
+        }).then(response => {
+            $scope.customerUpdate.avatar =  response.data.path;
+        }).catch(error => {
+            console.error("Error uploading images:", error);
+        })
     };
 
 
@@ -1747,17 +1750,4 @@ border-top: 1px solid  #5D6975;
 
 });
 
-app.directive('customOnChange', function() {
-    return {
-      restrict: 'A',
-      link: function (scope, element, attrs) {
-        var onChangeHandler = scope.$eval(attrs.customOnChange);
-        element.on('change', onChangeHandler);
-        element.on('$destroy', function() {
-          element.off();
-        });
-  
-      }
-    };
-  });
 
