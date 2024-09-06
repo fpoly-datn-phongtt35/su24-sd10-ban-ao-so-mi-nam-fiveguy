@@ -242,13 +242,13 @@ public class BillRestControllerTinh {
         return billRepositoryTinh.tongStatusBillYear(status).size();
     }
 
-//    @GetMapping("/tong-hoa-don-trang-thai-tuy-chinh")
-//    public int tongHoaDonStatusTuyChinh(
-//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-//            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
-//            @RequestParam Integer status) {
-//        return billRepositoryTinh.tongStatusBillOption(startDate,endDate, status).size();
-//    }
+    @GetMapping("/tong-hoa-don-trang-thai-tuy-chinh")
+    public int tongHoaDonStatusTuyChinh(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            @RequestParam Integer status) {
+        return billRepositoryTinh.tongStatusBillOption(startDate,endDate, status).size();
+    }
 
     //Khách hàng mua nhiều nhất-----------------------------------------------
 //    @GetMapping("/khach-hang-mua-nhieu-nhat-ngay")

@@ -23,4 +23,7 @@ public interface ProductRepositoryTinh extends JpaRepository<Product, Long> {
             "WHERE (:totalQuantity IS NULL OR pd.quantity <= :totalQuantity) " +
             "GROUP BY p.id, pd.id")
     Page<Object[]> findFilteredProductsWithDetails(@Param("totalQuantity") Integer totalQuantity, Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE p.status = 1")
+    List<Product> findProductsWithStatusOne();
 }

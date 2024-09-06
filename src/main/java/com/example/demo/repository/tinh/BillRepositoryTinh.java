@@ -86,6 +86,13 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
             "AND b.status = :status")
     List<Bill> tongStatusBillYear(@Param("status") Integer status);
 
+    @Query("SELECT b FROM Bill b JOIN b.billHistories ps " +
+            "WHERE b.createdAt BETWEEN :startDate AND :endDate " +
+            "AND b.status = :status")
+    List<Bill> tongStatusBillOption(@Param("startDate") Date startDate,
+                                    @Param("endDate") Date endDate,
+                                    @Param("status") Integer status);
+
 
 
 

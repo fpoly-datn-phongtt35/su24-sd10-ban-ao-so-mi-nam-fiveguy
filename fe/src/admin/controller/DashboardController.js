@@ -117,48 +117,26 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
     // Đảm bảo getTongBillStatus trả về promise từ $http.get
 
     //===============Sơ đồ Hình tròn=============================================================
-
     const ctx = document.getElementById("myChart").getContext("2d");
     let myChart = new Chart(ctx, {
         type: "doughnut",
         data: {
             labels: [
-                // "Chờ Xác nhận",
-                "Chờ Vận chuyển",
-                "Đang giao hàng",
-                // "Đã giao hàng",
-                "Đã hủy",
-                "Thất bại",
-                // "Chờ giao lại",
-                // "Đang giao lại",
-                // "Đang hoàn hàng",
-                // "Đã hoàn hàng",
-                "Hoàn, trả hàng thất bại",
-                "Thành công",
-                "Đơn trả, hoàn hàng",
-                // "Đã trả hàng",
-                // "Trả hàng thất bại"
+                "Hủy",        // Canceled - Red
+                "Thành công", // Successful - Green
+                "Trả hàng",   // Return - Orange
             ],
             datasets: [
                 {
                     label: "Số lượng hóa đơn theo trạng thái",
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0], // Mảng dữ liệu sẽ được cập nhật sau
+                    data: [0, 0, 0, 0, 0, 0, 0], // Data will be updated later
                     backgroundColor: [
-                        // "#eca147",
-                        "rgb(54, 162, 235)",
-                        "#33FFFF",
-                        // "#459446",
-                        "#dc3545",
-                        "#ff7c4e",
-                        // "rgb(255, 205, 86)",
-                        // "#0dcaf0",
-                        // "rgb(255, 99, 132)",
-                        // "#FFCCFF",
-                        "#FF0066",
-                        "#00FF00",
-                        // "#CC3366",
-                        "#00CC99",
-                        // "#CC0033"
+                        "#dc3545",  // Red for 'Hủy'
+                        "#00FF00",  // Green for 'Thành công'
+                        "#ff7c4e",  // Orange for 'Trả hàng'
+                        "#FF0066",  // Optional additional color
+                        "#33FFFF",  // Optional additional color
+                        "#00CC99",  // Optional additional color
                     ],
                     hoverOffset: 4,
                 },
@@ -180,27 +158,28 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
             },
         },
     });
+    
     function updateChart() {
-        // Chuyển các giá trị từ mảng tongBillStatuses thành mảng dữ liệu cho biểu đồ
+        // Map the status data to the correct colors and order
         const data = [
-            // $scope.tongBillStatuses[1] || 0,
-            ($scope.tongBillStatuses[2] || 0) + ($scope.tongBillStatuses[9] || 0),
-            ($scope.tongBillStatuses[3] || 0) + ($scope.tongBillStatuses[10] || 0),
-            // $scope.tongBillStatuses[4] || 0,
+            // Hủy (Canceled) - Red
             ($scope.tongBillStatuses[5] || 0) + ($scope.tongBillStatuses[6] || 0),
-            ($scope.tongBillStatuses[7] || 0) + ($scope.tongBillStatuses[8] || 0) + ($scope.tongBillStatuses[81] || 0),
-            // $scope.tongBillStatuses[11] || 0,
-            // $scope.tongBillStatuses[12] || 0,
-            ($scope.tongBillStatuses[13] || 0) + ($scope.tongBillStatuses[33] || 0),
-            $scope.tongBillStatuses[21] || 0,
-            // ($scope.tongBillStatuses[30] || 0) + ($scope.tongBillStatuses[31] || 0),
-            ($scope.tongBillStatuses[32] || 0) + ($scope.tongBillStatuses[12] || 0),
+    
+            // Thành công (Successful) - Green
+            ($scope.tongBillStatuses[21] || 0) +     ($scope.tongBillStatuses[32] || 0),
+    
+            // Trả hàng (Return) - Orange
+            ($scope.tongBillStatuses[32] || 0)
+    
+            // Additional statuses
+       
         ];
-
-        // Cập nhật dữ liệu của biểu đồ
+    
+        // Update chart data
         myChart.data.datasets[0].data = data;
         myChart.update();
     }
+    
     //===============END Sơ đồ Hình tròn=============================================================
 
     // ===========================get All tổng doang thu======================================
@@ -1075,7 +1054,7 @@ app.controller("DashboardController", function ($scope, $http, $filter) {
                 $scope.getTongDonHangHuyTuyChinh();
                 $scope.getTongSanPhamTuyChinh();
                 $scope.getSanPhamBanChayTuyChinh();
-                // $scope.getTongBillStatusTuyChinh();
+                $scope.getTongBillStatusTuyChinh();
                 $scope.getKhachHangMuaNhieuNhatTuyChinh();
                 // $scope.getTongBillStatus = function (url) {
                 //     return $http.get(url); // $http.get tự động trả về promise
@@ -1204,16 +1183,12 @@ $scope.totalPages = 0;
 $scope.currentPage = 0;
 $scope.desiredPage5 = 1;
 $scope.size = 5; // Thay đổi thành kích thước mặc định bạn muốn
-$scope.filters = {
-    name: null,
-    price: null,
-    totalQuantity: 100, // Bộ lọc tổng số lượng
-};
+$scope.fillTotalQuantity = 100, // Bộ lọc tổng số lượng
 
 $scope.getProductDetall = function (pageNumber) {
     let params = angular.extend(
-        { pageNumber: pageNumber, size: $scope.size },
-        $scope.filters
+        { pageNumber: pageNumber, size: $scope.size , totalQuantity :$scope.fillTotalQuantity }
+        
     );
     $http
         .get("http://localhost:8080/api/admin/product-tinh/page-product", {
@@ -1222,17 +1197,11 @@ $scope.getProductDetall = function (pageNumber) {
         .then(function (response) {
             if (response.data && response.data.content) {
                 $scope.filterProductDetall = response.data.content;
-
                 // Xử lý ảnh và số lượng
                 $scope.filterProductDetall.forEach(function (product) {
                     product.sizes = product.sizes || []; // Đảm bảo sizes là mảng, tránh lỗi khi không có kích cỡ
 
-                    // Xử lý ảnh
-                    if (product.image) {
-                        product.mainImage = product.image; // Lấy ảnh đầu tiên
-                    } else {
-                        product.mainImage = null; // Nếu không có ảnh, đặt giá trị mặc định
-                    }
+         
 
                     // Đảm bảo có đủ thông tin cho số lượng
                     product.totalQuantity = product.totalQuantity || 0;
