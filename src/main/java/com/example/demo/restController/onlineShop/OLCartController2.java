@@ -62,7 +62,7 @@ public class OLCartController2 {
                         olCartResponse.setPrice(olProductService2.getProductPriceById(product.getId()));
                         olCartResponse.setPromotionalPrice(olProductService2.findPromotionalPriceByProductId(product.getId()));
                         olCartResponse.setCart(cartDetail.getCart());
-                        olCartResponse.setName(product.getName() +  product.getCategory().getName() + product.getMaterial().getName());
+                        olCartResponse.setName(product.getName() + " " + product.getCategory().getName() + " " + product.getMaterial().getName());
                         olCartResponse.setNameColor(cartDetail.getProductDetail().getColor().getName());
                         olCartResponse.setNameSize(cartDetail.getProductDetail().getSize().getName());
                         olCartResponse.setProductDetail(cartDetail.getProductDetail());

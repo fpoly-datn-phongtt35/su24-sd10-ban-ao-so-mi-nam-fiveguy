@@ -32,7 +32,7 @@
             <div class="d-flex justify-content-between">
               <div class="tile-product_left">
                 <span class="product-title">
-                    {{ productDetailInfo.productInfo.productName }} {{ productDetailInfo.productInfo.categoryName }} {{ productDetailInfo.productInfo.materialName }} {{ productDetailInfo.productInfo.code }}
+                    {{ productDetailInfo.productInfo.productName }} {{ productDetailInfo.productInfo.categoryName }} {{ productDetailInfo.productInfo.materialName }}
                 </span>
             </div>
             
@@ -133,9 +133,11 @@
       <div style="display: flex;">
           <div class="quantity-input">
               <input style="border: 1px solid; border-radius: 5px; margin-right: 4px;" type="number"
-                     ng-model="quantitySelected" min="1" max="100" ng-change="checkQuantityChange2(quantitySelected)" />
+                     ng-model="quantitySelected" min="1"  ng-change="checkQuantityChange2(quantitySelected)" />
           </div>
-      
+      <div>
+        
+      </div>
           <a ng-if="productDetail.quantity > 0" ng-click="cart.add(productDetail.id, quantitySelected)"
              class="add-to-cart btn btn-warning shadow-0">
               Thêm vào giỏ hàng
@@ -297,8 +299,7 @@
               <img class="card-img-top rounded-2 size-img"  loading="lazy"
               ng-src="{{ product.imagePath }}" />
               <h3 class="product-grid__title">
-                  <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }}
-                      {{ product.product.category.name }}
+                  <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }} {{ product.product.category.name }} {{ product.product.material.name }}
                   </a>
               </h3>
         
