@@ -439,7 +439,12 @@ app.controller("ProductController", function($scope, $http, $timeout){
                 transformRequest: angular.identity
             }).then(response => {
                 response.data.forEach(image => {
-                    $scope.color.images.push(image);
+                    $scope.color.images.push({
+                         "name": image.name,
+                         "path": image.path,
+                         "status": 1,
+                         "isNew": true
+                    });
                 });
             }).catch(error => {
                 console.error("Error uploading images:", error);
