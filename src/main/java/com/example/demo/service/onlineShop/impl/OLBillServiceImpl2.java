@@ -245,7 +245,9 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 //                updateVoucherOnBillCancellation(id);
 //            }
 //            vc fix dot2
-            updateVoucherOnBillCancellation(bill.getVoucher());
+            if (optionalBill.get().getStatus() == 2){
+                updateVoucherOnBillCancellation(bill.getVoucher());
+            }
             return olBillRepository.save(existingBill);
         }
         return null;
