@@ -249,8 +249,9 @@ public static String encodeId(long id) {
 ////                        huyPaymentStatus
 //                        newPaymentStatusAndBillHistory( bill, bill.getCustomer(),5,3,0);
 //                        bill.setPaidAmount(new BigDecimal(0));
+//            vc fix dot2
 
-
+                        olBillService.updateVoucherOnBillCancellation(bill.getVoucher());
                         olBillService.deleteBill(bill);
                     }
                 }
