@@ -45,7 +45,7 @@ public class ProductServiceTHImpl implements ProductServiceTH {
                 productRequest.getCollar()
         );
         if (productExists) {
-            throw new DuplicateException("Trùng sản phẩm", "duplicate");
+            throw new DuplicateException("Sản phẩm đã tồn tại", "duplicate");
         }
         Product product = new Product();
         product.setCode(productRequest.getCode());
