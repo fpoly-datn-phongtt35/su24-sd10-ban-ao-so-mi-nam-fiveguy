@@ -868,10 +868,8 @@ app.controller("ProductController", function($scope, $http, $timeout){
     }
 
     $scope.err = (err) => {
-        if (err.code) {
-            toastr["error"](err.code);
-        } else if (err.name) {
-            toastr["error"](err.name);
+        if (err.duplicate) {
+            toastr["error"](err.duplicate);
         } else if (err.price) {
             toastr["error"](err.price);
         } else if (err.brand) {

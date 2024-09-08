@@ -37,9 +37,15 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Product create(ProductRequestTH productRequest, String fullName) {
-        Product exProductByCode = productRepository.findByCode(productRequest.getCode());
-        if (exProductByCode != null) {
-            throw new DuplicateException("Trùng mã sản phẩm", "code");
+        boolean productExists = productRepository.existsByCategoryAndBrandAndMaterialAndWristAndCollar(
+                productRequest.getCategory(),
+                productRequest.getBrand(),
+                productRequest.getMaterial(),
+                productRequest.getWrist(),
+                productRequest.getCollar()
+        );
+        if (productExists) {
+            throw new DuplicateException("Trùng sản phẩm", "duplicate");
         }
         Product product = new Product();
         product.setCode(productRequest.getCode());
@@ -94,9 +100,15 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Product update(ProductRequestTH productRequestTH, Long id, String fullName) {
-        Product exProductByCode = productRepository.findByCode(productRequestTH.getCode());
-        if (exProductByCode != null && !exProductByCode.getId().equals(id)) {
-            throw new DuplicateException("Trùng mã sản phẩm", "code");
+        boolean productExists = productRepository.existsByCategoryAndBrandAndMaterialAndWristAndCollar(
+                productRequestTH.getCategory(),
+                productRequestTH.getBrand(),
+                productRequestTH.getMaterial(),
+                productRequestTH.getWrist(),
+                productRequestTH.getCollar()
+        );
+        if (productExists) {
+            throw new DuplicateException("Sản phẩm đã tồn tại", "duplicate");
         }
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
