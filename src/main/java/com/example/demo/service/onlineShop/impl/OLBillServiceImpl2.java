@@ -124,7 +124,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
                         return ResponseEntity.ok(3); // Add a different response code to handle this case
                     }
                 }
-                updateVoucherOnBillCheckout(existingVoucher);
+//                updateVoucherOnBillCheckout(existingVoucher);
 
             } else {
                 return ResponseEntity.ok(3); // Existing condition: Voucher not valid
@@ -245,9 +245,9 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 //                updateVoucherOnBillCancellation(id);
 //            }
 //            vc fix dot2
-            if (optionalBill.get().getStatus() == 2){
-                updateVoucherOnBillCancellation(bill.getVoucher());
-            }
+//            if (optionalBill.get().getStatus() == 2){
+//                updateVoucherOnBillCancellation(bill.getVoucher());
+//            }
             return olBillRepository.save(existingBill);
         }
         return null;
@@ -259,29 +259,29 @@ public class OLBillServiceImpl2 implements OLBillService2 {
     }
 //            vc fix dot2
 
-    @Transactional
-    @Override
-    public void updateVoucherOnBillCancellation(Voucher usedVoucher) {
-        if (usedVoucher != null) {
-            // Tăng số lượng voucher lên 1
-            usedVoucher.setQuantity(usedVoucher.getQuantity() + 1);
-            voucherRepository.save(usedVoucher);
-        }
+//    @Transactional
+//    @Override
+//    public void updateVoucherOnBillCancellation(Voucher usedVoucher) {
+//        if (usedVoucher != null) {
+//            // Tăng số lượng voucher lên 1
+//            usedVoucher.setQuantity(usedVoucher.getQuantity() + 1);
+//            voucherRepository.save(usedVoucher);
+//        }
 
 
 
-    }
+//    }
 //            vc fix dot2
 
-    @Transactional
-    public void updateVoucherOnBillCheckout(Voucher usedVoucher) {
-        if (usedVoucher != null) {
-            // Tăng số lượng voucher lên 1
-            usedVoucher.setQuantity(usedVoucher.getQuantity() - 1);
-            voucherRepository.save(usedVoucher);
-        }
-
-
-    }
+//    @Transactional
+//    public void updateVoucherOnBillCheckout(Voucher usedVoucher) {
+//        if (usedVoucher != null) {
+//            // Tăng số lượng voucher lên 1
+//            usedVoucher.setQuantity(usedVoucher.getQuantity() - 1);
+//            voucherRepository.save(usedVoucher);
+//        }
+//
+//
+//    }
 
 }
