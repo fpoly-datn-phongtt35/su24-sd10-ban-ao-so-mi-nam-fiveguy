@@ -318,61 +318,25 @@ public class NBillDetailServiceImpl implements NBillDetailService {
 
         Bill bill = billOptional.get();
 
-        //bill khác 1 không sửa được
-        if(bill.getStatus() != 1) return;
-
+        // bill khác 1 không sửa được
+        if (bill.getStatus() != 1) return;
 
         BigDecimal totalAmountSale = calculateTotalAmountSale(bill.getId());
-        BigDecimal currentTotalAmount = bill.getTotalAmount();
         Voucher currentVoucher = bill.getVoucher();
 
         bill.setTotalAmount(totalAmountSale);
-        // Tìm voucher tốt nhất cho tổng tiền mới
-        Voucher bestVoucher = findBestVoucher(bill.getId());
 
-
-        // Tính toán giá trị giảm giá
-        BigDecimal currentDiscountValue = (currentVoucher != null) ? calculateDiscount(
-                currentVoucher,
-                bill.getTotalAmount()) : BigDecimal.ZERO;
-        ;
-        BigDecimal bestDiscountValue = (bestVoucher != null) ? calculateDiscount(bestVoucher,
-                bill.getTotalAmount()) : BigDecimal.ZERO;
-
-
-        // Quyết định voucher nào sẽ được áp dụng
-        Voucher voucherToApply;
-        BigDecimal discountToApply;
-
-        if (bestVoucher == null ||
-                !isVoucherApplicable(bestVoucher, totalAmountSale, bill.getCustomer(), bill)) {
-            voucherToApply = null;
-            discountToApply = BigDecimal.ZERO;
-        } else if (currentVoucher == null ||
-                !isVoucherApplicable(currentVoucher, totalAmountSale, bill.getCustomer(), bill) ||
-                bestDiscountValue.compareTo(currentDiscountValue) > 0) {
-            voucherToApply = bestVoucher;
-            discountToApply = bestDiscountValue;
-        } else {
-            voucherToApply = currentVoucher;
-            discountToApply = currentDiscountValue;
+        // Calculate discount only if the voucher is applicable
+        BigDecimal discountToApply = BigDecimal.ZERO;
+        if (currentVoucher != null && isVoucherApplicable(currentVoucher, totalAmountSale, bill.getCustomer(), bill)) {
+            discountToApply = calculateDiscount(currentVoucher, totalAmountSale);
         }
 
-
         // Cập nhật bill
-//        bill.setTotalAmount(totalAmountSale);
         bill.setTotalAmountAfterDiscount(totalAmountSale.subtract(discountToApply));
-        bill.setVoucher(voucherToApply);
-
-//        changePricePayment(bill, totalAmountSale.subtract(discountToApply));
 
         // Lưu bill
         billRepository.save(bill);
-
-        // Cập nhật số lượng voucher nếu có thay đổi
-//        if (!Objects.equals(voucherToApply, currentVoucher)) {
-//            updateVoucherQuantities(currentVoucher, voucherToApply);
-//        }
     }
 
     private void updateVoucherQuantities(Voucher oldVoucher, Voucher newVoucher) {

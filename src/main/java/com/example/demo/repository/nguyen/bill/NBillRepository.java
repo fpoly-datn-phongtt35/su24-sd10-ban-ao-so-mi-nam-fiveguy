@@ -80,5 +80,8 @@ public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecifica
                                   @Param("toDate") Date toDate,
                                   Pageable pageable);
 
+    @Query("SELECT COUNT(b) FROM Bill b WHERE b.customer.id = :customerId AND b.voucher.id = :voucherId")
+    long countByCustomerIdAndVoucherId(@Param("customerId") Long customerId, @Param("voucherId") Long voucherId);
 
+    List<Bill> findByVoucherNotNullAndStatusIn(List<Integer> asList);
 }

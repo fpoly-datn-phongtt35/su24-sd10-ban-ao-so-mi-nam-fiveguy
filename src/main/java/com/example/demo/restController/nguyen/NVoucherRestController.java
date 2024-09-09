@@ -3,6 +3,7 @@ package com.example.demo.restController.nguyen;
 import com.example.demo.entity.Voucher;
 import com.example.demo.model.request.nguyen.VoucherRequest;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
+import com.example.demo.model.response.nguyen.VoucherApplicability;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
 import com.example.demo.security.service.SCAccountService;
 import com.example.demo.service.nguyen.NVoucherService;
@@ -129,5 +130,10 @@ public class NVoucherRestController {
     @GetMapping("/findAllVoucherCanUse/{billId}")
     public List<Voucher> findAllVoucherCanUse(@PathVariable Long billId){
         return voucherService.findAllVoucherCanUse(billId);
+    }
+
+    @GetMapping("/findAllVoucherCanUseV2/{billId}")
+    public List<VoucherApplicability> findAllVoucherCanUseV2(@PathVariable Long billId){
+        return voucherService.findAllVoucherCanUseV2(billId);
     }
 }

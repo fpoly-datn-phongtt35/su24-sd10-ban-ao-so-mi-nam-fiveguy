@@ -262,6 +262,10 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $location.path('/admin/return-order/' + $scope.idBill);
     }
 
+    $scope.goToReturnOrderv2 = function () {
+        $location.path('/admin/return-order-v2/' + $scope.idBill);
+    }
+
     $scope.reasonsList = {
         1: { text: "Khách yêu cầu hủy", value: 1, status: 0, shortenText: "" },
         2: { text: "Khách không phản hồi", value: 2, status: 0, shortenText: "" },
@@ -1295,6 +1299,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $http.get(apiVoucher + "/findAllVoucherCanUse/" + $scope.idBill).then(function (res) {
             $scope.vouchers = res.data
         })
+        
+        $http.get(apiVoucher + "/findAllVoucherCanUseV2/" + $scope.idBill).then(function (res) {
+            $scope.vouchersV2 = res.data
+            console.log(res.data);
+        })
     }
     $scope.getAllVoucherCanUse()
 
@@ -1303,6 +1312,8 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             $scope.getBillById($scope.idBill)
             $scope.getAllVoucherCanUse()
 
+            $scope.showSuccess("Cập nhật mã giảm giá thành công");
+            $('#modalListVoucher').modal('hide');
             //gọi lại paymentStatus
             // $scope.getAllPaymentStatus($scope.idBill)
         })

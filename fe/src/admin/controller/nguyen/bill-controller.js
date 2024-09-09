@@ -148,13 +148,14 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http,$timeout) {
     //     11: { title: "Hoàn hàng", icon: "warehouse", status: 11, color: "#ed79ff" }
     // };
 
-     $scope.status = {
+    $scope.status = {
         20: { title: "Tạo đơn hàng", icon: "post_add", status: 20 },
         1: { title: "Chờ xác nhận", icon: "hourglass_empty", status: 1 },
         2: { title: "Chờ giao hàng", icon: "inventory", status: 2 },
         3: { title: "Đang giao hàng", icon: "local_shipping", status: 3 },
         4: { title: "Đã giao hàng", icon: "check_circle", status: 4 },
-        60: { title: "Chờ nhập hàng", icon: "not_interested", status: 60 },
+
+        60: { title: "Chờ nhập hàng", icon: "not_interested", status: 50 },
 
         50: { title: "Yêu cầu hủy", icon: "cancel", status: 50 },
         5: { title: "Khách hủy", icon: "cancel", status: 5 },
@@ -172,12 +173,13 @@ app.controller('nguyen-bill-ctrl', function ($scope, $http,$timeout) {
         13: { title: "Hoàn hàng thất bại", icon: "assignment_return", status: 13 },
 
         21: { title: "Hoàn thành", icon: "task_alt", status: 21 },
-        // 22: { title: "Thành công", icon: "task_alt", status: 20 },
+        22: { title: "Thành công", icon: "task_alt", status: 20 },
 
         30: { title: "Trả hàng", icon: "store", status: 30 },  //tại quầy
-        // 31: { title: "Trả hàng", icon: "local_shipping", status: 31 },  //tận nơi
+        31: { title: "Trả hàng", icon: "local_shipping", status: 31 },  //tận nơi
         32: { title: "Đã trả hàng", icon: "inventory_2", status: 32 },
         33: { title: "Trả hàng thất bại", icon: "assignment_late", status: 33 },
+
     };
 
 

@@ -2,6 +2,7 @@ package com.example.demo.service.nguyen.impl;
 
 import com.example.demo.entity.*;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
+import com.example.demo.model.response.nguyen.VoucherApplicability;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
 import com.example.demo.repository.nguyen.*;
 import com.example.demo.repository.nguyen.bill.NBillDetailRepository;
@@ -24,10 +25,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -136,24 +134,14 @@ public class NVoucherServiceImpl implements NVoucherService {
                 voucherRepository.save(v);
             }
         }
-
-//            Voucher voucher = voucherRepository.findById(voucherRequest.getId())
-//                    .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
-//
-//            if (bill.getVoucher() != null && bill.getVoucher().getId().equals(voucher.getId())) {
-//                voucher = null;
-//                bill.setTotalAmountAfterDiscount(bill.getTotalAmount());
-//
-//
-//            bill.setVoucher(voucher);
-//
-//            billRepository.save(bill);
     }
 
     @Scheduled(fixedRate = 60000)
     public void autoUpdateStatus() {
         updateStatus();
-        updateBillsWithNewVouchers();
+        updateBillsWithInvalidVouchers();
+//        updateBillsWithNewVouchers();
+
     }
 
     @Transactional
@@ -162,12 +150,53 @@ public class NVoucherServiceImpl implements NVoucherService {
 
         for (Bill bill : billsToUpdate) {
             //neu status = 1 ms sua
-            if(bill.getStatus() == 1){
+            if (bill.getStatus() == 1) {
                 Voucher bestVoucher = findBestVoucher(bill);
                 updateBillWithNewVoucher(bill, bestVoucher);
             }
         }
     }
+
+    @Transactional
+    public void updateBillsWithInvalidVouchers() {
+        List<Bill> billsToUpdate = findBillsWithInvalidVouchersV2();
+        Date currentDate = new Date();
+
+        for (Bill bill : billsToUpdate) {
+            Voucher voucher = bill.getVoucher();
+            if (voucher != null && (voucher.getStatus() == 2 || voucher.getEndDate().before(currentDate))) {
+//                returnVoucherQuantity(voucher);
+                bill.setVoucher(null);
+                // Cập nhật lại tổng tiền sau khi xóa voucher
+                bill.setTotalAmountAfterDiscount(bill.getTotalAmount());
+                billRepository.save(bill);
+            }
+        }
+
+    }
+
+    private void returnVoucherQuantity(Voucher voucher) {
+        if (voucher != null) {
+            Integer currentQuantity = voucher.getQuantity();
+            Integer currentNumberOfUses = voucher.getNumberOfUses();
+
+            if (currentNumberOfUses != null && currentNumberOfUses > 0) {
+                voucher.setNumberOfUses(currentNumberOfUses - 1);
+            }
+
+            if (currentQuantity != null) {
+                voucher.setQuantity(currentQuantity + 1);
+            }
+
+            // Lưu cập nhật voucher
+            voucherRepository.save(voucher);
+        }
+    }
+
+    private List<Bill> findBillsWithInvalidVouchersV2() {
+        return billRepository.findByVoucherNotNullAndStatusIn(Arrays.asList(1)); // Giả sử các trạng thái 1, 2, 3 là các trạng thái hợp lệ cho việc cập nhật
+    }
+
 
     List<Bill> findBillsWithInvalidVouchers() {
         Date currentDate = new Date();
@@ -464,7 +493,7 @@ public class NVoucherServiceImpl implements NVoucherService {
     @Transactional(readOnly = true)
     public List<Voucher> findAllVoucherCanUse(Long billId) {
         Bill bill = billRepository.findById(billId)
-                .orElseThrow(() ->  new RuntimeException("Bill not found"));
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
 
         BigDecimal totalAmount = calculateTotalAmountSale(billId);
         List<Voucher> vouchers = voucherRepository
@@ -477,22 +506,13 @@ public class NVoucherServiceImpl implements NVoucherService {
                 listVoucher.add(voucher);
             }
         }
-//
-//        int count = 0;
-//        for (Voucher voucher: listVoucher){
-//            if(voucher == bill.getVoucher()){
-//                count++;
-//            }
-//        }
-//        if(count == 0){
-//            listVoucher.add(bill.getVoucher());
-//        }
 
         listVoucher.sort((v1, v2) -> calculateDiscount(v2, totalAmount)
                 .compareTo(calculateDiscount(v1, totalAmount)));
 
         return listVoucher;
     }
+
 
     public BigDecimal calculateTotalAmountSale(Long billId) {
         List<BillDetail> billDetails = billDetailRepository.findByBillId(billId);
@@ -528,7 +548,8 @@ public class NVoucherServiceImpl implements NVoucherService {
 
         // New logic for applyfor
         if (voucher.getApplyfor() == 1) {
-            if (customer == null || customer.getCustomerType() == null || customer.getCustomerType().getStatus() != 1 ||
+            if (customer == null || customer.getCustomerType() == null ||
+                    customer.getCustomerType().getStatus() != 1 ||
                     !customerTypeVoucherRepository.findAllByVoucherId(voucher.getId()).stream()
                             .anyMatch(ctv -> ctv.getCustomerType()
                                     .equals(customer.getCustomerType()))) {
@@ -536,21 +557,12 @@ public class NVoucherServiceImpl implements NVoucherService {
             }
         }
 
-        // Check the number of uses limit using repository
-//        if (voucher.getNumberOfUses() != null && customer != null) {
-//            long usedCount = billRepository
-//                    .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-//                            List.of(5, 6, 1));  //Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
-//
-//            if (usedCount >= voucher.getNumberOfUses() && !isCurrentBillUsingVoucher) {
-//                return false; // Voucher usage limit reached
-//            }
-//        }
 
         if (voucher.getApplyfor() != 0 && voucher.getNumberOfUses() != null && customer != null) {
             long usedCount = billRepository
                     .countByCustomerIdAndVoucherIdAndStatusNotIn(customer.getId(), voucher.getId(),
-                            List.of(5, 6, 1, 20, 100));  // Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+                            List.of(5, 6, 1, 20,
+                                    100));  // Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
 
             // Kiểm tra nếu voucher đang được sử dụng trong bill hiện tại
 //            boolean isCurrentBillUsingVoucher =
@@ -590,4 +602,88 @@ public class NVoucherServiceImpl implements NVoucherService {
 
         return BigDecimal.ZERO;
     }
+
+
+    // Lấy số lượt sử dụng voucher của khách hàng
+    public long getVoucherUsageByCustomer(Long customerId, Long voucherId) {
+        // Adjust this query to accurately count how many times a customer used a specific voucher
+        return billRepository.countByCustomerIdAndVoucherId(customerId, voucherId);
+    }
+
+    // Lấy danh sách voucher với khả năng sử dụng cho khách hàng
+    @Override
+    public List<VoucherApplicability> findAllVoucherCanUseV2(Long billId) {
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new RuntimeException("Bill not found"));
+
+        List<Voucher> vouchers = voucherRepository.findAll();
+        List<VoucherApplicability> applicabilityList = new ArrayList<>();
+
+        for (Voucher voucher : vouchers) {
+            if(checkVisibity(voucher, bill)){
+                boolean isApplicable = checkVoucherApplicability(voucher, bill); // Logic kiểm tra voucher có áp dụng được không
+                long usedCount = billRepository
+                        .countByCustomerIdAndVoucherIdAndStatusNotIn(bill.getCustomer().getId(), voucher.getId(),
+                                List.of(5, 6, 20,
+                                        100));
+
+                VoucherApplicability applicability = new VoucherApplicability(voucher, isApplicable, usedCount, "Reason if needed");
+                applicabilityList.add(applicability);
+            }
+        }
+
+        return applicabilityList;
+    }
+
+    private boolean checkVoucherApplicability(Voucher voucher, Bill bill) {
+
+        if (voucher.getQuantity() == 0) {
+            return false;
+        }
+
+        if (bill.getTotalAmount().compareTo(BigDecimal.valueOf(voucher.getMinimumTotalAmount())) < 0) {
+            return false; // Giá trị đơn hàng nhỏ hơn yêu cầu tối thiểu
+        }
+
+        if (voucher.getApplyfor() != 0 && voucher.getNumberOfUses() != null && bill.getCustomer() != null) {
+            long usedCount = billRepository
+                    .countByCustomerIdAndVoucherIdAndStatusNotIn(bill.getCustomer().getId(), voucher.getId(),
+                            List.of(5, 6, 1, 20,
+                                    100));  // Bỏ 1 nếu muốn hiển thị khi voucher chưa xác nhận
+
+            if (usedCount >= voucher.getNumberOfUses()) {
+                return false; // Giới hạn số lần sử dụng voucher đã đạt
+            }
+        }
+
+        // Nếu tất cả điều kiện đều đúng, voucher có thể sử dụng
+        return true;
+    }
+
+    private boolean checkVisibity(Voucher voucher, Bill bill) {
+        // 1. Kiểm tra trạng thái voucher
+        if (voucher.getStatus() != 1) {
+            return false; // Voucher không hoạt động
+        }
+
+        // 4. Kiểm tra loại khách hàng
+        if (voucher.getApplyfor() == 1) { // Nếu voucher yêu cầu loại khách hàng cụ thể
+            if (bill.getCustomer() == null || bill.getCustomer().getCustomerType() == null) {
+                return false; // Không có thông tin khách hàng hoặc loại khách hàng
+            }
+
+            // Kiểm tra loại khách hàng có hợp lệ hay không
+            boolean isCustomerTypeValid = customerTypeVoucherRepository
+                    .findAllByVoucherId(voucher.getId()).stream()
+                    .anyMatch(ctv -> ctv.getCustomerType().getId().equals(bill.getCustomer().getCustomerType().getId()));
+
+            if (!isCustomerTypeValid) {
+                return false; // Loại khách hàng không phù hợp
+            }
+        }
+
+        // Nếu tất cả điều kiện đều đúng, voucher có thể sử dụng
+        return true;
+    }
+
 }
