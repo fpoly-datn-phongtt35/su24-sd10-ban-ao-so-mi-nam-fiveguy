@@ -40,5 +40,5 @@ public interface OLBillService2 {
     void deleteBill(Bill bill);
 //            vc fix dot2
 
-     void updateVoucherOnBillCancellation(Voucher usedVoucher);
+//     void updateVoucherOnBillCancellation(Voucher usedVoucher);
 }

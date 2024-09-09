@@ -251,7 +251,7 @@ public static String encodeId(long id) {
 //                        bill.setPaidAmount(new BigDecimal(0));
 //            vc fix dot2
 
-                        olBillService.updateVoucherOnBillCancellation(bill.getVoucher());
+//                        olBillService.updateVoucherOnBillCancellation(bill.getVoucher());
                         olBillService.deleteBill(bill);
                     }
                 }
