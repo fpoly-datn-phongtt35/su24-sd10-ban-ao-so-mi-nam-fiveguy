@@ -5,7 +5,7 @@ app.controller("ColorController", function($scope, $http){
     $scope.filter = {
         keyword: '',
         sortField: 'createdAt',
-        sortDirection: 'ASC'
+        sortDirection: 'DESC'
     };
     $scope.color = {};
     $scope.colorUpdate = {};

@@ -23,17 +23,10 @@
                         <input type="text" id="search" ng-model="filter.keyword" class="form-control" placeholder="Tên màu sắc...">
                     </div>
                     <div class="col-sm-3 d-flex flex-column">
-                        <label for="sortField">Sắp xếp theo</label>
-                        <select ng-model="filter.sortField" class="form-select" id="sortField">
-                            <option value="createdAt">Thời gian tạo</option>
-                            <option value="updatedAt">Thời gian cập nhật</option>
-                          </select>
-                    </div>
-                    <div class="col-sm-3 d-flex flex-column">
                         <label for="sortDirection">Thứ tự</label>
                         <select ng-model="filter.sortDirection" class="form-select" id="sortDirection">
-                            <option value="ASC">Tăng dần</option>
-                            <option value="DESC">Giảm dần</option>
+                            <option value="DESC">Mới nhất</option>
+                            <option value="ASC">Cũ nhất</option>
                           </select>
                     </div>
                     <div class="col-sm-3 d-flex flex-column">   
@@ -44,14 +37,16 @@
                             <option value="0">Ngừng hoạt động</option>
                           </select>
                     </div>
+                    <div class="col-sm-3 d-flex flex-column">
+                        <div class="w-100 h-100"></div>
+                        <button ng-click="searchColors()" style="width: 150px;" class="btn btn-primary d-flex justify-content-center" type="submit" id="button-addon2">
+                            <span class="material-icons">
+                                search
+                            </span>Tìm kiếm
+                        </button>
+                    </div>
                 </div>
-                <div class="row mx-0 justify-content-end px-3 mb-4">
-                    <button ng-click="searchColors()" style="width: 150px;" class="btn btn-primary d-flex justify-content-center" type="submit" id="button-addon2">
-                        <span class="material-icons">
-                            search
-                        </span>Tìm kiếm
-                    </button>
-                </div>
+              
                 <div class="position-relative">
                     <table class="table table-striped table-hover text-center">
                         <thead>
@@ -59,7 +54,7 @@
                                 <th>STT</th>
                                 <th>Tên</th>
                                 <th>Màu</th>
-                                <th>Thời gian</th>
+                                <th>Trạng thái</th>
                                 <th>Hành động</th>
                             </tr>
                         </thead>
@@ -71,10 +66,9 @@
                             <tr ng-repeat="(index, color) in colors.content">
                                 <th>{{index + 1}}</th>
                                 <th>{{color.name}}</th>
-                                <th><div class="d-flex justify-content-center"><input type="color" class="form-control form-control-color" ng-value="color.colorCode" id="exampleColorInput" title="{{color.colorCode}}" disabled></div></th>
-                                <th class="d-flex align-items-center flex-column">
+                                <th><input type="color" class="form-control m-auto form-control-color" ng-value="color.colorCode" id="exampleColorInput" title="{{color.colorCode}}" disabled></th>
+                                <th>
                                     <button type="button" class="btn btn-sm" ng-class="{'btn-success': color.status === 1, 'btn-danger': color.status === 0}">{{ color.status === 1 ? 'Hoạt động' : 'Ngừng hoạt động' }}</button>
-                                    <span>{{color.createdAt | date : "hh:mm dd-MM-yyyy" : 0}} - {{color.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span>
                                 </th>   
                                 <th>
                                     <a ng-click="editColor(color.id)" data-bs-target="#editColorModal" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
@@ -168,6 +162,12 @@
                                         <label for="colorCode" class="form-label">Chọn màu</label>
                                         <input type="color" ng-model="colorUpdate.colorCode" class="form-control form-control-color" id="exampleColorInput" title="Choose your color" required>
                                         <p class="text-danger" ng-if="errorsUpdate.colorCode">{{errorsUpdate.colorCode}}</p>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Thời gian tạo: <span class="ms-2">{{colorUpdate.createdAt | date : "hh:mm dd-MM-yyyy" : 0}}</span></label>
+                                    </div>
+                                    <div ng-if="colorUpdate.updatedAt" class="form-group mt-2">
+                                        <label>Thời gian cập nhật: <span class="ms-2">{{colorUpdate.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span></label>
                                     </div>
                                 </div>
                                 <div class="modal-footer">

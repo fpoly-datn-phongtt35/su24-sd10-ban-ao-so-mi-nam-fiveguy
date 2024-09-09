@@ -192,21 +192,14 @@
                                                 <td>{{ staticCustomer.customerName }}</td>
                                                 <td>{{ staticCustomer.customerPhone }} <br> {{ staticCustomer.customerEmail }}</td>
                                                 <td>{{ staticCustomer.numberOfPurchases }}</td>
-                                                <!-- <td>{{ formatCurrency(staticCustomer.totalAmountBeforeDiscount) }}đ</td> -->
-                                        
                                                 <td>{{ formatCurrency(staticCustomer.totalDiscountAmount) }}đ</td>
-                                                <!-- <td>{{ formatCurrency(staticCustomer.totalAmountAfterDiscount) }}đ</td> -->
                                                 <td>
                                                     <button class="btn btn-primary" ng-click="showCustomerDetails(staticCustomer, $index)">
                                                         Xem
                                                     </button>
                                                 </td>
                                             </tr>
-                                            <!-- <tbody style="margin-top: 10px;" ng-if="selectedCustomerProducts.length > 0"> -->
-
                                                 <tr ng-if="selectedCustomerProducts.length > 0" style="white-space: nowrap;">
-                                                    
-                                                    
                                                     <th>Sản phẩm</th>
                                                     <th>Số lượng</th>
                                                     <th>Giá</th>
@@ -340,7 +333,7 @@
                                         Mức giảm giá là bắt buộc.
                                     </div>
                                     <div class="text-danger" ng-show="!saleForm.value.$error.required && saleForm.value.$error.max && (saleForm.value.$touched || saleForm.$submitted)">
-                                        Mức giảm giá không được vượt quá 100 cho loại giảm giá phần trăm.
+                                        Mức giảm giá không được vượt quá 50 cho loại giảm giá phần trăm.
                                     </div>
                                 </div>
                                 

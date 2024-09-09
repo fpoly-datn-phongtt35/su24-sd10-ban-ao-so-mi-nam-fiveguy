@@ -16,23 +16,23 @@ public interface BillServiceTinh {
 
     void updateBillStatus(Long id);
 
-    Page<ThongKe> getSanPhamBanChayNgay(Date date, Pageable pageable);
+    Page<ThongKe> getSanPhamBanChayNgay( Pageable pageable);
 
-    Page<ThongKe> getSanPhamBanChayTuan(Date date, Pageable pageable);
+    Page<ThongKe> getSanPhamBanChayTuan( Pageable pageable);
 
-    Page<ThongKe> getSanPhamBanChayThang(Date date, Pageable pageable);
+    Page<ThongKe> getSanPhamBanChayThang( Pageable pageable);
 
-    Page<ThongKe> getSanPhamBanChayNam(Date date, Pageable pageable);
+    Page<ThongKe> getSanPhamBanChayNam( Pageable pageable);
 
-    Page<ThongKe> getSanPhamBanChayTrongKhoangThoiGian(Date startDate, Date endDate, Pageable pageable);
+    Page<ThongKe> findSanPhamBanChayTuyChon(Date startDate, Date endDate, Pageable pageable);
 
-    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNgay(Date date, Pageable pageable);
+//    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNgay(Date date, Pageable pageable);
 
-    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuan(Date date, Pageable pageable);
+//    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuan(Date date, Pageable pageable);
 
-    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatThang(Date date, Pageable pageable);
+//    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatThang(Date date, Pageable pageable);
 
-    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNam(Date date, Pageable pageable);
+//    Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatNam(Date date, Pageable pageable);
 
 
     Page<ThongKeKhachHang> getKhachHangMuaNhieuNhatTuyChinh(Date startDate, Date endDate, Pageable pageable);

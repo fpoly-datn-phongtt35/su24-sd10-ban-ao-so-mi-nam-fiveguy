@@ -5,7 +5,7 @@ app.controller("CollarController", function($scope, $http){
     $scope.filter = {
         name: '',
         sortField: 'createdAt',
-        sortDirection: 'ASC'
+        sortDirection: 'DESC'
     };
     $scope.collar = {};
     $scope.collarUpdate = {};

@@ -23,17 +23,10 @@
                         <input type="text" id="search" ng-model="filter.name" class="form-control" placeholder="Tên size...">
                     </div>
                     <div class="col-sm-3 d-flex flex-column">
-                        <label for="sortField">Sắp xếp theo</label>
-                        <select ng-model="filter.sortField" class="form-select" id="sortField">
-                            <option value="createdAt">Thời gian tạo</option>
-                            <option value="updatedAt">Thời gian cập nhật</option>
-                          </select>
-                    </div>
-                    <div class="col-sm-3 d-flex flex-column">
-                        <label for="sortDirection">Thứ tự</label>
+                        <label for="sortDirection">Sắp xếp</label>
                         <select ng-model="filter.sortDirection" class="form-select" id="sortDirection">
-                            <option value="ASC">Tăng dần</option>
-                            <option value="DESC">Giảm dần</option>
+                            <option value="DESC">Mới nhất</option>
+                            <option value="ASC">Cũ nhất</option>
                           </select>
                     </div>
                     <div class="col-sm-3 d-flex flex-column">   
@@ -44,14 +37,16 @@
                             <option value="0">Ngừng hoạt động</option>
                           </select>
                     </div>
+                    <div class="col-sm-3 d-flex flex-column">
+                        <div class="w-100 h-100"></div>
+                        <button ng-click="searchSizes()" style="width: 150px;" class="btn btn-primary d-flex justify-content-center" type="submit" id="button-addon2">
+                            <span class="material-icons">
+                                search
+                            </span>Tìm kiếm
+                        </button>
+                    </div>
                 </div>
-                <div class="row mx-0 justify-content-end px-3 mb-4">
-                    <button ng-click="searchSizes()" style="width: 150px;" class="btn btn-primary d-flex justify-content-center" type="submit" id="button-addon2">
-                        <span class="material-icons">
-                            search
-                        </span>Tìm kiếm
-                    </button>
-                </div>
+               
                 
                 <div class="position-relative">
                     <table class="table table-striped table-hover text-center">
@@ -59,7 +54,7 @@
                             <tr>
                                 <th>STT</th>
                                 <th>Tên</th>
-                                <th>Thời gian</th>
+                                <th>Trạng thái</th>
                                 <th>Hành động</th>
                             </tr>
                         </thead>
@@ -74,7 +69,6 @@
                                
                                 <th class="d-flex align-items-center flex-column">
                                     <button type="button" class="btn btn-sm" ng-class="{'btn-success': size.status === 1, 'btn-danger': size.status === 0}">{{ size.status === 1 ? 'Hoạt động' : 'Ngừng hoạt động' }}</button>
-                                    <span>{{size.createdAt | date : "hh:mm dd-MM-yyyy" : 0}} - {{size.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span>
                                 </th>   
                                 <th>
                                     <a ng-click="editSize(size.id)" data-bs-target="#editSizeModal" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
@@ -159,6 +153,12 @@
                                         <label>Tên size</label>
                                         <input type="text" ng-model="sizeUpdate.name" class="form-control" required>
                                         <p class="text-danger" ng-if="errorsUpdate.name">{{ errorsUpdate.name}}</p>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Thời gian tạo: <span class="ms-2">{{sizeUpdate.createdAt | date : "hh:mm dd-MM-yyyy" : 0}}</span></label>
+                                    </div>
+                                    <div ng-if="sizeUpdate.updatedAt" class="form-group mt-2">
+                                        <label>Thời gian cập nhật: <span class="ms-2">{{sizeUpdate.updatedAt | date : "hh:mm dd-MM-yyyy" : 0}}</span></label>
                                     </div>
                                 </div>
                                 <div class="modal-footer">

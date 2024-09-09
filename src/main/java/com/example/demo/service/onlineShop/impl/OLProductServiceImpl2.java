@@ -271,7 +271,7 @@ public class OLProductServiceImpl2 implements OLProductService2 {
             Integer discountType = (Integer) result[4];
             String imagePath = (String) result[5];
 
-            Product product = productRepository.findById(productId).orElse(null);
+                Product product = productRepository.findById(productId).orElse(null);
 
             return new ProductSaleDetails(
                     productId,

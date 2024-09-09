@@ -5,7 +5,7 @@ app.controller("WristController", function($scope, $http){
     $scope.filter = {
         name: '',
         sortField: 'createdAt',
-        sortDirection: 'ASC'
+        sortDirection: 'DESC'
     };
     $scope.wrist = {};
     $scope.wristUpdate = {};

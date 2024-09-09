@@ -59,7 +59,7 @@
                             ng-click="resetCheckBoxes()"></button>
                     </div>
                     <div class="modal-body">
-                        <form ng-submit="confirmChangeStatus()">
+                        <form ng-submit="confirmCancelOrder()">
                             <div class="modal-body">
                                 <div class="text-center mb-3">
                                     <div class="d-flex align-items-center justify-content-evenly">
@@ -114,8 +114,11 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                                     ng-click="resetCheckBoxes()">Đóng</button>
-                                <button type="submit" class="btn btn-primary" ng-click="printSelectedValues()">Xác
-                                    nhận</button>
+                                <!-- <button type="submit" class="btn btn-primary" ng-click="printSelectedValues()">Xác
+                                    nhận</button> -->
+
+                                    <button type="submit" class="btn btn-primary" >Xác nhận</button>
+
                             </div>
                         </form>
                     </div>
