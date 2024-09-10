@@ -16,6 +16,7 @@ import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class NReturnOrderServiceImpl implements NReturnOrderService {
@@ -67,6 +68,20 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         BillHistory newBillHistory = createNewBillHistory(bill, fullName);
         billHistoryRepository.save(newBillHistory);
 
+        refundProductDetailsQuantities(bill);
+
+        PaymentStatus ps = new PaymentStatus();
+        ps.setCode(generateUniqueCode());
+        ps.setPaymentDate(new Date());
+        ps.setBill(bill);
+        ps.setPaymentAmount(returnOrderSummary.getTongTienTra());
+        ps.setPaymentType(4);
+        ps.setPaymentMethod(1);
+        ps.setNote("Hoàn tiền trả hàng");
+        ps.setCustomerPaymentStatus(3);
+
+        paymentStatusRepository.save(ps);
+
         return savedReturnOrders;
     }
 
@@ -90,7 +105,7 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
 //        }
 //        bill.setTotalAmount(newTotalAmount);
 //        bill.setTotalAmountAfterDiscount(summary.getTongTienDaGiamSauKhiTra());
-        bill.setStatus(30);  // Đảm bảo 23 là trạng thái đúng
+        bill.setStatus(32);  // Đảm bảo 23 là trạng thái đúng
         billRepository.save(bill);
 
     }
@@ -103,12 +118,27 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
         newBillHistory.setReason(0);
         newBillHistory.setType(1);
         newBillHistory.setCreatedBy(fullName);
-        newBillHistory.setStatus(30);  // Đảm bảo 23 là trạng thái đúng
-        newBillHistory.setDescription("Trả hàng");
+        newBillHistory.setStatus(32);  // Đảm bảo 23 là trạng thái đúng
+        newBillHistory.setDescription("Khách trả hàng");
         return newBillHistory;
     }
 
+    public void refundProductDetailsQuantities(Bill bill) {
+        List<ReturnOrder> returnOrders = returnOrderRepository
+                .findAllReturnOrdersByBillIdOrderByCreatedAtDesc(bill.getId());
 
+        for (ReturnOrder returnOrder : returnOrders) {
+            BillDetail billDetail = returnOrder.getBillDetail();
+            ProductDetail productDetail = billDetail.getProductDetail();
+
+            // Only refund the quantity if defectiveQuantity is 0
+            if (returnOrder.getDefectiveQuantity() == 0) {
+                productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
+                productDetail.setUpdatedAt(new Date());
+                productDetailRepository.save(productDetail);
+            }
+        }
+    }
 
     //Trừ số lượng trong billDetail khi hoàn trả
     public void updateBillDetailsQuantities(List<ReturnOrder> returnOrders) {
@@ -117,6 +147,22 @@ public class NReturnOrderServiceImpl implements NReturnOrderService {
             billDetail.setQuantity(billDetail.getQuantity() - returnOrder.getQuantity());
             billDetailRepository.save(billDetail);
         }
+    }
+
+    private static final Random random = new Random();
+    private static final String PREFIX = "TT";
+    private static final int MAX_ATTEMPTS = 1000;
+
+    public String generateUniqueCode() {
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            int randomNumber = random.nextInt(10000);
+            String code = PREFIX + String.format("%04d", randomNumber);
+
+            if (!paymentStatusRepository.existsByCode(code)) {
+                return code;
+            }
+        }
+        throw new RuntimeException("Không thể tạo mã duy nhất sau " + MAX_ATTEMPTS + " lần thử.");
     }
 
 

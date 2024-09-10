@@ -167,7 +167,8 @@ public class NBillServiceImpl implements NBillService {
         if (returnBill.getStatus() == 5 || returnBill.getStatus() == 6) {
             updateVoucherOnBillCancellation(returnBill.getId());
         }
-        if (returnBill.getStatus() == 32 || returnBill.getStatus() == 12) {
+        //returnBill.getStatus() == 32 ||
+        if (returnBill.getStatus() == 12) { // hoàn trả số lượng khi status sang 12 - đã hoàn hàng
             refundProductDetailsQuantities(returnBill);
         }
 //        if (existingBill.getStatus() == 2 && (returnBill.getStatus() == 5 || returnBill.getStatus() == 6)){
@@ -378,8 +379,7 @@ public class NBillServiceImpl implements NBillService {
                 productDetailRepository.save(productDetail);
             }
         } else if ((newStatus == 5 || newStatus == 6)
-                && (currentStatus == 2 || currentStatus == 12 || currentStatus == 3)) {
-            System.out.println("aa");
+                && (currentStatus == 2 || currentStatus == 3)) {
             for (BillDetail billDetail : billDetails) {
                 ProductDetail productDetail = billDetail.getProductDetail();
                 int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
@@ -418,19 +418,27 @@ public class NBillServiceImpl implements NBillService {
 
     //Hoàn lại số lượng trong productDetail khi hoàn trả
     public void refundProductDetailsQuantities(Bill bill) {
-        List<ReturnOrder> returnOrders = returnOrderRepository
-                .findAllReturnOrdersByBillIdOrderByCreatedAtDesc(bill.getId());
+//        List<ReturnOrder> returnOrders = returnOrderRepository
+//                .findAllReturnOrdersByBillIdOrderByCreatedAtDesc(bill.getId());
+//
+//        for (ReturnOrder returnOrder : returnOrders) {
+//            BillDetail billDetail = returnOrder.getBillDetail();
+//            ProductDetail productDetail = billDetail.getProductDetail();
+//
+//            // Only refund the quantity if defectiveQuantity is 0
+//            if (returnOrder.getDefectiveQuantity() == 0) {
+//                productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
+//                productDetail.setUpdatedAt(new Date());
+//                productDetailRepository.save(productDetail);
+//            }
+//        }
 
-        for (ReturnOrder returnOrder : returnOrders) {
-            BillDetail billDetail = returnOrder.getBillDetail();
+        List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(bill.getId());
+        for (BillDetail billDetail : billDetails) {
             ProductDetail productDetail = billDetail.getProductDetail();
-
-            // Only refund the quantity if defectiveQuantity is 0
-            if (returnOrder.getDefectiveQuantity() == 0) {
-                productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
-                productDetail.setUpdatedAt(new Date());
-                productDetailRepository.save(productDetail);
-            }
+            int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
+            productDetail.setQuantity(newQuantity);
+            productDetailRepository.save(productDetail);
         }
     }
 
