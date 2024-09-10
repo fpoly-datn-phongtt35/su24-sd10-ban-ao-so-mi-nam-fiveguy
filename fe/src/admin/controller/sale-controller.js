@@ -336,7 +336,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
     
     $scope.checkDiscountValueUpdate = function () {
         if ($scope.saleDetail.discountType === '2' || $scope.saleDetail.discountType === 2) { 
-            var isValid = $scope.saleDetail.value <= 100;
+            var isValid = $scope.saleDetail.value <= 50;
             $scope.saleFormUpdate.value.$setValidity('max', isValid); // Đánh dấu validity của input value
 
             return isValid;
@@ -349,7 +349,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
 
     $scope.checkDiscountValueAdd = function () {
         if ($scope.saleDetail.discountType === '2' || $scope.saleDetail.discountType === 2) { 
-            var isValid = $scope.saleDetail.value <= 100;
+            var isValid = $scope.saleDetail.value <= 50;
             $scope.saleForm.value.$setValidity('max', isValid); 
             return isValid;
         }
@@ -504,7 +504,7 @@ app.controller('SaleController', ['$scope', '$http', '$routeParams', '$timeout',
             console.log($scope.saleDetail.discountType );
     
             // Kiểm tra value chỉ khi discountType là 2
-            if ($scope.saleDetail.discountType === '2' && $scope.saleDetail.value > 100) {
+            if ($scope.saleDetail.discountType === '2' && $scope.saleDetail.value > 50) {
                 $scope.saleForm.value.$setValidity('max', false); // Đánh dấu input value là không hợp lệ
                 return;
             }

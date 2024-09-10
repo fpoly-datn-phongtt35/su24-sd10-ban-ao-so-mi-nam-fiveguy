@@ -396,7 +396,9 @@ public class BillServiceTHImpl implements BillServiceTH {
         }
 
         bill.setPaymentMethod(billRequest.getPaymentMethod());
-
+        if(newStatus == 1){
+            bill.setStatus(2);
+        }
         // Save the updated Bill entity
         Bill savedBill = billRepository.save(bill);
 
@@ -425,6 +427,11 @@ public class BillServiceTHImpl implements BillServiceTH {
 
         billHistoryRepository.save(billHistory1);
         billHistoryRepository.save(billHistory2);
+//        Chờ giao hàng
+        if(newStatus == 1){
+            BillHistory billHistory3 = createBillHistory(savedBill, employee, 2);
+            billHistoryRepository.save(billHistory3);
+        }
 
         // Return the response
         return setBillResponse(savedBill);

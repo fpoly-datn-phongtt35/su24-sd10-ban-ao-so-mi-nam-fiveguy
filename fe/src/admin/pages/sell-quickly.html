@@ -411,7 +411,7 @@
                             <div class="d-flex justify-content-center">
                                 <div data-mdb-ripple-init class="btn btn-primary btn-rounded">
                                     <label class="form-label text-white m-1" style="cursor: pointer;" for="customFile">Chọn ảnh</label>
-                                    <input id="customFile" type="file" class="form-control d-none" custom-on-change="uploadFile"  />
+                                    <input id="customFile" type="file" class="form-control d-none" onchange="angular.element(this).scope().uploadFile(this)" />
                                 </div>
                             </div>
                         </div>
@@ -518,7 +518,7 @@
                             <div class="d-flex justify-content-center">
                                 <div data-mdb-ripple-init class="btn btn-primary btn-rounded">
                                     <label class="form-label text-white m-1" style="cursor: pointer;" for="customUpdateFile">Chọn ảnh</label>
-                                    <input id="customUpdateFile" type="file" class="form-control d-none" custom-on-change="uploadUpdateFile"  />
+                                    <input id="customUpdateFile" type="file" class="form-control d-none" onchange="angular.element(this).scope().uploadUpdateFile(this)" />
                                 </div>
                             </div>
                         </div>

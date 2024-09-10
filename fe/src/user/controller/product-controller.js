@@ -1,6 +1,7 @@
 app.controller("productController", function ($scope, $http, $window,$routeParams,$rootScope,$location,$filter) {
 
     $rootScope.countProduct = 0;
+    $rootScope.cartItemShow = [];
 
     var token = localStorage.getItem("token")
 
@@ -378,6 +379,12 @@ $scope.getPageRange = function() {
         $scope.cart = {
             items: [],
             add(productDetailId, quantity) {
+
+              console.log($scope.cartItems.length);
+                if($scope.cartItems != null && $scope.cartItems.length >= 20){
+                  $scope.showErrorNotification("Đơn hàng chỉ được mua tối đa 20 loại sản phẩm khác");
+                  return;
+                }
                     // Thực hiện hành động khi đã đăng nhập
                     $http.post('http://localhost:8080/api/home/cart/add', { productDetailId: productDetailId, quantity: quantity
                         // ,promotionalPrice: promotionalPrice
@@ -492,6 +499,8 @@ function loadCart() {
           if (response.data) {
             $scope.cartItems = response.data;
                 count();
+                $rootScope.cartItemShow = response.data;
+                
                 // $scope.applyVoucher();
               //   console.log($scope.selectedVoucher)
               // if ($scope.selectedVoucher == null) {
@@ -1255,7 +1264,7 @@ $scope.dataCity.ProvinceID;
   // };
   $scope.selectBestVoucher = function() {
     if (!$scope.customerVouchers || $scope.customerVouchers.length === 0) {
-      console.log("Không có vouchers để chọn.");
+      // console.log("Không có vouchers để chọn.");
       return;
     }
   
@@ -1267,7 +1276,7 @@ $scope.dataCity.ProvinceID;
     // console.log(validVouchers);
   
     if (validVouchers.length === 0) {
-      console.log("Không tìm được voucher phù hợp.");
+      // console.log("Không tìm được voucher phù hợp.");
       if ($scope.selectedVoucher) {
         $scope.selectedVoucher.selected = false; // Bỏ chọn voucher trước đó
       }
@@ -1324,7 +1333,7 @@ $scope.dataCity.ProvinceID;
     $scope.totalAmountAfterDiscount = $scope.totalAmount - $scope.valueVoucher;
     $scope.applyVoucher();
   
-    console.log("Chọn voucher tốt nhất:", bestVoucher);
+    // console.log("Chọn voucher tốt nhất:", bestVoucher);
   };
   
   
@@ -1349,7 +1358,7 @@ $scope.dataCity.ProvinceID;
               if ($scope.customerVouchers && $scope.customerVouchers.length > 0) {
                 $scope.selectBestVoucher();
               } else {
-                console.log("Không có vouchers cho khách hàng.");
+                // console.log("Không có vouchers cho khách hàng.");
               }
             });
           }, 1000); // Thời gian trễ là 1000ms (1 giây)
@@ -1558,6 +1567,49 @@ $scope.getRates = function() {
         });
 };
 
-  
+
+
+// Hàm confirmPurchase sẽ được gọi khi bấm nút
+$scope.confirmPurchase = function() {
+
+
+  const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-danger"
+      },
+      buttonsStyling: false
+  });
+
+  swalWithBootstrapButtons.fire({
+      title: "Bạn có chắc chắn muốn thanh toán?",
+      text: "Hành động này không thể hoàn tác!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Đồng ý",
+      cancelButtonText: "Hủy",
+      reverseButtons: true
+  }).then((result) => {
+      if (result.isConfirmed) {
+          // Gọi hàm thanh toán khi người dùng xác nhận
+          $scope.bill.purchase();
+          swalWithBootstrapButtons.fire({
+              title: "Đã thanh toán!",
+              text: "Đơn hàng của bạn đã được xử lý.",
+              icon: "success"
+          });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+          swalWithBootstrapButtons.fire({
+              title: "Đã hủy",
+              text: "Đơn hàng của bạn chưa được xử lý.",
+              icon: "error"
+          });
+      }
+  });
+};
+
+
+
+
 
 });

@@ -139,8 +139,7 @@
                 <img class="card-img-top rounded-2 size-imgCategory"  loading="lazy"
                 ng-src="{{ product.imagePath }}" />
                 <h3 class="product-grid__title">
-                    <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }}
-                        {{ product.product.category.name }}
+                    <a class="product-name" ng-href="#home/product/product-detail/{{product.productId}}">{{ product.productName }} {{ product.product.category.name }} {{product.product.material.name}}
                     </a>
                 </h3>
           

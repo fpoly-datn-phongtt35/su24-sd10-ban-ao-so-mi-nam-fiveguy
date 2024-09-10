@@ -3,6 +3,7 @@ package com.example.demo.service.onlineShop;
 import com.example.demo.entity.Bill;
 import com.example.demo.entity.BillHistory;
 import com.example.demo.entity.Customer;
+import com.example.demo.entity.Voucher;
 import com.example.demo.model.response.onlineShop.OlBillDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.Page;
@@ -37,4 +38,7 @@ public interface OLBillService2 {
 
 
     void deleteBill(Bill bill);
+//            vc fix dot2
+
+//     void updateVoucherOnBillCancellation(Voucher usedVoucher);
 }

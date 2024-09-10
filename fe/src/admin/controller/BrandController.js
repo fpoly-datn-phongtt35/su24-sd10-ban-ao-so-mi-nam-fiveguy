@@ -5,7 +5,7 @@ app.controller("BrandController", function($scope, $http){
     $scope.filter = {
         name: '',
         sortField: 'createdAt',
-        sortDirection: 'ASC',
+        sortDirection: 'DESC',
     };
     $scope.brand = {};
     $scope.brandUpdate = {};
