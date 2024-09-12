@@ -234,16 +234,20 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
             addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
                     billHistory.getDescription(), 1, billHistory.getReason(), billHistory.getCreatedBy());
-//            List<BillDetail> billDetails = olBillDetailService.findAllByBillIdOrderByIdDesc(id);
-//            if (bill.getStatus() == 5 && optionalBill.get().getStatus() == 2) {
-//                for (BillDetail billDetail : billDetails) {
-//                    ProductDetail productDetail = billDetail.getProductDetail();
-//                    int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
-//                    productDetail.setQuantity(newQuantity);
-//                    olProductDetailService.save(productDetail);
-//                }
-//                updateVoucherOnBillCancellation(id);
-//            }
+            List<BillDetail> billDetails = olBillDetailService.findAllByBillIdOrderByIdDesc(id);
+            if (bill.getStatus() == 5 && optionalBill.get().getStatus() == 2) {
+                for (BillDetail billDetail : billDetails) {
+                    ProductDetail productDetail = billDetail.getProductDetail();
+                    int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
+                    productDetail.setQuantity(newQuantity);
+                    olProductDetailService.save(productDetail);
+                }
+
+                if (bill.getVoucher() != null) {
+                    updateVoucherOnBillCancellation(bill.getVoucher());
+                }
+
+            }
 //            vc fix dot2
 //            if (optionalBill.get().getStatus() == 2){
 //                updateVoucherOnBillCancellation(bill.getVoucher());
@@ -253,24 +257,25 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         return null;
     }
 
+
+//            vc fix dot2
+
+    @Transactional
+    public void updateVoucherOnBillCancellation(Voucher usedVoucher) {
+            // Tăng số lượng voucher lên 1
+            usedVoucher.setQuantity(usedVoucher.getQuantity() + 1);
+            voucherRepository.save(usedVoucher);
+
+    }
+
+
+
+
     @Override
     public void deleteBill(Bill bill) {
         olBillRepository.delete(bill);
     }
-//            vc fix dot2
 
-//    @Transactional
-//    @Override
-//    public void updateVoucherOnBillCancellation(Voucher usedVoucher) {
-//        if (usedVoucher != null) {
-//            // Tăng số lượng voucher lên 1
-//            usedVoucher.setQuantity(usedVoucher.getQuantity() + 1);
-//            voucherRepository.save(usedVoucher);
-//        }
-
-
-
-//    }
 //            vc fix dot2
 
 //    @Transactional
