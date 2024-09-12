@@ -93,15 +93,42 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.getBillById($scope.idBill)
 
 
+    $scope.getLastestBillForUpdate = function () {
+        return $http.get(apiBill + "/" + $scope.idBill).then(function (res) {
+            $scope.lastestBill = res.data;
+        });
+    };
+
+    $scope.checkLastestStatus = function (status) {
+        console.log("Kiểm tra trạng thái mới nhất");
+        if (status != $scope.lastestBill.status) {
+            $scope.showError("Hoá đơn đã được cập nhật trạng thái mới trước đó");
+            $scope.getBillById($scope.idBill);
+            console.log("Trạng thái không khớp");
+            return false;
+        }
+        console.log("Trạng thái khớp");
+        return true;
+    };
+
+
 
     //XỬ LÝ STATUS BILL, HISTORY BILL, THÔNG TIN GIAO HÀNG, LOGIC CỦA HIỂN THỊ TRẠNG THÁI ĐƠN HÀNG, paymentStatus
     // #region bill status & bill history
 
     $scope.otherReasonText = null
 
-    $scope.showModalStatus = function (status) {
-        $('#changeStatusModal').modal('show');
-        $scope.currentStatus = status;
+    $scope.showModalStatusTest = function (status) {
+        console.log("11111ok");
+        if ($scope.checkLastestStatus(status)) {
+            $('#changeStatusModal').modal('show');
+            $scope.currentStatus = status;
+
+            console.log("11111ok");
+        } else {
+            console.log("Lỗi dòng 126, lastest product");
+            console.log("11111 not");
+        }
     };
 
     $scope.getBillHistoryByBillId = function () {
@@ -116,10 +143,63 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
     // $scope.getBillHistoryByBillId()
 
-    $scope.showModalStatus = function (nextStatus) {
-        $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
+    $scope.showModalStatusV1 = function (nextStatus) {
+        $scope.getLastestBillForUpdate()
+        console.log($scope.status);
+        console.log($scope.lastestBill);
+        if ($scope.status != $scope.lastestBill.status) {
+            $scope.showError("Hoá đơn đã được cập nhật trạng thái mới trước đó")
+            $scope.getBillById($scope.idBill)
+        } else {
+            $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity").then(function (response) {
 
-            //thiếu sản phẩm và trạng thái tiếp theo là chờ giao - 2
+                //thiếu sản phẩm và trạng thái tiếp theo là chờ giao - 2
+                if (response.data == 1 && nextStatus == 2) {
+                    $scope.showWarning("Giảm số lượng sản phẩm trong đơn hàng");
+                    return;
+                } else if (response.data == 2 && nextStatus == 2) {
+                    $scope.showWarning("Có sản phẩm trong đơn hàng đã hết");
+                    return;
+                }
+
+                $scope.resetCheckBoxes();
+
+                $('#changeStatusModal').modal('show');
+
+                $scope.currentStatus = $scope.status;
+                $scope.nextStatus = nextStatus;
+                $scope.selectedReasons = [];
+
+                if ($scope.transitionReasons[$scope.currentStatus] && $scope.transitionReasons[$scope.currentStatus][nextStatus]) {
+                    const reasonKeys = $scope.transitionReasons[$scope.currentStatus][nextStatus];
+                    $scope.reasonSuggestions = reasonKeys.map(key => ({
+                        value: key,
+                        text: $scope.reasonsList[key].text,
+                        checked: false
+                    }));
+                } else {
+                    $scope.reasonSuggestions = [];
+                }
+            }).catch(function (error) {
+
+                console.log("lỗi update status check quantity", error)
+                return;
+            });
+        }
+
+    };
+
+    $scope.showModalStatus = function (nextStatus) {
+        $scope.getLastestBillForUpdate().then(function() {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đơn hàng đã thay đổi trước đó");
+                return Promise.reject("Trạng thái đã thay đổi");
+            }
+    
+            // Tiếp tục xử lý nếu trạng thái hợp lệ
+            return $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity");
+        }).then(function (response) {
+            // Xử lý response
             if (response.data == 1 && nextStatus == 2) {
                 $scope.showWarning("Giảm số lượng sản phẩm trong đơn hàng");
                 return;
@@ -127,15 +207,13 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 $scope.showWarning("Có sản phẩm trong đơn hàng đã hết");
                 return;
             }
-
+    
             $scope.resetCheckBoxes();
-
             $('#changeStatusModal').modal('show');
-
             $scope.currentStatus = $scope.status;
             $scope.nextStatus = nextStatus;
             $scope.selectedReasons = [];
-
+    
             if ($scope.transitionReasons[$scope.currentStatus] && $scope.transitionReasons[$scope.currentStatus][nextStatus]) {
                 const reasonKeys = $scope.transitionReasons[$scope.currentStatus][nextStatus];
                 $scope.reasonSuggestions = reasonKeys.map(key => ({
@@ -147,9 +225,11 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 $scope.reasonSuggestions = [];
             }
         }).catch(function (error) {
-
-            console.log("lỗi update status check quantity", error)
-            return;
+            if (error === "Trạng thái đã thay đổi") {
+                console.log("Xử lý đã dừng do trạng thái thay đổi");
+            } else {
+                console.log("Lỗi trong quá trình xử lý", error);
+            }
         });
     };
 
@@ -1218,20 +1298,36 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     //remove product in billdetail
+    // $scope.removeBillDetail = function (billDetailId) {
+    //     $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
+    //         $scope.showSuccess("Xóa thành công")
+    //         // $scope.getAllBillDetailByBillId($scope.idBill)
+
+    //         //Lấy lại bill để hiển thị lại totalAmount
+    //         $scope.getBillById($scope.idBill)
+
+    //         //gọi lại paymentStatus
+    //         // $scope.getAllPaymentStatus($scope.idBill)
+    //     }, function (error) {
+    //         console.error('Xoá sản phẩm thất bại:', error);
+    //     })
+    // }
+
     $scope.removeBillDetail = function (billDetailId) {
-        $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
-            $scope.showSuccess("Xóa thành công")
-            // $scope.getAllBillDetailByBillId($scope.idBill)
-
-            //Lấy lại bill để hiển thị lại totalAmount
-            $scope.getBillById($scope.idBill)
-
-            //gọi lại paymentStatus
-            // $scope.getAllPaymentStatus($scope.idBill)
-        }, function (error) {
-            console.error('Xoá sản phẩm thất bại:', error);
-        })
-    }
+        $scope.getLastestBillForUpdate().then(function() {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi, không tiếp tục xử lý");
+                return;
+            }
+    
+            $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
+                $scope.showSuccess("Xóa thành công");
+                $scope.getBillById($scope.idBill);
+            }, function (error) {
+                console.error('Xoá sản phẩm thất bại:', error);
+            });
+        });
+    };
 
     //Validate max quantity in dillDetail
     // $scope.validateQuantityBd = function (bd, quantityNew) {
@@ -1245,51 +1341,76 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     // };
     $scope.validateQuantityBd = function (bd, quantityNew) {
         let currentTotalQuantity = $scope.billDetailSummary.totalQuantity - bd.quantity + quantityNew;
-    
+
         if (currentTotalQuantity > 20) {
             $scope.showWarning("Tổng số lượng trong đơn không được vượt quá 20");
             bd.quantityNew = bd.quantity;  // Giữ lại số lượng cũ nếu vượt quá 20
             return;
         }
-    
+
         if (quantityNew > bd.productDetail.quantity) {
             $scope.showWarning("Số lượng không được vượt quá số lượng tồn");
             bd.quantityNew = bd.productDetail.quantity; // Giới hạn số lượng không vượt quá số lượng tồn
         }
-        
+
         // bd.quantity = bd.quantityNew;
         // $scope.updateBillDetailQuantity(bd.quantityNew, bd);
     };
 
     //update quantity in billDetail
+    // $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
+
+    //     if (newQuantity == null || newQuantity == undefined || newQuantity == "" || newQuantity == billDetail.quantity) return;
+
+    //     // $scope.billDetails.forEach(function (bd) {
+    //     //     if (bd == billDetail && newQuantity > bd.productDetail.quantity) {
+    //     //         bd.quantity = bd.productDetail.quantity - 1;
+    //     //     }
+    //     // });
+
+    //     let params = {
+    //         newQuantity: newQuantity
+    //     };
+    //     $http({
+    //         method: 'PUT',
+    //         url: apiBill + "/details/" + billDetail.id + "/quantity",
+    //         params: params
+    //     }).then(function (res) {
+    //         $scope.showSuccess("Sửa số lượng thành công");
+    //         // $scope.getAllBillDetailByBillId($scope.idBill);
+
+    //         //Lấy lại bill để hiển thị lại totalAmount
+    //         $scope.getBillById($scope.idBill)
+
+    //         //gọi lại paymentStatus
+    //         // $scope.getAllPaymentStatus($scope.idBill)
+    //     }, function (error) {
+    //         console.error('Sửa số lượng thất bại:', error);
+    //     });
+    // };
+
     $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
-
-        if (newQuantity == null || newQuantity == undefined || newQuantity == "" || newQuantity == billDetail.quantity) return;
-
-        // $scope.billDetails.forEach(function (bd) {
-        //     if (bd == billDetail && newQuantity > bd.productDetail.quantity) {
-        //         bd.quantity = bd.productDetail.quantity - 1;
-        //     }
-        // });
-
-        let params = {
-            newQuantity: newQuantity
-        };
-        $http({
-            method: 'PUT',
-            url: apiBill + "/details/" + billDetail.id + "/quantity",
-            params: params
-        }).then(function (res) {
-            $scope.showSuccess("Sửa số lượng thành công");
-            // $scope.getAllBillDetailByBillId($scope.idBill);
-
-            //Lấy lại bill để hiển thị lại totalAmount
-            $scope.getBillById($scope.idBill)
-
-            //gọi lại paymentStatus
-            // $scope.getAllPaymentStatus($scope.idBill)
-        }, function (error) {
-            console.error('Sửa số lượng thất bại:', error);
+        $scope.getLastestBillForUpdate().then(function() {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi, không tiếp tục xử lý");
+                return;
+            }
+    
+            if (newQuantity == null || newQuantity == undefined || newQuantity == "" || newQuantity == billDetail.quantity) return;
+    
+            let params = {
+                newQuantity: newQuantity
+            };
+            $http({
+                method: 'PUT',
+                url: apiBill + "/details/" + billDetail.id + "/quantity",
+                params: params
+            }).then(function (res) {
+                $scope.showSuccess("Sửa số lượng thành công");
+                $scope.getBillById($scope.idBill);
+            }, function (error) {
+                console.error('Sửa số lượng thất bại:', error);
+            });
         });
     };
 
@@ -1299,7 +1420,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $http.get(apiVoucher + "/findAllVoucherCanUse/" + $scope.idBill).then(function (res) {
             $scope.vouchers = res.data
         })
-        
+
         $http.get(apiVoucher + "/findAllVoucherCanUseV2/" + $scope.idBill).then(function (res) {
             $scope.vouchersV2 = res.data
             console.log(res.data);
@@ -1307,17 +1428,34 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     }
     $scope.getAllVoucherCanUse()
 
-    $scope.setVoucherToBill = function (voucher) {
-        $http.put(apiBill + "/" + $scope.idBill + "/setVoucherToBill", voucher).then(function (res) {
-            $scope.getBillById($scope.idBill)
-            $scope.getAllVoucherCanUse()
+    // $scope.setVoucherToBill = function (voucher) {
+    //     $http.put(apiBill + "/" + $scope.idBill + "/setVoucherToBill", voucher).then(function (res) {
+    //         $scope.getBillById($scope.idBill)
+    //         $scope.getAllVoucherCanUse()
 
-            $scope.showSuccess("Cập nhật mã giảm giá thành công");
-            $('#modalListVoucher').modal('hide');
-            //gọi lại paymentStatus
-            // $scope.getAllPaymentStatus($scope.idBill)
-        })
-    }
+    //         $scope.showSuccess("Cập nhật mã giảm giá thành công");
+    //         $('#modalListVoucher').modal('hide');
+    //         //gọi lại paymentStatus
+    //         // $scope.getAllPaymentStatus($scope.idBill)
+    //     })
+    // }
+
+    $scope.setVoucherToBill = function (voucher) {
+        $scope.getLastestBillForUpdate().then(function() {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                return;
+            }
+    
+            $http.put(apiBill + "/" + $scope.idBill + "/setVoucherToBill", voucher).then(function (res) {
+                $scope.getBillById($scope.idBill);
+                $scope.getAllVoucherCanUse();
+                $scope.showSuccess("Cập nhật mã giảm giá thành công");
+                // $('#modalListVoucher').modal('hide');
+            });
+        });
+        $('#modalListVoucher').modal('hide');
+    };
 
     //#endregion
 

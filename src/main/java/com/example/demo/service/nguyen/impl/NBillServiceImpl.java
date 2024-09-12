@@ -217,7 +217,7 @@ public class NBillServiceImpl implements NBillService {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
 
-        if(bill.getStatus() != 1 && bill.getStatus() != 1)
+        if(bill.getStatus() != 1) return null;
 
         bill.setShippingFee(shippingFee);
 

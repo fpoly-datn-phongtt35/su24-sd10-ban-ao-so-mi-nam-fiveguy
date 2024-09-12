@@ -242,7 +242,7 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Trạng thái</th>
                                 <th scope="col" class="text-center">Thời gian</th>
-                                <th scope="col">Người xác nhận</th>
+                                <th scope="col">Người thực hiện</th>
                                 <th scope="col">Ghi chú</th>
                             </tr>
                         </thead>
@@ -1027,10 +1027,6 @@
                             class="currency">đ</span>
                     </div>
                 </div> -->
-                <div class="row align-items-center">
-                    <div class="col-7 fw-bold">Phí giao hàng:</div>
-                    <div class="col-5 text-end fs-5 money fw-bold">{{formatCurrency(billResponse.shippingFee)}}</div>
-                </div>
             </div>
 
             <!-- Phần voucher -->
@@ -1083,6 +1079,10 @@
                     <div class="col-5 text-end fs-5 money highlight-discount">{{formatCurrency(billResponse.totalAmount
                         -
                         billResponse.totalAmountAfterDiscount)}}</div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-7 fw-bold">Phí giao hàng:</div>
+                    <div class="col-5 text-end fs-5 money fw-bold">{{formatCurrency(billResponse.shippingFee)}}</div>
                 </div>
                 <hr>
                 <div class="row align-items-center">
