@@ -92,6 +92,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     }
     $scope.getBillById($scope.idBill)
 
+    $scope.lastestBillDetails = []
 
     $scope.getLastestBillForUpdate = function () {
         return $http.get(apiBill + "/" + $scope.idBill).then(function (res) {
@@ -1440,12 +1441,22 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 return;
             }
 
-            $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
-                $scope.showSuccess("Xóa thành công");
-                $scope.getBillById($scope.idBill);
-            }, function (error) {
-                console.error('Xoá sản phẩm thất bại:', error);
-            });
+            $http.get(apiBillDetail + "/getAllByBillId/" + $scope.idBill).then(function (response) {
+                $scope.lastestBillDetails = response.data
+                if ($scope.lastestBillDetails.length <= 1) {
+                    console.log($scope.lastestBillDetails.length);
+                    $scope.showWarning("Không thể xóa sản phẩm này")
+                    $scope.getAllBillDetailByBillId($scope.idBill)
+                    return;
+                }
+
+                $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
+                    $scope.showSuccess("Xóa thành công");
+                    $scope.getBillById($scope.idBill);
+                }, function (error) {
+                    console.error('Xoá sản phẩm thất bại:', error);
+                });
+            })
         });
     };
 
@@ -1509,7 +1520,14 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //     });
     // };
 
-    $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
+    $scope.getLatestBillDetail = function(billId, detailId) {
+        return $http.get(apiBillDetail + "/getAllByBillId/" + billId)
+            .then(function (res) {
+                return res.data.find(bd => bd.id === detailId);
+            });
+    };
+
+    $scope.updateBillDetailQuantityV1 = function (newQuantity, billDetail) {
         $scope.getLastestBillForUpdate().then(function () {
             if (!$scope.checkLastestStatus($scope.status)) {
                 console.log("Trạng thái đã thay đổi, không tiếp tục xử lý");
@@ -1517,6 +1535,17 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
             }
 
             if (newQuantity == null || newQuantity == undefined || newQuantity == "" || newQuantity == billDetail.quantity) return;
+
+            $http.get(apiBillDetail + "/getAllByBillId/" + billId).then(function (res) {
+                $scope.lastestBillDetails = res.data
+                console.log(res.data);
+            })
+            // $scope.getBillById($scope.idBill);
+            if (quantityNew > billDetail.productDetail.quantity) {
+                $scope.showWarning("Số lượng không được vượt quá số lượng tồn");
+                // bd.quantityNew = bd.productDetail.quantity;
+                return;
+            }
 
             let params = {
                 newQuantity: newQuantity
@@ -1532,6 +1561,53 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 console.error('Sửa số lượng thất bại:', error);
             });
         });
+    };
+
+    $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
+        if (newQuantity == null || newQuantity === undefined || newQuantity === "" || newQuantity == billDetail.quantity) return;
+    
+        $scope.getLastestBillForUpdate()
+            .then(function () {
+                if (!$scope.checkLastestStatus($scope.status)) {
+                    console.log("Trạng thái đã thay đổi, không tiếp tục xử lý");
+                    return Promise.reject("Trạng thái đã thay đổi");
+                }
+                return $scope.getLatestBillDetail($scope.idBill, billDetail.id);
+            })
+            .then(function(latestBillDetail) {
+                if (!latestBillDetail) {
+                    console.error('Không tìm thấy chi tiết hóa đơn mới nhất');
+                    return Promise.reject("Không tìm thấy chi tiết hóa đơn mới nhất");
+                }
+
+                console.log(latestBillDetail);
+    
+                if (newQuantity > latestBillDetail.productDetail.quantity) {
+                    $scope.showWarning("Số lượng không được vượt quá số lượng tồn");
+                    $scope.getBillById($scope.idBill);
+                    return Promise.reject("Số lượng vượt quá số lượng tồn");
+                }
+    
+                let params = {
+                    newQuantity: newQuantity
+                };
+                return $http({
+                    method: 'PUT',
+                    url: apiBill + "/details/" + billDetail.id + "/quantity",
+                    params: params
+                });
+            })
+            .then(function (res) {
+                $scope.showSuccess("Sửa số lượng thành công");
+                $scope.getBillById($scope.idBill);
+            })
+            .catch(function (error) {
+                if (typeof error === 'string') {
+                    console.error(error);
+                } else {
+                    console.error('Sửa số lượng thất bại:', error);
+                }
+            });
     };
 
 

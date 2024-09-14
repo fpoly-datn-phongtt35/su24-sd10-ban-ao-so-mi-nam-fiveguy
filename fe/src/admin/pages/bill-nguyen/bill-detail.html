@@ -1054,8 +1054,8 @@
                             <span class="text-danger" ng-if="billResponse.voucher.quantity === 0 ">Đã hết mã giảm
                                 giá</span>
                             <span class="text-danger"
-                                ng-if="billResponse.voucher.quantity > 0 &&  billResponse.totalAmount < billResponse.voucher.minimumTotalAmount">Đơn
-                                hàng không đủ điều kiện</span>
+                                ng-if="billResponse.voucher.quantity > 0 &&  billResponse.totalAmount < billResponse.voucher.minimumTotalAmount">
+                            Không thể sử dụng mã giảm giá</span>
                         </div>
                     </div>
                     <!-- <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucher"
@@ -1109,9 +1109,9 @@
                     <div class="col-7 fw-bold">
                         <span ng-if="paidOrRefundObject.paidOrRefund == 1 && status !== 32">Số tiền cần thanh toán
                             tiếp:</span>
-                        <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12">Số tiền cần
-                            hoàn trả:</span>
-                        <span ng-if="[30, 31, 32, 12].includes(status)">Số tiền hoàn trả:</span>
+                        <!-- <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12">Số tiền cần
+                            hoàn trả:</span> -->
+                        <span ng-if="([30, 31, 32, 12].includes(status)) || (paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12)">Số tiền hoàn trả:</span>
                     </div>
                     <div class="col-5 text-end fs-5 money"
                         ng-show="paidOrRefundObject.paidOrRefund == 1 && status !== 32 && getAdditionalPaymentAmount() > 0"
