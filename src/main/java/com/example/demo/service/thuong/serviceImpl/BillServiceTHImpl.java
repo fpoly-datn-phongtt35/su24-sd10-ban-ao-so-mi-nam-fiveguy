@@ -414,6 +414,7 @@ public class BillServiceTHImpl implements BillServiceTH {
             paymentStatus.setCustomerPaymentStatus(2);
             paymentStatus.setPaymentType(1);
             paymentStatus.setPaymentDate(dateTEst);
+            paymentStatus.setNote("Khách hàng thanh toán");
             paymentStatus.setPaymentAmount(savedBill.getTotalAmountAfterDiscount().add(
                     savedBill.getShippingFee() != null ? savedBill.getShippingFee() : BigDecimal.valueOf(0)
             ));
