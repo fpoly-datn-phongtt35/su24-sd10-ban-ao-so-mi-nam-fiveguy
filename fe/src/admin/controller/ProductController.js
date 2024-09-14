@@ -1017,6 +1017,27 @@ app.controller("ProductController", function($scope, $http, $timeout){
         })
     }
 
+    // check role 2
+    $scope.isEmployee = function() {
+        var token = localStorage.getItem('token');
+        if (token) {
+            try {
+                var decodedToken = jwt_decode(token); 
+                if (decodedToken && decodedToken.role && decodedToken.role.length > 0) {
+                    var userRole = decodedToken.role[0].authority;
+                    return userRole === 'EMPLOYEE';  
+                }
+            } catch (error) {
+                console.error("Failed to decode token or extract role", error);
+                return false; 
+            }
+        }
+        return false; 
+    };
+
+    $scope.isNotEmployee = function() {
+        return !$scope.isEmployee();  
+    };
 
 })
 

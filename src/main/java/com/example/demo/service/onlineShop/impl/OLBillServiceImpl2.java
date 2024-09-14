@@ -6,6 +6,7 @@ import com.example.demo.repository.common.VoucherCommonRepository;
 import com.example.demo.repository.onlineShop.OLBillHistoryRepository2;
 import com.example.demo.repository.onlineShop.OLBillRepository2;
 import com.example.demo.repository.point.CustomerTypeRepository;
+import com.example.demo.security.service.SCEmailService;
 import com.example.demo.service.onlineShop.OLBillDetailService2;
 import com.example.demo.service.onlineShop.OLBillService2;
 import com.example.demo.service.onlineShop.OLProductDetailService2;
@@ -51,6 +52,8 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
     @Autowired
     private CustomerTypeRepository customerTypeRepository;
+
+    @Autowired private SCEmailService SCEmailService;
 
     private boolean isQuantityAvailable(ProductDetail productDetail, int quantityToRemove) {
         int currentQuantity = productDetail.getQuantity() - 1;
@@ -158,9 +161,54 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 //        bill.setCreatedAt(new Date());
         bill.setCustomer(customer);
         Bill savedBill = olBillRepository.save(bill);
+        if (savedBill.getCustomer() != null && savedBill.getCustomer().getAccount() != null) {
+            String customerEmail = savedBill.getCustomer().getAccount().getEmail();
+            if (customerEmail != null && !customerEmail.isEmpty()) {
+                // Gửi email xác nhận đơn hàng cho khách hàng
+                sendOrderConfirmationEmail(
+                        customerEmail,
+                        savedBill.getCustomer().getFullName(),
+                        savedBill.getCustomer().getAccount().getPhoneNumber()
+                );
+            }
+        }
         olBillDetailService.saveAll(billDetails);
+
+
+
         return ResponseEntity.ok(savedBill);
     }
+    public void sendOrderConfirmationEmail(String toEmail, String customerName, String orderNumber) {
+        // Tạo tiêu đề cho email
+        String subject = "Xác nhận đơn hàng #" + orderNumber;
+
+        // Đường dẫn đến logo (phải đảm bảo rằng đường dẫn này có thể truy cập được từ bên ngoài)
+        String logoUrl = "http://127.0.0.1:5555/src/user/common/logo-shirt.png";
+
+        // Nội dung email dạng HTML với logo và layout như hình ảnh
+        String htmlContent = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd;'>"
+                + "<div style='text-align: center; margin-bottom: 20px;'>"
+                + "<img src='" + logoUrl + "' alt='Logo' style='width: 80px; height: auto; display: block; margin: 0 auto;'/>"
+                + "<h2 style='margin: 10px 0;'>FiveGuys.com</h2>"
+                + "<p>Mã đơn hàng là: <strong>" + orderNumber + "</strong></p>"
+                + "</div>"
+                + "<div style='text-align: center;'>"
+                + "<h1 style='font-size: 24px; color: #333;'>Cảm ơn bạn đã đặt hàng</h1>"
+                + "<p style='font-size: 16px; color: #666;'>"
+                + "Xin chào " + customerName + ", đơn hàng của bạn đã được đặt thành công.</p>"
+                + "<p style='font-size: 16px; color: #666;'>Cảm ơn bạn đã mua hàng tại cửa hàng của chúng tôi!</p>"
+                + "<p style='font-size: 16px; color: #666;'>-- FiveGuys --</p>"
+                + "</div>"
+                + "</div>";
+
+        // Gọi hàm sendHtmlEmail để gửi email
+        SCEmailService.sendHtmlEmail(toEmail, subject, htmlContent);
+    }
+
+
+
+
+
 
 
     @Override
@@ -234,16 +282,20 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 
             addBillHistoryStatus(existingBill.getId(), billHistory.getStatus(),
                     billHistory.getDescription(), 1, billHistory.getReason(), billHistory.getCreatedBy());
-//            List<BillDetail> billDetails = olBillDetailService.findAllByBillIdOrderByIdDesc(id);
-//            if (bill.getStatus() == 5 && optionalBill.get().getStatus() == 2) {
-//                for (BillDetail billDetail : billDetails) {
-//                    ProductDetail productDetail = billDetail.getProductDetail();
-//                    int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
-//                    productDetail.setQuantity(newQuantity);
-//                    olProductDetailService.save(productDetail);
-//                }
-//                updateVoucherOnBillCancellation(id);
-//            }
+            List<BillDetail> billDetails = olBillDetailService.findAllByBillIdOrderByIdDesc(id);
+            if (bill.getStatus() == 5 && optionalBill.get().getStatus() == 2) {
+                for (BillDetail billDetail : billDetails) {
+                    ProductDetail productDetail = billDetail.getProductDetail();
+                    int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
+                    productDetail.setQuantity(newQuantity);
+                    olProductDetailService.save(productDetail);
+                }
+
+                if (bill.getVoucher() != null) {
+                    updateVoucherOnBillCancellation(bill.getVoucher());
+                }
+
+            }
 //            vc fix dot2
 //            if (optionalBill.get().getStatus() == 2){
 //                updateVoucherOnBillCancellation(bill.getVoucher());
@@ -253,24 +305,25 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         return null;
     }
 
+
+//            vc fix dot2
+
+    @Transactional
+    public void updateVoucherOnBillCancellation(Voucher usedVoucher) {
+            // Tăng số lượng voucher lên 1
+            usedVoucher.setQuantity(usedVoucher.getQuantity() + 1);
+            voucherRepository.save(usedVoucher);
+
+    }
+
+
+
+
     @Override
     public void deleteBill(Bill bill) {
         olBillRepository.delete(bill);
     }
-//            vc fix dot2
 
-//    @Transactional
-//    @Override
-//    public void updateVoucherOnBillCancellation(Voucher usedVoucher) {
-//        if (usedVoucher != null) {
-//            // Tăng số lượng voucher lên 1
-//            usedVoucher.setQuantity(usedVoucher.getQuantity() + 1);
-//            voucherRepository.save(usedVoucher);
-//        }
-
-
-
-//    }
 //            vc fix dot2
 
 //    @Transactional
