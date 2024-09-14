@@ -1,4 +1,4 @@
-app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $routeParams, $timeout, $location) {
+app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $routeParams, $timeout, $location, $window) {
 
     const apiBill = "http://localhost:8080/api/admin/bill";
     const apiBillDetail = "http://localhost:8080/api/admin/billDetail";
@@ -96,6 +96,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     $scope.getLastestBillForUpdate = function () {
         return $http.get(apiBill + "/" + $scope.idBill).then(function (res) {
             $scope.lastestBill = res.data;
+            $scope.checkPay = $scope.calculatePaymentPaidOrRefund($scope.lastestBill)
         });
     };
 
@@ -190,12 +191,12 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     $scope.showModalStatus = function (nextStatus) {
-        $scope.getLastestBillForUpdate().then(function() {
+        $scope.getLastestBillForUpdate().then(function () {
             if (!$scope.checkLastestStatus($scope.status)) {
                 console.log("Trạng thái đơn hàng đã thay đổi trước đó");
                 return Promise.reject("Trạng thái đã thay đổi");
             }
-    
+
             // Tiếp tục xử lý nếu trạng thái hợp lệ
             return $http.get(apiBill + "/" + $scope.idBill + "/checkQuantity");
         }).then(function (response) {
@@ -207,13 +208,13 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 $scope.showWarning("Có sản phẩm trong đơn hàng đã hết");
                 return;
             }
-    
+
             $scope.resetCheckBoxes();
             $('#changeStatusModal').modal('show');
             $scope.currentStatus = $scope.status;
             $scope.nextStatus = nextStatus;
             $scope.selectedReasons = [];
-    
+
             if ($scope.transitionReasons[$scope.currentStatus] && $scope.transitionReasons[$scope.currentStatus][nextStatus]) {
                 const reasonKeys = $scope.transitionReasons[$scope.currentStatus][nextStatus];
                 $scope.reasonSuggestions = reasonKeys.map(key => ({
@@ -234,86 +235,94 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     };
 
     $scope.confirmChangeStatus = function () {
-        if (!$scope.isReasonSelected() && $scope.reasonSuggestions.length > 0) {
-            $scope.showError("Vui lòng chọn một lý do hoặc nhập lý do khác.");
-            return;
-        }
-        let description = $scope.billHistoryUpdate.description || "";
-        let reasonUpdate = {
-            value: 0
-        };
-
-        // Add selected reasons to the description
-        $scope.reasonSuggestions.forEach(function (reason) {
-            if (reason.checked) {
-                description += reason.text + ", ";
-                reasonUpdate = reason;
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                $('#changeStatusModal').modal('hide');
+                return;
             }
-        });
 
-        // Add "Other" reason
-        if ($scope.otherReasonChecked && $scope.otherReasonText !== null) {
-            description += "Khác: " + $scope.otherReasonText;
-        }
-        // Remove trailing comma and space
-        description = description.trim().replace(/,\s*$/, "");
-
-        $scope.billHistoryUpdate.description = description.trim();
-
-        let statusUpdate = $scope.nextStatus
-        if ([3, 10].includes($scope.currentStatus) && [7, 8].includes($scope.nextStatus)) {
-            if ([9, 10].includes(reasonUpdate.value) && $scope.status == 4) {
-                statusUpdate = 7
+            if (!$scope.isReasonSelected() && $scope.reasonSuggestions.length > 0) {
+                $scope.showError("Vui lòng chọn một lý do hoặc nhập lý do khác.");
+                return;
             }
-            if ([9].includes(reasonUpdate.value) && $scope.status == 10) {
-                statusUpdate = 8
+            let description = $scope.billHistoryUpdate.description || "";
+            let reasonUpdate = {
+                value: 0
+            };
+
+            // Add selected reasons to the description
+            $scope.reasonSuggestions.forEach(function (reason) {
+                if (reason.checked) {
+                    description += reason.text + ", ";
+                    reasonUpdate = reason;
+                }
+            });
+
+            // Add "Other" reason
+            if ($scope.otherReasonChecked && $scope.otherReasonText !== null) {
+                description += "Khác: " + $scope.otherReasonText;
             }
-            if ([11].includes(reasonUpdate.value)) {
-                statusUpdate = 81
+            // Remove trailing comma and space
+            description = description.trim().replace(/,\s*$/, "");
+
+            $scope.billHistoryUpdate.description = description.trim();
+
+            let statusUpdate = $scope.nextStatus
+            if ([3, 10].includes($scope.currentStatus) && [7, 8].includes($scope.nextStatus)) {
+                if ([9, 10].includes(reasonUpdate.value) && $scope.status == 4) {
+                    statusUpdate = 7
+                }
+                if ([9].includes(reasonUpdate.value) && $scope.status == 10) {
+                    statusUpdate = 8
+                }
+                if ([11].includes(reasonUpdate.value)) {
+                    statusUpdate = 81
+                }
+                if ([8, 12, 4].includes(reasonUpdate.value)) {
+                    statusUpdate = 8
+                }
             }
-            if ([8, 12, 4].includes(reasonUpdate.value)) {
-                statusUpdate = 8
+
+            let bill = angular.copy($scope.billResponse);
+            bill.reason = reasonUpdate.value
+            bill.status = statusUpdate;
+
+            if (statusUpdate == 2) {
+                bill.shippingFee = $scope.shippingFee
             }
-        }
-
-        let bill = angular.copy($scope.billResponse);
-        bill.reason = reasonUpdate.value
-        bill.status = statusUpdate;
-
-        if (statusUpdate == 2) {
-            bill.shippingFee = $scope.shippingFee
-        }
 
 
-        let billHistory = {
-            billId: $scope.idBill,
-            reason: reasonUpdate.value,
-            status: statusUpdate,
-            description: $scope.billHistoryUpdate.description,
-        };
+            let billHistory = {
+                billId: $scope.idBill,
+                reason: reasonUpdate.value,
+                status: statusUpdate,
+                description: $scope.billHistoryUpdate.description,
+            };
 
-        let data = { bill: bill, billHistory: billHistory };
+            let data = { bill: bill, billHistory: billHistory };
 
-        console.log(data);
-        $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
+            console.log(data);
+            $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
 
-            $('#changeStatusModal').modal('hide');
+                $('#changeStatusModal').modal('hide');
 
-            $scope.getBillById($scope.idBill);
-            $scope.getBillHistoryByBillId();
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
 
-            if (response.data == null) {
-                $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
-            }
-        }).catch(function (error) {
-            $('#changeStatusModal').modal('hide');
+                if (response.data == null) {
+                    $scope.showError("Kiểm tra lại số lượng sản phẩm trong đơn hàng");
+                }
+            }).catch(function (error) {
+                $('#changeStatusModal').modal('hide');
 
-            console.log("lỗi update status", error)
-        });
+                console.log("lỗi update status", error)
+            });
 
-        // Xóa nội dung ghi chú sau khi xác nhận
-        $scope.billHistoryUpdate.description = null;
-        $scope.otherReasonText = null;
+            // Xóa nội dung ghi chú sau khi xác nhận
+            $scope.billHistoryUpdate.description = null;
+            $scope.otherReasonText = null;
+        })
     };
 
     $scope.isReasonSelected = function () {
@@ -614,35 +623,42 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     // Update thông tin giao hàng
     $scope.updateShipmentDetail = function () {
-        var fullAddress =
-            $scope.addressDetail +
-            ', ' +
-            $scope.dataWard.WardName +
-            ', ' +
-            $scope.dataDistrict.DistrictName +
-            ', ' +
-            $scope.dataCity.ProvinceName;
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                $('#editShipmentDetail').modal('hide');
+                return;
+            }
+            var fullAddress =
+                $scope.addressDetail +
+                ', ' +
+                $scope.dataWard.WardName +
+                ', ' +
+                $scope.dataDistrict.DistrictName +
+                ', ' +
+                $scope.dataCity.ProvinceName;
 
-        var idFullAddress =
-            $scope.dataWard.WardCode +
-            ', ' +
-            $scope.dataDistrict.DistrictID +
-            ', ' +
-            $scope.dataCity.ProvinceID;
-        $scope.updateBill.address = fullAddress;
-        $scope.updateBill.addressId = idFullAddress;
-        // $scope.updateBill.shippingFee = $scope.shippingFee;
+            var idFullAddress =
+                $scope.dataWard.WardCode +
+                ', ' +
+                $scope.dataDistrict.DistrictID +
+                ', ' +
+                $scope.dataCity.ProvinceID;
+            $scope.updateBill.address = fullAddress;
+            $scope.updateBill.addressId = idFullAddress;
+            // $scope.updateBill.shippingFee = $scope.shippingFee;
 
-        let data = angular.copy($scope.updateBill)
-        $http.put(apiBill + "/shipUpdate/" + $scope.idBill, data).then(function (res) {
-            $scope.getBillById($scope.idBill)
-            $('#editShipmentDetail').modal('hide');
-            $scope.showSuccess("Cập nhật thông tin giao hàng thành công")
+            let data = angular.copy($scope.updateBill)
+            $http.put(apiBill + "/shipUpdate/" + $scope.idBill, data).then(function (res) {
+                $scope.getBillById($scope.idBill)
+                $('#editShipmentDetail').modal('hide');
+                $scope.showSuccess("Cập nhật thông tin giao hàng thành công")
 
-            $scope.getBillHistoryByBillId()
+                $scope.getBillHistoryByBillId()
 
-            //gọi lại paymentStatus
-            // $scope.getAllPaymentStatus($scope.idBill)
+                //gọi lại paymentStatus
+                // $scope.getAllPaymentStatus($scope.idBill)
+            })
         })
     }
 
@@ -686,46 +702,75 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //#region modal thanh toán hoàn tiền
 
     $scope.showConfirmPayment = function () {
-        let paymentDetails = $scope.calculatePaymentDetails();
-        if ($scope.paidOrRefundObject.paidOrRefund !== 0) {
-            $scope.customerPayment = {
-                shippingFeeAmount: paymentDetails.shippingFeeAmount,
-                billAmount: paymentDetails.billAmount,
-                paymentAmount: $scope.paidOrRefundObject.amount,
-                paymentMethod: 1,
-                note: null
-            };
-            $('#paymentAmountModal').modal('show');
-        } else {
-            $scope.showError("Không có số tiền cần thanh toán.");
-        }
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                return;
+            }
+            if (!([4].includes($scope.status) && ($scope.checkPay.paidOrRefund !== 0))) {
+                console.log("Conditions not met for showConfirmPayment");
+                $scope.showError("Không thể thực hiện hành động này");
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
+                return;
+            }
+            let paymentDetails = $scope.calculatePaymentDetails();
+            if ($scope.paidOrRefundObject.paidOrRefund !== 0) {
+                $scope.customerPayment = {
+                    shippingFeeAmount: paymentDetails.shippingFeeAmount,
+                    billAmount: paymentDetails.billAmount,
+                    paymentAmount: $scope.paidOrRefundObject.amount,
+                    paymentMethod: 1,
+                    note: null
+                };
+                $('#paymentAmountModal').modal('show');
+            } else {
+                $scope.showError("Không có số tiền cần thanh toán.");
+            }
+        })
     };
 
     $scope.submitPaymentAmount = function () {
-        let paymentStatus = {
-            paymentAmount: $scope.customerPayment.paymentAmount,
-            customerPaymentStatus: 2,
-            paymentMethod: $scope.customerPayment.paymentMethod,
-            paymentType: 1,
-            note: $scope.customerPayment.note
-        };
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                $('#paymentAmountModal').modal('hide');
+                return;
+            }
 
-        let data = {
-            bill: $scope.billResponse,
-            paymentStatus: paymentStatus,
-            payOrRefund: 1
-        }
+            if (!([4].includes($scope.status) && ($scope.checkPay.paidOrRefund !== 0))) {
+                console.log("Conditions not met for showConfirmPayment");
+                $('#paymentAmountModal').modal('hide');
+                $scope.showError("Không thể thực hiện hành động này");
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
+                return;
+            }
+            let paymentStatus = {
+                paymentAmount: $scope.customerPayment.paymentAmount,
+                customerPaymentStatus: 2,
+                paymentMethod: $scope.customerPayment.paymentMethod,
+                paymentType: 1,
+                note: $scope.customerPayment.note
+            };
 
-        console.log(data);
+            let data = {
+                bill: $scope.billResponse,
+                paymentStatus: paymentStatus,
+                payOrRefund: 1
+            }
 
-        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
-            $scope.showSuccess("Xác nhận thanh toán thành công");
-            $scope.getAllPaymentStatus($scope.idBill);
-            $('#paymentAmountModal').modal('hide');
+            console.log(data);
 
-            $scope.getBillById($scope.idBill);
-            $scope.getBillHistoryByBillId()
-        });
+            $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
+                $scope.showSuccess("Xác nhận thanh toán thành công");
+                $scope.getAllPaymentStatus($scope.idBill);
+                $('#paymentAmountModal').modal('hide');
+
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId()
+            });
+        })
     };
 
     $scope.showConfirmRefund = function () {
@@ -741,83 +786,116 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         //     console.log("lỗi update status check quantity", error)
         //     return;
         // });
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                return;
+            }
+            if (!([4].includes($scope.status) && $scope.checkPay.paidOrRefund == 2)) {
+                console.log("Conditions not met for showConfirmRefund");
+                $scope.showError("Không thể thực hiện hành động này");
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
+                return;
+            }
 
-        let paymentDetails = $scope.calculatePaymentDetails();
-        if ($scope.paidOrRefundObject.paidOrRefund == 2) {
-            $scope.customerPayment = {
-                shippingFeeAmount: Math.abs(paymentDetails.shippingFeeAmount),
-                billAmount: Math.abs(paymentDetails.billAmount),
-                paymentAmount: Math.abs($scope.paidOrRefundObject.amount),
-                paymentMethod: 1,
-                note: null
-            };
-            $('#refundAmountModal').modal('show');
-        } else {
-            $scope.showError("Không có số tiền cần hoàn lại.");
-        }
+            let paymentDetails = $scope.calculatePaymentDetails();
+            if ($scope.paidOrRefundObject.paidOrRefund == 2) {
+                $scope.customerPayment = {
+                    shippingFeeAmount: Math.abs(paymentDetails.shippingFeeAmount),
+                    billAmount: Math.abs(paymentDetails.billAmount),
+                    paymentAmount: Math.abs($scope.paidOrRefundObject.amount),
+                    paymentMethod: 1,
+                    note: null
+                };
+                $('#refundAmountModal').modal('show');
+            } else {
+                $scope.showError("Không có số tiền cần hoàn lại.");
+            }
+        })
     };
 
     $scope.submitRefundPayment = function () {
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                $('#refundAmountModal').modal('hide');
+                return;
+            }
+            if (!([4].includes($scope.status) && $scope.checkPay.paidOrRefund == 2)) {
+                console.log("Conditions not met for showConfirmRefund");
+                $('#refundAmountModal').modal('hide');
+                $scope.showError("Không thể thực hiện hành động này");
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
+                return;
+            }
+            console.log($scope.customerPayment.paymentMethod);
+            let paymentStatus = {
+                paymentAmount: $scope.customerPayment.paymentAmount,
+                customerPaymentStatus: 3,
+                paymentMethod: $scope.customerPayment.paymentMethod,
+                paymentType: 3,
+                note: $scope.customerPayment.note
+            };
 
-        console.log($scope.customerPayment.paymentMethod);
-        let paymentStatus = {
-            paymentAmount: $scope.customerPayment.paymentAmount,
-            customerPaymentStatus: 3,
-            paymentMethod: $scope.customerPayment.paymentMethod,
-            paymentType: 3,
-            note: $scope.customerPayment.note
-        };
+            let data = {
+                bill: $scope.billResponse,
+                paymentStatus: paymentStatus,
+                payOrRefund: 2
+            }
 
-        let data = {
-            bill: $scope.billResponse,
-            paymentStatus: paymentStatus,
-            payOrRefund: 2
-        }
+            console.log(data);
 
-        console.log(data);
+            $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
+                $scope.showSuccess("Xác nhận hoàn tiền thành công");
+                $scope.getAllPaymentStatus($scope.idBill);
+                $('#refundAmountModal').modal('hide');
 
-        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
-            $scope.showSuccess("Xác nhận hoàn tiền thành công");
-            $scope.getAllPaymentStatus($scope.idBill);
-            $('#refundAmountModal').modal('hide');
-
-            $scope.getBillById($scope.idBill);
-            $scope.getBillHistoryByBillId()
-            // if ($scope.status == 1) {
-            //     $scope.confirmChangeStatusRefund()
-            // }
-        });
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId()
+                // if ($scope.status == 1) {
+                //     $scope.confirmChangeStatusRefund()
+                // }
+            });
+        })
     };
 
     $scope.confirmChangeStatusRefund = function () {
-        let description = $scope.billHistoryUpdate.description || "";
-        $scope.billHistoryUpdate.description = description.trim();
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                return;
+            }
+            let description = $scope.billHistoryUpdate.description || "";
+            $scope.billHistoryUpdate.description = description.trim();
 
-        let bill = angular.copy($scope.billResponse);
-        bill.reason = 0
-        bill.status = 2;
+            let bill = angular.copy($scope.billResponse);
+            bill.reason = 0
+            bill.status = 2;
 
-        let billHistory = {
-            billId: $scope.idBill,
-            reason: 0,
-            status: 2,
-            description: $scope.billHistoryUpdate.description,
-        };
+            let billHistory = {
+                billId: $scope.idBill,
+                reason: 0,
+                status: 2,
+                description: $scope.billHistoryUpdate.description,
+            };
 
-        let data = { bill: bill, billHistory: billHistory };
+            let data = { bill: bill, billHistory: billHistory };
 
-        console.log(data);
-        $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
+            console.log(data);
+            $http.put(apiBill + "/billStatusUpdate/" + $scope.idBill, data).then(function (response) {
 
-            $scope.getBillById($scope.idBill);
-            $scope.getBillHistoryByBillId();
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
 
-        }).catch(function (error) {
-            console.log("lỗi update status", error)
-        });
+            }).catch(function (error) {
+                console.log("lỗi update status", error)
+            });
 
-        // Xóa nội dung ghi chú sau khi xác nhận
-        $scope.billHistoryUpdate.description = null;
+            // Xóa nội dung ghi chú sau khi xác nhận
+            $scope.billHistoryUpdate.description = null;
+        })
     };
 
     $scope.calculatePaymentPaidOrRefund = function (bill) {
@@ -852,60 +930,89 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
 
     $scope.showCancelBillRefund = function () {
-        let paymentDetails = $scope.calculatePaymentPaidOrRefund($scope.billResponse);
-        if (paymentDetails.paidOrRefund != 3) {
-            $scope.customerPayment = {
-                shippingFeeAmount: Math.abs(paymentDetails.shippingFeeAmount),
-                billAmount: Math.abs(paymentDetails.billAmount),
-                paymentAmount: $scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee,
-                paymentMethod: 1,
-                note: null
-            };
-            var totalPaid = $scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee;
-            var totalDue = $scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee;
-            var difference = totalPaid - totalDue;
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                return;
+            }
+            if (!($scope.paidOrRefundObject.checkPay != 3)) {
+                console.log("Conditions not met for showCancelBillRefund");
+                $scope.showError("Không thể thực hiện hành động này");
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
+                return;
+            }
 
-            if (paymentDetails.paidOrRefund == 0) {
-                $scope.customerPayment.paymentAmount = totalPaid
+            let paymentDetails = $scope.calculatePaymentPaidOrRefund($scope.billResponse);
+            if (paymentDetails.paidOrRefund != 3) {
+                $scope.customerPayment = {
+                    shippingFeeAmount: Math.abs(paymentDetails.shippingFeeAmount),
+                    billAmount: Math.abs(paymentDetails.billAmount),
+                    paymentAmount: $scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee,
+                    paymentMethod: 1,
+                    note: null
+                };
+                var totalPaid = $scope.billResponse.paidAmount + $scope.billResponse.paidShippingFee;
+                var totalDue = $scope.billResponse.totalAmountAfterDiscount + $scope.billResponse.shippingFee;
+                var difference = totalPaid - totalDue;
+
+                if (paymentDetails.paidOrRefund == 0) {
+                    $scope.customerPayment.paymentAmount = totalPaid
+                }
+                if (paymentDetails.paidOrRefund == 1) {
+                    $scope.customerPayment.paymentAmount = totalPaid
+                }
+                if (paymentDetails.paidOrRefund == 2) {
+                    $scope.customerPayment.paymentAmount = totalPaid
+                }
+                $('#refundAmountCancelBillModal').modal('show');
+            } else {
+                $scope.showError("Không có số tiền cần hoàn lại.");
             }
-            if (paymentDetails.paidOrRefund == 1) {
-                $scope.customerPayment.paymentAmount = totalPaid
-            }
-            if (paymentDetails.paidOrRefund == 2) {
-                $scope.customerPayment.paymentAmount = totalPaid
-            }
-            $('#refundAmountCancelBillModal').modal('show');
-        } else {
-            $scope.showError("Không có số tiền cần hoàn lại.");
-        }
+        })
     };
 
     $scope.submitCancelBillPayment = function () {
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                $('#refundAmountCancelBillModal').modal('hide');
+                return;
+            }
+            if (!(([5, 6].includes($scope.status) || [81, 12, 13].includes($scope.status)) && $scope.checkPay.paidOrRefund != 3)) {
+                console.log("Conditions not met for showCancelBillRefund");
+                $('#refundAmountCancelBillModal').modal('hide');
+                $scope.showError("Không thể thực hiện hành động này");
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
+                return;
+            }
 
-        console.log($scope.customerPayment.paymentMethod);
-        let paymentStatus = {
-            paymentAmount: $scope.customerPayment.paymentAmount,
-            customerPaymentStatus: 3,
-            paymentMethod: $scope.customerPayment.paymentMethod,
-            paymentType: 3,
-            note: $scope.customerPayment.note
-        };
+            console.log($scope.customerPayment.paymentMethod);
+            let paymentStatus = {
+                paymentAmount: $scope.customerPayment.paymentAmount,
+                customerPaymentStatus: 3,
+                paymentMethod: $scope.customerPayment.paymentMethod,
+                paymentType: 3,
+                note: $scope.customerPayment.note
+            };
 
-        let data = {
-            bill: $scope.billResponse,
-            paymentStatus: paymentStatus,
-            payOrRefund: 3
-        }
+            let data = {
+                bill: $scope.billResponse,
+                paymentStatus: paymentStatus,
+                payOrRefund: 3
+            }
 
-        console.log(data);
+            console.log(data);
 
-        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
-            $scope.showSuccess("Xác nhận hoàn tiền thành công");
-            $('#refundAmountCancelBillModal').modal('hide');
+            $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
+                $scope.showSuccess("Xác nhận hoàn tiền thành công");
+                $('#refundAmountCancelBillModal').modal('hide');
 
-            $scope.getBillById($scope.idBill);
-            $scope.getBillHistoryByBillId();
-        });
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId();
+            });
+        })
     };
 
 
@@ -924,50 +1031,61 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     //hoan tien tra hangf
     $scope.showHoanTienTraHang = function () {
-        $scope.customerPayment = {
-            shippingFeeAmount: 0,
-            billAmount: 0,
-            paymentAmount: $scope.returnOrdersSummary.tongTienTra,
-            paymentMethod: 1,
-            note: null
-        };
-        $('#traHangHoanTienModal').modal('show');
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                return;
+            }
+            $scope.customerPayment = {
+                shippingFeeAmount: 0,
+                billAmount: 0,
+                paymentAmount: $scope.returnOrdersSummary.tongTienTra,
+                paymentMethod: 1,
+                note: null
+            };
+            $('#traHangHoanTienModal').modal('show');
+        })
     };
 
     $scope.submitHoanTienTraHang = function () {
+        $scope.getLastestBillForUpdate().then(function () {
+            if (!$scope.checkLastestStatus($scope.status)) {
+                console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                $('#traHangHoanTienModal').modal('hide');
+                return;
+            }
+            console.log($scope.customerPayment.paymentMethod);
+            let paymentStatus = {
+                paymentAmount: $scope.returnOrdersSummary.tongTienTra,
+                customerPaymentStatus: 3,
+                paymentMethod: $scope.customerPayment.paymentMethod,
+                paymentType: 4,
+                note: $scope.customerPayment.note
+            };
 
-        console.log($scope.customerPayment.paymentMethod);
-        let paymentStatus = {
-            paymentAmount: $scope.returnOrdersSummary.tongTienTra,
-            customerPaymentStatus: 3,
-            paymentMethod: $scope.customerPayment.paymentMethod,
-            paymentType: 4,
-            note: $scope.customerPayment.note
-        };
+            let data = {
+                bill: $scope.billResponse,
+                paymentStatus: paymentStatus,
+                payOrRefund: 10
+            }
 
-        let data = {
-            bill: $scope.billResponse,
-            paymentStatus: paymentStatus,
-            payOrRefund: 10
-        }
+            console.log(data);
 
-        console.log(data);
+            $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
+                $scope.showSuccess("Xác nhận hoàn tiền thành công");
+                $('#traHangHoanTienModal').modal('hide');
 
-        $http.post(apiBill + "/" + $scope.idBill + "/savePaymentStatus", data).then(function (res) {
-            $scope.showSuccess("Xác nhận hoàn tiền thành công");
-            $('#traHangHoanTienModal').modal('hide');
+                $scope.getAllPaymentStatus($scope.idBill);
 
-            $scope.getAllPaymentStatus($scope.idBill);
+                $scope.getBillById($scope.idBill);
+                $scope.getBillHistoryByBillId()
 
-            $scope.getBillById($scope.idBill);
-            $scope.getBillHistoryByBillId()
-
-            $scope.checkIsRefund()
-        });
+                $scope.checkIsRefund()
+            });
+        })
     };
 
     //#endregion
-
 
     //theo dõi billResponse
     $scope.$watch('billResponse', function (newValue, oldValue) {
@@ -990,6 +1108,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
             // console.log($scope.errorQuantity + "   afgafhgalkds");
             $scope.checkIsRefund()
+
         }
     }, true);
 
@@ -1005,6 +1124,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                     $scope.errorQuantity = false;
                 }
             })
+
         }
     })
 
@@ -1314,12 +1434,12 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     // }
 
     $scope.removeBillDetail = function (billDetailId) {
-        $scope.getLastestBillForUpdate().then(function() {
+        $scope.getLastestBillForUpdate().then(function () {
             if (!$scope.checkLastestStatus($scope.status)) {
                 console.log("Trạng thái đã thay đổi, không tiếp tục xử lý");
                 return;
             }
-    
+
             $http.delete(apiBill + "/details/" + billDetailId).then(function (res) {
                 $scope.showSuccess("Xóa thành công");
                 $scope.getBillById($scope.idBill);
@@ -1390,14 +1510,14 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     // };
 
     $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
-        $scope.getLastestBillForUpdate().then(function() {
+        $scope.getLastestBillForUpdate().then(function () {
             if (!$scope.checkLastestStatus($scope.status)) {
                 console.log("Trạng thái đã thay đổi, không tiếp tục xử lý");
                 return;
             }
-    
+
             if (newQuantity == null || newQuantity == undefined || newQuantity == "" || newQuantity == billDetail.quantity) return;
-    
+
             let params = {
                 newQuantity: newQuantity
             };
@@ -1441,12 +1561,12 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     // }
 
     $scope.setVoucherToBill = function (voucher) {
-        $scope.getLastestBillForUpdate().then(function() {
+        $scope.getLastestBillForUpdate().then(function () {
             if (!$scope.checkLastestStatus($scope.status)) {
                 console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
                 return;
             }
-    
+
             $http.put(apiBill + "/" + $scope.idBill + "/setVoucherToBill", voucher).then(function (res) {
                 $scope.getBillById($scope.idBill);
                 $scope.getAllVoucherCanUse();
