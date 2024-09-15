@@ -1520,7 +1520,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
     //     });
     // };
 
-    $scope.getLatestBillDetail = function(billId, detailId) {
+    $scope.getLatestBillDetail = function (billId, detailId) {
         return $http.get(apiBillDetail + "/getAllByBillId/" + billId)
             .then(function (res) {
                 return res.data.find(bd => bd.id === detailId);
@@ -1565,7 +1565,7 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
 
     $scope.updateBillDetailQuantity = function (newQuantity, billDetail) {
         if (newQuantity == null || newQuantity === undefined || newQuantity === "" || newQuantity == billDetail.quantity) return;
-    
+
         $scope.getLastestBillForUpdate()
             .then(function () {
                 if (!$scope.checkLastestStatus($scope.status)) {
@@ -1574,20 +1574,20 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
                 }
                 return $scope.getLatestBillDetail($scope.idBill, billDetail.id);
             })
-            .then(function(latestBillDetail) {
+            .then(function (latestBillDetail) {
                 if (!latestBillDetail) {
                     console.error('Không tìm thấy chi tiết hóa đơn mới nhất');
                     return Promise.reject("Không tìm thấy chi tiết hóa đơn mới nhất");
                 }
 
                 console.log(latestBillDetail);
-    
+
                 if (newQuantity > latestBillDetail.productDetail.quantity) {
                     $scope.showWarning("Số lượng không được vượt quá số lượng tồn");
                     $scope.getBillById($scope.idBill);
                     return Promise.reject("Số lượng vượt quá số lượng tồn");
                 }
-    
+
                 let params = {
                     newQuantity: newQuantity
                 };
@@ -1640,7 +1640,18 @@ app.controller('nguyen-bill-detail-ctrl', function ($scope, $http, $rootScope, $
         $scope.getLastestBillForUpdate().then(function () {
             if (!$scope.checkLastestStatus($scope.status)) {
                 console.log("Trạng thái đã thay đổi trước đó, không tiếp tục xử lý");
+                $('#modalListVoucher').modal('hide');
                 return;
+            }
+
+            if ($scope.lastestBill.voucher != null && $scope.billResponse.voucher != null) {
+                if ($scope.billResponse.voucher.id != $scope.lastestBill.voucher.id) {
+                    $scope.showError("Voucher đã được thay đổi trước đó")
+                    $scope.getBillById($scope.idBill)
+                    $scope.getAllVoucherCanUse()
+                    $('#modalListVoucher').modal('hide');
+                    return;
+                }
             }
 
             $http.put(apiBill + "/" + $scope.idBill + "/setVoucherToBill", voucher).then(function (res) {

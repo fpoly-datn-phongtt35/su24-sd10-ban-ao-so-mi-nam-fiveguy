@@ -73,8 +73,14 @@
                         <button class="btn btn-primary me-3" ng-if="deliveryFlow[status].includes(1) && !errorQuantity"
                             ng-click="showModalStatus(1)">Tiếp tục đơn hàng</button>
 
-                        <button class="btn btn-info me-3" ng-if="deliveryFlow[status].includes(2) && !errorQuantity"
-                            ng-click="showModalStatus(2)">Xác nhận đơn hàng</button>
+                        <!-- <button class="btn btn-info me-3" ng-if="deliveryFlow[status].includes(2) && !errorQuantity"
+                            ng-click="showModalStatus(2)">Xác nhận đơn hàng</button> -->
+
+                        <button class="btn btn-info me-3"
+                            ng-if="deliveryFlow[status].includes(2) && !errorQuantity && (billResponse.voucher == null || billResponse.totalAmountAfterDiscount != billResponse.totalAmount)"
+                            ng-click="showModalStatus(2)">
+                            Xác nhận đơn hàng
+                        </button>
 
                         <button class="btn btn-success me-3" ng-if="deliveryFlow[status].includes(3)"
                             ng-click="showModalStatus(3)">Xác nhận giao hàng</button>
@@ -1055,7 +1061,7 @@
                                 giá</span>
                             <span class="text-danger"
                                 ng-if="billResponse.voucher.quantity > 0 &&  billResponse.totalAmount < billResponse.voucher.minimumTotalAmount">
-                            Không thể sử dụng mã giảm giá</span>
+                                Không thể sử dụng mã giảm giá</span>
                         </div>
                     </div>
                     <!-- <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucher"
@@ -1111,7 +1117,9 @@
                             tiếp:</span>
                         <!-- <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12">Số tiền cần
                             hoàn trả:</span> -->
-                        <span ng-if="([30, 31, 32, 12].includes(status)) || (paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12)">Số tiền hoàn trả:</span>
+                        <span
+                            ng-if="([30, 31, 32, 12].includes(status)) || (paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12)">Số
+                            tiền hoàn trả:</span>
                     </div>
                     <div class="col-5 text-end fs-5 money"
                         ng-show="paidOrRefundObject.paidOrRefund == 1 && status !== 32 && getAdditionalPaymentAmount() > 0"
@@ -1201,7 +1209,8 @@
             </div>
             <div class="modal-body">
                 <div class="voucher-list mt-2">
-                    <div class="voucher-container mx-4 mb-4" ng-repeat="v2 in vouchersV2" ng-show="v2.voucher.quantity >= 0">
+                    <div class="voucher-container mx-4 mb-4" ng-repeat="v2 in vouchersV2"
+                        ng-show="v2.voucher.quantity >= 0">
                         <div class="voucher-item">
                             <div class="voucher-content">
                                 <div class="mb-2">

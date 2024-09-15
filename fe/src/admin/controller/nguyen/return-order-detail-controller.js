@@ -96,14 +96,8 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
     // $scope.updateReturnReason = function(ro) {
     //     if (ro.returnReason === 'Lý do khác') {
     //         ro.note = ro.otherReason || ''; // Use custom reason if provided
-    //     } else {
+    //     } else {f
     //         ro.note = ro.returnReason; // Use selected reason directly
-    //     }
-    // };
-
-    // $scope.updateOtherReason = function(ro) {
-    //     if (ro.returnReason === 'Lý do khác') {
-    //         ro.note = ro.otherReason; // Update note with the custom reason
     //     }
     // };
 
@@ -154,6 +148,7 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
 
     $scope.updateReturnReason = function (ro) {
         $scope.updateDefectiveQuantity(ro);
+        ro.otherReason = ""
     };
 
     $scope.confirmReturn = function () {
@@ -167,8 +162,19 @@ app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $rout
         //     }
         // });
 
+        var submitData = angular.copy($scope.returnOrders);
+
+        // Process each return order
+        submitData.forEach(function(ro) {
+            if (ro.otherReason != null && ro.otherReason.trim() !== "") {
+                // If otherReason is not null or empty, append it to returnReason
+                ro.returnReason = ro.returnReason + " : " + ro.otherReason.trim();
+            }
+            // Remove the separate otherReason field as it's now part of returnReason
+            delete ro.otherReason;
+        });
         // Send the updated returnOrders to the server
-        $http.post($scope.apiReturnOrder + "/addReturnOrder", $scope.returnOrders).then(function (response) {
+        $http.post($scope.apiReturnOrder + "/addReturnOrder", submitData).then(function (response) {
             console.log(response);
             $('#confirmReturnModal').modal('hide');
             $location.path('/admin/bill/' + $scope.bill.id);
