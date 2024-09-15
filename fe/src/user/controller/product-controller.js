@@ -820,39 +820,7 @@ $scope.checkPhoneNumber= true;
       purchase() {
        
 
-      // Kiểm tra các trường thông tin bắt buộc
-let isBillReciverInvalid = !$scope.bill.reciverName || $scope.bill.reciverName.trim().length === 0;
-let isBillAddressDetailInvalid = !$scope.billAddressDetail || $scope.billAddressDetail.trim().length === 0;
 
-let isBillAddressCityInvalid = !$scope.dataCity || !$scope.dataCity.ProvinceName || $scope.dataCity.ProvinceName.trim().length === 0;
-
-let isBillAddressWardInvalid = !$scope.dataWard || !$scope.dataWard.WardName || $scope.dataWard.WardName.trim().length === 0;
-
-let isBillAddressDistrictInvalid = !$scope.dataDistrict || !$scope.dataDistrict.DistrictName || $scope.dataDistrict.DistrictName.trim().length === 0;
-
-let isBillPhoneNumberInvalid = !isValidPhoneNumber($scope.bill.phoneNumber);
-
-let isBillPaymentInvalid = $scope.selectedPayment == null;
-
-
-
-// Thêm kiểm tra cho các trường khác nếu cần
-
-// Hiển thị thông báo lỗi dưới các trường thông tin
-$scope.isBillReciverInvalid = isBillReciverInvalid;
-$scope.isBillAddressDetailInvalid = isBillAddressDetailInvalid;
-$scope.isBillAddressCityInvalid = isBillAddressCityInvalid;
-$scope.isBillAddressDistrictInvalid = isBillAddressDistrictInvalid;
-$scope.isBillAddressWardInvalid = isBillAddressWardInvalid;
-$scope.isBillPhoneNumberInvalid = isBillPhoneNumberInvalid;
-$scope.isBillPaymentInvalid = isBillPaymentInvalid;
-// Hiển thị thông báo lỗi cho các trường khác nếu cần
-
-// Tiếp tục chỉ khi không có lỗi
-if (isBillReciverInvalid || isBillAddressDetailInvalid || isBillAddressCityInvalid || isBillAddressDistrictInvalid || isBillAddressWardInvalid || isBillPhoneNumberInvalid || isBillPaymentInvalid) {
-  $scope.showErrorNotification("Vui lòng nhập đầy đủ thông tin!");
-  return;
-}
 
 var fullAddress =
 $scope.billAddressDetail +
@@ -1572,6 +1540,40 @@ $scope.getRates = function() {
 
 // Hàm confirmPurchase sẽ được gọi khi bấm nút
 $scope.confirmPurchase = function() {
+
+        // Kiểm tra các trường thông tin bắt buộc
+let isBillReciverInvalid = !$scope.bill.reciverName || $scope.bill.reciverName.trim().length === 0;
+let isBillAddressDetailInvalid = !$scope.billAddressDetail || $scope.billAddressDetail.trim().length === 0;
+
+let isBillAddressCityInvalid = !$scope.dataCity || !$scope.dataCity.ProvinceName || $scope.dataCity.ProvinceName.trim().length === 0;
+
+let isBillAddressWardInvalid = !$scope.dataWard || !$scope.dataWard.WardName || $scope.dataWard.WardName.trim().length === 0;
+
+let isBillAddressDistrictInvalid = !$scope.dataDistrict || !$scope.dataDistrict.DistrictName || $scope.dataDistrict.DistrictName.trim().length === 0;
+
+let isBillPhoneNumberInvalid = !isValidPhoneNumber($scope.bill.phoneNumber);
+
+let isBillPaymentInvalid = $scope.selectedPayment == null;
+
+
+
+// Thêm kiểm tra cho các trường khác nếu cần
+
+// Hiển thị thông báo lỗi dưới các trường thông tin
+$scope.isBillReciverInvalid = isBillReciverInvalid;
+$scope.isBillAddressDetailInvalid = isBillAddressDetailInvalid;
+$scope.isBillAddressCityInvalid = isBillAddressCityInvalid;
+$scope.isBillAddressDistrictInvalid = isBillAddressDistrictInvalid;
+$scope.isBillAddressWardInvalid = isBillAddressWardInvalid;
+$scope.isBillPhoneNumberInvalid = isBillPhoneNumberInvalid;
+$scope.isBillPaymentInvalid = isBillPaymentInvalid;
+// Hiển thị thông báo lỗi cho các trường khác nếu cần
+
+// Tiếp tục chỉ khi không có lỗi
+if (isBillReciverInvalid || isBillAddressDetailInvalid || isBillAddressCityInvalid || isBillAddressDistrictInvalid || isBillAddressWardInvalid || isBillPhoneNumberInvalid || isBillPaymentInvalid) {
+  $scope.showErrorNotification("Vui lòng nhập đầy đủ thông tin!");
+  return;
+}
 
   const swalWithBootstrapButtons = Swal.mixin({
       customClass: {

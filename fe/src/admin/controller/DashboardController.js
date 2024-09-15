@@ -1190,6 +1190,8 @@ $scope.getProductDetall = function (pageNumber) {
         { pageNumber: pageNumber, size: $scope.size , totalQuantity :$scope.fillTotalQuantity }
         
     );
+
+    console.log(params)
     $http
         .get("http://localhost:8080/api/admin/product-tinh/page-product", {
             params: params,
