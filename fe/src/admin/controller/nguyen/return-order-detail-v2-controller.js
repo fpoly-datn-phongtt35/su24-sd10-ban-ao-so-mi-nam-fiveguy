@@ -1,4 +1,4 @@
-app.controller('nguyen-return-order-detail-ctrl', function ($scope, $http, $routeParams, $location) {
+app.controller('nguyen-return-order-detail-v2-ctrl', function ($scope, $http, $routeParams, $location) {
 
     // Hàm hiển thị thông báo thành công
     $scope.showSuccess = function (message) {

@@ -131,8 +131,8 @@ app.controller("nguyen-voucher2-ctrl", function ($scope, $http, $timeout) {
     }
 
     $scope.validateAddValue = function (discountType) {
-        if ($scope.formInputVoucher.value > 100 && discountType == 1) {
-            $scope.formInputVoucher.value = 100
+        if ($scope.formInputVoucher.value > 50 && discountType == 1) {
+            $scope.formInputVoucher.value = 50
         }
         if ($scope.formInputVoucher.value < 1 && discountType == 1) {
             $scope.formInputVoucher.value = 1

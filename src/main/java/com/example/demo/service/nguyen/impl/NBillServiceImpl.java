@@ -16,13 +16,18 @@ import com.example.demo.repository.nguyen.bill.NBillRepository;
 import com.example.demo.repository.nguyen.bill.BillSpecification;
  import com.example.demo.service.nguyen.NBillService;
 import com.example.demo.service.point.CustomerPointsHistoryService;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -62,6 +67,7 @@ public class NBillServiceImpl implements NBillService {
     public List<Bill> getAll() {
         return billRepository.findAll();
     }
+
 
     @Override
     public Bill getById(Long id) {
@@ -128,6 +134,8 @@ public class NBillServiceImpl implements NBillService {
             throw new EntityNotFoundException("Bill not found with id " + id);
         }
 
+        Integer currentStatus = optionalBill.get().getStatus();
+
         Bill existingBill = optionalBill.get();
         existingBill.setReason(bill.getReason());
         existingBill.setStatus(bill.getStatus());
@@ -145,7 +153,7 @@ public class NBillServiceImpl implements NBillService {
                 billHistory.getDescription(), 1, billHistory.getReason(),
                 billHistory.getCreatedBy());
 
-        updateQuantityProductDetail(existingBill.getId(), existingBill.getStatus());
+        updateQuantityProductDetail(id, bill.getStatus(), currentStatus);
 
         Bill returnBill = billRepository.save(existingBill);
 
@@ -153,14 +161,19 @@ public class NBillServiceImpl implements NBillService {
         if (returnBill.getStatus() == 2) {
 //            changePricePayment(returnBill, returnBill.getTotalAmountAfterDiscount());
 //            processAndSavePaymentStatuses(returnBill);
+
             confirmBillAndUpdateVoucher(returnBill.getId());
         }
         if (returnBill.getStatus() == 5 || returnBill.getStatus() == 6) {
             updateVoucherOnBillCancellation(returnBill.getId());
         }
-        if (returnBill.getStatus() == 32 || returnBill.getStatus() == 12) {
+        //returnBill.getStatus() == 32 ||
+        if (returnBill.getStatus() == 12) { // hoàn trả số lượng khi status sang 12 - đã hoàn hàng
             refundProductDetailsQuantities(returnBill);
         }
+//        if (existingBill.getStatus() == 2 && (returnBill.getStatus() == 5 || returnBill.getStatus() == 6)){
+//            refundProductDetailsQuantities(returnBill);
+//        }
 
         //Tinh diem khi hoan tat don hang
         if(returnBill.getStatus() == 21){
@@ -204,7 +217,7 @@ public class NBillServiceImpl implements NBillService {
         Bill bill = billRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid bill ID"));
 
-        if(bill.getStatus() != 1 && bill.getStatus() != 1)
+        if(bill.getStatus() != 1) return null;
 
         bill.setShippingFee(shippingFee);
 
@@ -270,6 +283,26 @@ public class NBillServiceImpl implements NBillService {
         return billRepository.save(bill);
     }
 
+    private boolean decreaseVoucherQuantity(Voucher voucher) {
+        if (voucher.getQuantity() > 0) {
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucher.setNumberOfUses(voucher.getNumberOfUses() + 1);
+            voucherRepository.save(voucher);
+            return true;
+        }
+        return false;
+    }
+
+    private void returnVoucherQuantity(Voucher voucher) {
+        if (voucher != null) {
+            voucher.setQuantity(voucher.getQuantity() + 1);
+            if (voucher.getNumberOfUses() > 0) {
+                voucher.setNumberOfUses(voucher.getNumberOfUses() - 1);
+            }
+            voucherRepository.save(voucher);
+        }
+    }
+
 
     private BigDecimal calculateDiscountVoucher(Voucher voucher, BigDecimal totalAmount) {
         if (voucher == null || totalAmount == null) {
@@ -324,10 +357,14 @@ public class NBillServiceImpl implements NBillService {
     }
 
     @Transactional
-    public void updateQuantityProductDetail(Long billId, int newStatus) {
+    public void updateQuantityProductDetail(Long billId, int newStatus, Integer currentStatus) {
 
         Bill bill = billRepository.findById(billId)
                 .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+
+
+        System.out.println(bill.getStatus() + " - " + newStatus + "- " + currentStatus);
+
 
         List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(billId);
         if (newStatus == 2) {
@@ -341,8 +378,8 @@ public class NBillServiceImpl implements NBillService {
                 productDetail.setQuantity(newQuantity);
                 productDetailRepository.save(productDetail);
             }
-        } else if (newStatus == 5 || newStatus == 6) {
-            System.out.println("aa");
+        } else if ((newStatus == 5 || newStatus == 6)
+                && (currentStatus == 2 || currentStatus == 3)) {
             for (BillDetail billDetail : billDetails) {
                 ProductDetail productDetail = billDetail.getProductDetail();
                 int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
@@ -381,14 +418,26 @@ public class NBillServiceImpl implements NBillService {
 
     //Hoàn lại số lượng trong productDetail khi hoàn trả
     public void refundProductDetailsQuantities(Bill bill) {
-        List<ReturnOrder> returnOrders = returnOrderRepository
-                .findAllReturnOrdersByBillIdOrderByCreatedAtDesc(bill.getId());
+//        List<ReturnOrder> returnOrders = returnOrderRepository
+//                .findAllReturnOrdersByBillIdOrderByCreatedAtDesc(bill.getId());
+//
+//        for (ReturnOrder returnOrder : returnOrders) {
+//            BillDetail billDetail = returnOrder.getBillDetail();
+//            ProductDetail productDetail = billDetail.getProductDetail();
+//
+//            // Only refund the quantity if defectiveQuantity is 0
+//            if (returnOrder.getDefectiveQuantity() == 0) {
+//                productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
+//                productDetail.setUpdatedAt(new Date());
+//                productDetailRepository.save(productDetail);
+//            }
+//        }
 
-        for (ReturnOrder returnOrder : returnOrders) {
-            BillDetail billDetail = returnOrder.getBillDetail();
+        List<BillDetail> billDetails = billDetailRepository.findAllByBillIdOrderByIdDesc(bill.getId());
+        for (BillDetail billDetail : billDetails) {
             ProductDetail productDetail = billDetail.getProductDetail();
-            productDetail.setQuantity(productDetail.getQuantity() + returnOrder.getQuantity());
-            productDetail.setUpdatedAt(new Date());
+            int newQuantity = productDetail.getQuantity() + billDetail.getQuantity();
+            productDetail.setQuantity(newQuantity);
             productDetailRepository.save(productDetail);
         }
     }
@@ -436,20 +485,20 @@ public class NBillServiceImpl implements NBillService {
             voucherRepository.save(usedVoucher);
 
             // Nếu voucher này còn 0 cái sau khi xác nhận
-            if (usedVoucher.getQuantity() == 0) {
-                // Tìm các bill khác đang sử dụng voucher này và có trạng thái là 1
-                List<Bill> affectedBills = billRepository
-                        .findByVoucherIdAndStatus(usedVoucher.getId(), 1);
-
-                for (Bill affectedBill : affectedBills) {
-                    // Tìm voucher tốt nhất mới cho bill này
-                    Voucher newBestVoucher = findBestVoucher(affectedBill.getId());
-
-                    // Cập nhật voucher mới cho bill
-                    affectedBill.setVoucher(newBestVoucher);
-                    billRepository.save(affectedBill);
-                }
-            }
+//            if (usedVoucher.getQuantity() == 0) {
+//                // Tìm các bill khác đang sử dụng voucher này và có trạng thái là 1
+//                List<Bill> affectedBills = billRepository
+//                        .findByVoucherIdAndStatus(usedVoucher.getId(), 1);
+//
+//                for (Bill affectedBill : affectedBills) {
+//                    // Tìm voucher tốt nhất mới cho bill này
+//                    Voucher newBestVoucher = findBestVoucher(affectedBill.getId());
+//
+//                    // Cập nhật voucher mới cho bill
+//                    affectedBill.setVoucher(newBestVoucher);
+//                    billRepository.save(affectedBill);
+//                }
+//            }
         }
 
         // Cập nhật trạng thái bill sang 2
@@ -473,28 +522,7 @@ public class NBillServiceImpl implements NBillService {
             usedVoucher.setQuantity(usedVoucher.getQuantity() + 1);
             voucherRepository.save(usedVoucher);
 
-            // Nếu voucher này vừa tăng từ 0 lên 1
-//            if (usedVoucher.getQuantity() == 1) {
-//                // Tìm các bill khác đang có trạng thái là 1 (chờ xác nhận)
-//                List<Bill> pendingBills = billRepository.findByStatus(1);
-//
-//                for (Bill pendingBill : pendingBills) {
-//                    // Tìm voucher tốt nhất mới cho bill này (có thể bao gồm voucher vừa được khôi phục)
-//                    Voucher newBestVoucher = findBestVoucher(pendingBill.getId());
-//
-//                    // Nếu voucher tốt nhất mới khác với voucher hiện tại của bill
-//                    if (!Objects.equals(pendingBill.getVoucher(), newBestVoucher)) {
-//                        // Cập nhật voucher mới cho bill
-//                        pendingBill.setVoucher(newBestVoucher);
-//                        billRepository.save(pendingBill);
-//                    }
-//                }
-//            }
         }
-
-        // Cập nhật trạng thái bill (nếu cần)
-        // bill.setStatus(5); hoặc bill.setStatus(6);
-//        billRepository.save(bill);
     }
 
 

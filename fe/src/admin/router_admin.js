@@ -176,6 +176,15 @@ app.config(function ($routeProvider, $locationProvider) {
         }
       }
     })
+    .when("/admin/return-order-v2/:idBill", {
+      templateUrl: "pages/return-order-nguyen/return-order-detail-v2.html",
+      controller: "nguyen-return-order-detail-v2-ctrl",
+      resolve: {
+        auth: function (AuthService) {
+          return AuthService.authorize(['ADMIN','EMPLOYEE']);
+        }
+      }
+    })
 
 
     // <!-- Hải -->

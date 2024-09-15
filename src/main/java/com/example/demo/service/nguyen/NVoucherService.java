@@ -4,6 +4,7 @@ import com.example.demo.entity.Customer;
 import com.example.demo.entity.CustomerType;
 import com.example.demo.entity.Voucher;
 import com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO;
+import com.example.demo.model.response.nguyen.VoucherApplicability;
 import com.example.demo.model.response.nguyen.VoucherStatistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,4 +34,6 @@ public interface NVoucherService {
     Page<CustomerVoucherStatsDTO> getCustomerVoucherStats(Long voucherId, Pageable pageable);
 
     List<Voucher> findAllVoucherCanUse(Long billId);
+
+    List<VoucherApplicability> findAllVoucherCanUseV2(Long billId);
 }

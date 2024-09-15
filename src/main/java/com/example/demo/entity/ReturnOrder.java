@@ -23,6 +23,9 @@ public class ReturnOrder {
     @Column(name = "Quantity")
     private Integer quantity;
 
+    @Column(name = "DefectiveQuantity")
+    private int defectiveQuantity;
+
     @Column(name = "RefundPrice")
     private BigDecimal refundPrice;
 

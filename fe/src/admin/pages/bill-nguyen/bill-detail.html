@@ -12,6 +12,8 @@
                     <!-- <button class="btn btn-warning" ng-click="goToReturnOrder()">Trả hàng</button> -->
                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#billHistoryModal">Lịch
                         sử</button>
+                    <!-- <button class="btn btn-warning me-3" ng-show="deliveryFlow[status].includes(30)"
+                        ng-click="goToReturnOrderv2()">Trả hàng v2</button> -->
                 </div>
             </div>
             <hr class="mx-4" style="width: 98%;">
@@ -115,7 +117,7 @@
                         <!-- <button class="btn btn-warning me-3" ng-if="deliveryFlow[status].includes(30)"
                             ng-click="goToReturnOrder()">Trả hàng</button> -->
 
-                            <button class="btn btn-warning me-3"
+                        <button class="btn btn-warning me-3"
                             ng-show="deliveryFlow[status].includes(30) && canShowReturnButton(billResponse.deliveryDate)"
                             ng-click="goToReturnOrder()">Trả hàng</button>
 
@@ -185,7 +187,7 @@
                                             id="reason-{{reason.value}}" ng-model="reason.checked"
                                             ng-click="toggleReason(reason)">
                                         <label class="form-check-label" for="reason-{{reason.value}}">
-                                            {{ reason.text }} - {{reason.value}}
+                                            {{ reason.text }}
                                         </label>
                                     </div>
                                 </div>
@@ -240,7 +242,7 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Trạng thái</th>
                                 <th scope="col" class="text-center">Thời gian</th>
-                                <th scope="col">Người xác nhận</th>
+                                <th scope="col">Người thực hiện</th>
                                 <th scope="col">Ghi chú</th>
                             </tr>
                         </thead>
@@ -311,9 +313,9 @@
                         Hoàn tiền huỷ đơn</button>
 
 
-                    <button class="btn btn-primary" ng-show="[32].includes(status) && !isRefund"
+                    <!-- <button class="btn btn-primary" ng-show="[32].includes(status) && !isRefund"
                         ng-click="showHoanTienTraHang()">
-                        Hoàn tiền trả hàng</button>
+                        Hoàn tiền trả hàng</button> -->
 
                     <button class="btn btn-primary"
                         ng-show="[81, 12, 13].includes(status) && paidOrRefundObject.paidOrRefund != 3"
@@ -698,6 +700,10 @@
                         <div class="col-4"><strong>Địa chỉ:</strong></div>
                         <div class="col-8">{{billResponse.address}}</div>
                     </div>
+                    <div class="row mb-2">
+                        <div class="col-4"><strong>Ghi chú:</strong></div>
+                        <div class="col-8">{{billResponse.note}}</div>
+                    </div>
                 </div>
                 <div class="col-md-7" ng-show="billResponse.typeBill == 1">
                     <div class="row mb-2">
@@ -868,9 +874,33 @@
                             bd.price) *
                             bd.quantity)}}</td>
                         <td>
-                            <button class="btn" ng-click="removeBillDetail(bd.id)" ng-show="[1].includes(status)">
+                            <button class="btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveProduct-{{bd.id}}"
+                                ng-disabled="billDetails.length <= 1" ng-show="[1].includes(status)">
                                 <i class="material-icons">&#xE15C;</i>
                             </button>
+                            <!-- Modal Xác Nhận -->
+                            <div class="modal fade" id="confirmRemoveProduct-{{bd.id}}" tabindex="-1"
+                                aria-labelledby="confirmRemoveProduct" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="confirmReturnModalLabel">Xóa sản phẩm</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body fs-6">
+                                            Bạn có muốn xóa sản phẩm <span
+                                                class="fw-bold">{{bd.productDetail.product.name}}</span> không?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Hủy</button>
+                                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                                ng-click="removeBillDetail(bd.id)">Xác nhận</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <td colspan="12" ng-show="billDetails.length <= 0">Không có sản phẩm</td>
@@ -1001,10 +1031,6 @@
                             class="currency">đ</span>
                     </div>
                 </div> -->
-                <div class="row align-items-center">
-                    <div class="col-7 fw-bold">Phí giao hàng:</div>
-                    <div class="col-5 text-end fs-5 money fw-bold">{{formatCurrency(billResponse.shippingFee)}}</div>
-                </div>
             </div>
 
             <!-- Phần voucher -->
@@ -1024,15 +1050,26 @@
                             <span>Đơn từ <span class="highlighted-value">{{
                                     formatCurrency(billResponse.voucher.minimumTotalAmount)}}</span></span>
                         </div>
+                        <div ng-show="status == 1">
+                            <span class="text-danger" ng-if="billResponse.voucher.quantity === 0 ">Đã hết mã giảm
+                                giá</span>
+                            <span class="text-danger"
+                                ng-if="billResponse.voucher.quantity > 0 &&  billResponse.totalAmount < billResponse.voucher.minimumTotalAmount">
+                            Không thể sử dụng mã giảm giá</span>
+                        </div>
                     </div>
-                    <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucher"
+                    <!-- <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucher"
+                        ng-click="getAllVoucherCanUse()" ng-show="[1].includes(status)">
+                        <i class="material-icons">edit</i>
+                    </button> -->
+                    <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucherV2"
                         ng-click="getAllVoucherCanUse()" ng-show="[1].includes(status)">
                         <i class="material-icons">edit</i>
                     </button>
                 </div>
                 <div class="voucher-item" ng-show="billResponse.voucher === null">
                     <span>Chưa chọn mã giảm giá</span>
-                    <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucher"
+                    <button class="voucher-edit-button" data-bs-toggle="modal" data-bs-target="#modalListVoucherV2"
                         ng-click="getAllVoucherCanUse()" ng-show="[1].includes(status)">
                         <i class="material-icons">add</i>
                     </button>
@@ -1046,6 +1083,10 @@
                     <div class="col-5 text-end fs-5 money highlight-discount">{{formatCurrency(billResponse.totalAmount
                         -
                         billResponse.totalAmountAfterDiscount)}}</div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-7 fw-bold">Phí giao hàng:</div>
+                    <div class="col-5 text-end fs-5 money fw-bold">{{formatCurrency(billResponse.shippingFee)}}</div>
                 </div>
                 <hr>
                 <div class="row align-items-center">
@@ -1068,9 +1109,9 @@
                     <div class="col-7 fw-bold">
                         <span ng-if="paidOrRefundObject.paidOrRefund == 1 && status !== 32">Số tiền cần thanh toán
                             tiếp:</span>
-                        <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12">Số tiền cần
-                            hoàn trả:</span>
-                        <span ng-if="[30, 31, 32, 12].includes(status)">Số tiền hoàn trả:</span>
+                        <!-- <span ng-if="paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12">Số tiền cần
+                            hoàn trả:</span> -->
+                        <span ng-if="([30, 31, 32, 12].includes(status)) || (paidOrRefundObject.paidOrRefund == 2 && status !== 32 && status !== 12)">Số tiền hoàn trả:</span>
                     </div>
                     <div class="col-5 text-end fs-5 money"
                         ng-show="paidOrRefundObject.paidOrRefund == 1 && status !== 32 && getAdditionalPaymentAmount() > 0"
@@ -1098,7 +1139,7 @@
 
 
 <!-- Modal Chọn voucher có thể sử dụng-->
-<div class="modal fade" id="modalListVoucher" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalListVoucherV1" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable" style="width: 40%;">
         <div class="modal-content">
             <div class="modal-header">
@@ -1124,6 +1165,9 @@
                                     <span>Đơn từ <span class="highlighted-value">{{
                                             formatCurrency(voucher.minimumTotalAmount)}}</span></span>
                                 </div>
+                                <div>
+                                    Còn lại: {{voucher.quantity}}
+                                </div>
                             </div>
                             <button class="voucher-edit-button">
                                 <!-- <i class="material-icons">edit</i> -->
@@ -1147,6 +1191,69 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalListVoucherV2" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" style="width: 40%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="voucherModalLabel">Danh sách khuyến mãi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="voucher-list mt-2">
+                    <div class="voucher-container mx-4 mb-4" ng-repeat="v2 in vouchersV2" ng-show="v2.voucher.quantity >= 0">
+                        <div class="voucher-item">
+                            <div class="voucher-content">
+                                <div class="mb-2">
+                                    <div class="fw-bold">{{ v2.voucher.name }}</div>
+                                    <span class="voucher-code">{{ v2.voucher.code }}</span>
+                                    <span class="mx-2">•</span>
+                                    <span class="voucher-value">
+                                        Giảm <span class="highlight-main">{{ v2.voucher.value | number }}{{
+                                            v2.voucher.discountType === 2 ? 'đ' : '%' }}</span>
+                                    </span>
+                                </div>
+                                <div class="voucher-conditions">
+                                    <span ng-show="v2.voucher.discountType == 1" class="me-1">Giảm tối đa <span
+                                            class="highlighted-value">{{
+                                            formatCurrency(v2.voucher.maximumReductionValue) }}</span></span>
+                                    <span>Đơn từ <span class="highlighted-value">{{
+                                            formatCurrency(v2.voucher.minimumTotalAmount) }}</span></span>
+                                </div>
+                                <div>
+                                    <span>Còn lại: {{ v2.voucher.quantity }}
+                                    </span>
+                                    <span class="mx-2">•</span>
+                                    <span>Đã dùng: {{ v2.usedCount }} / {{ v2.voucher.numberOfUses }}
+                                    </span>
+                                    <p ng-if="v2.voucher.quantity <= 0" class="text-danger">Đã hết mã giảm giá</p>
+                                    <p ng-if="v2.voucher.quantity > 0 && v2.usedCount >= v2.voucher.numberOfUses && v2.voucher.id !== billResponse.voucher.id"
+                                        class="text-danger">Đã hết lượt sử dụng</p>
+                                    <p ng-if="v2.voucher.quantity > 0 && v2.usedCount < v2.voucher.numberOfUses && billResponse.totalAmount < v2.voucher.minimumTotalAmount"
+                                        class="text-danger">Đơn hàng không đủ điều kiện</p>
+
+                                </div>
+                            </div>
+                            <button class="voucher-edit-button"
+                                ng-disabled="(v2.voucher.quantity <= 0 || v2.usedCount >= v2.voucher.numberOfUses || billResponse.totalAmount < v2.voucher.minimumTotalAmount) && v2.voucher.code !== billResponse.voucher.code"
+                                ng-style="{'background-color': v2.voucher.code === billResponse.voucher.code ? 'green' : ''}"
+                                ng-click="setVoucherToBill(v2.voucher)">
+                                <i class="material-icons" style="color: aliceblue;"
+                                    ng-if="v2.voucher.code === billResponse.voucher.code">check</i>
+                                <i class="material-icons" ng-if="v2.voucher.code !== billResponse.voucher.code">add</i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="voucher-item mb-2 text-center" ng-show="vouchersV2.length == 0">
+                        <h6 class="text-center">Không có mã giảm giá phù hợp</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 
 <!-- Modal Thêm sản phẩm vào hóa đơn -->
@@ -1436,6 +1543,8 @@
         </div>
     </div>
 </div>
+
+
 
 </div>
 
