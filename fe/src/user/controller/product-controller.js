@@ -879,6 +879,7 @@ $scope.dataCity.ProvinceID;
         bill.address = fullAddress;
         bill.paymentMethod = $scope.selectedPayment;
         bill.addressId = idFullAddress;
+      console.log(bill)
 
         if ($scope.selectedVoucher != null) {
           delete $scope.selectedVoucher.selected;
@@ -891,7 +892,6 @@ $scope.dataCity.ProvinceID;
         // bill.customerEntity = $scope.userData;
         bill.shippingFee = $scope.shippingFee;
         // Tiến hành gửi dữ liệu lên server
-      // console.log(bill)
 
 
         $http.post("http://localhost:8080/api/home/bill/create", bill)
@@ -1572,7 +1572,6 @@ $scope.getRates = function() {
 // Hàm confirmPurchase sẽ được gọi khi bấm nút
 $scope.confirmPurchase = function() {
 
-
   const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
           confirmButton: "btn btn-success",
@@ -1582,7 +1581,9 @@ $scope.confirmPurchase = function() {
   });
 
   swalWithBootstrapButtons.fire({
-      title: "Bạn có chắc chắn muốn thanh toán?",
+      title: ($scope.selectedPayment.code === 102) 
+              ? "Bạn có chắc chắn muốn đặt hàng?" 
+              : "Bạn có chắc chắn muốn thanh toán?",
       text: "Hành động này không thể hoàn tác!",
       icon: "warning",
       showCancelButton: true,
@@ -1591,13 +1592,14 @@ $scope.confirmPurchase = function() {
       reverseButtons: true
   }).then((result) => {
       if (result.isConfirmed) {
-          // Gọi hàm thanh toán khi người dùng xác nhận
           $scope.bill.purchase();
-          swalWithBootstrapButtons.fire({
-              title: "Đã thanh toán!",
+          if ($scope.selectedPayment.code === 102) {
+            swalWithBootstrapButtons.fire({
+              title: "Đã đặt hàng thành công!",
               text: "Đơn hàng của bạn đã được xử lý.",
               icon: "success"
           });
+          }
       } else if (result.dismiss === Swal.DismissReason.cancel) {
           swalWithBootstrapButtons.fire({
               title: "Đã hủy",
@@ -1607,6 +1609,7 @@ $scope.confirmPurchase = function() {
       }
   });
 };
+
 
 
 

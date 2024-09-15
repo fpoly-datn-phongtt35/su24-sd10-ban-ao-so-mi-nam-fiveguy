@@ -38,15 +38,8 @@ import java.util.*;
 @Service
 public class OlBillUntility {
 
-
-    @Autowired
-    private OLProductDetailService2 olProductDetailService;
-
     @Autowired
     private OLBillService2 olBillService;
-
-    @Autowired
-    private OLBillDetailService2 billDetailService;
 
     @Autowired
     private OLBillHistoryService2 olBillHistoryService2;
@@ -54,11 +47,6 @@ public class OlBillUntility {
     @Autowired
     private OLPaymentStatusService2 olPaymentStatusService2;
 
-//    @Autowired
-//    private OLVouchersRepository olVouchersRepository;
-
-    @Autowired
-    private OLProductService2 olProductService;
 
     public boolean authenticationCheckMoMo(String orderId) {
         try {
@@ -158,26 +146,7 @@ public class OlBillUntility {
         String decodedString = new String(decodedBytes);
         return Long.parseLong(decodedString);
     }
-//    public void restoreProductQuantity(List<BillDetail> billDetails) {
-//        for (BillDetail detail : billDetails) {
-//            Optional<ProductDetail> productDetail = olProductDetailService.findById(detail.getProductDetail().getId());
-//            if (productDetail.isPresent()) {
-//                int quantityToAdd = detail.getQuantity();
-//                int currentQuantity = productDetail.get().getQuantity();
-//                productDetail.get().setQuantity(currentQuantity + quantityToAdd);
-//
-//                // Kiểm tra xem chi tiết sản phẩm đã hết status hay chưa
-//                if (productDetail.get().getStatus() == 2) {
-//                    productDetail.get().setStatus(1);  // Đặt status = 1 nếu số lượng được thêm vào
-//                }
-//
-//                olProductDetailService.save(productDetail.get());
-//                productDetail.get().getProduct().setStatus(1);  // Đặt status = 1 nếu tất cả ProductDetail đều có status = 2
-//                olProductService.save(productDetail.get().getProduct());
-//
-//            }
-//        }
-//    }
+
 public static String encodeId(long id) {
     byte[] bytes = String.valueOf(id).getBytes();
     String encoded = Base64.getEncoder().encodeToString(bytes);
@@ -282,35 +251,18 @@ public static String encodeId(long id) {
                 paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
                 paymentStatus.setPaymentMethod(2);
                 paymentStatus.setPaymentType(1);
+                paymentStatus.setNote("Khách hàng thanh toán");
                paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
                 olPaymentStatusService2.save(paymentStatus);
 
 
             }
 
-//        if (paymentType == 3){
-//            PaymentStatus paymentStatus = new PaymentStatus();
-//            paymentStatus.setBill(bill);
-//            paymentStatus.setCustomerPaymentStatus(statusPaymentStatus);
-//            paymentStatus.setPaymentMethod(1);
-//            paymentStatus.setPaymentAmount(bill.getTotalAmountAfterDiscount().add(bill.getShippingFee()));
-//            olPaymentStatusService2.save(paymentStatus);
-//        }
+
 
         }
 
-//    private final String EXCHANGE_RATE_API = "https://openexchangerates.org/api/latest.json?base=USD&symbols=VND&app_id=8bbe0880013e4460b9b81960a33980ed";
-//
-//    public BigDecimal getExchangeRate() {
-//        RestTemplate restTemplate = new RestTemplate();
-//        JsonNode response = restTemplate.getForObject(EXCHANGE_RATE_API, JsonNode.class);
-//
-//        // Lấy tỷ giá từ JSON response
-//        JsonNode rates = response.get("rates");
-//        BigDecimal exchangeRate = rates.get("VND").decimalValue();
-//
-//        return exchangeRate;
-//    }
+
 
 
 

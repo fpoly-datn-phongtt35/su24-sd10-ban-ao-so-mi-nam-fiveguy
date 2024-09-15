@@ -9,11 +9,13 @@
                             <h2 class="ml-lg-2">Sản phẩm</h2>
                         </div>
                         <div class="col-sm-9 p-0 d-flex justify-content-lg-end justify-content-center">
-                            <a data-bs-target="#addProductModel" class="btn btn-success" data-bs-toggle="modal">
+                            <a data-bs-target="#addProductModel" class="btn btn-success" data-bs-toggle="modal" 
+                               ng-if="isNotEmployee()">
                                 <i class="material-icons">&#xE147;</i>
                                 <span>Thêm mới</span>
                             </a>
                         </div>
+                        
                     </div>
                 </div>
                 <div class="row mx-0 mt-3 mb-2">
@@ -99,9 +101,12 @@
                                     <a ng-click="editProduct(product.id)" data-bs-target="#editProductModel" style="cursor: pointer;" class="edit" data-bs-toggle="modal">
                                         <i class="material-icons" data-bs-toggle="tooltip" title="Edit">&#xE254;</i>
                                     </a>
-                                    <a ng-click="handleDelete(product)" ng-if="product.status === 1" data-bs-target="#deleteProductModel" class="delete" data-bs-toggle="modal">
-                                        <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
-                                    </a>
+                                    <a ng-click="handleDelete(product)" 
+                                    ng-if="product.status === 1 && !isEmployee()" 
+                                    data-bs-target="#deleteProductModel" class="delete" data-bs-toggle="modal">
+                                     <i class="material-icons" data-bs-toggle="tooltip" title="Delete">&#xE872;</i>
+                                 </a>
+                                 
                                     <a ng-click="handleStatus(product)" ng-if="product.status === 0" class="status" data-bs-target="#updateStatusModel" data-bs-toggle="modal">
                                         <i class="material-icons" data-bs-toggle="tooltip" title="Status">settings_backup_restore</i>
                                     </a>
@@ -503,7 +508,14 @@
                                
                                 <div class="modal-footer">
                                     <button ng-click="resetFormUpdate()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                    <button id="updateProduct" type="submit" ng-disabled="productFormUpdate.$invalid" class="btn btn-success">Cập nhật</button>
+                                    <button id="updateProduct" 
+                                    type="submit" 
+                                    ng-disabled="productFormUpdate.$invalid" 
+                                    class="btn btn-success" 
+                                    ng-if="!isEmployee()">
+                                Cập nhật
+                            </button>
+                            
                                     <button id="loadingUpdate" class="btn btn-success" style="display: none;" type="button" disabled>
                                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                         Loading...
