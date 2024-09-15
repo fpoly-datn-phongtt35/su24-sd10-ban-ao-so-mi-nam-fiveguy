@@ -1133,7 +1133,8 @@ $scope.dataCity.ProvinceID;
           if (response.data) {
             $scope.productsByTotalQuantitySold = response.data.slice(0, 12); // Lấy chỉ 12 đối tượng đầu tiên
   
-            // console.log($scope.productsByTotalQuantitySold)
+            console.log(response.data)
+            console.log($scope.productsByTotalQuantitySold)
           }
         })
         .catch(function(error) {

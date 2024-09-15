@@ -35,6 +35,9 @@ public class ProductSale {
     @Column(name = "CreatedBy",columnDefinition = "nvarchar(300)")
     private String createdBy;
 
+    @Column(name = "IsActive")
+    private Integer isActive;
+
     @ManyToOne
     @JoinColumn(name = "IdSale", referencedColumnName = "Id")
     private Sale sale;

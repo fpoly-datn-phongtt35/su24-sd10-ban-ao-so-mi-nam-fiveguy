@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,8 +77,17 @@ public class ProductSaleServiceImpl2 implements ProductSaleService2 {
     @Override
     public List<ProductSale> addProductSales(List<ProductSale> productSales) {
 
-
+        for (ProductSale productSale : productSales){
+            productSale.setCreatedAt(new Date());
+            productSale.setIsActive(1);
+        }
         return productSaleRepository2.saveAll(productSales);
+    }
+
+    @Override
+    public void saveAllProductSale(List<ProductSale> productSales) {
+         productSaleRepository2.saveAll(productSales);
+
     }
 
 

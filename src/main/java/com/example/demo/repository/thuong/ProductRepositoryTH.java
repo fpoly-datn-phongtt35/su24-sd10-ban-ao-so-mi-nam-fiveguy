@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public interface ProductRepositoryTH extends JpaRepository<Product, Long> {
     @Query(value = "SELECT ps.promotionalPrice " +
             "FROM Product p " +
-            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id AND ps.isActive = 1 " +
             "WHERE p.id = :productId " +
             "AND p.status = 1 " +
             "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")

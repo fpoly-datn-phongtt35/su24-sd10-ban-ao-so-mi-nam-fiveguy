@@ -17,6 +17,7 @@ public interface ProductSaleService2 {
 
 
     List<ProductSale> addProductSales(List<ProductSale> productSales);
+    void saveAllProductSale(List<ProductSale> productSales);
     void deleteProductSales(List<Long> ids);
 //    void deleteAllProductSales();
 
