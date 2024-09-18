@@ -516,6 +516,10 @@ public class NBillServiceImpl implements NBillService {
             throw new RuntimeException("Bill status is not valid for cancellation or return");
         }
 
+//        if (bill.getReason() == 8 || bill.getReason() == 9){
+//            return;
+//        }
+
         Voucher usedVoucher = bill.getVoucher();
         if (usedVoucher != null) {
             // Tăng số lượng voucher lên 1

@@ -714,7 +714,9 @@
                 <div class="col-md-7" ng-show="billResponse.typeBill == 1">
                     <div class="row mb-2">
                         <div class="col-4"><strong>Tên người mua:</strong></div>
-                        <div class="col-8">Khách hàng lẻ</div>
+                        <div class="col-8">{{billResponse.customer ? billResponse.customer.fullName
+                            : 'Khách
+                            lẻ'}}</div>
                     </div>
                     <!-- <div class="row mb-2">
                         <div class="col-4"><strong>Số điện thoại:</strong></div>
@@ -1044,7 +1046,7 @@
                 <div class="voucher-item" ng-show="billResponse.voucher !== null">
                     <div class="voucher-content">
                         <div class="mb-2">
-                            <div class="fw-bold">{{ billResponse.voucher.name }}</div>
+                            <!-- <div class="fw-bold">{{ billResponse.voucher.name }}</div> -->
                             <span class="voucher-code">{{ billResponse.voucher.code }}</span>
                             <span class="mx-2">•</span>
                             <span class="voucher-value">Giảm <span class="highlight-main">{{ billResponse.voucher.value
