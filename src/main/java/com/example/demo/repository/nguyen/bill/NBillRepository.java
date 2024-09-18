@@ -41,13 +41,13 @@ public interface NBillRepository extends JpaRepository<Bill, Long>, JpaSpecifica
             @Param("createdAt") Date createdAt,
             @Param("status") Integer status);
 
-    //thong ke theo voucherid
     @Query("SELECT new com.example.demo.model.response.nguyen.CustomerVoucherStatsDTO(c.fullName, a.phoneNumber, a.email, COUNT(b), " +
             "SUM(b.totalAmount), SUM(b.totalAmountAfterDiscount)) " +
             "FROM Bill b " +
             "JOIN b.customer c " +
             "JOIN c.account a " +
             "WHERE b.voucher.id = :voucherId " +
+            "AND b.status NOT IN (1, 5, 6, 20, 50, 100) " +
             "GROUP BY c.id, c.fullName, a.phoneNumber, a.email")
     Page<CustomerVoucherStatsDTO> findCustomerVoucherStatsByVoucherId(
             @Param("voucherId") Long voucherId, Pageable pageable);
