@@ -161,17 +161,17 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 //        bill.setCreatedAt(new Date());
         bill.setCustomer(customer);
         Bill savedBill = olBillRepository.save(bill);
-        if (savedBill.getCustomer() != null && savedBill.getCustomer().getAccount() != null) {
-            String customerEmail = savedBill.getCustomer().getAccount().getEmail();
-            if (customerEmail != null && !customerEmail.isEmpty()) {
-                // Gửi email xác nhận đơn hàng cho khách hàng
-                sendOrderConfirmationEmail(
-                        customerEmail,
-                        savedBill.getCustomer().getFullName(),
-                        savedBill.getCustomer().getAccount().getPhoneNumber()
-                );
-            }
-        }
+//        if (savedBill.getCustomer() != null && savedBill.getCustomer().getAccount() != null) {
+//            String customerEmail = savedBill.getCustomer().getAccount().getEmail();
+//            if (customerEmail != null && !customerEmail.isEmpty()) {
+//                // Gửi email xác nhận đơn hàng cho khách hàng
+//                sendOrderConfirmationEmail(
+//                        customerEmail,
+//                        savedBill.getCustomer().getFullName(),
+//                        savedBill.getCustomer().getAccount().getPhoneNumber()
+//                );
+//            }
+//        }
         olBillDetailService.saveAll(billDetails);
 
 

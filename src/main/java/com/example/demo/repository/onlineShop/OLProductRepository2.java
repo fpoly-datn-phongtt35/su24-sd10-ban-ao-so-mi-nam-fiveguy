@@ -21,7 +21,7 @@ public interface OLProductRepository2 extends JpaRepository<Product, Long> {
 @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
         "MIN(i.path) AS imagePath " +  // Selecting the first image path per product
         "FROM Product p " +
-        "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+        "LEFT JOIN ProductSale ps ON p.id = ps.product.id AND ps.isActive = 1 " +
         "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
         "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1 " +  // Adding condition for image.status = 1
         "WHERE p.status = 1 " +
@@ -60,7 +60,7 @@ List<Object[]> findProductsWithImages();
     //    get  promotionalPrice  hiển thị cart
     @Query("SELECT ps.promotionalPrice " +
             "FROM Product p " +
-            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id AND ps.isActive = 1 " +
             "WHERE p.id = :productId " +
             "AND p.status = 1 " +
             "AND (ps.id IS NULL OR (ps.id IS NOT NULL AND (ps.sale.status = 1 OR ps.sale.status IS NULL)))")
@@ -73,7 +73,7 @@ List<Object[]> findProductsWithImages();
             "JOIN ProductDetails pd ON p.id = pd.Idproduct " +
             "LEFT JOIN BillDetails bd ON pd.id = bd.IdProductDetail " +
             "LEFT JOIN Bills b ON bd.IdBill = b.id " +
-            "LEFT JOIN ProductSales ps ON p.id = ps.Idproduct " +
+            "LEFT JOIN ProductSales ps ON p.id = ps.Idproduct AND ps.isActive = 1 " +
             "LEFT JOIN Sales s ON ps.Idsale = s.id AND s.status = 1 " +
             "LEFT JOIN Images i ON i.Idproduct = p.id " +
             "LEFT JOIN ( " +
@@ -100,7 +100,7 @@ List<Object[]> findProductsWithImages();
     @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
             "MIN(i.path) AS imagePath, p.createdAt " +  // Including p.createdAt in the SELECT clause
             "FROM Product p " +
-            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id AND ps.isActive = 1 " +
             "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
             "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1" +
             "WHERE p.status = 1 " +
@@ -112,7 +112,7 @@ List<Object[]> findProductsWithImages();
     @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
             "MIN(i.path) AS imagePath " +
             "FROM Product p " +
-            "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+            "LEFT JOIN ProductSale ps ON p.id = ps.product.id AND ps.isActive = 1 " +
             "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
             "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1 " +
             "WHERE p.status = 1 " +
@@ -132,7 +132,7 @@ List<Object[]> findProductsWithImages();
 @Query("SELECT p.id, p.name, ps.discountPrice, s.value, s.discountType, " +
         "MIN(i.path) AS imagePath " +
         "FROM Product p " +
-        "LEFT JOIN ProductSale ps ON p.id = ps.product.id " +
+        "LEFT JOIN ProductSale ps ON p.id = ps.product.id AND ps.isActive = 1 " +
         "LEFT JOIN Sale s ON ps.sale.id = s.id AND s.status = 1 " +
         "LEFT JOIN p.images i ON i.product.id = p.id AND i.status = 1 " +
         "WHERE p.category = :category " +

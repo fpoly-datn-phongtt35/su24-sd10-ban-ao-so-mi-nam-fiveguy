@@ -1,7 +1,9 @@
 package com.example.demo.service.sale;
 
+import com.example.demo.entity.ProductSale;
 import com.example.demo.entity.Sale;
 import com.example.demo.repository.sale.SaleRepository2;
+import com.example.demo.service.sale.serviceImpl.ProductSaleServiceImpl2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class DiscountStatusUpdater {
     @Autowired
     private SaleRepository2 saleRepository2;
 
+    @Autowired
+    private ProductSaleServiceImpl2 productSaleServiceImpl2;
+
     @Scheduled(fixedRate = 60000)
     public void updateDiscountStatus() {
         Date now = new Date();
@@ -26,6 +31,12 @@ public class DiscountStatusUpdater {
                     sale.setStatus(1); // Đang hoạt động
                 } else if ((sale.getStatus() == 1 || sale.getStatus() == 4) && now.after(sale.getEndDate())) {
                     sale.setStatus(3); // Hết hạn
+                    List<ProductSale> productSales = productSaleServiceImpl2.getProductSalesBySaleId((sale.getId()));
+
+                    for (ProductSale productSale : productSales){
+                        productSale.setIsActive(0);
+                    }
+                    productSaleServiceImpl2.saveAllProductSale(productSales);
                 }
                 saleRepository2.save(sale);
             }
