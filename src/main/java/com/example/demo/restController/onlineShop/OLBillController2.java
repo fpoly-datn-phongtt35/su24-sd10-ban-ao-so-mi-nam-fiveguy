@@ -65,7 +65,7 @@ public class OLBillController2 {
 
         if (body != null && body instanceof Bill) {
             Bill billData = (Bill) body;
-            BigDecimal totalPayment = new BigDecimal(String.valueOf(billData.getTotalAmountAfterDiscount()));
+            BigDecimal totalPayment = new BigDecimal(String.valueOf(billData.getTotalAmountAfterDiscount())).add(billData.getShippingFee());
             Integer codePayment = billData.getPaymentMethod().getCode();
             String codeBill = (olBillUntility.encodeId(billData.getId()));
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -183,22 +183,22 @@ public class OLBillController2 {
 
             }
 //            test thanh toán cod
-            else if (codePayment.equals(102)) {
-                billData.setStatus(1);
-                billData.setCustomer(customer.get());
-                billData.setPaidAmount(new BigDecimal(0));
-                billData.setPaidShippingFee(new BigDecimal(0));
-                Bill bill = olBillService.save(billData);
-                olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,3);
-
-            }
-        } else if (body instanceof Integer) {
-            int intValue = (int) body;
-            if (intValue == 3) {
-                return ResponseEntity.ok(3);
-            } else {
-                return ResponseEntity.ok(0);
-            }
+//            else if (codePayment.equals(102)) {
+//                billData.setStatus(1);
+//                billData.setCustomer(customer.get());
+//                billData.setPaidAmount(new BigDecimal(0));
+//                billData.setPaidShippingFee(new BigDecimal(0));
+//                Bill bill = olBillService.save(billData);
+//                olBillUntility.newPaymentStatusAndBillHistory(bill,customer.get(),1,1,3);
+//
+//            }
+//        } else if (body instanceof Integer) {
+//            int intValue = (int) body;
+//            if (intValue == 3) {
+//                return ResponseEntity.ok(3);
+//            } else {
+//                return ResponseEntity.ok(0);
+//            }
         } else if (body instanceof Map) {
             // Kiểm tra xem body có key là 2 không
             Map<?, ?> bodyMap = (Map<?, ?>) body;
