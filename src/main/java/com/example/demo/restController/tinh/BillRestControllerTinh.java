@@ -41,29 +41,25 @@ public class BillRestControllerTinh {
     //Tổng doanh thu =========================================================================
     @GetMapping("/tong-doanh-thu-ngay")
     public ResponseEntity<BigDecimal> tongTienDay() {
-        Date date = new Date();
-        BigDecimal totalAmount = billRepositoryTinh.tongSoTien(date, "day");
+        BigDecimal totalAmount = billRepositoryTinh.tongSoTien(new Date(), "day");
         return ResponseEntity.ok(totalAmount);
     }
 
     @GetMapping("/tong-doanh-thu-tuan")
     public ResponseEntity<BigDecimal> tongTienWeek() {
-        Date date = new Date();
-        BigDecimal customers = billRepositoryTinh.tongSoTien(date, "week");
+        BigDecimal customers = billRepositoryTinh.calculateTotalRevenueForWeek(new Date());
         return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/tong-doanh-thu-thang")
     public ResponseEntity<BigDecimal> tongTienMonth() {
-        Date date = new Date();
-        BigDecimal customers = billRepositoryTinh.tongSoTien(date, "month");
+        BigDecimal customers = billRepositoryTinh.calculateTotalRevenueForMonth(new Date());
         return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/tong-doanh-thu-nam")
     public ResponseEntity<BigDecimal> tongTienYear() {
-        Date date = new Date();
-        BigDecimal customers = billRepositoryTinh.tongSoTien(date, "year");
+        BigDecimal customers = billRepositoryTinh.tongSoTien(new Date(), "year");
         return ResponseEntity.ok(customers);
     }
 

@@ -23,9 +23,9 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
     //Tổng số dơn thanhf cong
     @Query("select b from Bill b JOIN b.billHistories bls where CAST(b.createdAt AS DATE) = CAST(:day AS DATE) and bls.status = 21")
     List<Bill> tongBillThanhCongDay(Date day);
-    @Query("SELECT b FROM Bill b JOIN b.billHistories bls WHERE DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, bls.createdAt) = DATEPART(WEEK, :date) AND bls.status = 21")
+    @Query("SELECT b FROM Bill b JOIN b.billHistories bls WHERE DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, b.createdAt) = DATEPART(WEEK, :date) AND bls.status = 21")
     List<Bill> tongBillThanhCongWeek(Date date);
-    @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(MONTH, b.createdAt) =  Month(:date) and DATEPART(YEAR, bls.createdAt) = YEAR(:date) AND bls.status = 21")
+    @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(MONTH, b.createdAt) =  Month(:date) and DATEPART(YEAR, b.createdAt) = YEAR(:date) AND bls.status = 21")
     List<Bill> tongBillThanhCongMonth(Date date);
     @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(YEAR, b.createdAt) = YEAR(:date) AND bls.status = 21")
     List<Bill> tongBillThanhCongYear(Date date);
@@ -39,9 +39,9 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
     //Tổng số dơn  Huy
     @Query("SELECT COUNT(DISTINCT b) FROM Bill b WHERE CAST(b.createdAt AS DATE) = CAST(:date AS DATE) AND (b.status = 5 OR b.status = 6)")
     Long tongBillHuyDay(@Param("date") Date date);
-    @Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billHistories ps WHERE DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, ps.createdAt) = DATEPART(WEEK, :date) AND (b.status = 5 OR b.status = 6)")
+    @Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billHistories ps WHERE DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, b.createdAt) = DATEPART(WEEK, :date) AND (b.status = 5 OR b.status = 6)")
     Long tongBillHuyWeek(@Param("date") Date date);
-    @Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billHistories ps WHERE DATEPART(MONTH, b.createdAt) = MONTH(:date) AND DATEPART(YEAR, ps.createdAt) = YEAR(:date) AND (b.status = 5 OR b.status = 6)")
+    @Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billHistories ps WHERE DATEPART(MONTH, b.createdAt) = MONTH(:date) AND DATEPART(YEAR, b.createdAt) = YEAR(:date) AND (b.status = 5 OR b.status = 6)")
     Long tongBillHuyMonth(@Param("date") Date date);
     @Query("SELECT COUNT(DISTINCT b) FROM Bill b JOIN b.billHistories ps WHERE DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND (b.status = 5 OR b.status = 6)")
     Long tongBillHuyYear(@Param("date") Date date);
@@ -51,9 +51,9 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
     //Tổng số đơn Trả
     @Query("select b from Bill b JOIN b.billHistories bls where CAST(b.createdAt AS Date) = CAST(:day AS DATE) AND bls.status = 32")
     List<Bill> tongBillTraHangDay(Date day);
-    @Query("SELECT b FROM Bill b JOIN b.billHistories bls WHERE DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, bls.createdAt) = DATEPART(WEEK, :date) AND bls.status = 32")
+    @Query("SELECT b FROM Bill b JOIN b.billHistories bls WHERE DATEPART(YEAR, b.createdAt) = DATEPART(YEAR, :date) AND DATEPART(WEEK, b.createdAt) = DATEPART(WEEK, :date) AND bls.status = 32")
     List<Bill> tongBillTraHangWeek(Date date);
-    @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(MONTH, b.createdAt) =  Month(:date) and DATEPART(YEAR, bls.createdAt) = YEAR(:date) AND bls.status = 32")
+    @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(MONTH, b.createdAt) =  Month(:date) and DATEPART(YEAR, b.createdAt) = YEAR(:date) AND bls.status = 32")
     List<Bill> tongBillTraHangMonth(Date date);
     @Query("select b from Bill b JOIN b.billHistories bls where DATEPART(YEAR, b.createdAt) = YEAR(:date) AND bls.status = 32")
     List<Bill> tongBillTraHangYear(Date date);
@@ -133,6 +133,74 @@ public interface BillRepositoryTinh extends JpaRepository<Bill, Long> {
             nativeQuery = true)
     BigDecimal tongSoTien(@Param("date") Date date, @Param("timePeriod") String timePeriod);
 
+
+    @Query(value = "WITH DistinctPaymentStatus AS ( " +
+            "    SELECT " +
+            "        ps.BillId, " +
+            "        ps.PaymentAmount, " +
+            "        ps.PaymentType, " +
+            "        ps.PaymentDate, " +
+            "        ROW_NUMBER() OVER (PARTITION BY ps.BillId ORDER BY ps.Id DESC) AS rn " +
+            "    FROM " +
+            "        PaymentStatus ps " +
+            ") " +
+            "SELECT " +
+            "    SUM( " +
+            "        CASE " +
+            "            WHEN dps.PaymentType = 4 THEN " +
+            "                b.totalAmountAfterDiscount - dps.PaymentAmount " +
+            "            ELSE " +
+            "                b.totalAmountAfterDiscount " +
+            "        END " +
+            "    ) AS totalRevenueAdjusted " +
+            "FROM " +
+            "    Bills b " +
+            "    LEFT JOIN DistinctPaymentStatus dps ON b.id = dps.BillId AND dps.rn = 1 " +
+            "WHERE " +
+            "    EXISTS ( " +
+            "        SELECT 1 " +
+            "        FROM BillHistories bh " +
+            "        WHERE bh.BillId = b.id " +
+            "        AND bh.Status = 21 " +
+            "    ) " +
+            "    AND DATEPART(YEAR, b.CreatedAt) = DATEPART(YEAR, :date) " +
+            "    AND DATEPART(WEEK, b.CreatedAt) = DATEPART(WEEK, :date)",
+            nativeQuery = true)
+    BigDecimal calculateTotalRevenueForWeek(@Param("date") Date date);
+
+    @Query(value = "WITH DistinctPaymentStatus AS ( " +
+            "    SELECT " +
+            "        ps.BillId, " +
+            "        ps.PaymentAmount, " +
+            "        ps.PaymentType, " +
+            "        ps.PaymentDate, " +
+            "        ROW_NUMBER() OVER (PARTITION BY ps.BillId ORDER BY ps.Id DESC) AS rn " +
+            "    FROM " +
+            "        PaymentStatus ps " +
+            ") " +
+            "SELECT " +
+            "    SUM( " +
+            "        CASE " +
+            "            WHEN dps.PaymentType = 4 THEN " +
+            "                b.totalAmountAfterDiscount - dps.PaymentAmount " +
+            "            ELSE " +
+            "                b.totalAmountAfterDiscount " +
+            "        END " +
+            "    ) AS totalRevenueAdjusted " +
+            "FROM " +
+            "    Bills b " +
+            "    LEFT JOIN DistinctPaymentStatus dps ON b.id = dps.BillId AND dps.rn = 1 " +
+            "WHERE " +
+            "    EXISTS ( " +
+            "        SELECT 1 " +
+            "        FROM BillHistories bh " +
+            "        WHERE bh.BillId = b.id " +
+            "        AND bh.Status = 21 " +
+            "    ) " +
+            "    AND DATEPART(YEAR, b.CreatedAt) = DATEPART(YEAR, :date) " +
+            "    AND DATEPART(MONTH, b.CreatedAt) = DATEPART(MONTH, :date)",
+            nativeQuery = true)
+    BigDecimal calculateTotalRevenueForMonth(@Param("date") Date date);
 
     @Query(value = "WITH DistinctPaymentStatus AS ( " +
             "    SELECT " +
