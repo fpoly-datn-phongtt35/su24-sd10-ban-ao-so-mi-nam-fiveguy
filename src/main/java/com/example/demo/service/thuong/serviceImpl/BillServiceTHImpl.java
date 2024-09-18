@@ -42,9 +42,6 @@ public class BillServiceTHImpl implements BillServiceTH {
     private VoucherRepositoryTH voucherRepository;
 
 
-    // Converting LocalDate to Date
-    Date dateTEst = new Date();
-
     private static final Random random = new Random();
     private static final String PREFIX = "TT";
     private static final int MAX_ATTEMPTS = 1000;
@@ -317,7 +314,7 @@ public class BillServiceTHImpl implements BillServiceTH {
     public BillResponseTH create(Employee employee) {
         Bill bill = new Bill();
         bill.setCode("HD" + Integer.parseInt(Long.toString(System.currentTimeMillis()).substring(7)));
-        bill.setCreatedAt(dateTEst);
+        bill.setCreatedAt(new Date());
         bill.setPaymentMethod(paymentMethodRepository.findByCode(13).get());
         bill.setTypeBill(1);
         bill.setStatus(20);
@@ -356,10 +353,10 @@ public class BillServiceTHImpl implements BillServiceTH {
         // Set the status based on the type of bill
         int newStatus = (billRequest.getTypeBill() == 1) ? 21 : (billRequest.getTypeBill() == 2) ? 1 : bill.getStatus();
         bill.setStatus(newStatus);
-        bill.setCreatedAt(dateTEst);
+        bill.setCreatedAt(new Date());
 
         if (billRequest.getTypeBill() == 1){
-            bill.setDeliveryDate(dateTEst);
+            bill.setDeliveryDate(new Date());
         }
 
 // Update voucher if provided
@@ -413,7 +410,7 @@ public class BillServiceTHImpl implements BillServiceTH {
             paymentStatus.setBill(savedBill);
             paymentStatus.setCustomerPaymentStatus(2);
             paymentStatus.setPaymentType(1);
-            paymentStatus.setPaymentDate(dateTEst);
+            paymentStatus.setPaymentDate(new Date());
             paymentStatus.setNote("Khách hàng thanh toán");
             paymentStatus.setPaymentAmount(savedBill.getTotalAmountAfterDiscount().add(
                     savedBill.getShippingFee() != null ? savedBill.getShippingFee() : BigDecimal.valueOf(0)
@@ -448,7 +445,7 @@ public class BillServiceTHImpl implements BillServiceTH {
         billHistory.setBill(bill);
         billHistory.setType(1);
         billHistory.setStatus(status);
-        billHistory.setCreatedAt(dateTEst);
+        billHistory.setCreatedAt(new Date());
         billHistory.setCreatedBy(employee.getFullName());
         return billHistory;
     }
