@@ -109,13 +109,34 @@ public class OLCartController2 {
                 cart = olCartService.save(cart);
             }
 
+
+
+
+
             Long productDetailId = Long.valueOf(orderData.get("productDetailId").asText());
             int quantity = orderData.get("quantity").asInt();
             if (quantity < 1) {
-//                System.out.println(quantity);
 
                 return ResponseEntity.ok(3); // Invalid quantity
             }
+
+
+            List<CartDetail> chiTietGioHang = olCartDetailService.findAllByCart_Id(cart.getId());
+
+                int totalQuantity = 0;
+
+            // Tính tổng số lượng các sản phẩm trong CartDetail
+            for (CartDetail cartDetail : chiTietGioHang) {
+
+                totalQuantity += cartDetail.getQuantity();
+            }
+
+            // Kiểm tra nếu tổng số lượng vượt quá 20 thì trả về mã lỗi 400
+            if (totalQuantity + quantity > 20) {
+                return ResponseEntity.ok(4); // Invalid quantity
+
+            }
+
             Optional<ProductDetail> productDetail = olProductDetailService.findById(productDetailId);
 
             if (productDetail.isPresent()) {
@@ -154,12 +175,35 @@ public class OLCartController2 {
         Long cartDetailId = orderData.get("cartDetailId").asLong();
         int quantity = orderData.get("quantity").asInt();
 
-
-
         if (cartDetailId != null ) {
             Optional<CartDetail> optionalCartDetail = olCartDetailService.findById(cartDetailId);
             if (optionalCartDetail.isPresent()) {
                 CartDetail cartDetail = optionalCartDetail.get();
+
+
+                List<CartDetail> chiTietGioHang = olCartDetailService.findAllByCart_Id(cartDetail.getCart().getId());
+                int totalQuantity = 0;
+
+                // Tính tổng số lượng các sản phẩm trong CartDetail
+                for (CartDetail cartDetail2 : chiTietGioHang) {
+
+                    if (cartDetail2.getId() == cartDetail.getId()){
+                        break;
+                    }
+                    totalQuantity += cartDetail2.getQuantity();
+                }
+
+                // Kiểm tra nếu tổng số lượng vượt quá 20 thì trả về mã lỗi 400
+                if (totalQuantity + quantity > 20) {
+                    return ResponseEntity.ok(new CartResponse2(6, "", 0)); // Cập nhật thành công
+
+
+
+                }
+                
+
+
+
                 ProductDetail productDetail = cartDetail.getProductDetail();
                 Product product = productDetail.getProduct();
                 String productName = product.getName() + " " + product.getCategory().getName() + " " + product.getMaterial().getName() + " " + product.getCode() + " Màu sắc " + productDetail.getColor().getName() + " Kích cỡ " + productDetail.getSize().getName();
@@ -179,6 +223,11 @@ public class OLCartController2 {
 
                 if (remainingQuantity >= quantity) {
                     cartDetail.setQuantity(quantity);
+
+
+
+
+
                     olCartDetailService.save(cartDetail);
                     return ResponseEntity.ok(new CartResponse2(1, "", 0)); // Cập nhật thành công
                 } else {

@@ -101,16 +101,16 @@ public class ProductServiceTHImpl implements ProductServiceTH {
 
     @Override
     public Product update(ProductRequestTH productRequestTH, Long id, String fullName) {
-//        boolean productExists = productRepository.existsByCategoryAndBrandAndMaterialAndWristAndCollar(
-//                productRequestTH.getCategory(),
-//                productRequestTH.getBrand(),
-//                productRequestTH.getMaterial(),
-//                productRequestTH.getWrist(),
-//                productRequestTH.getCollar()
-//        );
-//        if (productExists) {
-//            throw new DuplicateException("Sản phẩm đã tồn tại", "duplicate");
-//        }
+        boolean productExists = productRepository.existsByCategoryAndBrandAndMaterialAndWristAndCollar(
+                productRequestTH.getCategory(),
+                productRequestTH.getBrand(),
+                productRequestTH.getMaterial(),
+                productRequestTH.getWrist(),
+                productRequestTH.getCollar()
+        );
+        if (productExists) {
+            throw new DuplicateException("Sản phẩm đã tồn tại", "duplicate");
+        }
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();

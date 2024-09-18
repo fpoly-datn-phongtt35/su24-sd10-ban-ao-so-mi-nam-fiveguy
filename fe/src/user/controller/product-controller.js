@@ -254,6 +254,18 @@ $scope.getPageRange = function() {
 // $scope.loadPage = function() {
 //     $scope.filterProducts(0);
 // };
+// Giới hạn quantity không vượt quá 20
+// $scope.checkQuantity = function () {
+//   let totalQuantity = 0;
+//   for (let i = 0; i < $scope.cartItems.length; i++) {
+//       totalQuantity += $scope.cartItems[i].quantity;
+//       if (totalQuantity > 20) {
+//           $scope.showErrorNotification("Tổng số lượng sản phẩm trong giỏ hàng không được vượt quá 20.");
+//           return;
+//       }
+//   }
+// };
+
 
 
       // Function to refresh data (reset filters and reload products)
@@ -379,8 +391,18 @@ $scope.getPageRange = function() {
         $scope.cart = {
             items: [],
             add(productDetailId, quantity) {
+              console.log($scope.cartItems);
 
-              console.log($scope.cartItems.length);
+              
+              // let totalQuantity = 0;
+              // for (let i = 0; i < $scope.cartItems.length; i++) {
+              //     totalQuantity += $scope.cartItems[i].quantity;
+              //     if (totalQuantity >= 20) {
+              //         $scope.showErrorNotification("Tổng số lượng sản phẩm trong giỏ hàng không được vượt quá 20.");
+              //         return;
+              //     }
+              // }
+
                 if($scope.cartItems != null && $scope.cartItems.length >= 20){
                   $scope.showErrorNotification("Đơn hàng chỉ được mua tối đa 20 loại sản phẩm khác");
                   return;
@@ -401,7 +423,10 @@ $scope.getPageRange = function() {
                                 $scope.showErrorNotification("Sản phẩm không có đủ số lượng trong kho!");
                             } else if (response.data === 3) {
                               $scope.showErrorNotification("Số lượng không hợp lệ!");
-                            } 
+
+                          } else if (response.data === 4) {
+                            $scope.showErrorNotification("Tổng số lượng sản phẩm trong giỏ hàng không được vượt quá 20.");
+                          } 
                             else {
                                 $scope.showErrorNotification("Thêm vào giỏ thất bại!");
                             }
@@ -412,6 +437,17 @@ $scope.getPageRange = function() {
                         });
             },
             update(cartDetailId, quantity) {
+
+              // let totalQuantity = 0;
+              // for (let i = 0; i < $scope.cartItems.length; i++) {
+              //     totalQuantity += $scope.cartItems[i].quantity;
+              //     if (totalQuantity > 20) {
+              //         $scope.showErrorNotification("Tổng số lượng sản phẩm trong giỏ hàng không được vượt quá 20.");
+              //         return;
+              //     }
+              // }
+
+
               $http.post('http://localhost:8080/api/home/cart/update', {
                       cartDetailId: cartDetailId,
                       quantity: quantity,
@@ -427,7 +463,10 @@ $scope.getPageRange = function() {
                           $scope.showErrorNotification("Số lượng không hợp lệ!");
                       } else if (data.status === 4) {
                           $scope.showErrorNotification("Sản phẩm "+ data.productName  +" đã hết hàng!");
-                      } else {
+                      } 
+                      else if (data.status === 6) {
+                        $scope.showErrorNotification("Tổng số lượng sản phẩm trong giỏ hàng không được vượt quá 20.");
+                    } else {
                           $scope.showErrorNotification("Cập nhật giỏ thất bại!");
                       }
                       if (data.status === 1) {
@@ -1541,6 +1580,17 @@ $scope.getRates = function() {
 // Hàm confirmPurchase sẽ được gọi khi bấm nút
 $scope.confirmPurchase = function() {
 
+
+    let totalQuantity = 0;
+              for (let i = 0; i < $scope.cartItems.length; i++) {
+                  totalQuantity += $scope.cartItems[i].quantity;
+                  if (totalQuantity > 20) {
+                      $scope.showErrorNotification("Tổng số lượng sản phẩm trong giỏ hàng không được vượt quá 20.");
+                      return;
+                  }
+              }
+
+              
         // Kiểm tra các trường thông tin bắt buộc
 let isBillReciverInvalid = !$scope.bill.reciverName || $scope.bill.reciverName.trim().length === 0;
 let isBillAddressDetailInvalid = !$scope.billAddressDetail || $scope.billAddressDetail.trim().length === 0;

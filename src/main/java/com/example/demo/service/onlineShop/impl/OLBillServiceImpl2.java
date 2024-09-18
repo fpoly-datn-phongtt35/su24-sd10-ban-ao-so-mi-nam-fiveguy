@@ -161,17 +161,17 @@ public class OLBillServiceImpl2 implements OLBillService2 {
 //        bill.setCreatedAt(new Date());
         bill.setCustomer(customer);
         Bill savedBill = olBillRepository.save(bill);
-//        if (savedBill.getCustomer() != null && savedBill.getCustomer().getAccount() != null) {
-//            String customerEmail = savedBill.getCustomer().getAccount().getEmail();
-//            if (customerEmail != null && !customerEmail.isEmpty()) {
-//                // Gửi email xác nhận đơn hàng cho khách hàng
-//                sendOrderConfirmationEmail(
-//                        customerEmail,
-//                        savedBill.getCustomer().getFullName(),
-//                        savedBill.getCustomer().getAccount().getPhoneNumber()
-//                );
-//            }
-//        }
+        if (savedBill.getCustomer() != null && savedBill.getCustomer().getAccount() != null) {
+            String customerEmail = savedBill.getCustomer().getAccount().getEmail();
+            if (customerEmail != null && !customerEmail.isEmpty()) {
+                // Gửi email xác nhận đơn hàng cho khách hàng
+                sendOrderConfirmationEmail(
+                        customerEmail,
+                        savedBill.getCustomer().getFullName(),
+                        savedBill.getCustomer().getAccount().getPhoneNumber()
+                );
+            }
+        }
         olBillDetailService.saveAll(billDetails);
 
 
@@ -188,7 +188,7 @@ public class OLBillServiceImpl2 implements OLBillService2 {
         // Nội dung email dạng HTML với logo và layout như hình ảnh
         String htmlContent = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd;'>"
                 + "<div style='text-align: center; margin-bottom: 20px;'>"
-                + "<img src='" + logoUrl + "' alt='Logo' style='width: 80px; height: auto; display: block; margin: 0 auto;'/>"
+//                + "<img src='" + logoUrl + "' alt='Logo' style='width: 80px; height: auto; display: block; margin: 0 auto;'/>"
                 + "<h2 style='margin: 10px 0;'>FiveGuys.com</h2>"
                 + "<p>Mã đơn hàng là: <strong>" + orderNumber + "</strong></p>"
                 + "</div>"
